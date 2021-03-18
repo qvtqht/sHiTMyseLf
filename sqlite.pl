@@ -128,7 +128,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	SqliteQuery2("CREATE TABLE item(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		file_path UNIQUE,
-		item_name,
+		file_name,
 		file_hash UNIQUE,
 		item_type,
 		verify_error
@@ -187,7 +187,17 @@ sub SqliteMakeTables { # creates sqlite schema
 		WHERE attribute = 'title'
 	");
 
-	# item_title
+	# item_name
+	SqliteQuery("
+		CREATE VIEW item_name AS
+		SELECT
+			file_hash,
+			value AS name
+		FROM item_attribute_latest
+		WHERE attribute = 'name'
+	");
+
+	# item_author
 	SqliteQuery("
 		CREATE VIEW item_author AS
 		SELECT
@@ -398,7 +408,7 @@ sub SqliteMakeTables { # creates sqlite schema
 		CREATE VIEW item_flat AS
 			SELECT
 				item.file_path AS file_path,
-				item.item_name AS item_name,
+				IFNULL(item_name.name, item.file_name) AS item_name,
 				item.file_hash AS file_hash,
 				IFNULL(item_author.author_key, '') AS author_key,
 				IFNULL(child_count.child_count, 0) AS child_count,
@@ -407,13 +417,15 @@ sub SqliteMakeTables { # creates sqlite schema
 				IFNULL(item_title.title, '') AS item_title,
 				IFNULL(item_score.item_score, 0) AS item_score,
 				item.item_type AS item_type,
-				tags_list AS tags_list
+				tags_list AS tags_list,
+				item.file_name AS file_name
 			FROM
 				item
 				LEFT JOIN child_count ON ( item.file_hash = child_count.parent_hash)
 				LEFT JOIN parent_count ON ( item.file_hash = parent_count.item_hash)
 				LEFT JOIN added_time ON ( item.file_hash = added_time.file_hash)
 				LEFT JOIN item_title ON ( item.file_hash = item_title.file_hash)
+				LEFT JOIN item_name ON ( item.file_hash = item_name.file_hash)
 				LEFT JOIN item_author ON ( item.file_hash = item_author.file_hash)
 				LEFT JOIN item_score ON ( item.file_hash = item_score.file_hash)
 				LEFT JOIN item_tags_list ON ( item.file_hash = item_tags_list.file_hash )
@@ -1594,9 +1606,9 @@ sub DBAddItem2 {
 	return DBAddItem($filePath, '', '', $fileHash, $itemType, 0);
 }
 
-sub DBAddItem { # $filePath, $itemName, $authorKey, $fileHash, $itemType, $verifyError ; Adds a new item to database
+sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verifyError ; Adds a new item to database
 # $filePath = path to text file
-# $itemName = item's 'name' (currently hash)
+# $fileName = item's file name
 # $authorKey = author's gpg fingerprint
 # $fileHash = hash of item
 # $itemType = type of item (currently 'txt' is supported)
@@ -1626,7 +1638,7 @@ sub DBAddItem { # $filePath, $itemName, $authorKey, $fileHash, $itemType, $verif
 		@queryParams = ();
 	}
 
-	my $itemName = shift;
+	my $fileName = shift;
 	my $authorKey = shift;
 	my $fileHash = shift;
 	my $itemType = shift;
@@ -1638,23 +1650,23 @@ sub DBAddItem { # $filePath, $itemName, $authorKey, $fileHash, $itemType, $verif
 		$authorKey = '';
 	}
 
-	if (!$itemName) {
-		$itemName = 'untitled';
-		WriteLog('DBAddItem: warning: $itemName missing; $filePath = ' . $filePath);
+	if (!$fileName) {
+		$fileName = 'Bio';
+		WriteLog('DBAddItem: warning: $fileName missing; $filePath = ' . $filePath);
 	}
 #
 #	if ($authorKey) {
 #		DBAddItemParent($fileHash, DBGetAuthorPublicKeyHash($authorKey));
 #	}
 
-	WriteLog("DBAddItem($filePath, $itemName, $authorKey, $fileHash, $itemType, $verifyError);");
+	WriteLog("DBAddItem($filePath, $fileName, $authorKey, $fileHash, $itemType, $verifyError);");
 
 	if (!$query) {
-		$query = "INSERT OR REPLACE INTO item(file_path, item_name, file_hash, item_type, verify_error) VALUES ";
+		$query = "INSERT OR REPLACE INTO item(file_path, file_name, file_hash, item_type, verify_error) VALUES ";
 	} else {
 		$query .= ",";
 	}
-	push @queryParams, $filePath, $itemName, $fileHash, $itemType, $verifyError;
+	push @queryParams, $filePath, $fileName, $fileHash, $itemType, $verifyError;
 
 	$query .= "(?, ?, ?, ?, ?)";
 
@@ -2328,8 +2340,8 @@ sub DBGetAuthorPublicKeyHash { # Returns the hash/identifier of the file contain
 } # DBGetAuthorPublicKeyHash()
 
 sub DBGetItemFields { # Returns fields we typically need to request from item_flat table
-	my $itemFields =
-		"item_flat.file_path file_path,
+	my $itemFields = "
+		item_flat.file_path file_path,
 		item_flat.item_name item_name,
 		item_flat.file_hash file_hash,
 		item_flat.author_key author_key,
@@ -2339,7 +2351,11 @@ sub DBGetItemFields { # Returns fields we typically need to request from item_fl
 		item_flat.item_title item_title,
 		item_flat.item_score item_score,
 		item_flat.tags_list tags_list,
-		item_flat.item_type item_type";
+		item_flat.item_type item_type
+	";
+
+	$itemFields = trim($itemFields);
+	$itemFields = str_replace("\t", '', $itemFields);
 
 	return $itemFields;
 }
