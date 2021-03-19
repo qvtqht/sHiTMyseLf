@@ -65,11 +65,17 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		WriteLog('GetItemPage: ' . $debugOut);
 	}
 
-	if (defined($file{'item_title'}) && $file{'item_title'}) {
+	if (defined($file{'item_name'}) && $file{'item_name'}) {
+		WriteLog("GetItemPage: defined(item_name) = true!");
+		$title = HtmlEscape($file{'item_name'});
+		$titleHtml = HtmlEscape($file{'item_name'});
+		#$title .= ' (' . substr($file{'item_name'}, 0, 8) . '..)';
+	}
+	elsif (defined($file{'item_title'}) && $file{'item_title'}) {
 		WriteLog("GetItemPage: defined(item_title) = true!");
 		$title = HtmlEscape($file{'item_title'});
 		$titleHtml = HtmlEscape($file{'item_title'});
-		$title .= ' (' . substr($file{'file_hash'}, 0, 8) . '..)';
+		#$title .= ' (' . substr($file{'file_hash'}, 0, 8) . '..)';
 	}
 	else {
 		WriteLog("GetItemPage: defined(item_title) = false!");
