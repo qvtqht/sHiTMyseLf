@@ -12,3 +12,5 @@
 
 ./index.pl --all 2>>log/index_err.txt
 
+./pages.pl --all 2>>log/pages_err.txt
+
