@@ -9,7 +9,7 @@ FROM (
 		vote
 		LEFT JOIN vote_value ON (vote.vote_value = vote_value.vote)
 	WHERE
-		vote_value.value > 0
+		IFNULL(vote_value.value, 0) >= 0
 			AND
 		file_hash IN (SELECT file_hash FROM item)
 	GROUP BY
@@ -18,6 +18,8 @@ FROM (
 	)
 WHERE
 	vote_count >= 1
+GROUP BY
+	vote_value
 ORDER BY
 	vote_count
 

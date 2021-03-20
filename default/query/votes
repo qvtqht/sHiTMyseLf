@@ -14,5 +14,7 @@ FROM (
 	)
 WHERE
 	vote_count >= 1
+GROUP BY
+	vote_value
 ORDER BY
 	vote_value
