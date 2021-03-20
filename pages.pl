@@ -1259,6 +1259,8 @@ sub GetItemTemplate2 { # returns HTML for outputting one item
 		# get formatted/post-processed message for this item
 		my $message = GetItemDetokenedMessage($file{'file_hash'}, $file{'file_path'});
 
+		$message =~ s/\r//g;
+
 		# WriteLog($message);
 
 		if ($file{'tags_list'}) {
