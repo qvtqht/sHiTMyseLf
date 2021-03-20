@@ -142,7 +142,7 @@ sub GpgParse { # $filePath ; parses file and stores gpg response in cache
 				$gpgKeyPub = $1;
 				DBAddItemAttribute($fileHash, 'gpg_id', $gpgKeyPub);
 
-				if ($gpgStderrOutput =~ m/"([ a-zA-Z0-9<>&\@.()_]+)"/) {
+				if ($gpgStderrOutput =~ m/"([ a-zA-Z0-9<>&\@.()_'"\\]+)"/) {
 					# we found something which looks like a name
 					my $aliasReturned = $1;
 					$aliasReturned =~ s/\<(.+\@.+?)\>//g; # if has something which looks like an email, remove it
