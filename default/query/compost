@@ -7,8 +7,6 @@ SELECT
 	file_hash
 FROM
 	item_flat
-WHERE
-	',' || tags_list || ',' LIKE '%,hastext,%'
 ORDER BY
 	child_count ASC,
 	add_timestamp DESC
