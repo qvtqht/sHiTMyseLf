@@ -1182,6 +1182,7 @@ sub IsImageFile { # $file ; returns 1 if image file, 0 if not
 			&&
 		(
 			substr(lc($file), length($file) -4, 4) eq ".jpg" ||
+			substr(lc($file), length($file) -5, 5) eq ".jpeg" ||
 			substr(lc($file), length($file) -4, 4) eq ".gif" ||
 			substr(lc($file), length($file) -4, 4) eq ".png" ||
 			substr(lc($file), length($file) -4, 4) eq ".bmp" ||
