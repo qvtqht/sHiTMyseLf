@@ -1613,7 +1613,9 @@ sub GetItemDetokenedMessage { # $itemHash, $filePath ; retrieves item's message 
 	my $message = '';
 	my $messageCacheName = GetMessageCacheName($itemHash);
 
-	if (-e $messageCacheName) {
+	if (!-e $messageCacheName) {
+		WriteLog('GetItemDetokenedMessage: warning: FALSE $messageCacheName = ' . $messageCacheName);
+	} else {
 		WriteLog('GetItemDetokenedMessage: $message = GetFile(' . $messageCacheName . ');');
 		$message = GetFile($messageCacheName);
 		if (!$message) {
