@@ -1,3 +1,5 @@
 <!-- image.template -->
-<img src="$imageUrl" lowsrc="$imageSmallUrl" width="640" alt="$imageAlt">
+<a href="$permalinkHtml">
+	<img src="$imageUrl" lowsrc="$imageSmallUrl" width="300" alt="$imageAlt">
+</a>
 <!-- / image.template -->
