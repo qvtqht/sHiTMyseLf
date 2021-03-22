@@ -640,6 +640,9 @@ sub SqliteQueryCachedShell { # $query ; performs sqlite query via sqlite3 comman
 # uses hash-keyed cache 
 # CacheSqliteQuery { keyword
 # #todo add parsing into array?
+
+	WriteLog('SqliteQueryCachedShell: caller: ' . join(', ', caller));
+
 	my $query = shift;
 	if (!$query) {
 		WriteLog('SqliteQueryCachedShell: warning: called without $query');
