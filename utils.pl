@@ -1332,7 +1332,7 @@ sub AddItemToConfigList { # Adds a line to a list stored in config
 
 	# put it back
 	PutConfig($configPath, $configList);
-}
+} # AddItemToConfigList()
 
 sub CheckForInstalledVersionChange {
 	WriteLog('CheckForInstalledVersionChange() begin');
