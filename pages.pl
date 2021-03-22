@@ -1561,6 +1561,7 @@ sub GetItemTemplate2 { # returns HTML for outputting one item
 				$imageContainer =~ s/\$imageUrl/$imageUrl/g;
 				$imageContainer =~ s/\$imageSmallUrl/$imageSmallUrl/g;
 				$imageContainer =~ s/\$imageAlt/$imageAlt/g;
+				$imageContainer =~ s/\$permalinkHtml/$permalinkHtml/g;
 
 				$itemText = $imageContainer;
 
