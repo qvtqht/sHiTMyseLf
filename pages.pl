@@ -1260,6 +1260,11 @@ sub GetItemTemplate2 { # returns HTML for outputting one item
 		my $message = GetItemDetokenedMessage($file{'file_hash'}, $file{'file_path'});
 
 		$message =~ s/\r//g;
+		if (GetConfig('admin/expo_site_mode')) {
+			if (index($message, "\n-- \n") != -1) {
+				$message = substr($message, 0, index($message, "\n-- \n"));
+			}
+		}
 
 		# WriteLog($message);
 
@@ -1402,7 +1407,11 @@ sub GetItemTemplate2 { # returns HTML for outputting one item
 			#return GetWindowTemplate ($param{'body'}, $param{'title'}, $param{'headings'}, $param{'status'}, $param{'menu'});
 			my %windowParams;
 			$windowParams{'body'} = GetTemplate('html/item/item.template'); # GetItemTemplate2()
-			$windowParams{'title'} = HtmlEscape($file{'item_title'});
+			if (GetConfig('admin/expo_site_mode')) {
+				$windowParams{'title'} = HtmlEscape($file{'item_name'});
+			} else {
+				$windowParams{'title'} = HtmlEscape($file{'item_title'});
+			}
 			$windowParams{'guid'} = substr(sha1_hex($file{'file_hash'}), 0, 8);
 			# $windowParams{'headings'} = 'haedigns';
 
@@ -1422,6 +1431,11 @@ sub GetItemTemplate2 { # returns HTML for outputting one item
 				}
 
 				$windowParams{'status'} = $statusBar;
+			}
+			if (GetConfig('admin/expo_site_mode')) {
+				if ($file{'item_name'} eq 'Bio') {
+					$windowParams{'status'} = '';
+				}
 			}
 
 			if (defined($file{'show_quick_vote'})) {
@@ -1900,13 +1914,43 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 				$menuItemCaption = '#' . $menuItemName;
 			}
 
-			# this avoids creating duplicate urls but currently breaks light mode
-			# if ($menuItemName eq 'index') {
-			# 	$menuItemUrl = '/';
-			# }
+			if (GetConfig('admin/expo_site_mode')) {
 
-			# add menu item to output
+				#this avoids creating duplicate urls but currently breaks light mode
+				if ($menuItemName eq 'home') {
+					$menuItemUrl = '/';
+				}
+
+				# add menu item to output
+
+				if ($menuItem eq 'register') {
+					$menuItemUrl = 'https://tinyurl.com/4ezdhdk';
+				}
+
+				if ($menuItem eq 'hackathon') {
+					$menuItemUrl = 'https://forms.gle/JUvaggfVCNS8P54G7';
+				}
+
+				if ($menuItem eq 'mailinglist') {
+					$menuItemUrl = 'https://eepurl.com/gOVdKb';
+					$menuItemCaption = 'Mailing List';
+				}
+
+				if ($menuItem eq 'mediapartners') {
+					$menuItemCaption = 'Media Partners';
+				}
+
+				if ($menuItem eq 'priorexpo') {
+					$menuItemUrl = '/flashback_2020/';
+					$menuItemCaption = 'Prior Expo';
+				}
+			} # if (GetConfig('admin/expo_site_mode'))
+
 			$menuItems .= GetMenuItem($menuItemUrl, $menuItemCaption, $templateName);
+
+			if (GetConfig('admin/expo_site_mode')) {
+				$menuItems .= ' &nbsp; ';
+			}
 		}
 	}
 
@@ -3571,19 +3615,27 @@ sub GetDesktopPage { # returns html for desktop page (/desktop.html)
 			$tosText,
 			'Terms of Service',
 		);
-		$html .= $tosWindow;
 
-		$html .= GetQueryAsDialog('authors');
-		$html .= GetSettingsWindow();
-		$html .= GetProfileWindow();
-		$html .= GetStatsTable();
-		#$html .= GetWriteForm(); #commented because of the setFocus js, which should not happen on this page
-		if (GetConfig('admin/php/enable')) {
-			if (GetConfig('admin/upload/enable')) {
-				$html .= GetUploadWindow('html/form/upload.template');
+		if (GetConfig('admin/expo_site_mode')) {
+			$html .= GetQueryAsDialog('speakers', 'Speakers', 'item_title');
+			$html .= GetSimpleWindow('mailing_list');
+		} else {
+			$html .= $tosWindow;
+
+			$html .= GetQueryAsDialog('authors');
+			$html .= GetSettingsWindow();
+			$html .= GetProfileWindow();
+			$html .= GetStatsTable();
+			$html .= GetWriteForm(); #commented because of the setFocus js, which should not happen on this page
+
+			if (GetConfig('admin/php/enable')) {
+				if (GetConfig('admin/upload/enable')) {
+					$html .= GetUploadWindow('html/form/upload.template');
+				}
 			}
+			
+			$html .= GetOperatorWindow();
 		}
-		$html .= GetOperatorWindow();
 	}
 
 	$html .= GetPageFooter();
@@ -3895,6 +3947,40 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 
 	# Add Authors page
 	MakePage('authors', 0);
+
+
+	if (GetConfig('admin/expo_site_mode')) {
+		my @menuList = split("\n", GetConfig('list/menu'));
+		foreach my $menuItem (@menuList) {
+			MakeSimplePage($menuItem);
+		}
+	} # if (GetConfig('admin/expo_site_mode'))
+
+	if (GetConfig('admin/expo_site_mode')) {
+		my $speakersPage = '';
+		$speakersPage = GetPageHeader('Speakers', 'Speakers', 'speakers');
+
+		my %queryParams;
+		$queryParams{'where_clause'} = "WHERE item_type LIKE 'image'";
+		$queryParams{'order_clause'} = "ORDER BY file_name";
+#		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%speaker%'";
+
+		my @itemSpeakers = DBGetItemList(\%queryParams);
+		foreach my $itemSpeaker (@itemSpeakers) {
+			if (length($itemSpeaker->{'item_title'}) > 48) {
+				$itemSpeaker->{'item_title'} = substr($itemSpeaker->{'item_title'}, 0, 43) . '[...]';
+			}
+			my $itemSpeakerTemplate = GetItemTemplate2($itemSpeaker);
+			$speakersPage .= $itemSpeakerTemplate;
+		}
+
+		$speakersPage .= GetPageFooter();
+
+		$speakersPage = InjectJs($speakersPage, qw(settings utils));
+
+		PutHtmlFile('speakers.html', $speakersPage);
+
+	} # if (GetConfig('admin/expo_site_mode'))
 
 	MakePage('read', 0);
 
