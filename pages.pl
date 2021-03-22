@@ -1832,42 +1832,48 @@ sub FillThemeColors { # $html ; fills in templated theme colors in provided html
 } # FillThemeColors()
 
 sub WriteMenuList { # writes config/list/menu based on site configuration
+#	return;
 	#todo this function is not obvious, overrides obvious list/menu
 	my @menu;
 
-	push @menu, 'read';
-	push @menu, 'write';
+	if (GetConfig('admin/expo_site_mode')) {
+		#@menu = split(glob('html/page'));
+		# do nothing
+	} else {
+		push @menu, 'read';
+		push @menu, 'write';
 
-	if (GetConfig('admin/php/quickchat')) {
-		push @menu, 'chat';
+		if (GetConfig('admin/php/quickchat')) {
+			push @menu, 'chat';
+		}
+
+		#upload
+		if (GetConfig('admin/php/enable') && GetConfig('admin/upload/enable')) {
+			# push @menu, 'art';
+			push @menu, 'upload';
+		}
+
+		#push @menu, 'stats';
+	#
+	#	#profile
+	#	if (GetConfig('admin/js/enable') || GetConfig('admin/php/enable')) {
+	#		# one of these is required for profile to work
+	#		push @menu, 'profile';
+	#	} else {
+	#		#todo make it disabled or something
+	#		push @menu, 'profile';
+	#	}
+		push @menu, 'help';
+
+		###
+
+		my $menuList = join("\n", @menu);
+
+		PutConfig('template/list/menu', $menuList);
+		# PutConfig('template/list/menu_advanced', $menuList);
 	}
 
-	#upload
-	if (GetConfig('admin/php/enable') && GetConfig('admin/upload/enable')) {
-		# push @menu, 'art';
-		push @menu, 'upload';
-	}
-
-	#push @menu, 'stats';
-#
-#	#profile
-#	if (GetConfig('admin/js/enable') || GetConfig('admin/php/enable')) {
-#		# one of these is required for profile to work
-#		push @menu, 'profile';
-#	} else {
-#		#todo make it disabled or something
-#		push @menu, 'profile';
-#	}
-	push @menu, 'help';
-
-	###
-
-	my $menuList = join("\n", @menu);
-
-	PutConfig('list/menu', $menuList);
-	# PutConfig('list/menu_advanced', $menuList);
-
-	GetConfig('list/menu', 'unmemo');
+	GetConfig('template/list/menu', 'unmemo');
 	# GetConfig('list/menu_advanced', 'unmemo');
 } # WriteMenuList()
 
