@@ -1899,11 +1899,12 @@ sub DBGetItemAttribute { # $fileHash, [$attribute] ; returns all if attribute no
 	my $attribute = shift;
 
 	if ($fileHash) {
-		if ($fileHash =~ m/[^a-f0-9]/) {
-			WriteLog('DBGetItemAttribute: warning: sanity check failed on $fileHash');
-			return '';
+		if ($fileHash =~ m/^([^a-f0-9])$/) {
+			WriteLog('DBGetItemAttribute: warning: sanity check passed on $fileHash');
+			$fileHash = $1;
 		} else {
-			$fileHash =~ s/[^a-f0-9]//g;
+			WriteLog('DBGetItemAttribute: warning: sanity check FAILED on $fileHash');
+			return '';
 		}
 	} else {
 		return '';
