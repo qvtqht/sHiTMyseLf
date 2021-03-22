@@ -93,6 +93,9 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	# Get the HTML page template
 	my $htmlStart = GetPageHeader($title, $titleHtml, 'item');
 	$txtIndex .= $htmlStart;
+	if (GetConfig('admin/expo_site_mode')) {
+		$txtIndex .= GetMenuTemplate();
+	}
 	$txtIndex .= GetTemplate('html/maincontent.template');
 
 	$file{'display_full_hash'} = 1;
@@ -125,11 +128,14 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 
 	if (GetConfig('reply/enable')) {
 		my $voteButtons = '';
-		$voteButtons .= GetItemTagButtons($file{'file_hash'});
-
-		$txtIndex .= '<p><span class=advanced>'.GetWindowTemplate($voteButtons, 'Classify').'</span></p>';
-		$txtIndex .= GetReplyListing($file{'file_hash'});
-		$txtIndex .= GetReplyForm($file{'file_hash'});
+		if (GetConfig('admin/expo_site_mode')) {
+			# do nothing
+		} else {
+			$voteButtons .= GetItemTagButtons($file{'file_hash'});
+			$txtIndex .= '<p><span class=advanced>'.GetWindowTemplate($voteButtons, 'Classify').'</span></p>';
+			$txtIndex .= GetReplyListing($file{'file_hash'});
+			$txtIndex .= GetReplyForm($file{'file_hash'});
+		}
 
 		my @itemReplies = DBGetItemReplies($fileHash);
 		WriteLog('GetItemPage: scalar(@itemReplies) = ' . scalar(@itemReplies));
@@ -139,9 +145,12 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		}
 	}
 
-	$txtIndex .= GetItemAttributesWindow(\%file);
-
-	$txtIndex .= GetMenuTemplate();
+	if (GetConfig('admin/expo_site_mode')) {
+		# do nothing
+	} else {
+		$txtIndex .= GetItemAttributesWindow(\%file);
+		$txtIndex .= GetMenuTemplate();
+	}
 
 	# end page with footer
 	$txtIndex .= GetPageFooter();
