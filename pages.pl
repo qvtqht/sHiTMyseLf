@@ -1506,7 +1506,8 @@ sub GetItemTemplate2 { # returns HTML for outputting one item
 			$itemName = $fileHash;
 		} else {
 			# if display_full_hash is not set, truncate the hash to 8 characters
-			$itemName = substr($fileHash, 0, 8) . '..';
+			#$itemName = substr($fileHash, 0, 8) . '..';
+			$itemName = $file{'item_name'};
 		}
 
 		my $replyCount = $file{'child_count'};
