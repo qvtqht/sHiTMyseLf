@@ -1203,8 +1203,42 @@ sub FormatMessage {
 #	}
 #} # GetItemTemplate()
 
-sub GetItemTemplate2 { # returns HTML for outputting one item
-	WriteLog("GetItemTemplate2() begin");
+sub GetImageContainer { # $fileHash, $imageAlt
+	my $fileHash = shift;
+	my $imageAlt = shift;
+
+	#todo sanity
+
+	my $permalinkHtml = '';
+	if ($imageAlt eq 'Foundry') {
+		$permalinkHtml = 'https://foundrydigital.com/';
+	}
+	if ($imageAlt eq 'Metrika') {
+		$permalinkHtml = 'https://www.metrika.co/';
+	}
+	if ($imageAlt eq 'Sia') {
+		$permalinkHtml = 'https://sia.tech/';
+	}
+	if (!$permalinkHtml) {
+		my $permalinkHtml = '/' . GetHtmlFilename($fileHash);
+	}
+	my $imageContainer = GetTemplate('html/item/container/image.template');
+
+	my $imageUrl = "/thumb/thumb_800_$fileHash.gif"; #todo hardcoding no
+	# my $imageUrl = "/thumb/thumb_420_$fileHash.gif"; #todo hardcoding no
+	my $imageSmallUrl = "/thumb/thumb_42_$fileHash.gif"; #todo hardcoding no
+	#my $imageAlt = $itemTitle;
+
+	$imageContainer =~ s/\$imageUrl/$imageUrl/g;
+	$imageContainer =~ s/\$imageSmallUrl/$imageSmallUrl/g;
+	$imageContainer =~ s/\$imageAlt/$imageAlt/g;
+	$imageContainer =~ s/\$permalinkHtml/$permalinkHtml/g;
+
+	return $imageContainer;
+} # GetImageContainer()
+
+sub GetItemTemplate { # returns HTML for outputting one item
+	WriteLog("GetItemTemplate() begin");
 
 	# %file(hash for each file)
 	# file_path = file path including filename
