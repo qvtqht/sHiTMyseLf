@@ -1865,13 +1865,15 @@ sub FillThemeColors { # $html ; fills in templated theme colors in provided html
 } # FillThemeColors()
 
 sub WriteMenuList { # writes config/list/menu based on site configuration
-#	return;
 	#todo this function is not obvious, overrides obvious list/menu
 	my @menu;
 
 	if (GetConfig('admin/expo_site_mode')) {
 		#@menu = split(glob('html/page'));
-		# do nothing
+		my $menuList = GetThemeAttribute('template/list/menu');
+		if ($menuList) {
+			@menu = split($menuList);
+		}
 	} else {
 		push @menu, 'read';
 		push @menu, 'write';
@@ -1935,7 +1937,7 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 
 	WriteLog('GetMenuFromList: $listName = ' . $listName . ', $templateName = ' . $templateName);
 
-	my $listText = GetConfig('list/' . $listName); #list/menu
+	my $listText = GetThemeAttribute('template/list/' . $listName); #list/menu
 	$listText = str_replace(' ', "\n", $listText);
 	$listText = str_replace("\n\n", "\n", $listText);
 	my @menuList = split("\n", $listText);
@@ -1968,7 +1970,8 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 				}
 
 				if ($menuItem eq 'hackathon') {
-					$menuItemUrl = 'https://forms.gle/JUvaggfVCNS8P54G7';
+					$menuItemUrl = 'https://mit-bitcoin-expo-hackathon.devfolio.co/';
+#					$menuItemUrl = 'https://forms.gle/JUvaggfVCNS8P54G7';
 				}
 
 				if ($menuItem eq 'mailinglist') {
@@ -2056,9 +2059,15 @@ sub GetMenuTemplate { # returns menubar
 
 	my $selfLink = '/access.html';
 	my $menuItems = GetMenuFromList('menu');
-	my $menuItemsTag = GetMenuFromList('menu_tag');
-	my $menuItemsAdvanced = GetMenuFromList('menu_advanced');
-	my $menuItemsAdmin = GetMenuFromList('menu_admin');
+	if (GetConfig('admin/expo_site_mode') {
+		my $menuItemsTag = '';
+		my $menuItemsAdvanced = '';
+		my $menuItemsAdmin = '';
+	} else {
+		my $menuItemsTag = GetMenuFromList('menu_tag');
+		my $menuItemsAdvanced = GetMenuFromList('menu_advanced');
+		my $menuItemsAdmin = GetMenuFromList('menu_admin');
+	}
 
 	$topMenuTemplate =~ s/\$menuItemsAdvanced/$menuItemsAdvanced/g;
 	$topMenuTemplate =~ s/\$menuItemsAdmin/$menuItemsAdmin/g;
@@ -3442,7 +3451,7 @@ sub GetMenuItem { # $address, $caption; returns html snippet for a menu item (us
 
 	my $templateName = shift;
 	if (!$templateName) {
-		$templateName = 'menuitem.template';
+		$templateName = 'html/menuitem.template';
 	}
 	chomp $templateName;
 
@@ -3990,9 +3999,11 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 
 
 	if (GetConfig('admin/expo_site_mode')) {
-		my @menuList = split("\n", GetConfig('list/menu'));
+		my @menuList = split("\n", GetConfig('template/list/menu'));
 		foreach my $menuItem (@menuList) {
-			MakeSimplePage($menuItem);
+			if ($menuItem ne 'sponsors' || $menuItem ne 'speakers') {
+				MakeSimplePage($menuItem);
+			}
 		}
 	} # if (GetConfig('admin/expo_site_mode'))
 
