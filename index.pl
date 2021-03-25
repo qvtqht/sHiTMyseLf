@@ -1103,6 +1103,7 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 		$ext eq 'png' ||
 		$ext eq 'gif' ||
 		$ext eq 'jpg' ||
+		$ext eq 'jpeg' ||
 		$ext eq 'bmp' ||
 		$ext eq 'svg' ||
 		$ext eq 'webp' ||

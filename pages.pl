@@ -2539,7 +2539,7 @@ sub GetStatsTable {
 		my $IMAGEDIR = GetDir('image');
 		if ($IMAGEDIR =~ m/^([^\s]+)$/) { #security #taint
 			$IMAGEDIR = $1;
-			my $imagesFindResults = `find $IMAGEDIR -name \\\*.png -o -name \\\*.jpg -o -name \\\*.gif -o -name \\\*.bmp -o -name \\\*.jfif -o -name \\\*.webp -o -name \\\*.svg | wc -l`;
+			my $imagesFindResults = `find $IMAGEDIR -name \\\*.png -o -name \\\*.jpg -o -name \\\*.jpeg -o -name \\\*.gif -o -name \\\*.bmp -o -name \\\*.jfif -o -name \\\*.webp -o -name \\\*.svg | wc -l`;
 			chomp $imagesFindResults;
 			if ($imagesFindResults =~ m/^[0-9]+$/) {
 				my $filesImage =  GetCache('count_image') || trim($imagesFindResults);
