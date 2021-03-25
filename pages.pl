@@ -1769,6 +1769,8 @@ sub GetThemeAttribute { # returns theme color from config/theme/
 
 		$attributeValue .= GetConfig($attributePath) || '';
 
+		WriteLog('GetThemeAttribute: $attributeName = ' . $attributeName . '; $themeName = ' . $themeName . '; $attributePath = ' . $attributePath);
+
 		if ($attributeValue) {
 			WriteLog('GetThemeAttribute: ' . $attributeName . ' + ' . $themeName . ' -> ' . $attributePath . ' -> ' . $attributeValue);
 			if ($attributeName ne 'additional.css') {
@@ -1776,8 +1778,8 @@ sub GetThemeAttribute { # returns theme color from config/theme/
 			} else {
 				$attributeValue .= "\n";
 			}
-		}
-	}
+		} # if ($attributeValue)
+	} # foreach $themeName (@activeThemes)
 
 	if ($attributeName ne 'additional.css') {
 		WriteLog('GetThemeAttribute: warning: fall-through on: ' . $attributeName);
