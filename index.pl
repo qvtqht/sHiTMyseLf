@@ -137,6 +137,13 @@ sub GetTokenDefs {
 			'apply_to_parent' => 1,
 			'message' => '[Title]'
 		},
+		{ # name of item, either self or parent. used for display when title is needed #title title:
+			'token'   => 'name',
+			'mask'    => '^(name)(\W)(.+)$',
+			'mask_params'    => 'mg',
+			'apply_to_parent' => 1,
+			'message' => '[Name]'
+		},
 		{ # used for image alt tags #todo
 			'token'   => 'alt',
 			'mask'    => '^(alt)(\W+)(.+)$',
@@ -423,13 +430,16 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 			push @tokenMessages, 'Token #example was found, other tokens will be ignored.';
 		} # #example
 		else { # not #example
+			my $itemTimestamp = DBGetItemAttribute($fileHash, 'chain_timestamp');#todo bug here, depends on chain being on
+
 			foreach my $tokenFoundRef (@tokensFound) {
 				my %tokenFound = %$tokenFoundRef;
 				if ($tokenFound{'token'} && $tokenFound{'param'}) {
 					WriteLog('IndexTextFile: token, param: ' . $tokenFound{'token'} . ',' . $tokenFound{'param'});
 
 					if (
-						$tokenFound{'token'} eq 'title' ||
+						$tokenFound{'token'} eq 'title' || #title
+						$tokenFound{'token'} eq 'name' ||
 						$tokenFound{'token'} eq 'alt' ||
 						$tokenFound{'token'} eq 'access_log_hash' ||
 						$tokenFound{'token'} eq 'url'
@@ -439,18 +449,20 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						# 		otherwise: to self
 						WriteLog('IndexTextFile: token_found: ' . $tokenFound{'recon'});
 
+						$itemTimestamp = time(); #todo #fixme #stupid
+
 						if ($tokenFound{'recon'} && $tokenFound{'message'} && $tokenFound{'param'}) {
 							if (@itemParents) {
 								foreach my $itemParent (@itemParents) {
-									DBAddItemAttribute($itemParent, $tokenFound{'token'}, $tokenFound{'param'}, 0, $fileHash);
+									DBAddItemAttribute($itemParent, $tokenFound{'token'}, $tokenFound{'param'}, $itemTimestamp, $fileHash);
 								}
 							} else {
-								DBAddItemAttribute($fileHash, $tokenFound{'token'}, $tokenFound{'param'}, 0, $fileHash);
+								DBAddItemAttribute($fileHash, $tokenFound{'token'}, $tokenFound{'param'}, $itemTimestamp, $fileHash);
 							}
 						} else {
 							WriteLog('IndexTextFile: warning: ' . $tokenFound{'token'} . ' (generic): sanity check failed');
 						}
-					} # title, access_log_hash, url, alt
+					} # title, access_log_hash, url, alt, name
 
 					if ($tokenFound{'token'} eq 'config') { #config
 						if (
@@ -949,7 +961,8 @@ sub IndexImageFile { # $file ; indexes one image file into database
 
 		DBAddItem($file, $itemName, '', $fileHash, 'image', 0);
 		DBAddItem('flush');
-		DBAddItemAttribute($fileHash, 'title', $itemName, $addedTime);
+		#DBAddItemAttribute($fileHash, 'title', $itemName, $addedTime);
+		#DBAddItemAttribute($fileHash, 'title', $itemName, time()); #todo time should come from actual file time #todo re-add this
 		DBAddVoteRecord($fileHash, $addedTime, 'image'); # add image tag
 
 		DBAddPageTouch('read');
