@@ -1362,7 +1362,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			$message = TextartForWeb($message);
 		} else {
 			# if not textart, just escape html characters
-			WriteLog('GetItemTemplate2: calling FormatForWeb');
+			WriteLog('GetItemTemplate: calling FormatForWeb');
 			$message = FormatForWeb($message);
 		}
 
@@ -1401,7 +1401,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			# /e = eval
 		}
 
-		WriteLog('GetItemTemplate2: $message is: ' . $message);
+		WriteLog('GetItemTemplate: $message is: ' . $message);
 
 		#hint GetHtmlFilename()
 		#todo verify that the items exist before turning them into links,
@@ -1434,7 +1434,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		{
 			#return GetWindowTemplate ($param{'body'}, $param{'title'}, $param{'headings'}, $param{'status'}, $param{'menu'});
 			my %windowParams;
-			$windowParams{'body'} = GetTemplate('html/item/item.template'); # GetItemTemplate2()
+			$windowParams{'body'} = GetTemplate('html/item/item.template'); # GetItemTemplate()
 			if (GetConfig('admin/expo_site_mode')) {
 				$windowParams{'title'} = HtmlEscape($file{'item_name'});
 			} else {
@@ -1595,8 +1595,9 @@ sub GetItemTemplate { # returns HTML for outputting one item
 				my $imageContainer = GetTemplate('html/item/container/image.template');
 
 				my $imageUrl = "/thumb/thumb_800_$fileHash.gif"; #todo hardcoding no
-				# my $imageUrl = "/thumb/thumb_420_$fileHash.gif"; #todo hardcoding no
 				my $imageSmallUrl = "/thumb/thumb_42_$fileHash.gif"; #todo hardcoding no
+#				my $imageUrl = "/thumb/squared_800_$fileHash.gif"; #todo hardcoding no
+#				my $imageSmallUrl = "/thumb/squared_42_$fileHash.gif"; #todo hardcoding no
 				my $imageAlt = $itemTitle;
 
 				# $imageSmallUrl is a smaller image, used in the "lowsrc" attribute for img tag
@@ -1605,6 +1606,8 @@ sub GetItemTemplate { # returns HTML for outputting one item
 				$imageContainer =~ s/\$imageSmallUrl/$imageSmallUrl/g;
 				$imageContainer =~ s/\$imageAlt/$imageAlt/g;
 				$imageContainer =~ s/\$permalinkHtml/$permalinkHtml/g;
+
+				$imageContainer = AddAttributeToTag($imageContainer, 'img', 'width', '300');
 
 				$itemText = $imageContainer;
 
@@ -1678,7 +1681,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		WriteLog('GetItemTemplate: warning: return empty string');
 		return '';
 	}
-} # GetItemTemplate2()
+} # GetItemTemplate()
 
 sub GetPageFooter { # returns html for page footer
 	WriteLog('GetPageFooter()');
