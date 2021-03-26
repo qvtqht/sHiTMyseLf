@@ -3172,6 +3172,11 @@ sub GetReadPage { # generates page with item listing based on parameters
 			my $tagName = $pageParam;
 			chomp($tagName);
 
+			if ($tagName =~ m/[^a-zA-Z0-9]/) {
+				WriteLog('GetReadPage: warning: sanity check failed on $tagName');
+				return '';
+			}
+
 			$title = "$tagName, posts with tag";
 			$titleHtml = $title;
 
