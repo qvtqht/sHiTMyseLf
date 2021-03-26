@@ -2048,6 +2048,7 @@ sub GetClockWidget {
 
 sub GetMenuTemplate { # returns menubar
 	my $topMenuTemplate = GetTemplate('html/topmenu2.template');
+
 	if (GetConfig('admin/js/enable')) {
 		$topMenuTemplate = AddAttributeToTag(
 			$topMenuTemplate,
@@ -2059,10 +2060,13 @@ sub GetMenuTemplate { # returns menubar
 
 	my $selfLink = '/access.html';
 	my $menuItems = GetMenuFromList('menu');
-	if (GetConfig('admin/expo_site_mode') {
-		my $menuItemsTag = '';
-		my $menuItemsAdvanced = '';
-		my $menuItemsAdmin = '';
+
+	my $menuItemsTag = '';
+	my $menuItemsAdvanced = '';
+	my $menuItemsAdmin = '';
+
+	if (GetConfig('admin/expo_site_mode')) {
+		#do nothing
 	} else {
 		my $menuItemsTag = GetMenuFromList('menu_tag');
 		my $menuItemsAdvanced = GetMenuFromList('menu_advanced');
