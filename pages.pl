@@ -1871,6 +1871,12 @@ sub WriteMenuList { # writes config/list/menu based on site configuration
 	if (GetConfig('admin/expo_site_mode')) {
 		#@menu = split(glob('html/page'));
 		my $menuList = GetThemeAttribute('template/list/menu');
+
+		if (!$menuList) {
+			WriteLog('WriteMenuList: warning: $menuList was false');
+			return '';
+		} # if (!$menuList)
+
 		if ($menuList) {
 			@menu = split($menuList);
 		}
