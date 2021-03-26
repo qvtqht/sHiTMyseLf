@@ -3283,12 +3283,12 @@ sub GetReadPage { # generates page with item listing based on parameters
 #				$row->{'show_quick_vote'} = 1;
 				$row->{'trim_long_text'} = 1;
 
-				WriteLog('GetReadPage: GetItemTemplate2($row)');
+				WriteLog('GetReadPage: GetItemTemplate($row)');
 
-				$itemTemplate = GetItemTemplate2($row); # GetReadPage()
+				$itemTemplate = GetItemTemplate($row); # GetReadPage()
 			}
 			else {
-				$itemTemplate = GetItemTemplate2($row); # GetReadPage()
+				$itemTemplate = GetItemTemplate($row); # GetReadPage()
 				WriteLog('GetReadPage: warning: missing $message');
 			}
 
@@ -3368,7 +3368,7 @@ sub GetItemListHtml { # @files(array of hashes) ; takes @files, returns html lis
 			$row->{'trim_long_text'} = 0;
 
 			my $itemTemplate;
-			$itemTemplate = GetItemTemplate2($row); # GetIndexPage()
+			$itemTemplate = GetItemTemplate($row); # GetIndexPage()
 
 			$itemList = $itemList . $itemComma . $itemTemplate;
 
