@@ -2073,6 +2073,15 @@ sub GetMenuTemplate { # returns menubar
 		my $menuItemsAdmin = GetMenuFromList('menu_admin');
 	}
 
+	if (!$menuItems || trim($menuItems)) {
+		$menuItems = '
+			<a href=/>Home</a>
+			<a href=/read.html>Read</a>
+			<a href=/write.html>Write</a>
+			<a href=/help.html>Help</a>
+		';
+	}
+
 	$topMenuTemplate =~ s/\$menuItemsAdvanced/$menuItemsAdvanced/g;
 	$topMenuTemplate =~ s/\$menuItemsAdmin/$menuItemsAdmin/g;
 	$topMenuTemplate =~ s/\$menuItemsTag/$menuItemsTag/g;
