@@ -1744,59 +1744,6 @@ sub GetThemeColor { # returns theme color based on html/theme
 	return $color;
 }
 
-sub GetThemeAttribute { # returns theme color from config/theme/
-#additional.css special case: values will be concatenated instead of returning first one
-	my $attributeName = shift;
-	chomp $attributeName;
-
-	#WriteLog('GetThemeAttribute(' . $attributeName . ')');
-
-	my $attributeValue = '';
-
-	my @activeThemes = split("\n", GetConfig('html/theme'));
-	foreach my $themeName (@activeThemes) {
-	#	my $themeName = GetConfig('html/theme');
-		if (substr($themeName, 0, 6) eq 'theme.') {
-			# compatibility
-			if (length($themeName) > 6) {
-				$themeName = substr($themeName, 6);
-			}
-		}
-
-		my $attributePath = 'theme/' . $themeName . '/' . $attributeName;
-
-		#todo sanity checks
-
-		$attributeValue .= GetConfig($attributePath) || '';
-
-		WriteLog('GetThemeAttribute: $attributeName = ' . $attributeName . '; $themeName = ' . $themeName . '; $attributePath = ' . $attributePath);
-
-		if ($attributeValue) {
-			WriteLog('GetThemeAttribute: ' . $attributeName . ' + ' . $themeName . ' -> ' . $attributePath . ' -> ' . $attributeValue);
-			if ($attributeName ne 'additional.css') {
-				return trim($attributeValue);
-			} else {
-				$attributeValue .= "\n";
-			}
-		} # if ($attributeValue)
-	} # foreach $themeName (@activeThemes)
-
-	if ($attributeName ne 'additional.css') {
-		WriteLog('GetThemeAttribute: warning: fall-through on: ' . $attributeName);
-		return '';
-	} else {
-		return trim($attributeValue);
-	}
-
-#
-#	if (!ConfigKeyValid("theme/$themeName")) {
-#		WriteLog('GetThemeAttribute: warning: ConfigKeyValid("theme/$themeName") was false');
-#		$themeName = 'chicago';
-#	}
-#
-#	return trim($attributeValue);
-} # GetThemeAttribute()
-
 sub FillThemeColors { # $html ; fills in templated theme colors in provided html
 	my $html = shift;
 	chomp($html);

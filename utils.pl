@@ -1961,7 +1961,56 @@ sub EnsureDirsThatShouldExist { # creates directories expected later
 			die("$dir should exist, but it doesn't. aborting.");
 		}
 	}
-}
+} # EnsureDirsThatShouldExist()
+
+sub GetThemeAttribute { # returns theme color from config/theme/
+# may be CONFUSING:
+# additional.css special case:
+# values will be concatenated instead of returning first one
+	my $attributeName = shift;
+	chomp $attributeName;
+
+	#WriteLog('GetThemeAttribute(' . $attributeName . ')');
+
+	my $returnValue = '';
+
+	my @activeThemes = split("\n", GetConfig('html/theme'));
+	foreach my $themeName (@activeThemes) {
+		my $attributePath = 'theme/' . $themeName . '/' . $attributeName;
+
+		#todo sanity checks
+		my $attributeValue = GetConfig($attributePath);
+
+		WriteLog('GetThemeAttribute: $attributeName = ' . $attributeName . '; $themeName = ' . $themeName . '; $attributePath = ' . $attributePath);
+
+		if ($attributeValue && trim($attributeValue) ne '') {
+			WriteLog('GetThemeAttribute: ' . $attributeName . ' + ' . $themeName . ' -> ' . $attributePath . ' -> ' . $attributeValue);
+			if ($attributeName ne 'additional.css') {
+				$returnValue = GetConfig($attributePath) || '';
+				last;
+			} else {
+				$returnValue .= GetConfig($attributePath) || '';
+				$returnValue .= "\n";
+			}
+		} # if ($attributeValue)
+	} # foreach $themeName (@activeThemes)
+
+	if (trim($returnValue) eq '') {
+		WriteLog('GetThemeAttribute: warning: $returnValue is empty for $attributeName = ' . $attributeName);
+	}
+
+	WriteLog('GetThemeAttribute: $returnValue = ' . $returnValue . '; $attributeName = ' . $attributeName);
+
+	return trim($returnValue);
+
+#
+#	if (!ConfigKeyValid("theme/$themeName")) {
+#		WriteLog('GetThemeAttribute: warning: ConfigKeyValid("theme/$themeName") was false');
+#		$themeName = 'chicago';
+#	}
+#
+#	return trim($attributeValue);
+} # GetThemeAttribute()
 
 EnsureDirsThatShouldExist();
 
