@@ -369,14 +369,16 @@ sub GetTemplate { # $templateName ; returns specified template from template dir
 	}
 
 	#information about theme
-	my $themeName = GetConfig('html/theme');
-	my $themePath = 'theme/' . $themeName . '/template/' . $filename;
+#	my $themeName = GetConfig('html/theme');
+#	my $themePath = 'theme/' . $themeName . '/template/' . $filename;
 
 	my $template = '';
-	if (GetConfig($themePath)) {
+	if (GetThemeAttribute('template/' . $filename)) {
+		WriteLog("GetTemplate: Found GetThemeAttribute('template/' . $filename)");
 		#if current theme has this template, override default
-		$template = GetConfig($themePath);
+		$template = GetThemeAttribute('template/' . $filename);
 	} else {
+		WriteLog("GetTemplate: NOT found GetThemeAttribute('template/' . $filename)");
 		#otherwise use regular template
 		$template = GetConfig('template/' . $filename);
 	}
