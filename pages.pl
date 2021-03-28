@@ -954,7 +954,7 @@ sub GetReplyForm { # $replyTo ; returns reply form for specified item
 			'input id=btnSendReply',
 			'onclick',
 #			"this.value='Meditate...';if(window.writeSubmit){return writeSubmit(this);}"
-			"this.value = 'Meditate...'; if (window.writeSubmit) { setTimeout('writeSubmit();', 1); return true; } else { return true; }"
+			"this.value = 'Meditate...'; if (window.writeSubmit) { setTimeout('writeSubmit();', 100); return true; } else { return true; }"
 		);
 
 		#todo the return value can be changed from false to true to issue two submissions, one signed and one not
