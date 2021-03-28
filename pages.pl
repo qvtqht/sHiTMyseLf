@@ -492,7 +492,10 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 
 	# main window content, aka body
 	if ($windowBody) {
-		if (index(lc($windowBody), '<tr') == -1) {
+		if (index(lc($windowBody), '<table') == -1) {
+			$windowBody = '<tr class=content><td>' . $windowBody . '</td></tr>';
+		}
+		elsif (index(lc($windowBody), '<tr') == -1) {
 			if ($contentColumnCount > 1) {
 				#todo templatize?
 				$windowBody = '<tr class=content><td colspan=$contentColumnCount>' . $windowBody . '</td></tr>';
