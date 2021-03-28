@@ -1,0 +1,7 @@
+SELECT
+	item_flat.item_title item_title,
+	file_hash
+FROM item_flat
+WHERE tags_list LIKE '%speaker%'
+ORDER BY add_timestamp DESC
+LIMIT 100
