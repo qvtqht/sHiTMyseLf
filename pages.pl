@@ -87,6 +87,20 @@ sub GetDialogPage { # returns html page with dialog
 
 			$windowContents = GetTemplate('html/404.template');
 
+			if (GetConfig('admin/expo_site_mode')) {
+				$windowContents = str_replace(
+					'<span id=mittens></span>',
+					'',
+					$windowContents
+				)
+			} else {
+				$windowContents = str_replace(
+					'<span id=mittens></span>',
+					'<span id=mittens>' . GetTemplate('html/form/mittens.template') . '</span>',
+					$windowContents
+				)
+			}
+
 			#todo choose random item from list/looking_for
 			my $lookingFor = 'mittens';
 			$windowContents =~ s/looking for mittens/looking for $lookingFor/;
