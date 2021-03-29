@@ -3614,9 +3614,11 @@ sub GetAccessKey { # $caption ; returns access key to use for menu item
 	my $newKey = '';
 	for (my $i = 0; $i < length($caption) - 1; $i++) {
 		my $newKeyPotential = lc(substr($caption, $i, 1));
-		if (!$keyCaption{$newKeyPotential}) {
-			$newKey = $newKeyPotential;
-			last;
+		if ($newKeyPotential =~ m/^[a-z]$/) {
+			if (!$keyCaption{$newKeyPotential}) {
+				$newKey = $newKeyPotential;
+				last;
+			}
 		}
 	}
 
