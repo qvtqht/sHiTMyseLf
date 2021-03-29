@@ -4006,29 +4006,16 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 	} # if (GetConfig('admin/expo_site_mode'))
 
 	if (GetConfig('admin/expo_site_mode')) {
-		my $speakersPage = '';
-		$speakersPage = GetPageHeader('Speakers', 'Speakers', 'speakers');
 
-		my %queryParams;
-		$queryParams{'where_clause'} = "WHERE item_type LIKE 'image'";
-		$queryParams{'order_clause'} = "ORDER BY file_name";
-#		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%speaker%'";
+		MakePage('links');
 
-		my @itemSpeakers = DBGetItemList(\%queryParams);
-		foreach my $itemSpeaker (@itemSpeakers) {
-			if (length($itemSpeaker->{'item_title'}) > 48) {
-				$itemSpeaker->{'item_title'} = substr($itemSpeaker->{'item_title'}, 0, 43) . '[...]';
-			}
-			my $itemSpeakerTemplate = GetItemTemplate2($itemSpeaker);
-			$speakersPage .= $itemSpeakerTemplate;
-		}
+		MakePage('speakers');
 
-		$speakersPage .= GetPageFooter();
+		MakePage('committee');
 
-		$speakersPage = InjectJs($speakersPage, qw(settings utils));
+		MakePage('sponsors');
 
-		PutHtmlFile('speakers.html', $speakersPage);
-
+		MakePage('academic');
 	} # if (GetConfig('admin/expo_site_mode'))
 
 	MakePage('read', 0);

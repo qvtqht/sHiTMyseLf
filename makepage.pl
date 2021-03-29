@@ -55,6 +55,138 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 		my $tagPage = GetReadPage('tag', $tagName);
 		PutHtmlFile($targetPath, $tagPage);
 	}
+	elsif ($pageType eq 'academic') {
+		my $academicPage = '';
+		$academicPage = GetPageHeader('Academic Partners', 'Academic Partners', 'academic');
+
+		my %queryParams;
+		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%academic%'";
+		$queryParams{'order_clause'} = "ORDER BY file_name";
+
+		my $academicImages = '';
+
+		my @itemAcademic = DBGetItemList(\%queryParams);
+		foreach my $itemAcademic (@itemAcademic) {
+			if (length($itemAcademic->{'item_title'}) > 48) {
+				$itemAcademic->{'item_title'} = substr($itemAcademic->{'item_title'}, 0, 43) . '[...]';
+			}
+			my $academicImage = GetImageContainer($itemAcademic->{'file_hash'}, $itemAcademic->{'item_name'});
+			$academicImage = AddAttributeToTag($academicImage, 'img', 'height', '100');
+			$academicImage = GetWindowTemplate($academicImage, '');
+			$academicImages .= $academicImage;
+			$academicImages .= "<br><br><br>";
+			#my $itemAcademicTemplate = GetItemTemplate($itemAcademic);
+			#$academicPage .= $itemAcademicTemplate;
+		}
+
+		$academicImages = '<center style="padding: 5pt">' . $academicImages . '</center>';
+		$academicPage .= GetWindowTemplate('<tr><td>' . $academicImages . '</td></tr>', 'Academic Partners');
+#		$academicPage .= GetWindowTemplate($academicImages, 'Academic Partners');
+
+		$academicPage .= GetPageFooter();
+		$academicPage = InjectJs($academicPage, qw(settings utils));
+
+		PutHtmlFile('academic.html', $academicPage);
+	} #academic
+
+	elsif ($pageType eq 'speakers') {
+		my $speakersPage = '';
+		$speakersPage = GetPageHeader('Speakers', 'Speakers', 'speakers');
+
+		my %queryParams;
+		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%speaker%'";
+		$queryParams{'order_clause'} = "ORDER BY file_name";
+#		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%speaker%'";
+
+		my @itemSpeakers = DBGetItemList(\%queryParams);
+		foreach my $itemSpeaker (@itemSpeakers) {
+			if (length($itemSpeaker->{'item_title'}) > 48) {
+				$itemSpeaker->{'item_title'} = substr($itemSpeaker->{'item_title'}, 0, 43) . '[...]';
+			}
+			my $itemSpeakerTemplate = GetItemTemplate($itemSpeaker);
+			$speakersPage .= $itemSpeakerTemplate;
+		}
+
+		$speakersPage .= GetPageFooter();
+		$speakersPage = InjectJs($speakersPage, qw(settings utils));
+		PutHtmlFile('speakers.html', $speakersPage);
+	}
+
+	elsif ($pageType eq 'links') {
+		my $linksPage = '';
+		$linksPage = GetPageHeader('Links', 'Links', 'links');
+
+		my %queryParams;
+		$queryParams{'where_clause'} = "WHERE file_hash IN ( SELECT file_hash FROM item_attribute WHERE attribute = 'url' )";
+
+		my @itemLinks = DBGetItemList(\%queryParams);
+		foreach my $itemLink (@itemLinks) {
+			my $itemLinkTemplate = GetItemTemplate($itemLink);
+			$linksPage .= $itemLinkTemplate;
+		}
+
+		$linksPage .= GetPageFooter();
+		$linksPage = InjectJs($linksPage, qw(settings utils));
+		PutHtmlFile('links.html', $linksPage);
+	}
+	elsif ($pageType eq 'committee') {
+		my $committeePage = '';
+		$committeePage = GetPageHeader('Committee', 'Committee', 'committee');
+
+		my %queryParams;
+		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%committee%'";
+		$queryParams{'order_clause'} = "ORDER BY item_order";
+
+		my @itemCommittee = DBGetItemList(\%queryParams);
+		foreach my $itemCommittee (@itemCommittee) {
+			if (length($itemCommittee->{'item_title'}) > 48) {
+				$itemCommittee->{'item_title'} = substr($itemCommittee->{'item_title'}, 0, 43) . '[...]';
+			}
+			my $itemCommitteeTemplate = GetItemTemplate($itemCommittee);
+			$committeePage .= $itemCommitteeTemplate;
+		}
+
+		$committeePage .= GetPageFooter();
+		$committeePage = InjectJs($committeePage, qw(settings utils));
+		PutHtmlFile('committee.html', $committeePage);
+	}
+
+	elsif ($pageType eq 'sponsors') {
+		my $sponsorsPage = '';
+		$sponsorsPage = GetPageHeader('Sponsors', 'Sponsor', 'sponsors');
+
+		foreach my $sponsorLevel (qw(gold silver)) {
+			my %queryParams;
+			$queryParams{'where_clause'} = "WHERE tags_list LIKE '%sponsor%' AND tags_list like '%$sponsorLevel%'";
+			$queryParams{'order_clause'} = "ORDER BY file_name";
+
+			my $sponsorsImages = '';
+
+			my @itemSponsors = DBGetItemList(\%queryParams);
+			foreach my $itemSponsor (@itemSponsors) {
+				if (length($itemSponsor->{'item_title'}) > 48) {
+					$itemSponsor->{'item_title'} = substr($itemSponsor->{'item_title'}, 0, 43) . '[...]';
+				}
+				my $sponsorImage = GetImageContainer($itemSponsor->{'file_hash'}, $itemSponsor->{'item_name'});
+				$sponsorImage = AddAttributeToTag($sponsorImage, 'img', 'height', '100');
+				$sponsorImage = GetWindowTemplate($sponsorImage, '');
+				$sponsorsImages .= $sponsorImage;
+				$sponsorsImages .= "<br><br><br>";
+				#my $itemSponsorTemplate = GetItemTemplate($itemSponsor);
+				#$sponsorsPage .= $itemSponsorTemplate;
+			}
+
+			$sponsorsImages = '<center style="padding: 5pt">' . $sponsorsImages . '</center>';
+			$sponsorsPage .= GetWindowTemplate('<tr><td>' . $sponsorsImages . '</td></tr>', ucfirst($sponsorLevel) . ' Sponsors');
+
+			$sponsorsPage .= "<br><br>";
+		}
+
+		$sponsorsPage .= GetPageFooter();
+		$sponsorsPage = InjectJs($sponsorsPage, qw(settings utils));
+
+		PutHtmlFile('sponsors.html', $sponsorsPage);
+	} #sponsors
 	#
 	# author page, get author's id from $pageParam
 	elsif ($pageType eq 'author') {
