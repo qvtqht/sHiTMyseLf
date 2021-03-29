@@ -880,6 +880,28 @@ sub IndexImageFile { # $file ; indexes one image file into database
 		return 1;
 	}
 
+	if (GetConfig('admin/expo_site_mode')) {
+		my @tagFromPath;
+		if ($file =~ /speaker/) {
+			push @tagFromPath, 'speaker';
+		}
+		if ($file =~ /academic/) {
+			push @tagFromPath, 'academic';
+		}
+		if ($file =~ /sponsor/) {
+			push @tagFromPath, 'sponsor';
+			if ($file =~ /gold/) {
+				push @tagFromPath, 'gold';
+			}
+			if ($file =~ /silver/) {
+				push @tagFromPath, 'silver';
+			}
+		}
+		if ($file =~ /committee/) {
+			push @tagFromPath, 'committee';
+		}
+	}
+
 	my $addedTime;          # time added, epoch format
 	my $fileHash;            # git's hash of file blob, used as identifier
 
@@ -997,6 +1019,12 @@ sub IndexImageFile { # $file ; indexes one image file into database
 		#DBAddItemAttribute($fileHash, 'title', $itemName, $addedTime);
 		#DBAddItemAttribute($fileHash, 'title', $itemName, time()); #todo time should come from actual file time #todo re-add this
 		DBAddVoteRecord($fileHash, $addedTime, 'image'); # add image tag
+
+		if (@tagFromPath) {
+			foreach my $tag (@tagFromPath) {
+				DBAddVoteRecord($fileHash, $addedTime, $tag);
+			}
+		}
 
 		DBAddPageTouch('read');
 		DBAddPageTouch('tag', 'image');
