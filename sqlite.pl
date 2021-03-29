@@ -197,6 +197,16 @@ sub SqliteMakeTables { # creates sqlite schema
 		WHERE attribute = 'name'
 	");
 
+	# item_order
+	SqliteQuery("
+		CREATE VIEW item_order AS
+		SELECT
+			file_hash,
+			value AS item_order
+		FROM item_attribute_latest
+		WHERE attribute = 'order'
+	");
+
 	# item_author
 	SqliteQuery("
 		CREATE VIEW item_author AS
@@ -418,7 +428,8 @@ sub SqliteMakeTables { # creates sqlite schema
 				IFNULL(item_score.item_score, 0) AS item_score,
 				item.item_type AS item_type,
 				tags_list AS tags_list,
-				item.file_name AS file_name
+				item.file_name AS file_name,
+				CAST(item_order.item_order AS INTEGER) AS item_order
 			FROM
 				item
 				LEFT JOIN child_count ON ( item.file_hash = child_count.parent_hash)
@@ -426,6 +437,7 @@ sub SqliteMakeTables { # creates sqlite schema
 				LEFT JOIN added_time ON ( item.file_hash = added_time.file_hash)
 				LEFT JOIN item_title ON ( item.file_hash = item_title.file_hash)
 				LEFT JOIN item_name ON ( item.file_hash = item_name.file_hash)
+				LEFT JOIN item_order ON ( item.file_hash = item_order.file_hash)
 				LEFT JOIN item_author ON ( item.file_hash = item_author.file_hash)
 				LEFT JOIN item_score ON ( item.file_hash = item_score.file_hash)
 				LEFT JOIN item_tags_list ON ( item.file_hash = item_tags_list.file_hash )
@@ -2365,7 +2377,8 @@ sub DBGetItemFields { # Returns fields we typically need to request from item_fl
 		item_flat.item_title item_title,
 		item_flat.item_score item_score,
 		item_flat.tags_list tags_list,
-		item_flat.item_type item_type
+		item_flat.item_type item_type,
+		item_flat.item_order item_order
 	";
 
 	$itemFields = trim($itemFields);
