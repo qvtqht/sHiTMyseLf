@@ -3786,19 +3786,36 @@ sub MakeSimplePage { # given page name, makes page
 	}
 	chomp $pageName;
 	if (!$pageName =~ m/^[a-z]+$/) {
-		return;
+		WriteLog('MakeSimplePage: warning: $pageName failed sanity check');
+		return '';
 	}
+
+	WriteLog('MakeSimplePage: $pageName = ' . $pageName);
+
 
 	my $html = '';
 
-	$html .= GetPageHeader(ucfirst($pageName), ucfirst($pageName), $pageName);
+	my $title = ucfirst($pageName);
+	if (lc($pageName) eq 'media') {
+		$title = 'Media Partners';
+	}
+
+	if (lc($pageName) eq 'academic') {
+		$title = 'Academic Partners';
+	}
+
+	$html .= GetPageHeader($title, $title, $pageName);
 	$html .= GetTemplate('html/maincontent.template');
 
 	my $pageContent = GetTemplate("page/$pageName.template");
 
+	if (trim($pageContent) eq '') {
+		$pageContent = 'Coming Soon...';
+	}
+
 	my $contentWindow = GetWindowTemplate(
 		$pageContent,
-		ucfirst($pageName)
+		$title
 	);
 
 	my $itemListPlaceholder = '<span id=itemList></span>';
