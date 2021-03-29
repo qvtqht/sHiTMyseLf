@@ -553,7 +553,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 									($authorKey eq $puzzleAuthorKey) # key matches cookie or fingerprint
 								) {
 									$message =~ s/$tokenFound{'recon'}/[$puzzlePrefix]/g;
-	#									$message =~ s/$tokenFound{'recon'}/[Solved puzzle with this prefix: $puzzlePrefix]/g;
+									# $message =~ s/$tokenFound{'recon'}/[Solved puzzle with this prefix: $puzzlePrefix]/g;
 									DBAddItemAttribute($fileHash, 'puzzle_timestamp', $mintedAt);
 									DBAddVoteRecord($fileHash, $mintedAt, 'puzzle');
 									$detokenedMessage = str_replace($tokenFound{'recon'}, '', $detokenedMessage);
@@ -940,15 +940,33 @@ sub IndexImageFile { # $file ; indexes one image file into database
 			my $HTMLDIR = GetDir('html');
 
 			if (!-e "$HTMLDIR/thumb/thumb_800_$fileHash.gif") {
-			# if (!-e "$HTMLDIR/thumb/thumb_420_$fileHash.gif") {
 				my $convertCommand = "convert \"$fileShellEscaped\" -thumbnail 800x800 -strip $HTMLDIR/thumb/thumb_800_$fileHash.gif";
-				# my $convertCommand = "convert \"$file\" -thumbnail 420x420 -strip $HTMLDIR/thumb/thumb_420_$fileHash.gif";
 				WriteLog('IndexImageFile: ' . $convertCommand);
 
 				my $convertCommandResult = `$convertCommand`;
 				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
 			}
-			# make 42x42 thumbnail
+#			if (!-e "$HTMLDIR/thumb/squared_800_$fileHash.gif") {
+#				my $convertCommand = "convert \"$fileShellEscaped\" -crop 800x800 -strip $HTMLDIR/thumb/squared_800_$fileHash.gif";
+#				WriteLog('IndexImageFile: ' . $convertCommand);
+#
+#				my $convertCommandResult = `$convertCommand`;
+#				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
+#			}
+			if (!-e "$HTMLDIR/thumb/thumb_400_$fileHash.gif") {
+				my $convertCommand = "convert \"$fileShellEscaped\" -thumbnail 400x400 -strip $HTMLDIR/thumb/thumb_400_$fileHash.gif";
+				WriteLog('IndexImageFile: ' . $convertCommand);
+
+				my $convertCommandResult = `$convertCommand`;
+				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
+			}
+#			if (!-e "$HTMLDIR/thumb/squared_400_$fileHash.gif") {
+#				my $convertCommand = "convert \"$fileShellEscaped\" -crop 400x400 -strip $HTMLDIR/thumb/squared_400_$fileHash.gif";
+#				WriteLog('IndexImageFile: ' . $convertCommand);
+#
+#				my $convertCommandResult = `$convertCommand`;
+#				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
+#			}
 			if (!-e "$HTMLDIR/thumb/thumb_42_$fileHash.gif") {
 				my $convertCommand = "convert \"$fileShellEscaped\" -thumbnail 42x42 -strip $HTMLDIR/thumb/thumb_42_$fileHash.gif";
 				WriteLog('IndexImageFile: ' . $convertCommand);
@@ -956,6 +974,13 @@ sub IndexImageFile { # $file ; indexes one image file into database
 				my $convertCommandResult = `$convertCommand`;
 				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
 			}
+#			if (!-e "$HTMLDIR/thumb/squared_42_$fileHash.gif") {
+#				my $convertCommand = "convert \"$fileShellEscaped\" -crop 42x42 -strip $HTMLDIR/thumb/squared_42_$fileHash.gif";
+#				WriteLog('IndexImageFile: ' . $convertCommand);
+#
+#				my $convertCommandResult = `$convertCommand`;
+#				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
+#			}
 
 			# # make 48x48 thumbnail
 			# if (!-e "$HTMLDIR/thumb/thumb_48_$fileHash.gif") {
