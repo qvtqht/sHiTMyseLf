@@ -2053,12 +2053,14 @@ sub GetMenuTemplate { # returns menubar
 		my $menuItemsAdmin = GetMenuFromList('menu_admin');
 	}
 
-	if (!$menuItems || trim($menuItems)) {
+	if (!$menuItems || trim($menuItems) eq '') {
+		WriteLog('GetMenuTemplate: warning: using hard-coded fallback menu list');
 		$menuItems = '
 			<a href=/>Home</a>
 			<a href=/read.html>Read</a>
 			<a href=/write.html>Write</a>
 			<a href=/help.html>Help</a>
+			<a href=/settings.html><font color=gray>Settings</a>
 		';
 	}
 
