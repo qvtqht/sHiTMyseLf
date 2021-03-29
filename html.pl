@@ -41,6 +41,8 @@ sub GetHtmlAvatar { # Returns HTML avatar from cache
 sub GetHtmlFilename { # get the HTML filename for specified item hash
 	# GetItemUrl GetItemHtmlLink { #keywords
 	# Returns 'ab/cd/abcdef01234567890[...].html'
+	# -or- Slug-From-Item-Name.html
+	#
 	my $hash = shift;
 
 	WriteLog("GetHtmlFilename()");
@@ -84,16 +86,39 @@ sub GetHtmlFilename { # get the HTML filename for specified item hash
 	# 	'.html';
 	#
 	#
-	my $htmlFilename =
-		substr($hash, 0, 2) .
-			'/' .
-			substr($hash, 2, 2) .
-			'/' .
-			substr($hash, 0, 8) .
-			'.html';
+	my $htmlFilename = '';
+
+	if (GetConfig('html/item_name_slug')) {
+		my $itemName = DBGetItemAttribute($hash, 'name');
+
+		WriteLog('GetHtmlFilename: item_name_slug: $itemName = ' . $itemName);
+
+		if ($itemName) {
+			my $slug = $itemName;
+			$slug = str_replace(' ', '-', $slug);
+			$slug =~ s/[^a-zA-Z0-9\-]//g;
+
+			#todo sanity
+
+			if ($slug) {
+				$htmlFilename = $slug . '.html';
+			}
+		} # if ($itemName)
+	} # if (GetConfig('html/item_name_slug'))
+
+	if (!$htmlFilename) {
+		# fallback and default in one
+		$htmlFilename =
+			substr($hash, 0, 2) .
+				'/' .
+				substr($hash, 2, 2) .
+				'/' .
+				substr($hash, 0, 8) .
+				'.html';
+	}
 
 	return $htmlFilename;
-}
+} # GetHtmlFilename()
 
 sub AddAttributeToTag { # $html, $tag, $attributeName, $attributeValue; adds attr=value to html tag;
 # sub AddTagAttribute {
