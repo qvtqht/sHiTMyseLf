@@ -1082,7 +1082,31 @@ sub MakeIndex { # indexes all available text files, and outputs any config found
 
 		IndexImageFile('flush');
 	} # admin/image/enable
+
+	DeindexMissingFiles();
 } # MakeIndex()
+
+sub DeindexMissingFiles {
+	my %queryParams = ();
+	my @items = DBGetItemList(\%queryParams);
+
+	#print Dumper(@items);
+
+	if (@items) {
+		foreach my $item (@items) {
+			if ($item->{'file_path'}) {
+				if (!-e $item->{'file_path'}) {
+					DBDeleteItemReferences($item->{'file_hash'});
+				}
+			}
+		}
+	}
+
+	#todo
+	# get all indexed files
+	# 	check for existence of file
+	#		if no file, deindex item
+}
 
 sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on extension
 	my $file = shift;
