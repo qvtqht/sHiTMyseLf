@@ -207,17 +207,21 @@ sub GetReplyListing {
 } # GetReplyListing()
 
 sub GetItemAttributesWindow {
+# GetItemAttributesDialog {
 	#my $itemInfoTemplate = GetTemplate('html/item_info.template');
 	my $itemInfoTemplate;
-	WriteLog('GetItemPage: my $itemInfoTemplate; ');
+	WriteLog('GetItemAttributesWindow: my $itemInfoTemplate; ');
 
 	my $fileRef = shift;
 	my %file = %{$fileRef};
 #	my %file = %{shift @_};
 
-	my $fileHash = $file{'file_hash'};
+	my $fileHash = trim($file{'file_hash'});
 
 	#todo sanity checks
+
+	#WriteLog('GetItemAttributesWindow: %file = ' . Dumper(%file));
+	#WriteLog('GetItemAttributesWindow: $fileHash = ' . $fileHash);
 
 	my $itemAttributes = DBGetItemAttribute($fileHash);
 	$itemAttributes = trim($itemAttributes);
