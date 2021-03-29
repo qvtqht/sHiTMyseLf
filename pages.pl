@@ -1393,8 +1393,17 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			$message =~ s/>>([a-f0-9]{40})/GetItemTemplateFromHash($1)/eg;
 		} else {
 			# if any references to other items, replace with link to item
+
+			# with name
+			#$message =~ s/([a-f0-9]{40})/GetItemHtmlLink($1, DBGetItemAttribute($1, 'name'))/eg;
+
+			# with title
+			#$message =~ s/([a-f0-9]{40})/GetItemHtmlLink($1, DBGetItemTitle($1))/eg;
+
+			# just the item id
 			$message =~ s/([a-f0-9]{40})/GetItemHtmlLink($1)/eg;
-			#$message =~ s/([a-f0-9]{40})/DBGetItemTitle($1)/eg;
+
+			#$message =~ s/([a-f0-9]{40})//eg;
 		}
 
 		if ($itemHash) {
