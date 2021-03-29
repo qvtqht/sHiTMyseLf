@@ -3997,7 +3997,7 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 
 
 	if (GetConfig('admin/expo_site_mode')) {
-		my @menuList = split("\n", GetConfig('template/list/menu'));
+		my @menuList = split("\n", GetTemplate('list/menu'));
 		foreach my $menuItem (@menuList) {
 			if ($menuItem ne 'sponsors' || $menuItem ne 'speakers') {
 				MakeSimplePage($menuItem);
