@@ -3748,37 +3748,6 @@ sub GetSimpleWindow {
 	return $contentWindow;
 } # GetSimpleWindow()
 
-sub GetSimplePage { # given page name, makes page
-	my $pageName = shift;
-	if (!$pageName) {
-		return;
-	}
-	chomp $pageName;
-	if (!$pageName =~ m/^[a-z]+$/) {
-		return;
-	}
-
-	my $html = '';
-
-	$html .= GetPageHeader(ucfirst($pageName), ucfirst($pageName), $pageName);
-	$html .= GetTemplate('html/maincontent.template');
-
-
-	$html .= GetSimpleWindow($pageName);
-
-	$html .= GetPageFooter();
-
-	if (GetConfig('admin/js/enable')) {
-		my @scripts = qw(avatar settings profile utils timestamp);
-		if (GetConfig('admin/js/dragging')) {
-			push @scripts, 'dragging';
-		}
-		$html = InjectJs($html, @scripts);
-	}
-
-	return $html;
-} # GetSimplePage()
-
 sub MakeSimplePage { # given page name, makes page
 	my $pageName = shift;
 	if (!$pageName) {
