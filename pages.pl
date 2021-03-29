@@ -1477,6 +1477,13 @@ sub GetItemTemplate { # returns HTML for outputting one item
 					$statusBar =~ s/\$authorLink;//g;
 				}
 
+				if (GetConfig('admin/expo_site_mode')) {
+					if ($file{'item_title'} =~ m/^http/) {
+						my $permalinkHtml = $file{'item_title'};
+						$statusBar =~ s/\$permalinkHtml/$permalinkHtml/g;
+					}
+				}
+
 				$windowParams{'status'} = $statusBar;
 			}
 			if (GetConfig('admin/expo_site_mode')) {
