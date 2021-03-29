@@ -3732,8 +3732,11 @@ sub ListItemsByTag { #todo
 	return $contentWindow;
 }
 
-sub GetSimpleWindow {
+sub GetSimpleWindow { # windowType ; gets simple window based on template/page/$windowType.template
 	my $windowType = shift;
+
+	WriteLog('GetSimpleWindow: $windowType = ' . $windowType);
+
 	#todo sanity
 	my $html = '';
 	my $pageContent = GetTemplate("page/$windowType.template");
