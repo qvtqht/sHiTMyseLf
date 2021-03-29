@@ -3673,7 +3673,7 @@ sub GetDesktopPage { # returns html for desktop page (/desktop.html)
 			$html .= GetSettingsWindow();
 			$html .= GetProfileWindow();
 			$html .= GetStatsTable();
-			$html .= GetWriteForm(); #commented because of the setFocus js, which should not happen on this page
+			$html .= GetWriteForm();
 
 			if (GetConfig('admin/php/enable')) {
 				if (GetConfig('admin/upload/enable')) {
