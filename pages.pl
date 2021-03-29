@@ -1227,17 +1227,8 @@ sub GetImageContainer { # $fileHash, $imageAlt
 	#todo sanity
 
 	my $permalinkHtml = '';
-	if ($imageAlt eq 'Foundry') {
-		$permalinkHtml = 'https://foundrydigital.com/';
-	}
-	if ($imageAlt eq 'Metrika') {
-		$permalinkHtml = 'https://www.metrika.co/';
-	}
-	if ($imageAlt eq 'Sia') {
-		$permalinkHtml = 'https://sia.tech/';
-	}
 	if (!$permalinkHtml) {
-		my $permalinkHtml = '/' . GetHtmlFilename($fileHash);
+		$permalinkHtml = '/' . GetHtmlFilename($fileHash);
 	}
 	my $imageContainer = GetTemplate('html/item/container/image.template');
 
@@ -1245,6 +1236,8 @@ sub GetImageContainer { # $fileHash, $imageAlt
 	# my $imageUrl = "/thumb/thumb_420_$fileHash.gif"; #todo hardcoding no
 	my $imageSmallUrl = "/thumb/thumb_42_$fileHash.gif"; #todo hardcoding no
 	#my $imageAlt = $itemTitle;
+
+	WriteLog('GetImageContainer: $fileHash = ' . $fileHash . '; $imageAlt = ' . $imageAlt . '; $permalinkHtml = ' . $permalinkHtml);
 
 	$imageContainer =~ s/\$imageUrl/$imageUrl/g;
 	$imageContainer =~ s/\$imageSmallUrl/$imageSmallUrl/g;
