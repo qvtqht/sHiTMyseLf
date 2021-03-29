@@ -93,7 +93,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	# Get the HTML page template
 	my $htmlStart = GetPageHeader($title, $titleHtml, 'item');
 	$txtIndex .= $htmlStart;
-	if (GetConfig('admin/expo_site_mode')) {
+	if (GetConfig('admin/expo_site_mode')) { # menu at the top on item page
 		$txtIndex .= GetMenuTemplate();
 	}
 	$txtIndex .= GetTemplate('html/maincontent.template');
@@ -129,8 +129,11 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	if (GetConfig('reply/enable')) {
 		my $voteButtons = '';
 		if (GetConfig('admin/expo_site_mode')) {
+			if (GetConfig('admin/expo_site_edit')) {
+				$txtIndex .= GetReplyForm($file{'file_hash'});
+			}
 			# do nothing
-		} else {
+		} else { # additional dialogs on items page
 			$voteButtons .= GetItemTagButtons($file{'file_hash'});
 			$txtIndex .= '<p><span class=advanced>'.GetWindowTemplate($voteButtons, 'Classify').'</span></p>';
 			$txtIndex .= GetReplyListing($file{'file_hash'});
@@ -145,8 +148,10 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		}
 	}
 
-	if (GetConfig('admin/expo_site_mode')) {
-		# do nothing
+	if (GetConfig('admin/expo_site_mode')) { # item attributes dialog on items page
+		if (GetConfig('admin/expo_site_edit')) {
+			$txtIndex .= GetItemAttributesWindow(\%file);
+		}
 	} else {
 		$txtIndex .= GetItemAttributesWindow(\%file);
 		$txtIndex .= GetMenuTemplate();
