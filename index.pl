@@ -144,6 +144,13 @@ sub GetTokenDefs {
 			'apply_to_parent' => 1,
 			'message' => '[Name]'
 		},
+		{ # order of item, either self or parent. used for ordering things
+			'token'   => 'order',
+			'mask'    => '^(order)(\W)(.+)$',
+			'mask_params'    => 'mg',
+			'apply_to_parent' => 1,
+			'message' => '[Order]'
+		},
 		{ # used for image alt tags #todo
 			'token'   => 'alt',
 			'mask'    => '^(alt)(\W+)(.+)$',
@@ -440,6 +447,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 					if (
 						$tokenFound{'token'} eq 'title' || #title
 						$tokenFound{'token'} eq 'name' ||
+						$tokenFound{'token'} eq 'order' ||
 						$tokenFound{'token'} eq 'alt' ||
 						$tokenFound{'token'} eq 'access_log_hash' ||
 						$tokenFound{'token'} eq 'url'
