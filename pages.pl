@@ -4852,8 +4852,8 @@ sub GetItemTemplateFromHash {
 	if (scalar(@files)) {
 		my $file = $files[0];
 
-		WriteLog('GetItemTemplateFromHash: my $itemPage = GetItemTemplate2($file = "' . $file . '")');
-		my $itemPage = GetItemTemplate2($file);
+		WriteLog('GetItemTemplateFromHash: my $itemPage = GetItemTemplate($file = "' . $file . '")');
+		my $itemPage = GetItemTemplate($file);
 
 		return $itemPage;
 	} # scalar(@files)
