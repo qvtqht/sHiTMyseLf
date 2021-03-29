@@ -5358,7 +5358,7 @@ sub FormatForWeb { # $text ; replaces some spaces with &nbsp; to preserve text-b
 		return '';
 	}
 
-	$text = HtmlEscape($text);
+	$text = HtmlEscape($text); #todo this needs some improvement
 
 	# these have been moved to format for textart
 	#	$text =~ s/\n /<br>&nbsp;/g;
