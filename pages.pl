@@ -3330,7 +3330,8 @@ sub GetReadPage { # generates page with item listing based on parameters
 			}
 
 			if ($itemComma eq '') {
-				$itemComma = '<br><hr size=7>';
+				#$itemComma = '<br><hr size=7>';
+				$itemComma = ' ';
 			} else {
 				$itemTemplate = $itemComma . $itemTemplate;
 			}
