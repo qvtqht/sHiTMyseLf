@@ -1008,6 +1008,13 @@ sub PutHtmlFile { # $file, $content, $itemHash ; writes content to html file, wi
 				WriteLog('PutHtmlFile: warning: $content contains $ symbol! $file = ' . ($file ? $file : '-'));
 			}
 		}
+		if (index($content, 'maincontent') == -1) {
+			# ensure document contains a mainconvent-tagged element
+			# typically: <MAIN ID=maincontent><A NAME=maincontent></A>
+			if (index($fileProvided, '.js') != -1) {
+				WriteLog('PutHtmlFile: warning: "maincontent" not found in file! $file = ' . ($file ? $file : '-'));
+			}
+		}
 		if ($content =~ m/<html.+<html/) {
 			# test for duplicate <html> tag
 			WriteLog('PutHtmlFile: warning: $content contains duplicate <html> tags');
