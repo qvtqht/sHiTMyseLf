@@ -12,6 +12,64 @@ while (my $argFound = shift) {
 #require('./utils.pl');
 #require('./pages.pl');
 
+sub GetGalleryPage {
+	my $pageType = shift;
+
+	my $boolLinkImage = 1;
+	if ($pageType eq 'committee') {
+		$boolLinkImage = 0;
+	}
+
+	#todo sanity
+
+	my $html = '';
+
+	if ($pageType =~ m/[^a-z]/) {
+		WriteLog('MakePage: warning: sanity check failed, $pageType contains strange characters');
+		return '';
+	}
+
+	my $title = GetString('menu/' . $pageType);
+
+	$html = GetPageHeader($title, $title, $pageType);
+
+	my %queryParams;
+	$queryParams{'where_clause'} = "WHERE ',' || tags_list || ',' LIKE '%," . $pageType . ",%'";
+	$queryParams{'order_clause'} = "ORDER BY item_name";
+
+	my $htmlImages = ''; # html with images
+
+	my @items = DBGetItemList(\%queryParams);
+	foreach my $item (@items) {
+		if (length($item->{'item_title'}) > 48) {
+			$item->{'item_title'} = substr($item->{'item_title'}, 0, 43) . '[...]';
+		}
+		my $itemImage = GetImageContainer($item->{'file_hash'}, $item->{'item_name'}, $boolLinkImage);
+		$itemImage = AddAttributeToTag($itemImage, 'img', 'height', '100');
+		$itemImage = GetWindowTemplate($itemImage, '');
+
+		$htmlImages .= $itemImage;
+		$htmlImages .= "<br><br><br>";
+	}
+
+	$htmlImages = '<center style="padding: 5pt">' . $htmlImages . '</center>';
+	$html .= GetWindowTemplate('<tr><td>' . $htmlImages . '</td></tr>', GetString('menu/' . $pageType));
+
+	$html .= GetPageFooter();
+	$html = InjectJs($html, qw(settings utils));
+
+	return $html;
+}
+
+sub MakeGalleryPage {
+	my $pageType = shift;
+
+	my $pageFile = $pageType . '.html';
+
+	WriteLog('MakeGalleryPage: $pageType = ' . $pageType . '; $pageFile = ' . $pageFile);
+
+	PutHtmlFile($pageType . '.html', GetGalleryPage($pageType));
+}
 sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it into $HTMLDIR directory; $pageType, $pageParam
 # supported page types so far:
 # tag, #hashtag
@@ -55,39 +113,14 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 		my $tagPage = GetReadPage('tag', $tagName);
 		PutHtmlFile($targetPath, $tagPage);
 	}
+
 	elsif ($pageType eq 'academic') {
-		my $academicPage = '';
-		$academicPage = GetPageHeader('Academic Partners', 'Academic Partners', 'academic');
-
-		my %queryParams;
-		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%academic%'";
-		$queryParams{'order_clause'} = "ORDER BY file_name";
-
-		my $academicImages = '';
-
-		my @itemAcademic = DBGetItemList(\%queryParams);
-		foreach my $itemAcademic (@itemAcademic) {
-			if (length($itemAcademic->{'item_title'}) > 48) {
-				$itemAcademic->{'item_title'} = substr($itemAcademic->{'item_title'}, 0, 43) . '[...]';
-			}
-			my $academicImage = GetImageContainer($itemAcademic->{'file_hash'}, $itemAcademic->{'item_name'});
-			$academicImage = AddAttributeToTag($academicImage, 'img', 'height', '100');
-			$academicImage = GetWindowTemplate($academicImage, '');
-			$academicImages .= $academicImage;
-			$academicImages .= "<br><br><br>";
-			#my $itemAcademicTemplate = GetItemTemplate($itemAcademic);
-			#$academicPage .= $itemAcademicTemplate;
-		}
-
-		$academicImages = '<center style="padding: 5pt">' . $academicImages . '</center>';
-		$academicPage .= GetWindowTemplate('<tr><td>' . $academicImages . '</td></tr>', 'Academic Partners');
-#		$academicPage .= GetWindowTemplate($academicImages, 'Academic Partners');
-
-		$academicPage .= GetPageFooter();
-		$academicPage = InjectJs($academicPage, qw(settings utils));
-
-		PutHtmlFile('academic.html', $academicPage);
+		MakeGalleryPage('academic');
 	} #academic
+
+	elsif ($pageType eq 'media') {
+		MakeGalleryPage('media');
+	} #media
 
 	elsif ($pageType eq 'speakers') {
 		my $speakersPage = '';
