@@ -1867,59 +1867,47 @@ sub FillThemeColors { # $html ; fills in templated theme colors in provided html
 	return $html;
 } # FillThemeColors()
 
-sub WriteMenuList { # writes config/list/menu based on site configuration
+sub GetSystemMenuList { # writes config/list/menu based on site configuration
 	#todo this function is not obvious, overrides obvious list/menu
 	my @menu;
 
+	WriteLog('GetSystemMenuList()');
+
+	my $menuList = '';
+
 	if (GetConfig('admin/expo_site_mode')) {
-		#@menu = split(glob('html/page'));
-		my $menuList = GetThemeAttribute('template/list/menu');
-
-		if (!$menuList) {
-			WriteLog('WriteMenuList: warning: $menuList was false');
-			return '';
-		} # if (!$menuList)
-
-		if ($menuList) {
-			@menu = split($menuList);
+		WriteLog('GetSystemMenuList: expo_site_mode');
+		if (!GetConfig('admin/expo_site_edit')) {
+			WriteLog('WriteMenuList: returning empty');
 		}
-	} else {
-		push @menu, 'read';
-		push @menu, 'write';
-
-		if (GetConfig('admin/php/quickchat')) {
-			push @menu, 'chat';
-		}
-
-		#upload
-		if (GetConfig('admin/php/enable') && GetConfig('admin/upload/enable')) {
-			# push @menu, 'art';
-			push @menu, 'upload';
-		}
-
-		#push @menu, 'stats';
-	#
-	#	#profile
-	#	if (GetConfig('admin/js/enable') || GetConfig('admin/php/enable')) {
-	#		# one of these is required for profile to work
-	#		push @menu, 'profile';
-	#	} else {
-	#		#todo make it disabled or something
-	#		push @menu, 'profile';
-	#	}
-		push @menu, 'help';
-
-		###
-
-		my $menuList = join("\n", @menu);
-
-		PutConfig('template/list/menu', $menuList);
-		# PutConfig('template/list/menu_advanced', $menuList);
 	}
 
-	GetConfig('template/list/menu', 'unmemo');
-	# GetConfig('list/menu_advanced', 'unmemo');
-} # WriteMenuList()
+	push @menu, 'read';
+	push @menu, 'write';
+
+	if (GetConfig('admin/php/quickchat')) {
+		push @menu, 'chat';
+	}
+
+	#upload
+	if (GetConfig('admin/php/enable') && GetConfig('admin/upload/enable')) {
+		# push @menu, 'art';
+		push @menu, 'upload';
+	}
+
+	#profile
+	if (GetConfig('admin/js/enable') || GetConfig('admin/php/enable')) {
+		# one of these is required for profile to work
+		push @menu, 'profile';
+	} else {
+		#todo hide it or something?
+		#perhaps link to informational page on using offline profiles?
+		push @menu, 'profile';
+	}
+	push @menu, 'help';
+
+	return @menu;
+} # GetSystemMenuList()
 
 sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; returns html menu based on referenced list
 # $listName is reference to a list in config/list, e.g. config/list/menu
@@ -1955,6 +1943,10 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 	$listText = str_replace("\n\n", "\n", $listText);
 
 	my @menuList = split("\n", $listText);
+
+	if (GetConfig('admin/expo_site_mode') && GetConfig('admin/expo_site_edit')) { #todo
+		push @menuList, GetSystemMenuList();
+	}
 
 	my $menuItems = ''; # output html which will be returned
 
