@@ -4,13 +4,7 @@
 
 <p>This page does not exist. It may still be in preparation.</p>
 
-<form action=/post.html>
-	<label for=comment>
-		<b></b><big>What were you looking for?</big></b><br>
-		<input type=text size=42 id=comment name=comment value="I was looking for mittens...">
-	</label>
-	<input type=submit value=Send onclick="this.value='Wait...'; return true;">
-</form>
+<span id=mittens></span>
 
 <noscript><p>Please use your browser's Back button to return to the previous page.</p></noscript>
 
