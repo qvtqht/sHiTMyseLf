@@ -943,7 +943,11 @@ sub DBGetItemReplies { # Returns replies for item (actually returns all child it
 	WriteLog("DBGetItemReplies($itemHash)");
 
 	my %queryParams;
-	$queryParams{'where_clause'} = "WHERE file_hash IN(SELECT item_hash FROM item_parent WHERE parent_hash = '$itemHash')";
+	if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
+		$queryParams{'where_clause'} = "WHERE ','||tags_list||',' NOT LIKE '%,notext,%' AND file_hash IN(SELECT item_hash FROM item_parent WHERE parent_hash = '$itemHash')";
+	} else {
+		$queryParams{'where_clause'} = "WHERE file_hash IN(SELECT item_hash FROM item_parent WHERE parent_hash = '$itemHash')";
+	}
 	$queryParams{'order_clause'} = "ORDER BY (tags_list NOT LIKE '%hastext%'), add_timestamp";
 
 	return DBGetItemList(\%queryParams);
