@@ -1508,7 +1508,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			}
 			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
 				#todo
-				if ($file{'item_name'} eq 'Bio') {
+				if ($file{'item_name'} eq 'Information') {
 					$windowParams{'status'} = '';
 				}
 			}
