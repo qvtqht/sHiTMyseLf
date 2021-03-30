@@ -1672,10 +1672,14 @@ sub GetItemTemplate { # returns HTML for outputting one item
 
 		my $replyLink = $permalinkHtml . '#reply'; #todo this doesn't need the url before #reply if it is on the item's page
 
-		if (index($itemText, '$') > -1) {
-			# this is a kludge, should be a better solution
-			#$itemText = '<code>item text contained disallowed character</code>';
-			$itemText =~ s/\$/%/g;
+		if (GetConfig('admin/expo_site_mode')) {
+			# do nothing
+		} else {
+			if (index($itemText, '$') > -1) {
+				# this is a kludge, should be a better solution
+				#$itemText = '<code>item text contained disallowed character</code>';
+				$itemText =~ s/\$/%/g;
+			}
 		}
 
 		$itemTemplate =~ s/\$borderColor/$borderColor/g;
