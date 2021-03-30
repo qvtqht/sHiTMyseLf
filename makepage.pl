@@ -175,6 +175,9 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 			if (length($itemCommittee->{'item_title'}) > 48) {
 				$itemCommittee->{'item_title'} = substr($itemCommittee->{'item_title'}, 0, 43) . '[...]';
 			}
+			if (!GetConfig('admin/expo_site_edit')) {
+				$itemCommittee->{'no_permalink'} = 1;
+			}
 			my $itemCommitteeTemplate = GetItemTemplate($itemCommittee);
 			$committeePage .= $itemCommitteeTemplate;
 		}
@@ -183,7 +186,6 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 		$committeePage = InjectJs($committeePage, qw(settings utils));
 		PutHtmlFile('committee.html', $committeePage);
 	}
-
 	elsif ($pageType eq 'sponsors') {
 		my $sponsorsPage = '';
 		$sponsorsPage = GetPageHeader('Sponsors', 'Sponsor', 'sponsors');
