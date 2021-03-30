@@ -850,6 +850,9 @@ sub GetQueryPage {
 		}
 		return $html;
 	} else {
+#		$html .= GetPageHeader($title, $title, $pageName);
+#		$html .= GetWindow('No results, please check index');
+#		$html .= GetPageFooter();
 		#todo
 	}
 } # GetQueryPage()
@@ -1461,7 +1464,6 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		$alias = HtmlEscape($alias);
 		my $fileHash = GetFileHash($file{'file_path'}); # get file's hash
 
-
 		# initialize $itemTemplate for storing item output
 		my $itemTemplate = '';
 		{
@@ -1784,7 +1786,7 @@ sub GetThemeColor { # returns theme color based on html/theme
 
 	if (!defined($color) || $color eq '') {
 		$color = '#00ff00';
-		WriteLog("GetThemeColor: WARNING: Value for $colorName not found");
+		WriteLog('GetThemeColor: warning: value not found, $colorName = ' . $colorName);
 	}
 
 	if ($color =~ m/^[0-9a-fA-F]{6}$/) {
@@ -1918,10 +1920,11 @@ sub WriteMenuList { # writes config/list/menu based on site configuration
 sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; returns html menu based on referenced list
 # $listName is reference to a list in config/list, e.g. config/list/menu
 # $separator is what is inserted between menu items
+# GetMenuList {
 
 	state $wroteMenu;
 	if (!$wroteMenu) {
-		WriteMenuList();
+		#WriteMenuList();
 		$wroteMenu = 1;
 	}
 
@@ -1940,9 +1943,13 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 
 	WriteLog('GetMenuFromList: $listName = ' . $listName . ', $templateName = ' . $templateName);
 
-	my $listText = GetThemeAttribute('template/list/' . $listName); #list/menu
-	$listText = str_replace(' ', "\n", $listText);
+	my $listText = GetTemplate('list/' . $listName);
+
+	WriteLog('GetMenuFromList: $listText = ' . $listText);
+
+#	$listText = str_replace(' ', "\n", $listText);
 	$listText = str_replace("\n\n", "\n", $listText);
+
 	my @menuList = split("\n", $listText);
 
 	my $menuItems = ''; # output html which will be returned
@@ -2063,6 +2070,8 @@ sub GetMenuTemplate { # returns menubar
 
 	my $selfLink = '/access.html';
 	my $menuItems = GetMenuFromList('menu');
+
+	WriteLog('GetMenuTemplate: $menuItems = ' . $menuItems);
 
 	my $menuItemsTag = '';
 	my $menuItemsAdvanced = '';
