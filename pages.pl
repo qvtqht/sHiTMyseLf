@@ -1962,6 +1962,9 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 				$menuItemCaption = '#' . $menuItemName;
 			}
 
+
+			my $boolExtUrl = 0;
+
 			if (GetConfig('admin/expo_site_mode')) {
 
 				#this avoids creating duplicate urls but currently breaks light mode
@@ -1971,37 +1974,47 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 
 				# add menu item to output
 
+				if (GetString("menu/$menuItem")) {
+					$menuItemCaption = GetString("menu/$menuItem");
+
+				}
+
 				if ($menuItem eq 'register') {
+					$boolExtUrl = 1;
 					$menuItemUrl = 'https://tinyurl.com/4ezdhdk';
 				}
 
 				if ($menuItem eq 'hackathon') {
+					$boolExtUrl = 1;
 					$menuItemUrl = 'https://mit-bitcoin-expo-hackathon.devfolio.co/';
 #					$menuItemUrl = 'https://forms.gle/JUvaggfVCNS8P54G7';
 				}
 
 				if ($menuItem eq 'mailinglist') {
+					$boolExtUrl = 1;
 					$menuItemUrl = 'https://eepurl.com/gOVdKb';
-					$menuItemCaption = 'Mailing List';
-				}
 
-				if ($menuItem eq 'mediapartners') {
-					$menuItemCaption = 'Media Partners';
 				}
 
 				if ($menuItem eq 'priorexpo') {
+					$boolExtUrl = 1;
 					$menuItemUrl = '/flashback_2020/';
-					$menuItemCaption = 'Prior Expo';
 				}
 			} # if (GetConfig('admin/expo_site_mode'))
 
+			$menuItemCaption = ucfirst($menuItemCaption);
+
+
 			$menuItems .= GetMenuItem($menuItemUrl, $menuItemCaption, $templateName);
+			if (0 && $boolExtUrl) {
+				#mark the url as external #todo
+			}
 
 			if (GetConfig('admin/expo_site_mode')) {
 				$menuItems .= ' &nbsp; ';
 			}
-		}
-	}
+		} # if ($menuItemName)
+	} # foreach my $menuItem (@menuList)
 
 	# return template we've built
 	return $menuItems;
