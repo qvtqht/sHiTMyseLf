@@ -285,7 +285,7 @@ sub GetStylesheet { # returns style template based on config
 		# add style for color avatars if that's the setting
 	}
 
-	if (GetConfig('admin/js/dragging')) {
+	if (GetConfig('admin/js/dragging') || GetConfig('html/inline_block_css')) {
 		$style .= "\n" . GetTemplate('css/dragging.css');
 	}
 
