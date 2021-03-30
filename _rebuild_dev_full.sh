@@ -10,4 +10,7 @@
 
 ./build.pl 2>>log/build_err.txt
 
+./index.pl --all 2>>log/index_err.txt
+
+./pages.pl --all 2>>log/pages_err.txt
 
