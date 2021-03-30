@@ -1277,6 +1277,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 	# item_title = title
 	# tags_list = comma-separated list of tags the item has
 	# is_textart = set <tt><code> tags for the message itself
+	# no_permalink = do not link to item's permalink page
 
 	# show_easyfind = show/hide easyfind words
 	# item_type = 'txt' or 'image'
@@ -1495,6 +1496,10 @@ sub GetItemTemplate { # returns HTML for outputting one item
 						my $permalinkHtml = $file{'item_title'};
 						$statusBar =~ s/\$permalinkHtml/$permalinkHtml/g;
 					}
+
+					if ($file{'no_permalink'}) {
+						$statusBar = $file{'item_title'};
+					}
 				}
 
 				$windowParams{'status'} = $statusBar;
@@ -1632,7 +1637,12 @@ sub GetItemTemplate { # returns HTML for outputting one item
 
 		if ($itemType eq 'image') {
 			if (GetConfig('admin/image/enable')) {
-				my $imageContainer = GetTemplate('html/item/container/image.template');
+				my $imageContainer = '';
+				if ($file{'no_permalink'}) {
+					$imageContainer = GetTemplate('html/item/container/image.template');
+				} else {
+					$imageContainer = GetTemplate('html/item/container/image_with_link.template');
+				}
 
 				my $imageUrl = "/thumb/thumb_800_$fileHash.gif"; #todo hardcoding no
 				my $imageSmallUrl = "/thumb/thumb_42_$fileHash.gif"; #todo hardcoding no
