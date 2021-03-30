@@ -4051,6 +4051,8 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 		MakePage('sponsors');
 
 		MakePage('academic');
+
+		MakePage('media');
 	} # if (GetConfig('admin/expo_site_mode'))
 
 	MakePage('read', 0);
