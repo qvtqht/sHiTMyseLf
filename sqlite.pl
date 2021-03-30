@@ -1671,7 +1671,7 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 
 	if (GetConfig('admin/expo_site_mode')) {
 		if (!$fileName) {
-			$fileName = 'Bio';
+			$fileName = 'Information';
 			WriteLog('DBAddItem: warning: $fileName missing; $filePath = ' . $filePath);
 		}
 	}
