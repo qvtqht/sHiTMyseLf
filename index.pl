@@ -880,6 +880,7 @@ sub IndexImageFile { # $file ; indexes one image file into database
 		return 1;
 	}
 
+	my @tagFromPath;
 	if (GetConfig('admin/expo_site_mode')) {
 		my @tagFromPath;
 		if ($file =~ /speaker/) {
@@ -899,6 +900,9 @@ sub IndexImageFile { # $file ; indexes one image file into database
 		}
 		if ($file =~ /committee/) {
 			push @tagFromPath, 'committee';
+		}
+		if ($file =~ /media/) {
+			push @tagFromPath, 'media';
 		}
 	}
 
