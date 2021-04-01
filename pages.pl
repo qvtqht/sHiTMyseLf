@@ -1367,7 +1367,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 
 		if ($file{'remove_token'}) {
 			# if remove_token is specified, remove it from the message
-			WriteLog('$file{\'remove_token\'} = ' . $file{'remove_token'});
+			WriteLog('GetItemTemplate: $file{\'remove_token\'} = ' . $file{'remove_token'});
 
 			$message =~ s/$file{'remove_token'}//g;
 			$message = trim($message);
@@ -1377,7 +1377,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			#  this could potentially be mis-used to join together two pieces of a forbidden string
 			#todo make it so that post does not need to be trimmed, but extra \n\n after the token is removed
 		} else {
-			WriteLog('$file{\'remove_token\'} is not set');
+			WriteLog('GetItemTemplate: $file{\'remove_token\'} is not set');
 		}
 
 		# } elsif ($isSurvey) {
