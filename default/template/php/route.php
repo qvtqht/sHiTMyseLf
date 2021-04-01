@@ -583,8 +583,18 @@ if (GetConfig('admin/php/route_enable')) {
 
 				WriteLog('route.php: root sanity check passed for $path = "' . $path . '"');
 				if ($path) {
+					// there's a $path
 					$pathRel = '.' . $path; // relative path of $path (to current directory, which should be html/)
-					if ($path != '/404.html' && file_exists($pathRel)) {
+
+					$cacheLimit = 3600; // seconds page cache is good for
+
+					$fileRegrowInterval = GetConfig('admin/php/regrow_keep_fresh_interval');
+
+					if (
+						$path != '/404.html' &&
+						file_exists($pathRel)
+					) {
+						// file exists and is new enough
 						WriteLog("file_exists($pathRel) was true");
 
 						if (isset($_GET['txtClock'])) {
