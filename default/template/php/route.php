@@ -1,5 +1,7 @@
 <?php
 
+// declare(strict_types = 1); #todo
+
 // this fixes a crash bug in mosaic. it should not cause a problem anywhere else
 // <_<     >_>      o_O      -_-     ^_^
 header('Content-Type: text/html');
@@ -285,10 +287,10 @@ function InjectJs ($html, $scriptNames, $injectMode = 'before', $htmlTag = '</bo
 	}
 
 	return $html;
-}
+} # InjectJs()
 
 function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing the missing page
-// Handle404 (
+// Handle404 (  #todo #DRY
 	WriteLog("HandleNotFound($path, $pathRel)");
 
 	if (GetConfig('admin/php/regrow_404_pages')) {
@@ -312,10 +314,17 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$hashTag = $hashTagMatch[1];
 			$pagesPlArgument = '\#' . $hashTag;
 		}
+#todo
+#		if (
+#			preg_match('/^\/goto\/([a-zA-Z0-9]+)/', $path, $hashTagMatch)
+#		) {
+#			WriteLog('HandleNotFound: found goto');
+#			$gotoArgument = $hashTagMatch[1];
+#			$pagesPlArgument = 'goto/' . $gotoArgument;
+#		}
 		if (
 			$path == '/' ||
 			$path == '/index.html' ||
-			$path == '/read.html' ||
 			$path == '/upload.html' ||
 			$path == '/upload_multi.html' ||
 			$path == '/etc.html' ||
@@ -332,6 +341,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$path == '/sha512.js' ||
 			$path == '/crypto.js' ||
 			$path == '/crypto2.js' ||
+			$path == '/media.html' ||
 			$path == '/openpgp.js'
 		) {
 			WriteLog('HandleNotFound: found a summary page');
@@ -347,6 +357,34 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 		) {
 			WriteLog('HandleNotFound: found authors page');
 			$pagesPlArgument = '-M authors';
+		}
+
+		if (
+			$path == '/sponsors.html'
+		) {
+			WriteLog('HandleNotFound: found sponsors page');
+			$pagesPlArgument = '-M sponsors';
+		}
+
+		if (
+			$path == '/committee.html'
+		) {
+			WriteLog('HandleNotFound: found committee page');
+			$pagesPlArgument = '-M committee';
+		}
+
+		if (
+			$path == '/speakers.html'
+		) {
+			WriteLog('HandleNotFound: found speakers page');
+			$pagesPlArgument = '-M speakers';
+		}
+
+		if (
+			$path == '/academic.html'
+		) {
+			WriteLog('HandleNotFound: found academic page');
+			$pagesPlArgument = '-M academic';
 		}
 
 		if (
@@ -443,7 +481,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			WriteLog('HandleNotFound: $pathRel exist: ' . $pathRel);
 			$html = file_get_contents($pathRel);
 		}
-	}
+	} # if (GetConfig('admin/php/regrow_404_pages'))
 
 	if (!isset($html) || !$html) {
 		// don't know how to handle this request, default to 404
@@ -508,12 +546,14 @@ if (GetConfig('admin/php/route_enable')) {
 
 			WriteLog('route.php: $pathFull = ' . $pathFull);
 
-			if ($path == '/profile.html') {
-				// if profile, leave it alone
-				// otherwise, below is for forcing login
-			} else {
+			if (GetConfig('admin/force_profile')) {
 				// if registration is required, redirect user to profile.html
-				if (GetConfig('admin/force_profile')) {
+				if ($path == '/profile.html') {
+					// if profile, leave it alone
+					// otherwise, below is for forcing login
+				} else {
+					// redirect
+
 					$clientHasCookie = 0;
 					if (isset($_COOKIE)) {
 						if (isset($_COOKIE['cookie'])) {
@@ -903,7 +943,7 @@ if (GetConfig('admin/php/route_enable')) {
 		if ($redirectUrl) {
 			// if we've come up with a place to redirect to, do it now
 
-			//header('Location: ' . $redirectUrl);
+			// header('Location: ' . $redirectUrl);
 		}
 
 		if ($path == '/profile.html') {
@@ -1074,7 +1114,7 @@ if (GetConfig('admin/php/route_enable')) {
 		print $html; // final output
 		////////////////////////////
 	}
-}
+} # route_enable = true
 else {
 	WriteLog('config/admin/php/route_enable = false');
 
