@@ -249,7 +249,7 @@ if (isset($comment) && $comment) {
 		if ($replyTo && !preg_match('/\>\>' . $replyTo . '/', $comment)) {
 			// add >> token to comment if $replyTo is provided, but comment does not have token
 			// note that the regex does have a / at the end, it's after $replyTo
-			$comment .= "\n\n" . $replyToToken;
+			$comment = $replyToToken . "\n\n" . $comment;
 		}
 
 		if ($strSourceUrl || $strSourceTitle) {
