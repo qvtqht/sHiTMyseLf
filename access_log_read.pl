@@ -154,6 +154,11 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 # )
 	WriteLog("ProcessAccessLog() begin");
 
+	if (GetConfig('admin/expo_site_mode')) {
+		#bandaid
+		return;
+	}
+
 	# Processes the specified access.log file
 	# Returns the number of new items and/or actions found
 
