@@ -234,6 +234,13 @@ sub GetTokenDefs {
 		# /g = global (all instances)
 		# /i = case-insensitive
 		# /e = eval
+		#
+		# allowed flag combinations:
+		# mg (??)
+		# mgi ??
+		# gi    ??
+		# g       ??
+		#
 
 	return @tokenDefs;
 } # GetTokenDefs()
