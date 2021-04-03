@@ -299,7 +299,7 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 		$dateMonth = $mon2num{$dateMonth};
 
 		if (!$time) {
-			LogError('Missing Time: ' . $line);
+			LogError('ProcessAccessLog: warning: missing time: ' . $line);
 			next;
 		}
 
@@ -490,11 +490,15 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 
 					# Try to write to the file, exit if we can't
 					if (PutFile($pathedFilename, $message)) {
+						WriteLog('ProcessAccessLog: PutFile(' . $pathedFilename . ') returned true!');
 						if (GetConfig('admin/organize_files')) {
+							WriteLog('ProcessAccessLog: admin/organize_files was true');
+
 							# If organizing is enabled, rename the file to its hash-based filename
 							my $hashFilename = GetFileHashPath($pathedFilename);
 							
 							if ($hashFilename) {
+								WriteLog('ProcessAccessLog: $hashFilename = ' . $hashFilename);
 								if ($pathedFilename ne $hashFilename) {
 									if ($pathedFilename =~ m/^(.+)$/) {
 										$pathedFilename = $1;
@@ -556,7 +560,7 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 						# }
 
 						# Tell debug console about file save completion
-						WriteLog("Seems like PutFile() worked! $addedTime");
+						WriteLog('ProcessAccessLog: Seems like PutFile() worked! $addedTime = ' . $addedTime);
 
 						# record debug info
 						if ($recordDebugInfo) {
