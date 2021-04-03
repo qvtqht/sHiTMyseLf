@@ -59,7 +59,7 @@ input:focus {
     padding: 5pt;
     spacing: 5pt;
     border: 0;
-	box-shadow: 5pt 5pt 0 #006767;
+	box-shadow: 5pt 5pt 0 rgba(0, 20, 20, 0.5);
 }
 #txtClock {
 	border: 1pt inset $colorWindow;
