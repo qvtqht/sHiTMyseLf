@@ -1489,7 +1489,7 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
     # if the file is present in deleted.log, get rid of it and its page, return
     if ($fileHash && -e 'log/deleted.log' && GetFile('log/deleted.log') =~ $fileHash) {
         # write to log
-        WriteLog("IsFileDeleted: $fileHash exists in deleted.log, removing $file");
+        WriteLog("IsFileDeleted: MATCHED! $fileHash exists in deleted.log, removing $file");
 
 		{
 			# unlink the file itself
@@ -1513,7 +1513,7 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
         }
 
         return 1;
-    }
+    } # IsFileDeleted()
 
     # if the file is present in deleted.log, get rid of it and its page, return
     if ($fileHash && -e 'log/archived.log' && GetFile('log/archived.log') =~ $fileHash) {
@@ -1739,6 +1739,7 @@ sub RemoveEmptyDirectories { #looks for empty directories under $path and remove
 }
 
 sub GetFileHashPath { # $file ; Returns text file's standardized path given its filename
+# GetFilename {
 	# e.g. /01/23/0123abcdef0123456789abcdef0123456789a.txt
 	my $file = shift;
 
