@@ -15,7 +15,7 @@ use 5.010;
 require './utils.pl';
 
 # look for anything new in access log
-system('./access.pl --all');
+system('./access_log_read.pl --all');
 
 # index any files which haven't been indexed already
 system('./index.pl --all');
