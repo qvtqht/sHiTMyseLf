@@ -191,7 +191,7 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 	}
 
 	if (!$fieldValue || trim($fieldValue) eq '') {
-		WriteLog('RenderField: warning: return is FALSE; $fieldName = ' . $fieldName . '; $fieldValue = ' . $fieldValue);
+		WriteLog('RenderField: warning: $fieldValue is missing; $fieldName = ' . $fieldName . '; caller: ' . join(', ', caller));
 		$fieldValue = '-';
 	}
 	
