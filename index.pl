@@ -285,6 +285,21 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		return 0;
 	}
 
+	# if the file is present in deleted.log, get rid of it and its page, return
+	if (IsFileDeleted($file, $fileHash)) {
+		# write to log
+		WriteLog('IndexTextFile: IsFileDeleted() returned true, returning');
+		if ($file) {
+			WriteLog('IndexTextFile: IsFileDeleted() $file = ' . $file);
+		}
+		if ($fileHash) {
+			WriteLog('IndexTextFile: IsFileDeleted() $file = ' . $file);
+		}
+		return 0;
+	}
+
+	my $addedTime = 0;
+
 	WriteLog('IndexTextFile: $fileHash = ' . $fileHash);
 	if (GetConfig('admin/logging/write_chain_log')) {
 		AddToChainLog($fileHash);
