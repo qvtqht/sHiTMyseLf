@@ -412,7 +412,21 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$path == '/compost.html'
 		) {
 			WriteLog('HandleNotFound: found compost page');
-			$pagesPlArgument = '--compost';
+			$pagesPlArgument = '-M compost';
+		}
+
+		if (
+			$path == '/deleted.html'
+		) {
+			WriteLog('HandleNotFound: found deleted page');
+			$pagesPlArgument = '-M deleted';
+		}
+
+		if (
+			$path == '/agenda.html'
+		) {
+			WriteLog('HandleNotFound: found agenda page');
+			$pagesPlArgument = '-M agenda';
 		}
 
 		if (
