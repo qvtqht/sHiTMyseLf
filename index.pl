@@ -423,6 +423,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						$newTokenFound{'param'} = $foundTokenParam;
 						$newTokenFound{'recon'} = $reconLine;
 						$newTokenFound{'message'} = $tokenMessage;
+						$newTokenFound{'apply_to_parent'} = $tokenDef{'apply_to_parent'};
 						push(@tokensFound, \%newTokenFound);
 
 						if ($tokenName eq 'hashtag') {
@@ -512,7 +513,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						}
 
 						if ($tokenFound{'recon'} && $tokenFound{'message'} && $tokenFound{'param'}) {
-							if (@itemParents) {
+							if ($tokenFound{'apply_to_parent'} && @itemParents) {
 								foreach my $itemParent (@itemParents) {
 									DBAddItemAttribute($itemParent, $tokenFound{'token'}, $tokenFound{'param'}, $itemTimestamp, $fileHash);
 								}
