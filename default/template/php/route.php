@@ -715,6 +715,11 @@ if (GetConfig('admin/php/route_enable')) {
 							RedirectWithResponse('/settings.html', 'Previous content has been archived.');
 						}
 
+						if (substr($pathRel, -1) == '/') {
+							# if it ends with /, add index.html
+							$pathRel .= 'index.html';
+						}
+
 						// user asked for a particular file, and that's what we'll give them
 						WriteLog('$html = file_get_contents($pathRel);');
 						$html = file_get_contents($pathRel);
