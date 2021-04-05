@@ -143,6 +143,24 @@ sub GetTokenDefs {
 			'apply_to_parent' => 1,
 			'message' => '[Title]'
 		},
+		{ # begin time, self only:
+			'token'   => 'begin',
+			'mask'    => '^(begin)(\W)(.+)$',
+			'mask_params'    => 'mg',
+			'message' => '[Begin]'
+		},
+		{ # duration, self only:
+			'token'   => 'duration',
+			'mask'    => '^(duration)(\W)(.+)$',
+			'mask_params'    => 'mg',
+			'message' => '[Duration]'
+		},
+		{ # track: self only:
+			'token'   => 'track',
+			'mask'    => '^(track)(\W)(.+)$',
+			'mask_params'    => 'mg',
+			'message' => '[Track]'
+		},
 		{ # name of item, either self or parent. used for display when title is needed #title title:
 			'token'   => 'name',
 			'mask'    => '^(name)(\W)(.+)$',
