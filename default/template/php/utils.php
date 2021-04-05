@@ -252,6 +252,12 @@ function DoUpdate () { // #todo #untested
 	}
 }
 
+
+function DoConfigDump () { // #todo #untested
+	require_once('config.php');
+	return WriteConfigDump();
+}
+
 function DoUpgrade () {
 	$pwd = getcwd();
 	WriteLog('$pwd = ' . $pwd);
