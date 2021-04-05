@@ -415,13 +415,14 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 								my $replyToId = $paramValue;
 
 								if (!($message =~ /\>\>$replyToId/)) {
-									$message .= "\n\n>>$replyToId";
+									$message = ">>$replyToId" . "\n\n" . $message;
 								}
 							} else {
+								#todo need some sanity checks here
 								my $replyToId = $paramValue;
 
 								if (!($message =~ /\>\>$replyToId/)) {
-									$message .= "\n\n>>$replyToId";
+									$message = ">>$replyToId" . "\n\n" . $message;
 								}
 							}
 						}
