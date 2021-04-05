@@ -326,7 +326,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 	WriteLog('IndexTextFile: $fileHash = ' . $fileHash);
 	if (GetConfig('admin/logging/write_chain_log')) {
-		AddToChainLog($fileHash);
+		$addedTime = AddToChainLog($fileHash);
+		#todo there is a bug here, should not depend on chain log
 	}
 
 	if (GetCache("indexed/$fileHash")) {
@@ -503,7 +504,12 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						# 		otherwise: to self
 						WriteLog('IndexTextFile: token_found: ' . $tokenFound{'recon'});
 
-						$itemTimestamp = time(); #todo #fixme #stupid
+						if ($addedTime) {
+							$itemTimestamp = $addedTime; #todo #fixme #stupid
+							#todo it currently depends on chainlog
+						} else {
+							$itemTimestamp = time(); #todo #fixme #stupid
+						}
 
 						if ($tokenFound{'recon'} && $tokenFound{'message'} && $tokenFound{'param'}) {
 							if (@itemParents) {
