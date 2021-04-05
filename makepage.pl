@@ -177,6 +177,12 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 
 		my @itemCommittee = DBGetItemList(\%queryParams);
 		foreach my $itemCommittee (@itemCommittee) {
+			if (GetConfig('admin/mit_expo_mode')) {
+				if ($itemCommittee->{'item_name'} eq 'Manish Kumar') {
+					#expo mode #todo #bandaid
+					$itemCommittee->{'item_title'} = 'Hackathon Co-Chair';
+				}
+			}
 			if (length($itemCommittee->{'item_title'}) > 48) {
 				$itemCommittee->{'item_title'} = substr($itemCommittee->{'item_title'}, 0, 43) . '[...]';
 			}
