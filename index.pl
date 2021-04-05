@@ -1294,6 +1294,10 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 while (my $arg1 = shift @argsFound) {
 	WriteLog('index.pl: $arg1 = ' . $arg1);
 	if ($arg1) {
+		if ($arg1 eq '--clear') {
+			print "index.pl: --clear\n";
+			print `rm -vrf cache/b/indexed/*`;
+		}
 		if ($arg1 eq '--all') {
 			print "index.pl: --all\n";
 			MakeIndex();
