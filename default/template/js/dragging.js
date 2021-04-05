@@ -157,7 +157,8 @@ function DraggingCascade () {
 } // DraggingCascade()
 
 function DraggingInit (doPosition) {
-// InitDrag { DragInit {
+// InitDrag {
+// DragInit {
 // initialize all class=dialog elements on the page to be draggable
 
 	//alert('DEBUG: DraggingInit');
@@ -167,10 +168,10 @@ function DraggingInit (doPosition) {
 		return '';
 	}
 
-	if (window.GetPrefs && !GetPrefs('draggable')) {
-		//alert('DEBUG: DraggingInit: warning: GetPrefs(draggable) was false, returning');
-		return '';
-	}
+//	if (window.GetPrefs && !GetPrefs('draggable')) {
+//		//alert('DEBUG: DraggingInit: warning: GetPrefs(draggable) was false, returning');
+//		return '';
+//	}
 
 	if (doPosition) {
 		doPosition = 1;
