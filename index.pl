@@ -962,6 +962,9 @@ sub IndexImageFile { # $file ; indexes one image file into database
 		if ($file =~ /media/) {
 			push @tagFromPath, 'media';
 		}
+		if ($file =~ /agenda/) {
+			push @tagFromPath, 'agenda';
+		}
 	}
 
 	my $addedTime;          # time added, epoch format
