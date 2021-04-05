@@ -784,6 +784,18 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		} # not #example
 
 		$detokenedMessage = trim($detokenedMessage);
+		if (trim($detokenedMessage) eq '-- ') {
+			#todo #bandaid
+			# this should be handled by the signature_divider token
+			$detokenedMessage = '';
+		}
+
+		WriteLog('IndexTextFile: $fileHash = ' . $fileHash . '; length($detokenedMessage) = ' . length($detokenedMessage) . '; $detokenedMessage = "' . $detokenedMessage . '"');
+		
+#		if ($fileHash eq 'ef5f020ffae013876493cf25e323a2c67a3f09db') {
+#			die($detokenedMessage);
+#		}
+
 		if ($detokenedMessage eq '') {
 			# add #notext label/tag
 			WriteLog('IndexTextFile: no $detokenedMessage, setting #notext; $fileHash = ' . $fileHash);
