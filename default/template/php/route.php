@@ -689,6 +689,23 @@ if (GetConfig('admin/php/route_enable')) {
 						}
 
 						if (
+							isset($_GET['chkConfigDump']) &&
+							isset($_GET['btnConfigDump'])
+						) {
+							$updateStartTime = time();
+							$configDumpPath = DoConfigDump();
+							$fileUrlPath = ''; #todo why?
+							$updateFinishTime = time();
+							$updateDuration = $updateFinishTime - $updateStartTime;
+
+							WriteLog('$configDumpPath = ' . $configDumpPath);
+
+							IndexTextFile("./html/" . substr($configDumpPath, 1)); #todo get output and redirect to correct page
+
+							RedirectWithResponse('/stats.html', "Config dump finished! <small>in $updateDuration"."s</small>");
+						}
+
+						if (
 							isset($_GET['chkFlush']) &&
 							isset($_GET['btnFlush'])
 						) {
