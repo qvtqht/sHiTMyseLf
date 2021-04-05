@@ -1,0 +1,20 @@
+<!-- mitbtc/template/topmenu2.template -->
+<table cellspacing=0 cellpadding=3 border=0 bgcolor="$colorWindow" class=dialog>
+	<tr bgcolor="$colorTopMenuTitlebar">
+		<td colspan=2>
+			<img alt="MIT Bitcoin Expo" title="MIT Bitcoin Expo" logo src="/logo.gif" height=16 width=16>
+			<font color="$colorTitlebarText"><b>MIT Bitcoin Expo 2021</b></font>
+			<a href="/etc.html">.</a>
+			<br>
+		</td>
+	</tr>
+	<tr bgcolor="$colorWindow" class=menubar>
+		<td>
+			<big>
+				<big>$menuItems</big>
+			</big>
+		</td>
+	</tr>
+</table>
+<!-- / mitbtc/template/topmenu2.template -->
+
