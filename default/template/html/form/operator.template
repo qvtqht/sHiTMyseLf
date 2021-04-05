@@ -2,12 +2,32 @@
 
 <fieldset class=beginner>
 	<legend><b>Attention:</b><br></legend>
-	Use operator controls with care!<br>
+	Please, use operator controls with care!<br>
 </fieldset>
 
 <fieldset>
 	<legend><b>Operator Controls</b></legend>
 
+	<p>
+		<span class=beginner>
+			Use Safe Mode if problems exist or are anticipated:<br>
+		</span>
+		<label for=chkSafeMode>
+			<input type=checkbox id=chkSafeMode name=chkSafeMode>
+			SafeMode
+		</label>
+		<input type=submit name=btnSafeMode id=btnSafeMode value=SafeMode>
+	</p>
+	<p>
+		<span class=beginner>
+			Save site configuration and display it:<br>
+		</span>
+		<label for=chkConfigDump>
+			<input type=checkbox id=chkConfigDump name=chkConfigDump>
+			ConfigExport
+		</label>
+		<input type=submit name=btnConfigDump id=btnConfigDump value=ConfigExport>
+	</p>
 	<p>
 		<span class=beginner>
 			If something you expect does not appear, try this button:<br>
