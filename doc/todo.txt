@@ -1,3 +1,73 @@
+#bug js messages on write page when js/enabled=0
+
+
+add 3 speakers
+add agenda images
+
+agenda on one page
+slideo and iframe other
+smaller than window
+same width
+
+
+
+change html/theme to comma separated
+
+flatten props
+	find all notext items which assign props
+		combine all of their entries from config (in the right order)
+			(use config_latest)
+				export to new file
+					archive the sources
+
+
+
+
+alt tags for images
+	which ones?
+	how to generate?
+
+if item has #eventlog (?) tag
+	focus reply form when page is loaded
+		to facilitate fast data entry
+
+
+mit bitcoin expo
+================
+#academic partners
+#	main page
+#	item pages
+
+#new sponsors
+#	graphics
+
+creative proposals
+==================
+sorting by hash
+
+
+#sponsor bios
+#ensure sponsor, partner pages all have the same design
+#top banner should have logo title
+#statusbar for partner pages should go to their site
+#committee should be in correct order
+
+
+index images under image/speaker ahead of others
+	assign #speaker tag to these images
+		change speakers page to query by this tag
+do the same thing for sponsors:
+	image/sponsor
+		assign #sponsor tag
+			set #sponsor page to query by this tag
+
+
+
+
+
+
+
+
 add a clock js for starting the timeout if eventloop is missing
 	this is useful for the 404 page, which doesn't need to have utils.js on it
 
