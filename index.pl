@@ -500,6 +500,9 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						$tokenFound{'token'} eq 'order' ||
 						$tokenFound{'token'} eq 'alt' ||
 						$tokenFound{'token'} eq 'access_log_hash' ||
+						$tokenFound{'token'} eq 'begin' ||
+						$tokenFound{'token'} eq 'duration' ||
+						$tokenFound{'token'} eq 'track' ||
 						$tokenFound{'token'} eq 'url'
 					) {
 						# these tokens are applied to:
