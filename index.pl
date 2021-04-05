@@ -950,9 +950,10 @@ sub IndexImageFile { # $file ; indexes one image file into database
 		return 1;
 	}
 
+	#my @tagFromFile;
+	#my @tagsFromFile;
 	my @tagFromPath;
 	if (GetConfig('admin/expo_site_mode')) {
-		my @tagFromPath;
 		if ($file =~ /speaker/) {
 			push @tagFromPath, 'speaker';
 		}
