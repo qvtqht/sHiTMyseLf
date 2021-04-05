@@ -122,7 +122,7 @@ function freshCallback() { // callback for requesting HEAD for current page
 							if (window.freshTimeoutId) {
 								clearTimeout(window.freshTimeoutId);
 							}
-							window.eventLoopFresh = 0; // stop checking for updates
+							//window.eventLoopFresh = 0; // stop checking for updates
 
 							if (document.title.substring(0, 2) != '! ') {
 								document.title = '! ' + document.title;
@@ -157,7 +157,7 @@ function freshCallback() { // callback for requesting HEAD for current page
 			//document.body.appendChild(ariaAlert);
 			document.body.insertBefore(ariaAlert, document.body.firstChild);
 		}
-		window.eventLoopFresh = 0; // stop checking for updates
+		// window.eventLoopFresh = 0; // stop checking for updates
 	} // status == 404
 
 	return true;
