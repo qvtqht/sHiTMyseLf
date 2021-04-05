@@ -124,6 +124,12 @@ sub GetTokenDefs {
 			'mask_params' => 'mg',
 			'message' => '[Parent]'
 		},
+		{ # parent of item (to which item is replying)
+			'token'   => 'signature_divider',
+			'mask'    => '^(-- )()()$', # -- \n
+			'mask_params' => 'mg',
+			'message' => '[Signature Divider]'
+		},
 	#				{ # reference to item
 	#					'token'   => 'itemref',
 	#					'mask'    => '(\W?)([0-9a-f]{8})(\W?)',
