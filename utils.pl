@@ -882,6 +882,18 @@ sub PutHtmlFile { # $file, $content, $itemHash ; writes content to html file, wi
 	my $fileProvided = $file;
 	$file = "$HTMLDIR/$file";
 
+	if (GetConfig('admin/post/post_url')) {
+		# replace target for form submissions from current site to somewhere else
+		if (GetConfig('admin/post/post_url') ne '/post.html') {
+			if (index($content, '/post.html') != -1) {
+				my $postUrl = 'https://www.opxenioctibtim.org/post.html';
+				str_replace('/post.html', $postUrl, $content);
+				$content =~ s/\/post.html/$postUrl/g;
+				#die 1;
+			}
+		}
+	}
+
 	# controls whether linked urls are converted to relative format
 	# meaning they go from e.g. /write.html to ./write.html
 	# this breaks the 404 page links so disable that for now
