@@ -1277,7 +1277,8 @@ sub GetItemTemplate { # returns HTML for outputting one item
 	# remove_token = token to remove (for reply tokens)
 	# show_vote_summary = shows item's list and count of tags
 	# show_quick_vote = displays quick vote buttons
-	# item_title = title
+	# item_title = override title
+	# item_statusbar = override statusbar
 	# tags_list = comma-separated list of tags the item has
 	# is_textart = set <tt><code> tags for the message itself
 	# no_permalink = do not link to item's permalink page
@@ -1470,7 +1471,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			#return GetWindowTemplate ($param{'body'}, $param{'title'}, $param{'headings'}, $param{'status'}, $param{'menu'});
 			my %windowParams;
 			$windowParams{'body'} = GetTemplate('html/item/item.template'); # GetItemTemplate()
-			if (GetConfig('admin/expo_site_mode')) {
+			if (GetConfig('admin/expo_site_mode')) { #todo #debug #expo
 				$windowParams{'title'} = HtmlEscape($file{'item_name'});
 			} else {
 				$windowParams{'title'} = HtmlEscape($file{'item_title'});
@@ -1478,8 +1479,20 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			$windowParams{'guid'} = substr(sha1_hex($file{'file_hash'}), 0, 8);
 			# $windowParams{'headings'} = 'haedigns';
 
-			{
-				my $statusBar = GetTemplate('html/item/status_bar.template');
+
+			my $statusBar = '';
+			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) { #expo
+				WriteLog('GetItemTemplate: $statusBar expo_site_mode override activated');
+				if ($file{'item_title'} =~ m/^http/) {
+					my $permalinkHtml = $file{'item_title'};
+					$statusBar =~ s/\$permalinkHtml/$permalinkHtml/g;
+				}
+
+				if ($file{'no_permalink'}) {
+					$statusBar = $file{'item_title'};
+				}
+			} else {
+				$statusBar = GetTemplate('html/item/status_bar.template');
 
 				my $fileHashShort = substr($fileHash, 0, 8);
 				$statusBar =~ s/\$fileHashShort/$fileHashShort/g;
@@ -1492,26 +1505,31 @@ sub GetItemTemplate { # returns HTML for outputting one item
 					# if no author, no $authorLink
 					$statusBar =~ s/\$authorLink;//g;
 				}
-
-				if (GetConfig('admin/expo_site_mode')) {
-					if ($file{'item_title'} =~ m/^http/) {
-						my $permalinkHtml = $file{'item_title'};
-						$statusBar =~ s/\$permalinkHtml/$permalinkHtml/g;
-					}
-
-					if ($file{'no_permalink'}) {
-						$statusBar = $file{'item_title'};
-					}
-				}
-
-				$windowParams{'status'} = $statusBar;
+				WriteLog('$statusBar 1.5 = ' . $statusBar);
 			}
-			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
-				#todo
-				if ($file{'item_name'} eq 'Information') {
-					$windowParams{'status'} = '';
-				}
+
+			if ($file{'item_statusbar'}) {
+				$statusBar = $file{'item_statusbar'};
 			}
+
+			if (index($file{'tags_list'}, 'sponsor') != -1) {
+				$statusBar = '<a href="' . $file{'item_title'} . '" target=_blank>' . $file{'item_title'} . '</a>';
+			}
+
+#			if (!$statusBar && index($file{'tags_list'}, 'speaker') != -1) {
+#				#$statusBar = $file{'item_title'};
+#			}
+			WriteLog('$statusBar 2 = ' . $statusBar);
+			$windowParams{'status'} = $statusBar;
+
+
+#			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
+#				#todo
+#				if ($file{'item_name'} eq 'Information') {
+#					WriteLog('GetItemTemplate: expo_site_mode: setting window status to blank');
+#					$windowParams{'status'} = '';
+#				}
+#			}
 
 			if (defined($file{'show_quick_vote'})) {
 				$windowParams{'menu'} = GetQuickVoteButtonGroup($file{'file_hash'}, $file{'vote_return_to'});
