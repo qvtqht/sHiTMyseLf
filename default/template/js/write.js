@@ -58,7 +58,7 @@ function WriteOnload () { // onload handler for write page
 
 					if (window.solvePuzzle) {
 						var spanWriteAdvanced = document.getElementById('spanWriteAdvanced');
-						if (spanWriteAdvanced) {
+						if (spanWriteAdvanced && window.solvePuzzle) {
 							var btnSolvePuzzle = document.createElement('input');
 							btnSolvePuzzle.setAttribute('id', 'btnSolvePuzzle');
 							btnSolvePuzzle.setAttribute('type', 'button');
