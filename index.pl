@@ -1196,12 +1196,17 @@ sub DeindexMissingFiles {
 	my %queryParams = ();
 	my @items = DBGetItemList(\%queryParams);
 
+	WriteLog('DeindexMissingFiles scalar(@items) is ' . scalar(@items));
+	WriteMessage("Checking for deleted items... ");
+
 	#print Dumper(@items);
 
 	if (@items) {
 		foreach my $item (@items) {
+
 			if ($item->{'file_path'}) {
 				if (!-e $item->{'file_path'}) {
+					WriteLog('DeindexMissingFiles: Found a missing text file, removing references. ' . $item->{'file_path'});
 					DBDeleteItemReferences($item->{'file_hash'});
 				}
 			}
@@ -1212,7 +1217,7 @@ sub DeindexMissingFiles {
 	# get all indexed files
 	# 	check for existence of file
 	#		if no file, deindex item
-}
+} # DeindexMissingFiles()
 
 sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on extension
 	my $file = shift;
