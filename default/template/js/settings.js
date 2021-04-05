@@ -45,7 +45,7 @@ function SetElementVisible (element, displayValue, bgColor, borderStyle) { // se
 		if (borderStyle) {
 			// border style
 			element.style.border = borderStyle;
-			element.style.borderRadius = '3pt';
+			//element.style.borderRadius = '3pt';
 		}
 	}
 
