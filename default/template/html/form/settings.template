@@ -43,7 +43,7 @@
 	<p>
 		<label for=chkDraggable class=advanced>
 			<input type=checkbox id=chkDraggable name=chkDraggable onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable'); }">
-			Enable dragging automatically<noscript><b>*</b></noscript>
+			Enable draggable interface<noscript><b>*</b></noscript>
 		</label>
 	</p>
 </fieldset>
@@ -61,7 +61,7 @@
 <p>
 	<label for=chkWriteAutoSave>
 		<input type=checkbox id=chkWriteAutoSave name=chkWriteAutoSave onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_autosave'); }">
-		Automatically save drafts on device<noscript><b>*</b></noscript>
+		Auto-save<noscript><b>*</b></noscript>
 	</label>
 </p>
 
