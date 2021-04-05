@@ -429,7 +429,9 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						if ($tokenName eq 'hashtag') {
 							$hasToken{$foundTokenParam} = 1;
 						}
-					} # @tokenLines
+
+						$detokenedMessage = str_replace($reconLine, '', $detokenedMessage);
+					} # while (@tokenLines)
 				} # GetConfig("admin/token/$tokenName") && $detokenedMessage
 			} # @tokenDefs
 
