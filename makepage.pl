@@ -133,9 +133,12 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 
 		my @itemSpeakers = DBGetItemList(\%queryParams);
 		foreach my $itemSpeaker (@itemSpeakers) {
+			#$itemSpeaker->{'item_title'} = $itemSpeaker->{'item_name'};
 			if (length($itemSpeaker->{'item_title'}) > 48) {
-				$itemSpeaker->{'item_title'} = substr($itemSpeaker->{'item_title'}, 0, 43) . '[...]';
+				$itemSpeaker->{'item_title'} = substr($itemSpeaker->{'item_title'}, 0, 45) . '[...]';
+
 			}
+			$itemSpeaker->{'item_statusbar'} = GetItemHtmlLink($itemSpeaker->{'file_hash'}, $itemSpeaker->{'item_title'});
 			my $itemSpeakerTemplate = GetItemTemplate($itemSpeaker);
 			$speakersPage .= $itemSpeakerTemplate;
 		}
@@ -146,21 +149,23 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 	}
 
 	elsif ($pageType eq 'links') {
-		my $linksPage = '';
-		$linksPage = GetPageHeader('Links', 'Links', 'links');
-
-		my %queryParams;
-		$queryParams{'where_clause'} = "WHERE file_hash IN ( SELECT file_hash FROM item_attribute WHERE attribute = 'url' )";
-
-		my @itemLinks = DBGetItemList(\%queryParams);
-		foreach my $itemLink (@itemLinks) {
-			my $itemLinkTemplate = GetItemTemplate($itemLink);
-			$linksPage .= $itemLinkTemplate;
-		}
-
-		$linksPage .= GetPageFooter();
-		$linksPage = InjectJs($linksPage, qw(settings utils));
-		PutHtmlFile('links.html', $linksPage);
+		MakeSimplePage('links');
+#		my $linksPage = '';
+#		$linksPage = GetPageHeader('Links', 'Links', 'links');
+#
+#		my %queryParams;
+#		$queryParams{'where_clause'} = "WHERE file_hash IN ( SELECT file_hash FROM item_attribute WHERE attribute = 'url' )";
+#
+#		my @itemLinks = DBGetItemList(\%queryParams);
+##		foreach my $itemLink (@itemLinks) {
+##			my $itemLinkTemplate = GetItemTemplate($itemLink);
+##			$linksPage .= $itemLinkTemplate;
+##		}
+#		$linksPage .= GetQueryAsDialog("Select item_title from item_flat where tags_list like '%url%'");
+#
+#		$linksPage .= GetPageFooter();
+#		$linksPage = InjectJs($linksPage, qw(settings utils));
+#		PutHtmlFile('links.html', $linksPage);
 	}
 	elsif ($pageType eq 'committee') {
 		my $committeePage = '';
@@ -320,6 +325,24 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 #		my $compostPage = GetQueryPage('compost', 'Compost', 'item_title,author_key,add_timestamp');
 #		my $topItemsPage = GetTopItemsPage();
 		PutHtmlFile("compost.html", $compostPage);
+	}
+	elsif ($pageType eq 'agenda') {
+		my $agendaPage = '';
+		$agendaPage .= GetPageHeader('agenda', 'agenda', 'agenda');
+		$agendaPage .= GetWindowTemplate(GetTemplate('html/page/agenda_saturday.template'), 'Saturday');
+		$agendaPage .= GetWindowTemplate(GetTemplate('html/page/agenda_sunday.template'), 'Sunday');
+		$agendaPage .= GetPageFooter();
+		PutHtmlFile('agenda.html', $agendaPage);
+#		MakeGalleryPage('agenda-saturday');
+#		MakeGalleryPage('agenda-sunday');
+
+#		PutHtmlFile("agenda.html", $agendaPage);
+#		PutHtmlFile("agenda-saturday.html", GetQueryPage('agenda_saturday'));
+#		PutHtmlFile("agenda-sunday.html", GetQueryPage('agenda_sunday'));
+	}
+	elsif ($pageType eq 'deleted') {
+		my $agendaPage = GetQueryPage('deleted');
+		PutHtmlFile("deleted.html", $agendaPage);
 	}
 	elsif ($pageType eq 'settings') {
 		# Settings page
