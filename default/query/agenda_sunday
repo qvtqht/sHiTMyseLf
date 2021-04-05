@@ -1,0 +1,7 @@
+select
+	item_title,
+	file_hash
+from item_flat
+	where tags_list like '%agenda%'
+	and item_name like 'sunday%'
+;
