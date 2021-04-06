@@ -4071,6 +4071,8 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 		MakePage('academic');
 
 		MakePage('media');
+
+		MakePage('agenda', 0);
 	} # if (GetConfig('admin/expo_site_mode'))
 
 	MakePage('read', 0);
@@ -4078,6 +4080,8 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 	MakePage('tags', 0);
 
 	MakePage('compost', 0);
+
+	MakePage('deleted', 0);
 
 	PutStatsPages();
 	#
