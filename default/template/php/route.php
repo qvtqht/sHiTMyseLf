@@ -423,6 +423,13 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 		}
 
 		if (
+			$path == '/child.html'
+		) {
+			WriteLog('HandleNotFound: found child page');
+			$pagesPlArgument = '-M child';
+		}
+
+		if (
 			$path == '/agenda.html'
 		) {
 			WriteLog('HandleNotFound: found agenda page');
