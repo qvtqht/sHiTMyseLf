@@ -24,6 +24,9 @@ use URI::Escape;
 use Storable;
 use Digest::SHA qw( sha1_hex );
 use File::Spec qw( abs2rel );
+use Time::HiRes qw(time);
+use POSIX qw(strftime);
+
 
 sub require_once { # $path ; use require() unless already done
 	my $path = shift;
@@ -118,7 +121,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 	}
 	chomp $text;
 
-	{
+	{ # this is the part which prints the snow
 		my $firstWord = substr($text, 0, index($text, ' '));
 		if (index($firstWord, '(') != -1) {
 			$firstWord = substr($firstWord, 0, index($firstWord, '('));
@@ -138,6 +141,14 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 	state $debugOn;
 	if ($debugOn || -e 'config/admin/debug') {
 		my $timestamp = GetTime();
+
+		if (GetConfig('admin/debug_use_milliseconds')) {
+			my $t = time;
+			my $date = $timestamp;#strftime "%Y%m%d %H:%M:%S", localtime $t;
+			$date .= sprintf ".%03d", ($t-int($t))*1000; # without rounding
+			$timestamp = $date;
+		}
+
 		AppendFile("log/log.log", $timestamp . " " . $text);
 		$debugOn = 1;
 	}
