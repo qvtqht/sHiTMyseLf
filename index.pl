@@ -1192,9 +1192,13 @@ sub MakeIndex { # indexes all available text files, and outputs any config found
 	DeindexMissingFiles();
 } # MakeIndex()
 
-sub DeindexMissingFiles {
+sub DeindexMissingFiles { # remove from index data for files which have been removed
+# takes no parameters
+#
+	# get all items in database
 	my %queryParams = ();
 	my @items = DBGetItemList(\%queryParams);
+	my $itemsDeletedCount = 0;
 
 	WriteLog('DeindexMissingFiles scalar(@items) is ' . scalar(@items));
 	WriteMessage("Checking for deleted items... ");
@@ -1202,21 +1206,27 @@ sub DeindexMissingFiles {
 	#print Dumper(@items);
 
 	if (@items) {
+		# for each of the items, check if the file still exists
 		foreach my $item (@items) {
 
 			if ($item->{'file_path'}) {
 				if (!-e $item->{'file_path'}) {
+					# if file does not exist, remove its references
 					WriteLog('DeindexMissingFiles: Found a missing text file, removing references. ' . $item->{'file_path'});
 					DBDeleteItemReferences($item->{'file_hash'});
+					$itemsDeletedCount++;
 				}
 			}
 		}
+
+		if ($itemsDeletedCount) {
+			# if any files were de-indexed, report this, and pause for 3 seconds to inform operator
+			WriteMessage('DeindexMissingFiles: deleted items found and removed: ' . $itemsDeletedCount);
+			WriteMessage(`sleep 3`);
+		}
 	}
 
-	#todo
-	# get all indexed files
-	# 	check for existence of file
-	#		if no file, deindex item
+	return $itemsDeletedCount;
 } # DeindexMissingFiles()
 
 sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on extension
