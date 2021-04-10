@@ -3,9 +3,9 @@
 	<tr bgcolor="$colorTopMenuTitlebar" class=titlebar>
 		<td colspan=2>
 			<small>
-			<a tabindex=2 href="#maincontent" name=top><font color="$colorTopMenuTitlebarText">Skip to main content</font></a>;
-			<a href="$selfLink?light=1" tabindex=3><font color="$colorTopMenuTitlebarText">Accessibility mode</font></a>;
-			<br>
+				<a tabindex=2 href="#maincontent" name=top><font color="$colorTopMenuTitlebarText">Skip to main content</font></a>;
+				<a href="$selfLink?light=1" tabindex=3><font color="$colorTopMenuTitlebarText">Accessibility mode</font></a>;
+				<br>
 			</small>
 		</td>
 	</tr>
