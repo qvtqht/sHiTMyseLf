@@ -387,7 +387,7 @@ if (isset($filePath) && $filePath) {
 	WriteLog('post.php: warning: $filePath is FALSE');
 }
 
-WriteLog('post.php: about to look for post.php; `pwd` = ' . `pwd` . '; cwd() = ' . cwd());
+WriteLog('post.php: about to look for post.php; `pwd` = ' . `pwd`);
 
 #######################################
 $html = file_get_contents('post.html') || file_get_contents('./post.html');
