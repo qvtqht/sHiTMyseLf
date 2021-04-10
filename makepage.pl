@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use utf8;
+use 5.010;
 
 my @argsFound;
 while (my $argFound = shift) {
@@ -70,7 +71,8 @@ sub MakeGalleryPage {
 
 	PutHtmlFile($pageType . '.html', GetGalleryPage($pageType));
 }
-sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it into $HTMLDIR directory; $pageType, $pageParam
+
+sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it into $HTMLDIR directory; $pageType, $pageParam
 # supported page types so far:
 # tag, #hashtag
 # author, ABCDEF01234567890
@@ -84,16 +86,19 @@ sub MakePage { # $pageType, $pageParam, $priority ; make a page and write it int
 # index
 # compost
 
-	my $HTMLDIR = GetDir('html');
+	state $HTMLDIR;
+	if (!$HTMLDIR) {
+		$HTMLDIR = GetDir('html');
+	}
 
 	# $pageType = author, item, tags, etc.
 	# $pageParam = author_id, item_hash, etc.
 	my $pageType = shift;
 	my $pageParam = shift;
-	my $priority = shift;
+	my $htmlRoot = shift;
 
-	if (!$priority) {
-		$priority = 0;
+	if ($htmlRoot) {
+		$HTMLDIR = $htmlRoot;
 	}
 
 	#todo sanity checks
