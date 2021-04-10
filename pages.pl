@@ -2519,6 +2519,12 @@ sub GetStatsTable {
 	state $itemsIndexed; $itemsIndexed = $itemsIndexed || DBGetItemCount();
 	my $authorCount = DBGetAuthorCount();
 
+	state $itemsDeleted;
+	if (!$itemsDeleted) {
+		my @result = SqliteQueryHashRef('deleted');
+		$itemsDeleted = scalar(@result);
+	}
+
 #	my $adminId = GetRootAdminKey();
 #	my $adminUsername = GetAlias($adminId);
 #	my $adminLink = GetAuthorLink($adminId);
@@ -2633,6 +2639,7 @@ sub GetStatsTable {
 	$statsTable =~ s/\$versionFull/$versionFull/;
 	$statsTable =~ s/\$versionShort/$versionShort/;
 	$statsTable =~ s/\$itemsIndexed/$itemsIndexed/;
+	$statsTable =~ s/\$itemsDeleted/$itemsDeleted/;
 	$statsTable =~ s/\$authorCount/$authorCount/;
 	$statsTable =~ s/\$filesTotal/$filesTotal/;
 	$statsTable =~ s/\$chainLogLength/$chainLogLength/;
