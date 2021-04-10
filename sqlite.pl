@@ -1242,6 +1242,8 @@ sub DBDeletePageTouch { # $pageName, $pageParam
 }
 
 sub DBDeleteItemReferences { # delete all references to item from tables
+# sub RemoveItemReferences {
+# #todo feels not up to date as of 1617729803 / march 6 2021
 	WriteLog('DBDeleteItemReferences() ...');
 
 	my $hash = shift;
@@ -1273,7 +1275,7 @@ sub DBDeleteItemReferences { # delete all references to item from tables
 		SqliteQuery2($query);
 	}
 
-	{
+	{ #dupe of below? #todo
 		my $query = "DELETE FROM vote WHERE ballot_hash = '$hash'";
 		SqliteQuery2($query);
 	}
@@ -1282,7 +1284,6 @@ sub DBDeleteItemReferences { # delete all references to item from tables
 		my $query = "DELETE FROM item_attribute WHERE source = '$hash'";
 		SqliteQuery2($query);
 	}
-
 
 	#ballot_hash
 	my @tables3 = qw(vote);
