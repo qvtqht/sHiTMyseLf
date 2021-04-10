@@ -2,7 +2,7 @@
 
 #problem going from ./_clean_dev.sh to ./build.pl is not obvious
 	should trap db errors or something like that
-	should trap db errors or something like that
+	#done clean_dev now automatically runs build.pl with a delay
 
 #minor query results dialog has extra row below header.
 
