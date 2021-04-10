@@ -23,8 +23,12 @@ input[type=text], input[type=password], select, option, textarea {
 	box-shadow: 3pt 3pt 0 rgba(0, 20, 20, 0.5);
 	border: $borderDialog;
 	background-color: $colorWindow;
+	border-radius: 2pt;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
+}
+td {
+	border-radius: 2pt;
 }
 .statusbar td {
 	border: 1pt inset $colorWindow;
