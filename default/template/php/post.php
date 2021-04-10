@@ -387,10 +387,18 @@ if (isset($filePath) && $filePath) {
 	WriteLog('post.php: warning: $filePath is FALSE');
 }
 
+WriteLog('post.php: about to look for post.php; `pwd` = ' . `pwd` . '; cwd() = ' . cwd());
 
 #######################################
-$html = file_get_contents('post.html');
+$html = file_get_contents('post.html') || file_get_contents('./post.html');
 #######################################
+
+if ($html) {
+	WriteLog('post.php: found post.php contents success!');
+} else {
+	WriteLog('post.php: warning: $html is false after file_get_contents(./post.html)');
+}
+
 
 if (isset($fileUrlPath) && $fileUrlPath) {
 	if (file_exists('../config/template/php/just_posted.template')) {
