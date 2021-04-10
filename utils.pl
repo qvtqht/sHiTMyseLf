@@ -142,7 +142,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 	if ($debugOn || -e 'config/admin/debug') {
 		my $timestamp = GetTime();
 
-		if (GetConfig('admin/debug_use_milliseconds')) {
+		if (1) { # debug use milliseconds
 			my $t = time;
 			my $date = $timestamp;#strftime "%Y%m%d %H:%M:%S", localtime $t;
 			$date .= sprintf ".%03d", ($t-int($t))*1000; # without rounding
