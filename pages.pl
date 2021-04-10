@@ -4629,11 +4629,11 @@ sub GetSettingsWindow {
 }
 
 sub GetOperatorWindow {
-#	my $operatorTemplate = GetTemplate('form/operator.template');
-#	my $operatorWindow = GetWindowTemplate($operatorTemplate, 'Operator');
-#	$operatorWindow = '<form id=frmOperator name=frmOperator class=admin>' . $operatorWindow . '</form>';
-#	return $operatorWindow;
-	return 'hi';
+	my $operatorTemplate = GetTemplate('form/operator.template');
+	my $operatorWindow = GetWindowTemplate($operatorTemplate, 'Operator');
+	$operatorWindow = '<form id=frmOperator name=frmOperator class=admin>' . $operatorWindow . '</form>';
+	return $operatorWindow;
+	#return 'hi';
 }
 
 sub GetSettingsPage { # returns html for settings page (/settings.html)
