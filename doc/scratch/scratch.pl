@@ -22,7 +22,7 @@
 ##			}
 #
 #			# Get the reply template
-#			my $replyTemplate = GetItemTemplate2($replyItem); # GetItemPage()
+#			my $replyTemplate = GetItemTemplate($replyItem); # GetItemPage()
 #
 #			# output it to debug
 #			WriteLog('$replyTemplate for ' . $$replyItem{'template_name'} . ':');
@@ -1013,7 +1013,8 @@ sub DBGetTouchedPages { # Returns items from task table, used for prioritizing w
 	my $results = SqliteQuery2($query, @params);
 
 	return $results;
-}
+} # DBGetTouchedPages()
+
 
 sub DBAddItemPage { # $itemHash, $pageType, $pageParam ; adds an entry to item_page table
 # should perhaps be called DBAddItemPageReference

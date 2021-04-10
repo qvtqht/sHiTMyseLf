@@ -1,3 +1,171 @@
+/* dragging.js */
+// props https://www.w3schools.com/howto/howto_js_draggable.asp
+
+/*
+		#mydiv {
+    	  	position: absolute;
+     		z-index: 9;
+    	}
+
+    	#mydivheader {
+    		this is just the titlebar
+    	}
+*/
+
+window.draggingZ = 0;
+
+function dragElement (elmnt, header) {
+	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+	if (header) {
+		// if present, the header is where you move the DIV from:
+		header.onmousedown = 'dragMouseDown(this)';
+	} else {
+		// otherwise, move the DIV from anywhere inside the DIV:
+		elmnt.onmousedown = 'dragMouseDown(this)';
+	}
+
+	var rect = elmnt.getBoundingClientRect();
+
+	elmnt.style.position = 'absolute';
+	elmnt.style.top = (rect.top) + "px";
+	elmnt.style.left = (rect.left) + "px";
+
+    //console.log(rect.top, rect.right, rect.bottom, rect.left);
+	//elmnt.style.position = 'absolute';
+	//elmnt.style.z-index = '9';
+}
+
+function dragMouseDown(elmnt) {
+	e = window.event;
+
+	e.preventDefault();
+
+	// get the mouse cursor position at startup:
+	pos3 = e.clientX;
+	pos4 = e.clientY;
+
+	document.onmouseup = 'closeDragElement(elmnt)';
+	// call a function whenever the cursor moves:
+	document.onmousemove = 'elementDrag(elmnt)';
+
+	elmnt.style.zIndex = ++window.draggingZ;
+}
+
+function elementDrag(e) {
+	//document.title = pos1 + ',' + pos2 + ',' + pos3 + ',' + pos4;
+	//document.title = e.clientX + ',' + e.clientY;
+	//document.title = elmnt.offsetTop + ',' + elmnt.offsetLeft;
+	e = e || window.event;
+	e.preventDefault();
+	// calculate the new cursor position:
+	pos1 = pos3 - e.clientX;
+	pos2 = pos4 - e.clientY;
+	pos3 = e.clientX;
+	pos4 = e.clientY;
+	// set the element's new position:
+
+	elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+	elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+}
+
+function closeDragElement(elmnt) {
+	// stop moving when mouse button is released:
+	document.onmouseup = '';
+	document.onmousemove = '';
+
+	if (elmnt) {
+		SaveWindowState(elmnt);
+		elmnt.style.zIndex = ++window.draggingZ;
+		// keep incrementing the global zindex counter
+	}
+//
+//		if (elmnt.id) {
+//			if (window.SetPrefs) {
+//				SetPrefs(elmnt.id + '.style.top', elmnt.style.top);
+//				SetPrefs(elmnt.id + '.style.left', elmnt.style.left);
+//			}
+//		}
+}
+
+function SaveWindowState (elmnt) {
+	var allTitlebar = elmnt.getElementsByClassName('titlebar');
+	var firstTitlebar = allTitlebar[0];
+
+	if (firstTitlebar && firstTitlebar.getElementsByTagName) {
+		var elId = firstTitlebar.getElementsByTagName('b');
+		if (elId && elId[0]) {
+			elId = elId[0];
+
+			if (elId && elId.innerHTML.length < 31) {
+				SetPrefs(elId.innerHTML + '.style.top', elmnt.style.top);
+				SetPrefs(elId.innerHTML + '.style.left', elmnt.style.left);
+//				elements[i].style.top = GetPrefs(elId.innerHTML + '.style.top') || elId.style.top;
+//				elements[i].style.left = GetPrefs(elId.innerHTML + '.style.left') || elId.style.left;
+			} else {
+				//alert('DEBUG: SaveWindowState: elId is false');
+			}
+		}
+	}
+}
+
+function ArrangeAll () {
+	//alert('DEBUG: DraggingInit: doPosition = ' + doPosition);
+	var elements = document.getElementsByClassName('dialog');
+	//for (var i = 0; i < elements.length; i++) {
+	for (var i = elements.length - 1; 0 <= i; i--) { // walk backwards for positioning reasons
+		elements[i].setAttribute('style', '');
+//
+//		var btnSkip = elements[i].getElementsByClassName('btnSkip');
+//		if (btnSkip && btnSkip[0]) {
+//			btnSkip[0].click();
+//		}
+	}
+}
+
+function DraggingInit (doPosition) {
+// initializes all class=dialog elements on the page to be draggable
+	if (!document.getElementsByClassName) {
+		//alert('DEBUG: DraggingInit: sanity check failed, document.getElementsByClassName was FALSE');
+		return '';
+	}
+
+	if (doPosition) {
+		doPosition = 1;
+	} else {
+		doPosition = 0;
+	}
+
+	//alert('DEBUG: DraggingInit: doPosition = ' + doPosition);
+	var elements = document.getElementsByClassName('dialog');
+	//for (var i = 0; i < elements.length; i++) {
+	for (var i = elements.length - 1; 0 <= i; i--) { // walk backwards for positioning reasons
+		var allTitlebar = elements[i].getElementsByClassName('titlebar');
+		var firstTitlebar = allTitlebar[0];
+
+		if (firstTitlebar && firstTitlebar.getElementsByTagName) {
+			dragElement(elements[i], firstTitlebar);
+			var elId = firstTitlebar.getElementsByTagName('b');
+			elId = elId[0];
+			if (doPosition && elId && elId.innerHTML.length < 31) {
+				elements[i].style.top = GetPrefs(elId.innerHTML + '.style.top') || elements[i].style.top;
+				elements[i].style.left = GetPrefs(elId.innerHTML + '.style.left') || elements[i].style.left;
+			} else {
+				//alert('DEBUG: DraggingInit: elId is false');
+			}
+		}
+	}
+
+	return '';
+} // DraggingInit()
+
+/* / dragging.js */
+
+
+
+
+=============================
+
 
 //		if (elements[i].id && window.GetPrefs) {
 //			var elTop = GetPrefs(elements[i].id + '.style.top');

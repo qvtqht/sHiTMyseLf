@@ -1,3 +1,110 @@
+#problem caches have no cleanup process except _clean_dev
+
+#problem going from ./_clean_dev.sh to ./build.pl is not obvious
+	should trap db errors or something like that
+	should trap db errors or something like that
+
+#minor query results dialog has extra row below header.
+
+#minor build.pl results in building pages when i'm about to rebuild them again
+
+
+dupe detection plan {
+	split files into lines, hash each line
+	build index of lines-files
+	adopt under oldest
+}
+
+#todo how to trim entire subthread when trimming item
+
+lighttpd {
+	#todo need lockfile for own dev server
+	#bug different instances are killing each other's servers
+}
+
+pages.pl {
+	listing pages should also generate child listing pages
+		e.g. speakers, authors,
+		unless ...
+	hash-based parameter should be more flexible
+		like git's
+}
+
+clean html leftovers {
+	empty subdirs a1/b2/
+	author/11BBCCDDEEFF/
+}
+
+
+disabling php should {
+	restart the local dev server if running/enabled
+	remove html/*.php (or list of php files)
+}
+
+#dupe file_hash vs item_hash
+
+generate static html {
+	config/admin/php/enable=0
+	config/admin/js/enable=0
+	config/admin/pages/lazy_page_generation=0
+	config/admin/expo_mode_edit=0
+	./_clean_dev.sh
+	time ./build.pl
+	time ./index.pl --all
+	time ./pages.pl --all
+
+
+}
+
+found during mitbtc {
+	#bug deleted.log is not working
+	#bug #remove is not working
+	#bug already generated html is not removed when items deindexed
+	#bug html files are not re-generated after _clean_html
+	#problem no easy way to switch from edit mode to {
+		export mode {
+			php
+			js
+			expo_mode_edit
+			clean up  existing files
+			rebuild pages (into separate export directory)
+		}
+	}
+	#bug
+		welcome page is not build from theme template
+		links
+		
+	#bug #minor gallery boxes don't stay square when zoomed out
+}
+
+
+
+
+sana
+====
+sections
+	magia
+		tarot
+		runes
+		energic cleansing
+		amulets / protection
+			with bioparts
+			charging of amulets
+	poetry
+	store
+		paypal
+	photos
+materials
+	photo
+		facebook
+	poetry
+	magia text
+	design
+
+
+
+
+
 #bug js messages on write page when js/enabled=0
 
 
@@ -34,6 +141,8 @@ if item has #eventlog (?) tag
 
 mit bitcoin expo
 ================
+iframes on welcome page need error handling
+	when offline
 #academic partners
 #	main page
 #	item pages
