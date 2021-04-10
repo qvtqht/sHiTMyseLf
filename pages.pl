@@ -3260,7 +3260,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 			#$queryParams{'join_clause'} = "JOIN vote ON (item_flat.file_hash = vote.file_hash)";
 			#$queryParams{'group_by_clause'} = "GROUP BY vote.file_hash";
 			#$queryParams{'where_clause'} = "WHERE vote.vote_value = '$tagName'";
-			$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score > 0";
+			$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%'";
 			$queryParams{'order_clause'} = "ORDER BY item_flat.add_timestamp DESC";
 			$queryParams{'limit_clause'} = "LIMIT 100"; #todo fix hardcoded limit
 
@@ -3627,6 +3627,7 @@ sub WriteIndexPages { # writes the compost pages (index0-n.html)
 
 	if (GetConfig('admin/html/index_pages_limit')) {
 		if ($itemCount > GetConfig('admin/html/index_pages_limit')) {
+			WriteLog('WriteIndexPages: warning: reducing $itemCount to ' . $itemCount . ' because of admin/html/index_pages_limit');
 			$itemCount = GetConfig('admin/html/index_pages_limit');
 		}
 	}
@@ -3638,6 +3639,8 @@ sub WriteIndexPages { # writes the compost pages (index0-n.html)
 	#twice. this also allows us to only update the first 5 plus all affected
 	#when a new item is added, instead of the whole catalog
 	#todo does not work as expected, fix it
+
+	WriteLog('WriteIndexPages: $overlapPage = ' . $overlapPage);
 
 	if (defined($itemCount) && $itemCount && $itemCount > 0) {
 		my $i = 0;
@@ -3869,7 +3872,6 @@ sub MakeSimplePage { # given page name, makes page
 
 	WriteLog('MakeSimplePage: $pageName = ' . $pageName);
 
-
 	my $html = '';
 
 	my $title = ucfirst($pageName);
@@ -3884,7 +3886,7 @@ sub MakeSimplePage { # given page name, makes page
 	$html .= GetPageHeader($title, $title, $pageName);
 	$html .= GetTemplate('html/maincontent.template');
 
-	my $pageContent = GetTemplate("page/$pageName.template");
+	my $pageContent = GetTemplate("html/page/$pageName.template");
 
 	if (trim($pageContent) eq '') {
 		$pageContent = 'Coming Soon...';
@@ -4077,14 +4079,14 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 	# Search page
 	my $searchPage = GetSearchPage();
 	PutHtmlFile("search.html", $searchPage);
-#
-#	# Add Event page
-#	my $eventAddPage = GetEventAddPage();
-#	PutHtmlFile("event.html", $eventAddPage);
-#
-#	# Add Event page
-#	my $eventsPage = GetEventsPage();
-#	PutHtmlFile("events.html", $eventsPage);
+
+	# Add Event page
+	my $eventAddPage = GetEventAddPage();
+	PutHtmlFile("event.html", $eventAddPage);
+
+	# Add Event page
+	my $eventsPage = GetEventsPage();
+	PutHtmlFile("events.html", $eventsPage);
 
 	# Add Authors page
 	MakePage('authors', 0);
@@ -4101,7 +4103,7 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 
 	if (GetConfig('admin/expo_site_mode')) {
 
-		MakePage('links');
+#		MakePage('links');
 
 		MakePage('speakers');
 
@@ -4627,10 +4629,11 @@ sub GetSettingsWindow {
 }
 
 sub GetOperatorWindow {
-	my $operatorTemplate = GetTemplate('form/operator.template');
-	my $operatorWindow = GetWindowTemplate($operatorTemplate, 'Operator');
-	$operatorWindow = '<form id=frmOperator name=frmOperator class=admin>' . $operatorWindow . '</form>';
-	return $operatorWindow;
+#	my $operatorTemplate = GetTemplate('form/operator.template');
+#	my $operatorWindow = GetWindowTemplate($operatorTemplate, 'Operator');
+#	$operatorWindow = '<form id=frmOperator name=frmOperator class=admin>' . $operatorWindow . '</form>';
+#	return $operatorWindow;
+	return 'hi';
 }
 
 sub GetSettingsPage { # returns html for settings page (/settings.html)
@@ -5100,6 +5103,44 @@ sub BuildTouchedPages { # $timeLimit, $startTime ; builds pages returned by DBGe
 	return $pagesProcessed;
 } # BuildTouchedPages
 
+sub BuildStaticExportPages { #
+	my $pagesProcessed = 0;
+	my $allPages = DBGetAllPages();
+
+	if ($allPages) { #todo actually check it's an array reference or something?
+		# de-reference array of touched pages
+		my @pagesArray = @$allPages;
+
+		# write number of touched pages to log
+		WriteLog('BuildTouchedPages: scalar(@pagesArray) = ' . scalar(@pagesArray));
+
+		# this part will refresh any pages that have been "touched"
+		# in this case, 'touch' means when an item that affects the page
+		# is updated or added
+
+		foreach my $page (@pagesArray) {
+			$pagesProcessed++;
+
+			# dereference @pageArray and get the 3 items in it
+			my @pageArray = @$page;
+			my $pageType = shift @pageArray;
+			my $pageParam = shift @pageArray;
+			my $touchTime = shift @pageArray;
+
+			# output to log
+			WriteLog('BuildStaticExportPages: $pageType = ' . $pageType . '; $pageParam = ' . $pageParam . '; $touchTime = ' . $touchTime);
+
+			MakePage($pageType, $pageParam, './export');
+		}
+	} # $allPages
+	else {
+		WriteLog('BuildStaticExportPages: warning: $allPages was false, and thus not an array reference.');
+		return 0;
+	}
+
+	return $pagesProcessed;
+} # BuildStaticExportPages()
+
 sub GetAvatar { # $key, $noCache ; returns HTML avatar based on author key, using avatar.template
 	# affected by config/html/avatar_icons
 	WriteLog("GetAvatar(...)");
@@ -5116,7 +5157,7 @@ sub GetAvatar { # $key, $noCache ; returns HTML avatar based on author key, usin
 			$avatarCacheDir = 'avatar.plain';
 			$avatarTemplate = 'html/avatar-username.template';
 		}
-		my $themeName = GetConfig('html/theme');
+		my $themeName = GetConfig('html/theme'); #todo #bug
 		$avatarCacheDir .= '/' . $themeName;
 	}
 
@@ -5614,6 +5655,9 @@ while (my $arg1 = shift @foundArgs) {
 		}
 		elsif ($arg1 eq '--php') {
 			print ("recognized --php\n");
+			if (!GetConfig('admin/php/enable')) {
+				print("warning: --php was used, but admin/php/enable is false\n");
+			}
 			MakePhpPages();
 		}
 		elsif ($arg1 eq '--js') {
@@ -5668,9 +5712,17 @@ while (my $arg1 = shift @foundArgs) {
 		}
 		elsif ($arg1 eq '--all' || $arg1 eq '-a') {
 			print ("recognized --all\n");
-			print `query/touch_all.sh`;
+			print `query/page_touch_all.sh`;
 			MakeSummaryPages();
 			BuildTouchedPages();
+		}
+		elsif ($arg1 eq '--export') {
+			GetConfig('config/admin/php/enable', 'override', 0);
+			GetConfig('config/admin/js/enable', 'override', 0);
+			GetConfig('config/admin/pages/lazy_page_generation', 'override', 0);
+			GetConfig('config/admin/expo_mode_edit', 'override', 0);
+			print ("recognized --export\n");
+			BuildStaticExportPages();
 		}
 		elsif ($arg1 eq '-M') { # makepage
 			print ("recognized -M\n");
