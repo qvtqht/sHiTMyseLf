@@ -10,7 +10,7 @@
 
 	<p>
 		<span class=beginner>
-			Use Safe Mode if problems exist or are anticipated:<br>
+			Use Safe Mode if problems exist or anticipated:<br>
 		</span>
 		<label for=chkSafeMode>
 			<input type=checkbox id=chkSafeMode name=chkSafeMode>
@@ -20,7 +20,7 @@
 	</p>
 	<p>
 		<span class=beginner>
-			Save site configuration and display it:<br>
+			Save snapshot file with configuration:<br>
 		</span>
 		<label for=chkConfigDump>
 			<input type=checkbox id=chkConfigDump name=chkConfigDump>
