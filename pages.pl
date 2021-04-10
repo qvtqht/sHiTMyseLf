@@ -857,6 +857,40 @@ sub GetQueryPage {
 	}
 } # GetQueryPage()
 
+sub GetQueryPageFromArrayOfQueries {
+	my @queries = shift;
+
+	#todo sanity checks
+
+	#todo pre-validate queries with sqlite3
+
+	my $title = '#todo title';
+
+	my $html;
+	$html .= GetPageHeader($title, $title, 'query');
+	$html .= GetTemplate('html/maincontent.template');
+
+	foreach my $query (@queries) {
+		if (!ConfigKeyValid('query/' . $query)) {
+			WriteLog('GetQueryPageFromArrayOfQueries: warning: missing query: ' . $query);
+		}
+		if (ConfigKeyValid('query/' . $query)) {
+			my $query = GetConfig('query/' . $query);
+			my @result = SqliteQueryHashRef($query);
+			$html .= GetResultSetAsDialog(\@result, $title);
+			$html .= '<hr><br><pre class=advanced>'.HtmlEscape($query).'</pre><hr><br>';
+		}
+		$html .= GetPageFooter();
+
+		if (GetConfig('admin/js/enable')) {
+			$html = InjectJs($html, qw(settings utils timestamp));
+			#todo only add timestamp if necessary?
+		}
+	}
+
+	return $html;
+} # GetQueryPageFromArrayOfQueries()
+
 sub GetTagsPage { # returns html for tags listing page (sorted by number of uses)
 # $title = title of page
 # $titleHtml = title of page, html-formatted
