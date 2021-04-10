@@ -912,6 +912,9 @@ sub DBGetItemCount { # Returns item count.
 
 	my $itemCount;
 	if ($whereClause) {
+		if (substr(lc($whereClause), 0, 7) eq 'where ') {
+			$whereClause = substr($whereClause, 7);
+		}
 		$itemCount = SqliteGetValue("SELECT COUNT(*) FROM item_flat WHERE $whereClause");
 	} else {
 		$itemCount = SqliteGetValue("SELECT COUNT(*) FROM item_flat");
@@ -919,7 +922,7 @@ sub DBGetItemCount { # Returns item count.
 	chomp($itemCount);
 
 	return $itemCount;
-}
+} # DBGetItemCount()
 
 sub DBGetItemParents {# Returns all item's parents
 # $itemHash = item's hash/identifier
