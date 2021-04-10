@@ -1,19 +1,56 @@
 <!-- stats.template -->
 
-<fieldset class=beginner>
+<fieldset>
 	<p>Updated: $lastUpdateTime
 	<p></p>
 	<p id=diagnostics></p>
 </fieldset>
-<fieldset class=advanced>
+<fieldset>
 	<p>Built: $lastBuildTime
-	<p><a href="/tags.html">$tagsTotal tags</a>
-	<p><a href="/authors.html">$authorCount authors</a>
-	<p><a href="/chain.log">$chainLogLength</a>
-	<p><a href="/compost.html">$itemsIndexed items</a>
-	<p><a href="/data.html">$filesTotal files</a>
-	<p>Server: $server
-	<p>Version: $versionShort
+	<p>
+		<a href="/tags.html">
+			$tagsTotal tags
+			<span class=advanced><span class=beginner>have been applied to the items</span></span>
+		</a>
+	</p>
+	<p>
+		<a href="/authors.html">
+			$authorCount authors
+			<span class=advanced><span class=beginner>have shared names or public keys</span></span>
+		</a>
+	</p>
+	<p class=advanced>
+		<a href="/chain.log">
+			$chainLogLength
+			<span class=beginner>items notarized</span>
+		</a>
+	</p>
+	<p class=advanced>
+		<a href="/compost.html">
+			$itemsIndexed files
+			<span class=beginner>indexed into items</span>
+		</a>
+	</p>
+	<p class=advanced>
+		<a href="/deleted.html">
+			$itemsDeleted deleted
+			<span class=beginner></span>
+		</a>
+	</p>
+	<p class=advanced>
+		<a href="/data.html">
+			$filesTotal files
+			<span class=beginner>found under /html/txt (click to download)</span>
+		</a>
+	</p>
+	<p class=advanced>
+		Server: $server
+		<span class=beginner>this is the server's public key</span>
+	</p>
+	<p class=advanced>
+		Version: $versionShort
+		<span class=beginner>, aka checksum of git commit</span>
+	</p>
 </fieldset>
 
 <!-- / stats.template -->
