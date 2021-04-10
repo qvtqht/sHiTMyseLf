@@ -1131,6 +1131,33 @@ sub DBGetTouchedPages { # Returns items from task table, used for prioritizing w
 	return $results;
 }
 
+sub DBGetAllPages { # Returns items from task table, used for prioritizing which pages need rebuild
+# index, rss, authors, stats, tags, and top are returned first
+	my $touchedPageLimit = shift;
+
+	WriteLog("DBGetAllPages($touchedPageLimit)");
+
+	# sorted by most recent (touch_time DESC) so that most recently touched pages are updated first.
+	# this allows us to call a shallow update and still expect what we just did to be updated.
+	my $query = "
+		SELECT
+			task_name,
+			task_param,
+			touch_time,
+			priority
+		FROM task
+		WHERE task_type = 'page'
+		ORDER BY priority DESC, touch_time DESC
+		;
+	";
+
+	my @params;
+
+	my $results = SqliteQuery2($query, @params);
+
+	return $results;
+} # DBGetAllPages()
+
 sub DBAddItemPage { # $itemHash, $pageType, $pageParam ; adds an entry to item_page table
 # should perhaps be called DBAddItemPageReference
 # purpose of table is to track which items are on which pages
