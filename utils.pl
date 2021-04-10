@@ -783,9 +783,18 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 #props http://www.bin-co.com/perl/scripts/str_replace.php
 sub str_ireplace { # $replaceWhat, $replaceWith, $string ; emulates some of str_ireplace() from php
 	# fourth $count parameter not implemented yet
+	#todo this definitely has a performance problem
+	# and also possible bugs
+	#todo
 	my $replace_this = shift;
 	my $with_this  = shift;
 	my $string   = shift;
+
+	# this workaround has a problem with regex syntax
+	# $string =~ s/$replace_this/$with_this/gi;
+	# return $string;
+
+	#todo make below more efficient
 
 	if (!defined($string) || !$string) {
 		WriteLog('str_ireplace: warning: $string not supplied');
