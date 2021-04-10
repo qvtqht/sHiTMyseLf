@@ -123,6 +123,8 @@ function ShowPreNavigateNotification () {
 			//document.body.appendChild(ariaAlert);
 			document.body.insertBefore(ariaAlert, document.body.firstChild);
 		}
+	} else {
+		// #todo
 	}
 
 	return ''; // true would show a confirmation
