@@ -575,7 +575,7 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 	my $query = shift;
 	chomp $query;
 
-	if ($query =~ m/([0-9a-zA-Z_-]+)/i) {
+	if ($query =~ m/^([0-9a-zA-Z_-]+)$/i) {
 		$query = $1;
 		if (GetConfig('query/' . $query)) {
 			#todo sanity
