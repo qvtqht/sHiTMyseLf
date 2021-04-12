@@ -108,20 +108,23 @@ function ShowPreNavigateNotification () {
 	//alert('DEBUG: ShowPreNavigateNotification() begin');
 	document.title = 'Meditate...';
 	//document.body.style.opacity="0.8";
+	if (event.target==location.href) {
+	} else {
 
-	if (document.getElementById) {
-		var ariaAlert;
-		ariaAlert = document.getElementById('ariaAlert');
+		if (document.getElementById) {
+			var ariaAlert;
+			ariaAlert = document.getElementById('ariaAlert');
 
-		if (!ariaAlert) {
-			ariaAlert = document.createElement('p');
-			ariaAlert.setAttribute('role', 'alert');
-			ariaAlert.setAttribute('id', 'ariaAlert');
-			ariaAlert.innerHTML = 'Meditate...';
-			ariaAlert.style.opacity = '1';
-			ariaAlert.style.zIndex = '1337';
-			//document.body.appendChild(ariaAlert);
-			document.body.insertBefore(ariaAlert, document.body.firstChild);
+			if (!ariaAlert) {
+				ariaAlert = document.createElement('p');
+				ariaAlert.setAttribute('role', 'alert');
+				ariaAlert.setAttribute('id', 'ariaAlert');
+				ariaAlert.innerHTML = 'Meditate...';
+				ariaAlert.style.opacity = '1';
+				ariaAlert.style.zIndex = '1337';
+				//document.body.appendChild(ariaAlert);
+				document.body.insertBefore(ariaAlert, document.body.firstChild);
+			}
 		}
 	} else {
 		// #todo
