@@ -5402,6 +5402,13 @@ sub FormatDate { # $epoch ; formats date depending on how long ago it was
 # FormatDateForDisplay()
 	my $epoch = shift;
 
+	WriteLog('FormatDate: $epoch = ' . $epoch);
+
+	if ($epoch =~ m/^([0-9])\.([0-9])$/) {
+		$epoch = $1;
+		#return FormatDate($epoch); #
+	}
+
 	if ($epoch =~ m/\D/) { # has non-digits
 		WriteLog('FormatDate: warning: $epoch failed sanity check');
 		return '???';
