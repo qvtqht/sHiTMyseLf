@@ -110,6 +110,10 @@ if (GetConfig('admin/ssi/enable') && GetConfig('admin/php/enable')) {
 	BuildMessage('build.pl: warning: ssi/enable and php/enable are both true');
 }
 
-system('./index --all');
+system('echo "\n"');
+system('echo "Running ./index.pl --all in 3..."; sleep 1');
+system('echo "2..."; sleep 1');
+system('echo "1..."; sleep 1');
+system('./index.pl --all');
 
 1;
