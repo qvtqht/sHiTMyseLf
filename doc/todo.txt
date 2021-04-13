@@ -1,3 +1,26 @@
+config token {
+	token recognize, but index --> config/ flow doesn't happen
+	if config/html (at minimum) is changed, then
+		html should be refreshed
+			static mode: remind user
+			dynamic mode: clear cache
+}
+
+OnLoadEverything : may be a bug here wrt HideLoadingIndicator
+
+#accessibility form elements mode {
+	keyboard
+		some older browsers
+			mac ie
+			offbyone
+			opera 4.0
+			ie 2.0
+			netscape 3.0
+	in these browsers, only form elements are accessible by keyboard
+		a links are not accessible to keyboard in these browsers
+	proposed alternative: turn links into form elements
+}
+
 #problem caches have no cleanup process except _clean_dev
 
 #problem going from ./_clean_dev.sh to ./build.pl is not obvious
@@ -79,7 +102,6 @@ found during mitbtc {
 
 
 
-
 sana
 ====
 sections
@@ -103,28 +125,17 @@ materials
 
 
 
-
-
 #bug js messages on write page when js/enabled=0
-
-
-add 3 speakers
-add agenda images
-
-agenda on one page
-slideo and iframe other
-smaller than window
-same width
 
 
 
 change html/theme to comma separated
 
-flatten props
-	find all notext items which assign props
-		combine all of their entries from config (in the right order)
-			(use config_latest)
-				export to new file
+flatten propsx
+	find all notext items which assign propsx
+		combine all of their entries from config (in the right order)x
+			(use config_latest)x
+				export to new filex
 					archive the sources
 
 
@@ -2057,7 +2068,6 @@ Host: localhost:2784
 
 events, tags, authors all need fallback empty pages #meta #todo
 
-
 ===
 
 #meta #todo strip metadata and write images into compatible format.
@@ -2067,9 +2077,6 @@ already done for gif, but now need to replace original image and change its hash
 ===
 
 #meta #todo need even better keyboard which ie3 and nn2 can use.
--- 
-Cookie: 39AB600C7BAA6F3D
-Host: 10.0.2.2:2784
 
 ===
 
@@ -2102,14 +2109,17 @@ this item will end up in todo, if i am not mistaken, because it is first in the 
 ===
 
 require profile mode is janky and locks out links and any non-cookie users
-
-#todo #meta
-
-
+	#todo #meta
 
 ===
 
-#todo auto arrange windows one by one, adding height values, placing them one after the next, unless already in preferences #meta
+js/dragging {
+	#todo auto arrange windows one by one,
+		adding height values,
+		placing them one after the next,
+		unless already in preferences #meta
+	this is mostly done for modern-ish browsers but needs refinement
+}
 
 ===
 
@@ -2124,5 +2134,11 @@ require profile mode is janky and locks out links and any non-cookie users
 		it works!
 	make it a flag
 
+
+
+
 #todo #todo #todo
 config/list/menu_bytag
+
+config/admin/js/dragging
+	when 0, hide in settings
