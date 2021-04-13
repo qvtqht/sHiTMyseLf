@@ -154,6 +154,20 @@ if (GetConfig('admin/lighttpd/enable')) {
 	}
 
 	StartLighttpd();
+
+	if (GetConfig('admin/lighttpd/open_browser_after_start')) {
+		WriteMessage('Opening browser in 3...');
+		sleep 1;
+		WriteMessage('Opening browser in 2...');
+		sleep 1;
+		WriteMessage('Opening browser in 1...');
+		sleep 1;
+
+		my $openString = 'browser "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
+
+		WriteMessage('Opening browser with `' . $openString . '`');
+		WriteMessage(`$openString`);
+	}
 } else {
 	WriteMessage("admin/lighttpd/enable was false");
 }
