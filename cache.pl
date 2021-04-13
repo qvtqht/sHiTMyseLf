@@ -42,7 +42,7 @@ sub GetCache { # get cache by cache key
 	}
 
 	my $cacheDir = GetDir('cache');
-	$cacheName = $cacheDir . '/' . $cacheName; #todo
+	$cacheName = $cacheDir . '/' . $cacheName;
 
 	if (-e $cacheName) {
 		# return contents of file at that path
