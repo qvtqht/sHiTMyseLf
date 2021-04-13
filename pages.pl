@@ -467,12 +467,6 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 		foreach my $columnCaption (@columnsArray) {
 			$printedColumnsCount++;
 			my $columnHeaderTemplate = GetTemplate('html/window/header_column.template'); # <td></td>
-			if ($printedColumnsCount >= scalar(@columnsArray)) {
-				# only printed after the last column
-				# adds a <br> for browsers without table support
-				$columnCaption .= '<br>'; # for no-table browsers
-			}
-			$columnHeaderTemplate =~ s/\$headerCaption/$columnCaption/;
 			if ($columnCaption eq 'file_hash') { #todo config/list/field_advanced
 				$columnHeaderTemplate = AddAttributeToTag(
 					$columnHeaderTemplate,
@@ -481,6 +475,12 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 					'advanced'
 				);
 			}
+			if ($printedColumnsCount >= scalar(@columnsArray)) {
+				# only printed after the last column
+				# adds a <br> for browsers without table support
+				$columnCaption .= '<br>'; # for no-table browsers
+			}
+			$columnHeaderTemplate =~ s/\$headerCaption/$columnCaption/;
 			$windowHeaderColumns .= $columnHeaderTemplate;
 		}
 		$windowHeaderTemplate =~ s/\$windowHeadings/$windowHeaderColumns/;
