@@ -10,6 +10,8 @@ function LongAgo (seconds) { // returns string with time units
 	}
 
 	if (seconds < 60) {
+		seconds = Math.floor(seconds / 60); //#todo milliseconds setting should toggle this
+
 		if (seconds != 1) {
 			seconds = seconds + ' seconds';
 		} else {
