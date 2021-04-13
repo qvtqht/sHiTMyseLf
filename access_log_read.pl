@@ -1,9 +1,13 @@
 #!/usr/bin/perl -T
 
 # access.pl
-# #todo rename to accesslog.pl?
+
 # Parses access.log
-# Posts new messages to $TXTDIR -- GetDir('txt');
+# 	Stores hashes of already processed lines in log/processed.log
+#		This prevents re-processing of the same line, log/processed.log
+# New text items are added to GetDir('txt') aka $TXTDIR aka html/txt/
+#	&replyto= parameter may result in >> token being added to message
+
 my $arg1 = shift;
 
 use strict;
@@ -127,23 +131,18 @@ sub GenerateFilenameFromTime { # generates a .txt filename based on timestamp
 	return $filename;
 }
 
-sub LogError {
+sub LogError { #stores error notice in separate text file
 	my $TXTDIR = GetDir('txt');
-
 	my $errorText = shift;
 
 	my $debugInfo = '#error #meta ' . $errorText;
-	
 	my $time = GetTime();
-
 	my $debugFilename = 'error_' . $time . '.txt';
 	
 	$debugFilename = $TXTDIR . $debugFilename;
-
 	WriteLog('PutFile($debugFilename = ' . $debugFilename . ', $debugInfo = ' . $debugInfo . ');');
-
 	PutFile($debugFilename, $debugInfo);
-}
+} # LogError()
 
 sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 # ProcessAccessLog(
@@ -223,8 +222,8 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 
 		# These are the values we will pull out of access.log
 		my $site;
-		my $hostname;
-		my $logName;
+		my $clientHostname;
+		my $serverHostname;
 		my $fullName;
 		my $date;
 		my $gmt;
@@ -239,11 +238,11 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 		# Parse mode select
 		if ($vhostParse) {
 			# Split the log line
-			($site, $hostname, $logName, $fullName, $date, $gmt,
+			($site, $clientHostname, $serverHostname, $fullName, $date, $gmt,
 				$req, $file, $proto, $status, $length, $ref) = split(' ', $line);
 		} else {
 			# Split the log line
-			($hostname, $logName, $fullName, $date, $gmt,
+			($clientHostname, $serverHostname, $fullName, $date, $gmt,
 				$req, $file, $proto, $status, $length, $ref) = split(' ', $line);
 		}
 
@@ -251,7 +250,7 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 		my $recordFingerprint = 0; # do we need to record fingerprint?
 		my $recordDebugInfo = 0;   # do we need to record debug info?
 
-		if (!defined($hostname) || !defined($logName) || !defined($fullName) || !defined($date) || !defined($gmt) || !defined($req) || !defined($file) || !defined($proto) || !defined($status) || !defined($length) || !defined($ref)) {
+		if (!defined($clientHostname) || !defined($serverHostname) || !defined($fullName) || !defined($date) || !defined($gmt) || !defined($req) || !defined($file) || !defined($proto) || !defined($status) || !defined($length) || !defined($ref)) {
 			# something is missing, better ignore it to be safe.
 			LogError('Broken line in access.log: ' . $line);
 			next;
@@ -259,7 +258,7 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 
 		# useragent is last. everything that is not the values we have pulled out so far
 		# is the useragent.
-		my $notUseragentLength = length($hostname . $logName . $fullName . $date . $gmt . $req . $file . $proto . $status . $length . $ref) + 11;
+		my $notUseragentLength = length($clientHostname . $serverHostname . $fullName . $date . $gmt . $req . $file . $proto . $status . $length . $ref) + 11;
 		$userAgent = substr($line, $notUseragentLength);
 		chomp($userAgent);
 		$userAgent = trim($userAgent);
@@ -274,9 +273,9 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 			next;
 		}
 
-		if ($logName) {
-			#todo fix this
-			AddHost($logName, 1);
+		if ($serverHostname) {
+			WriteLog('ProcessAccessLog: $serverHostname = ' . $serverHostname);
+			AddHost($serverHostname, 1);
 		}
 
 		# Split $date into $time and $date
@@ -409,7 +408,7 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 						}
 
 						WriteLog('ProcessAccessLog: urlParam: $paramName = ' . $paramValue);
-#todo support t= and s=
+						#todo support t= and s=
 						if ($paramName eq 'replyto') {
 							if (IsItem($urlParam)) {
 								my $replyToId = $paramValue;
@@ -485,8 +484,8 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 
 					if (GetConfig('admin/logging/record_http_host')) {
 						# append "signature" to file if record_http_host is enabled
-						if ($logName) {
-							$message .= "\n-- \nHost: " . $logName;
+						if ($serverHostname) {
+							$message .= "\n-- \nHost: " . $serverHostname;
 						}
 					}
 
@@ -611,7 +610,7 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 
 							if (GetConfig('admin/logging/record_clients') && $recordFingerprint) {
 								WriteLog('ProcessAccessLog: admin/logging/record_clients && $recordFingerprint');
-								my $clientFingerprint = uc(substr(md5_hex($hostname . $userAgent), 0, 16));
+								my $clientFingerprint = uc(substr(md5_hex($clientHostname . $userAgent), 0, 16));
 								$addedMessage .= "Client: $clientFingerprint\n";
 							}
 
