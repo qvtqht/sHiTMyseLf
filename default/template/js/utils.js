@@ -108,9 +108,8 @@ function ShowPreNavigateNotification () {
 	//alert('DEBUG: ShowPreNavigateNotification() begin');
 	document.title = 'Meditate...';
 	//document.body.style.opacity="0.8";
-	if (event.target==location.href) {
+	if (event.target == location.href) {
 	} else {
-
 		if (document.getElementById) {
 			var ariaAlert;
 			ariaAlert = document.getElementById('ariaAlert');
@@ -125,9 +124,9 @@ function ShowPreNavigateNotification () {
 				//document.body.appendChild(ariaAlert);
 				document.body.insertBefore(ariaAlert, document.body.firstChild);
 			}
+		} else {
+			//#todo
 		}
-	} else {
-		// #todo
 	}
 
 	return ''; // true would show a confirmation
