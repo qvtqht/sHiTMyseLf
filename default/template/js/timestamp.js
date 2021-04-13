@@ -1,5 +1,10 @@
 // == begin timestamp.js
 
+function RoundNumber (num) {
+	return Math.floor(num);
+	//return Math.floor(num * 10) / 10;
+}
+
 function LongAgo (seconds) { // returns string with time units
 // takes seconds as parameter
 // returns a string like "3 days ago" or "3 days from now"
@@ -10,7 +15,7 @@ function LongAgo (seconds) { // returns string with time units
 	}
 
 	if (seconds < 60) {
-		seconds = Math.floor(seconds / 60); //#todo milliseconds setting should toggle this
+		seconds = RoundNumber(seconds / 60); //#todo milliseconds setting should toggle this
 
 		if (seconds != 1) {
 			seconds = seconds + ' seconds';
@@ -18,7 +23,7 @@ function LongAgo (seconds) { // returns string with time units
 			seconds = seconds + ' second';
 		}
 	} else {
-		seconds = Math.floor(seconds / 60);
+		seconds = RoundNumber(seconds / 60);
 
 		if (seconds < 60) {
 			if (seconds != 1) {
@@ -27,7 +32,7 @@ function LongAgo (seconds) { // returns string with time units
 				seconds = seconds + ' minute';
 			}
 		} else {
-			seconds = Math.floor(seconds / 60);
+			seconds = RoundNumber(seconds / 60);
 
 			if (seconds < 24) {
 				if (seconds != 1) {
@@ -36,7 +41,7 @@ function LongAgo (seconds) { // returns string with time units
 					seconds = seconds + ' hour';
 				}
 			} else {
-				seconds = Math.floor(seconds / 24);
+				seconds = RoundNumber(seconds / 24);
 
 				if (seconds < 7) {
 					if (seconds != 1) {
@@ -46,7 +51,7 @@ function LongAgo (seconds) { // returns string with time units
 					}
 				} else {
 					if (seconds < 30) {
-						seconds = Math.floor(seconds / 7);
+						seconds = RoundNumber(seconds / 7);
 						if (seconds != 1) {
 							seconds = seconds + ' weeks';
 						} else {
@@ -54,7 +59,7 @@ function LongAgo (seconds) { // returns string with time units
 						}
 					} else {
 						if (seconds < 365) {
-							seconds = Math.floor(seconds / 30);
+							seconds = RoundNumber(seconds / 30);
 
 							if (seconds != 1) {
 								seconds = seconds + ' months';
@@ -62,7 +67,7 @@ function LongAgo (seconds) { // returns string with time units
 								seconds = seconds + ' month';
 							}
 						} else {
-							seconds = Math.floor(seconds / 365);
+							seconds = RoundNumber(seconds / 365);
 							if (seconds != 1) {
 								seconds = seconds + ' years';
 							} else {
