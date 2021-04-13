@@ -54,9 +54,15 @@ sub GetCache { # get cache by cache key
 } # GetCache()
 
 sub PutCache { # $cacheName, $content; stores value in cache
-	#todo sanity checks
 	my $cacheName = shift;
 	chomp($cacheName);
+
+	if ($cacheName =~ m/^([0-9a-zA-Z\/_]+)$/) {
+		$cacheName = $1;
+	} else {
+		WriteLog('PutCache: warning: $cacheName failed sanity check');
+		return '';
+	}
 
 	my $content = shift;
 
@@ -64,6 +70,8 @@ sub PutCache { # $cacheName, $content; stores value in cache
 		WriteLog('PutCache: warning: sanity check failed, no $content');
 		return 0;
 	}
+
+	WriteLog('PutCache: $cacheName = ' . $cacheName . '; $content = (' . length($content) . 'b)');
 
 	chomp($content);
 
