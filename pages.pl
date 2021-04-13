@@ -5359,7 +5359,7 @@ sub GetTimestampWidget { # $time ; returns timestamp widget
 	} else {
 		$time = 0;
 	}
-	WriteLog('GetTimestampWidget("' . $time . '")');
+	WriteLog('GetTimestampWidget("' . $time . '"), caller: ' . join(',', caller));
 
 	state $epoch; # state of config
 	if (!defined($epoch)) {
