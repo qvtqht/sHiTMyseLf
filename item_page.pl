@@ -180,7 +180,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 
 sub GetReplyListingEmpty {
 	my $html = '<p>No replies found.</p>';
-	$html = GetWindowTemplate($html, 'Replies');
+	$html = GetWindowTemplate($html, 'No replies');
 	return $html;
 }
 
