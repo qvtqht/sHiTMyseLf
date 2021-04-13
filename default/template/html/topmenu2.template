@@ -16,7 +16,7 @@
 				<span class=advanced>$menuItemsAdvanced</span>
 				<span class=admin> $menuItemsAdmin</span>
 			</big>
-			<a href="/etc.html" accesskey=o>M<u>o</u>re</a>
+			<a href="/etc.html" title="More" accesskey=o>M<u>o</u>re</a>
 			<span id=spnClock></span>
 		</td>
 	</tr>
