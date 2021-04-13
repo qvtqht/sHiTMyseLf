@@ -785,6 +785,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 		$detokenedMessage = trim($detokenedMessage);
 		if (trim($detokenedMessage) eq '-- ') {
+			WriteLog('IndexTextFile: warning: bandaid encountered: dashdashspace');
 			#todo #bandaid
 			# this should be handled by the signature_divider token
 			$detokenedMessage = '';
