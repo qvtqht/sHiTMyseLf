@@ -27,8 +27,9 @@
 	</p>
 	<p class=advanced>
 		<a href="/compost.html">
-			$itemsIndexed files
-			<span class=beginner>indexed into items</span>
+			$itemsIndexed
+			<span class=beginner>files indexed into</span>
+			items
 		</a>
 	</p>
 	<p class=advanced>
