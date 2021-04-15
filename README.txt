@@ -1,6 +1,7 @@
 SHITMYSELF
 ==========
 Message board for hackers and friends which aims to please.
+About 30 times slower than Hugo.
 
 
 PHILOSOPHY
