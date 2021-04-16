@@ -152,16 +152,32 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		AppendFile("log/log.log", $timestamp . " " . $text);
 		$debugOn = 1;
 	}
+
+	if ($debugOn) { # this is the part which prints the snow #snow
+		my $firstWord = substr($text, 0, index($text, ' '));
+		if (index($firstWord, '(') != -1) {
+			$firstWord = substr($firstWord, 0, index($firstWord, '('));
+		}
+		if (index($firstWord, ':') != -1) {
+			$firstWord = substr($firstWord, 0, index($firstWord, ':'));
+		}
+
+		#print($firstWord."\n");
+		my $firstWordHash = md5_hex($firstWord);
+		my $firstWordHashFirstChar = substr($firstWordHash, 0, 1);
+		$firstWordHashFirstChar =~ tr/0123456789abcdef/.;*\-,<">'+o:`_|+/;
+		WriteMessage($firstWordHashFirstChar); #todo make config/
+	}
 } # WriteLog()
 
 sub WriteMessage { # Writes timestamped message to console (stdout)
 	my $text = shift;
 	chomp $text;
 
-	state $lastText;
+	state $previousText = '';
 
 	if ($text eq '.' || length($text) == 1) {
-		$lastText = $text;
+		$previousText = $text;
 
 		state @chars;
 		if (!@chars) {
@@ -186,7 +202,7 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 	# just an idea
 	# doesn't seem to work well because the console freezes up if there's no \n coming
 	# if ($text =~ m/^[0-9]+$/) {
-	# 	$lastText = $text;
+	# 	$previousText = $text;
 	# 	print $text . " ";
 	# 	return;
 	# }
@@ -194,12 +210,9 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 	WriteLog($text);
 	my $timestamp = GetTime();
 
-	if ($lastText eq '.' || length($lastText) == 1) {
-		print "\n";
-	}
 	print "\n$timestamp $text\n";
 
-	$lastText = $text;
+	$previousText = $text;
 }
 
 sub MakePath { # $newPath ; ensures all subdirs for path exist
