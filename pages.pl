@@ -2563,9 +2563,11 @@ sub GetStatsTable {
 #	my $adminUsername = GetAlias($adminId);
 #	my $adminLink = GetAuthorLink($adminId);
 
-	my $adminId = '';#GetRootAdminKey();
-	my $adminUsername = '';#GetAlias($adminId);
-	my $adminLink = '';#GetAuthorLink($adminId);
+	#my $adminId = '';#GetRootAdminKey();
+	my $adminId = DBGetAdminKey(); # returns highest scoring
+
+	my $adminUsername = GetAlias($adminId);
+	my $adminLink = GetAuthorLink($adminId);
 
 	my $serverId = '';#GetServerKey();
 	my $serverLink = GetAuthorLink($serverId);

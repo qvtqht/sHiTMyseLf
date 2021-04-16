@@ -2412,6 +2412,44 @@ sub DBGetAuthorPublicKeyHash { # Returns the hash/identifier of the file contain
 	}
 } # DBGetAuthorPublicKeyHash()
 
+sub DBGetServerKey {
+	return DBGetAdminKey();
+}
+
+sub DBGetAdminKey { # Returns the pubkey id of the top-scoring admin (or nothing)
+# cached in hash called %authorPubKeyCache
+
+	WriteLog('DBGetAdminKey()');
+
+	my $memoKey = 1; #hardcoded in case it needs to change
+
+	state %memoHash;
+	if (exists($memoHash{$memoKey}) && $memoHash{$memoKey}) {
+		WriteLog('DBGetAdminKey: returning from memo: ' . $memoHash{$memoKey});
+		return $memoHash{$memoKey};
+	}
+
+	my $key = 1;
+
+	if ($key) { #todo fix non-param sql
+		my $query = "SELECT MAX(author_flat.author_key) AS author_key FROM author_flat WHERE file_hash in (SELECT file_hash FROM item_flat WHERE ',' || tags_list || ',' LIKE '%,admin,%')";
+		my $valueReturned = SqliteGetValue($query);
+		if ($valueReturned) {
+			$memoHash{$memoKey} = SqliteGetValue($query);
+			WriteLog('DBGetAdminKey: returning ' . $memoHash{$memoKey});
+			return $memoHash{$memoKey};
+		} else {
+			WriteLog('DBGetAdminKey: database drew a blank, returning 0');
+			return 0;
+		}
+	} else {
+		WriteLog('DBGetAdminKey: warning: $key was false, returning empty string');
+		return '';
+	}
+
+	WriteLog('DBGetAdminKey: warning: fall-through, returning empty string');
+} # DBGetAdminKey()
+
 sub DBGetItemFields { # Returns fields we typically need to request from item_flat table
 	my $itemFields = "
 		item_flat.file_path file_path,

@@ -1,6 +1,7 @@
 <!-- stats.template -->
 
 <fieldset>
+	<p>Operator: $admin</p>
 	<p>Updated: $lastUpdateTime
 	<p></p>
 	<p id=diagnostics></p>
