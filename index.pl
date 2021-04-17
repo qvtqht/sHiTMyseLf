@@ -86,6 +86,10 @@ sub MakeChainIndex { # $import = 1; reads from log/chain.log and puts it into it
 				$previousLine = $currentLine;
 			} # foreach $currentLine (@addedRecord)
 
+			WriteMessage("==========================");
+			WriteMessage("Verifying Chain: Complete!");
+			WriteMessage("==========================");
+
 			DBAddItemAttribute('flush');
 
 			return %return;
@@ -1331,6 +1335,15 @@ while (my $arg1 = shift @argsFound) {
 			print "index.pl: --all\n";
 			MakeIndex();
 			MakeChainIndex();
+			print "=========================\n";
+			print "index.pl: --all finished!\n";
+			print "=========================\n";
+
+			system('echo "\n"');
+            system('echo "Running ./_clean_html.sh in 3..."; sleep 1');
+            system('echo "2..."; sleep 1');
+            system('echo "1..."; sleep 1');
+            system('./_clean_html.sh');
 		}
 		if ($arg1 eq '--chain') {
 			# html/chain.log
