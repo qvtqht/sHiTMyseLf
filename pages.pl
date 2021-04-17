@@ -272,6 +272,7 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 } # GetQueryAsDialog()
 
 sub GetStylesheet { # returns style template based on config
+# sub GetCss {
 	state $styleSheet;
 	if ($styleSheet) {
 		return $styleSheet;
@@ -289,6 +290,8 @@ sub GetStylesheet { # returns style template based on config
 		$style .= "\n" . GetTemplate('css/dragging.css');
 	}
 
+	#$style .= "\n" . GetTemplate('css/shimmer.css');
+
 	if (GetThemeAttribute('additional.css')) {
 		$style .= "\n" . GetThemeAttribute('additional.css');
 	}
@@ -296,7 +299,7 @@ sub GetStylesheet { # returns style template based on config
 	$styleSheet = $style;
 
 	return $styleSheet;
-}
+} # GetStylesheet()
 
 sub GetAuthorLink { # $fingerprint, $showPlain ; returns avatar'ed link for an author id
 	my $fingerprint = shift; # author's fingerprint
@@ -1792,13 +1795,12 @@ sub GetItemTemplate { # returns HTML for outputting one item
 } # GetItemTemplate()
 
 sub GetPageFooter { # returns html for page footer
+# sub GetFooter {
 	WriteLog('GetPageFooter()');
-
 	my $txtFooter = GetTemplate('html/htmlend.template');
 
-	my $disclaimer = GetString('disclaimer');
-
-	$txtFooter =~ s/\$disclaimer/$disclaimer/g;
+	#my $disclaimer = GetString('disclaimer');
+	#$txtFooter =~ s/\$disclaimer/$disclaimer/g;
 
 	$txtFooter = FillThemeColors($txtFooter);
 
@@ -1828,7 +1830,6 @@ sub GetPageFooter { # returns html for page footer
 	else {
 		WriteLog('GetPageFooter: ssi footer conditions NOT met!');
 	}
-
 
 	return $txtFooter;
 }
@@ -2682,7 +2683,7 @@ sub GetStatsTable {
 
 	if ($templateName eq 'html/stats.template') {
 		$statsTable = GetWindowTemplate($statsTable, 'Stats');
-		#todo remove this once other template is fixed
+		#todo remove this once other template is fixed #???
 	}
 
 	return $statsTable;
