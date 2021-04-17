@@ -390,7 +390,10 @@ if (isset($filePath) && $filePath) {
 WriteLog('post.php: about to look for post.php; `pwd` = ' . `pwd`);
 
 #######################################
-$html = file_get_contents('post.html') || file_get_contents('./post.html');
+$html = file_get_contents('post.html');
+if (!$html) {
+	$html = file_get_contents('./post.html');
+}
 #######################################
 
 if ($html) {
