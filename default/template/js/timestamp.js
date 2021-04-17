@@ -1,8 +1,14 @@
 // == begin timestamp.js
 
 function RoundNumber (num) {
-	return Math.floor(num);
-	//return Math.floor(num * 10) / 10;
+	var ret = Math.floor(num);
+
+	//var ret = Math.floor(num * 10) / 10;
+	//leave one digit after the decimal point
+
+	//alert('DEBUG: document.title = 'RoundNumber: num = ' + num + '; ret = ' + ret + '');
+
+	return ret;
 }
 
 function LongAgo (seconds) { // returns string with time units
@@ -15,7 +21,7 @@ function LongAgo (seconds) { // returns string with time units
 	}
 
 	if (seconds < 60) {
-		seconds = RoundNumber(seconds / 60); //#todo milliseconds setting should toggle this
+		seconds = RoundNumber(seconds); //#todo milliseconds setting should toggle this
 
 		if (seconds != 1) {
 			seconds = seconds + ' seconds';
