@@ -302,19 +302,17 @@ sub SqliteMakeTables { # creates sqlite schema
 
 
 	# config
-	SqliteQuery2("CREATE TABLE config(key, value, timestamp, reset_flag, file_hash);");
-	SqliteQuery2("CREATE UNIQUE INDEX config_unique ON config(key, value, timestamp, reset_flag);");
+	SqliteQuery2("CREATE TABLE config(key, value, reset_flag, file_hash);");
+	SqliteQuery2("CREATE UNIQUE INDEX config_unique ON config(key, value, reset_flag);");
 	SqliteQuery2("
    		CREATE VIEW config_latest
    		AS
    			SELECT
    				key,
    				value,
-   				MAX(timestamp) config_timestamp,
    				reset_flag,
    				file_hash FROM config
 			GROUP BY key
-			ORDER BY timestamp DESC
     	;");
 
 	SqliteQuery2("
@@ -1047,7 +1045,7 @@ sub DBGetItemAuthor { # get author for item ($itemhash)
 }
 
 
-sub DBAddConfigValue { # add value to the config table ($key, $value)
+sub DBAddConfigValue { # $key, $value, $resetFlag, $sourceItem ; add value to config table
 	state $query;
 	state @queryParams;
 
@@ -1079,7 +1077,6 @@ sub DBAddConfigValue { # add value to the config table ($key, $value)
 	}
 
 	my $value = shift;
-	my $timestamp = shift;
 	my $resetFlag = shift;
 	my $sourceItem = shift;
 
@@ -1092,13 +1089,13 @@ sub DBAddConfigValue { # add value to the config table ($key, $value)
 	}
 
 	if (!$query) {
-		$query = "INSERT OR REPLACE INTO config(key, value, timestamp, reset_flag, file_hash) VALUES ";
+		$query = "INSERT OR REPLACE INTO config(key, value, reset_flag, file_hash) VALUES ";
 	} else {
 		$query .= ",";
 	}
 
-	$query .= '(?, ?, ?, ?, ?)';
-	push @queryParams, $key, $value, $timestamp, $resetFlag, $sourceItem;
+	$query .= '(?, ?, ?, ?)';
+	push @queryParams, $key, $value, $resetFlag, $sourceItem;
 
 	return;
 }
