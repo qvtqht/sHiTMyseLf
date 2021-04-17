@@ -60,6 +60,7 @@ sub StartLighttpd {
 	if ($pathLighttpd =~ m/^([^\s]+)$/) {
 		$pathLighttpd = $1;
 		system("$pathLighttpd -D -f config/lighttpd.conf");
+		#todo background it if opening browser
 	} else {
 		WriteMessage('lighttpd path missing or failed sanity check');
 	}
@@ -155,6 +156,7 @@ if (GetConfig('admin/lighttpd/enable')) {
 
 	WriteMessage("===================\n");
 	WriteMessage("Starting server!...\n");
+	WriteMessage('http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html' . "\n");
 	WriteMessage("===================\n");
 	StartLighttpd();
 
@@ -166,7 +168,7 @@ if (GetConfig('admin/lighttpd/enable')) {
 		WriteMessage('Opening browser in 1...');
 		sleep 1;
 
-		my $openString = 'browser "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
+		my $openString = 'xdg-open "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
 
 		WriteMessage('Opening browser with `' . $openString . '`');
 		WriteMessage(`$openString`);
