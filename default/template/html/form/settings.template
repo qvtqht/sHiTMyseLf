@@ -59,6 +59,13 @@
 </p>
 
 <p>
+	<label for=chkFocusReply class=advanced>
+		<input type=checkbox id=chkFocusReply name=chkFocusReply onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'focus_reply'); }">
+		Automatically focus reply field<noscript><b>*</b></noscript>
+	</label>
+</p>
+
+<p>
 	<label for=chkWriteAutoSave>
 		<input type=checkbox id=chkWriteAutoSave name=chkWriteAutoSave onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_autosave'); }">
 		Auto-save<noscript><b>*</b></noscript>
