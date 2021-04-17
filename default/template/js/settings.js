@@ -133,6 +133,8 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 		container = document;
 	}
 
+	var counterChangesMade = 0;
+
 	if (document.getElementById && window.localStorage && container.getElementsByClassName) {
 		//alert('DEBUG: ShowAdvanced: feature check passed!');
 		///////////
@@ -144,6 +146,7 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 		if (force || window.showTimestampsLastAction != displayTimestamps) {
 			//ShowTimestamps();
 			window.showTimestampsLastAction = displayTimestamps;
+			counterChangesMade++;
 		}
 
 		var displayAdmin = 'none'; // not voting by default
@@ -156,6 +159,8 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 			for (var i = 0; i < elemAdmin.length; i++) {
 				SetElementVisible(elemAdmin[i], displayAdmin, 0, 0);
 			}
+
+			counterChangesMade++;
 		}
 
 		var displayValue = 'none'; // hide by default
@@ -180,6 +185,8 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 //			    SetElementVisible(clock, displayValue, bgColor, 0);
 //			}
 			showAdvancedLastAction = displayValue + bgColor;
+
+			counterChangesMade++;
 		}
 
 		displayValue = 'initial'; // show by default
@@ -199,6 +206,8 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 				SetElementVisible(divsToShow[i], displayValue, bgColor, 0);
 			}
 			showBeginnerLastAction = displayValue + bgColor;
+
+			counterChangesMade++;
 		}
 //
 //		if (window.freshTimeoutId) {
@@ -229,6 +238,10 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 	} else {
 		//alert('DEBUG: ShowAdvanced: feature check FAILED!');
 		//alert('DEBUG: window.localStorage: ' + window.localStorage + '; document.getElementsByClassName: ' + document.getElementsByClassName);
+	}
+
+	if (counterChangesMade) {
+		LoadCheckboxValues();
 	}
 
 	//alert('DEBUG: ShowAdvanced: returning false');
