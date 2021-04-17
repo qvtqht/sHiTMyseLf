@@ -94,8 +94,10 @@ if (GetConfig('admin/dev/launch_browser_after_build')) {
 	WriteLog(`xdg-open http://localhost:2784/ &`);
 }
 
-BuildMessage("Done!");
-WriteLog( "Finished!");
+BuildMessage("===============");
+BuildMessage("Build finished!");
+BuildMessage("===============");
+WriteLog("Finished!");
 
 if (GetConfig('admin/build/loop_after')) {
 	WriteLog('Starting loop.pl...');
