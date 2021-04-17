@@ -121,22 +121,6 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 	}
 	chomp $text;
 
-	{ # this is the part which prints the snow
-		my $firstWord = substr($text, 0, index($text, ' '));
-		if (index($firstWord, '(') != -1) {
-			$firstWord = substr($firstWord, 0, index($firstWord, '('));
-		}
-		if (index($firstWord, ':') != -1) {
-			$firstWord = substr($firstWord, 0, index($firstWord, ':'));
-		}
-
-		#print($firstWord."\n");
-		my $firstWordHash = md5_hex($firstWord);
-		my $firstWordHashFirstChar = substr($firstWordHash, 0, 1);
-		$firstWordHashFirstChar =~ tr/0123456789abcdef/.;*\-,<">'+o:`_|+/;
-		WriteMessage($firstWordHashFirstChar);
-	}
-
 	# Only if debug mode is enabled
 	state $debugOn;
 	if ($debugOn || -e 'config/admin/debug') {
