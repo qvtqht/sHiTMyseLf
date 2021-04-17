@@ -58,7 +58,9 @@ rm -v log/log.log
 echo "mkdir -p html/txt"
 mkdir -p html/txt
 
+echo "================="
 echo "Cleanup complete!"
+echo "================="
 echo "Rebuilding with ./build.pl in 3..."
 sleep 1
 

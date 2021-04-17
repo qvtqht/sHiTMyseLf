@@ -11,3 +11,16 @@ rm -vrf html/*.html html/*/*.html html/*/*/*.html
 
 echo "rm -rf html/*.js html/*/*.js html/*/*/*.js"
 rm -vrf html/*.js html/*/*.js html/*/*/*.js
+
+echo "Cleanup complete!"
+echo "Rebuilding with ./generate_html_frontend.pl in 3...";
+sleep 1
+
+echo "2... "
+sleep 1
+
+echo "1... "
+sleep 1
+
+echo "Running ./generate_html_frontend.pl"
+./generate_html_frontend.pl

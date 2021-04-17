@@ -115,12 +115,18 @@ my $IMAGEDIR = $HTMLDIR . '/image';
 	print("rm -rf $ARCHIVE_DATE_DIR\n");
 	system("rm -rf $ARCHIVE_DATE_DIR");
 
-	system('./clean.sh; ./build.pl');
-
 	print("echo \"Forum content was archived at $date\" > $TXTDIR/archived_$date\.txt\n");
 	system("echo \"Forum content was archived at $date\" > $TXTDIR/archived_$date\.txt");
 
-	print("Done.\n");
+	print("=================\n");
+	print("Archive finished!\n");
+	print("=================\n");
+
+	system('echo "\n"');
+	system('echo "Running ./_clean_dev.sh in 3..."; sleep 1');
+	system('echo "2..."; sleep 1');
+	system('echo "1..."; sleep 1');
+	system('./_clean_dev.sh');
 }
 
 1;
