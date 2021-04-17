@@ -494,7 +494,8 @@ sub GetAlias { # $fingerprint, $noCache ; Returns alias for an author
 		$aliasCache{$fingerprint} = $alias;
 		return $aliasCache{$fingerprint};
 	} else {
-		return $fingerprint;
+		#return $fingerprint;
+		return '';
 		#		return 'unregistered';
 	}
 } # GetAlias()

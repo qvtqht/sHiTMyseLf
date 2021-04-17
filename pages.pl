@@ -5240,7 +5240,11 @@ sub GetAvatar { # $key, $noCache ; returns HTML avatar based on author key, usin
 		my $alias = '';
 		
 		if (!$alias) {
+			#todo huh?
 			$alias = GetAlias($authorKey, $noCache);
+			if (!$alias) {
+				$alias = 'Guest';
+			}
 			$alias = trim($alias);
 		}
 		if ($authorItemAttributes) {
