@@ -102,6 +102,13 @@ function UpdateOnscreenKeyboard () {
 //			var asdf = parent.frames;
 	//alert('DEBUG: UpdateOnscreenKeyboard()');
 
+	//#todo should be somewhere else
+	{
+		if (GetPrefs('translit_state') != window.translitKeyState) {
+			SetPrefs('translit_state', window.translitKeyState);
+		}
+	}
+
 	if (window.parent) {
 		if (window.parent.frames) {
 			var framesRef = window.parent.frames;
@@ -156,6 +163,10 @@ function UpdateOnscreenKeyboard () {
 			}
 		}
 	}
+}
+
+function setTranslitState (theState) {
+	window.translitKeyState = theState;
 }
 
 function translitKey(e, t) { // replaces pressed qwerty key with russian letter
@@ -215,6 +226,7 @@ function translitKey(e, t) { // replaces pressed qwerty key with russian letter
 			// ctrl+d for dvorak
 			if (window.translitKeyState == 4) {
 				// 2 is off
+
 				window.translitKeyState = 2;
 				t.style.borderTop = '3pt solid gray';
 			} else {
