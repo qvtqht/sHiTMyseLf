@@ -1,16 +1,15 @@
 SHITMYSELF
 ==========
 Message board for hackers and friends which aims to please.
-About 30 times slower than Hugo.
+At least 30 times slower than Hugo.
 
 
 PHILOSOPHY
 ==========
-Be kind and polite to all beings whenever possible.
-Readable source code for clarity and honesty.
-Aim to support every device, browser, and user.
-Do what user asks, wants, or is in their best interest.
-Don't ask or demand user to do anything they don't want.
+Be kind and polite to all whenever possible, conditions permitting.
+Readable Perl source code for clarity, honesty, and ease of use.
+Aim to support every browser old enough to vote.
+Do what the user wants. Don't ask or demand anything of the user.
 Try to make user comfortable. Do not bother user with trivia.
 Tell the truth, the whole truth, and nothing but the truth.
 Whenever you find yourself on the side of majority, pause and reflect.
