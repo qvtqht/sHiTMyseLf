@@ -308,6 +308,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 	my $fileHash; # hash of file contents
 	$fileHash = GetFileHash($file);
 
+	my $titleCandidate = '';
+
 	if (!$file || !$fileHash) {
 		WriteLog('IndexTextFile: warning: $file or $fileHash missing; returning');
 		return 0;
@@ -492,6 +494,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		} # #example
 		else { # not #example
 			my $itemTimestamp = DBGetItemAttribute($fileHash, 'chain_timestamp');#todo bug here, depends on chain being on
+			my @hashTagsAppliedToParent;
 
 			foreach my $tokenFoundRef (@tokensFound) {
 				my %tokenFound = %$tokenFoundRef;
@@ -572,10 +575,14 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 									# #todo create a whitelist of safe keys non-admins can change
 
-									DBAddConfigValue($configKeyActual, $configValue, 0, 0, $fileHash);
+									DBAddConfigValue($configKeyActual, $configValue, 0, $fileHash);
 									WriteIndexedConfig();
 									$message = str_replace($tokenFound{'recon'}, "[Config: $configKeyActual = $configValue]", $message);
 									$detokenedMessage = str_replace($tokenFound{'recon'}, '', $detokenedMessage);
+
+									if (!$titleCandidate) {
+										$titleCandidate = 'Configuration change';
+									}
 								} else {
 									# token tried to pass unacceptable config key
 									$message = str_replace($tokenFound{'recon'}, "[Not Accepted: $configKeyActual]", $message);
@@ -639,8 +646,11 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 								$message =~ s/$tokenFound{'recon'}/[my name is: $nameGiven]/g;
 
 								DBAddKeyAlias($authorKey, $tokenFound{'param'}, $fileHash);
-								DBAddItemAttribute($fileHash, 'title', $tokenFound{'param'} . ' has self-identified'); #todo templatize
 								DBAddKeyAlias('flush');
+
+								if (!$titleCandidate) {
+									$titleCandidate = $tokenFound{'param'} . ' has self-identified';
+								}
 							}
 						} else {
 							WriteLog('IndexTextFile: warning: my_name_is: sanity check FAILED');
@@ -732,6 +742,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 									) {
 										WriteLog('IndexTextFile: #admin: Found seemingly valid request');
 										DBAddVoteRecord($itemParent, 0, $hashTag, $authorKey, $fileHash);
+
 										my $authorGpgFingerprint = DBGetItemAttribute($itemParent, 'gpg_fingerprint');
 										if ($authorGpgFingerprint =~ m/([0-9A-F]{16})/) {
 											#todo this is dirty, dirty hack
@@ -748,8 +759,13 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 										} else {
 											WriteLog('IndexTextFile: #admin: did NOT find $authorGpgFingerprint');
 										}
+
 										DBAddVoteRecord('flush');
-									} # has permission to remove
+
+										if (!$titleCandidate) {
+											$titleCandidate = '[#' . $hashTag . ']';
+										}
+									} # if ($authorKey && IsAdmin)
 									else {
 										WriteLog('IndexTextFile: Request to admin file was not found to be valid');
 									}
@@ -776,8 +792,21 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 											DBAddVoteRecord($itemParentHash, 0, $hashTag, '', $fileHash);
 										}
 										DBAddPageTouch('item', $itemParentHash);
+										push @hashTagsAppliedToParent, $hashTag;
 									} # @itemParents
 								} # scalar(@itemParents)
+								else {
+									# no parents, self-apply
+									if ($authorKey) {
+										WriteLog('IndexTextFile: $authorKey = ' . $authorKey);
+										# include author's key if message is signed
+										DBAddVoteRecord($fileHash, 0, $hashTag, $authorKey, $fileHash);
+									}
+									else {
+										WriteLog('IndexTextFile: $authorKey was FALSE');
+										DBAddVoteRecord($fileHash, 0, $hashTag, '', $fileHash);
+									}
+								}
 							} # valid hashtag
 						} # non-permissioned hashtags
 
@@ -785,6 +814,19 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 					} #hashtag
 				} # if ($tokenFound{'token'} && $tokenFound{'param'}) {
 			} # foreach @tokensFound
+
+			if (scalar(@hashTagsAppliedToParent)) {
+				if (!$titleCandidate) {
+					my $titleCandidateComma = '';
+					foreach my $hashTagApplied (@hashTagsAppliedToParent) {
+						$titleCandidate .= ' #' . $hashTagApplied;
+					}
+					$titleCandidate = trim($titleCandidate);
+					if (scalar(@itemParents) > 1) {
+						$titleCandidate .= ' applied to ' . scalar(@itemParents) . ' items';
+					}
+				}
+			}
 		} # not #example
 
 		$detokenedMessage = trim($detokenedMessage);
@@ -805,6 +847,11 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 			# add #notext label/tag
 			WriteLog('IndexTextFile: no $detokenedMessage, setting #notext; $fileHash = ' . $fileHash);
 			DBAddVoteRecord($fileHash, 0, 'notext');
+
+			if ($titleCandidate) {
+				#no message, only tokens. try to get a title from the tokens, which we stashed earlier
+				DBAddItemAttribute($fileHash, 'title', $titleCandidate, 0);
+			}
 		}
 		else { # has $detokenedMessage
 			WriteLog('IndexTextFile: has $detokenedMessage $fileHash = ' . $fileHash);
