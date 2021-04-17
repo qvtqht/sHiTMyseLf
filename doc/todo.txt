@@ -1,3 +1,39 @@
+#bug duplicate text files are cropping up
+	html/txt/aa/bb/aabb...
+	html/txt/aabb...
+
+#propagation {
+	#remove effects do not propagate to html right away, even in php mode
+		additional actions taken:
+			_clean_html (which also runs generate_frontend)
+}
+
+#bug-feature when titlebar buttons is enabled
+	but js is disabled
+		js is still written to the page
+
+light mode should not be available if not supported
+
+#minor organize default/template/html a little bit
+	pages should be in page/
+	widget should be in widget/
+
+#doc that index.php is not processed by route.php
+
+access.log needs to fingerprint ip address as cookie!!
+
+static mode
+	finding what  you just posted is not obvious
+		should be a "recently added" thingy
+
+#bug advanced menu is not rendered
+
+changing php config should restart local lighttpd server
+	or prompt user to do it
+
+
+show reply thread subjects below reply items on item page
+
 config token {
 	token recognize, but index --> config/ flow doesn't happen
 	if config/html (at minimum) is changed, then

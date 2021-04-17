@@ -124,3 +124,7 @@ Browser Issues
 See browsers.txt
 
 
+Puzzle
+======
+Client solve time measuring is not enforced in any way,
+	client can set current timestamp on every new hash generation
