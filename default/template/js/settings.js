@@ -365,6 +365,7 @@ function SetInterfaceMode (ab) { // updates several settings to change to "ui mo
 			SetPrefs('write_autosave', 0);
 			SetPrefs('expert_timestamps', 0);
 			SetPrefs('draggable', 0);
+			SetPrefs('focus_reply', 0);
 //			SetPrefs('sign_by_default', 1);
 		} else if (ab == 'intermediate') {
 			SetPrefs('show_advanced', 1);
@@ -392,6 +393,7 @@ function SetInterfaceMode (ab) { // updates several settings to change to "ui mo
 		}
 
 		ShowAdvanced(1);
+		LoadCheckboxValues();
 
         //alert('DEBUG: window.SetPrefs was found, and ShowAdvanced(1) was called');
 
@@ -419,6 +421,16 @@ function LoadCheckbox (c, prefKey) { // updates checkbox state to reflect settin
 	return 1;
 }
 
+function LoadCheckboxValues () {
+	//alert('DEBUG: LoadCheckboxValues()');
+	LoadCheckbox(document.getElementById('chkDraggable'), 'draggable');
+	LoadCheckbox(document.getElementById('chkShowAdmin'), 'show_admin');
+	LoadCheckbox(document.getElementById('chkShowAdvanced'), 'show_advanced');
+	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');
+	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');
+	LoadCheckbox(document.getElementById('chkExpertTimestamps'), 'expert_timestamps');
+	LoadCheckbox(document.getElementById('chkFocusReply'), 'focus_reply');
+}
 
 function SettingsOnload () { // onload function for settings page
 	//alert('debug: SettingsOnload() begin');
@@ -429,12 +441,7 @@ function SettingsOnload () { // onload function for settings page
 		var pane;
 
 		//LoadCheckbox(document.getElementById('chkSignByDefault'), 'sign_by_default');
-		LoadCheckbox(document.getElementById('chkDraggable'), 'draggable');
-		LoadCheckbox(document.getElementById('chkShowAdmin'), 'show_admin');
-		LoadCheckbox(document.getElementById('chkShowAdvanced'), 'show_advanced');
-		LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');
-		LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');
-		LoadCheckbox(document.getElementById('chkExpertTimestamps'), 'expert_timestamps');
+		LoadCheckboxValues();
 
 		//if (GetPrefs('sign_by_default') == 1) {
 		//	var cbM = document.getElementById('chkSignByDefault');
