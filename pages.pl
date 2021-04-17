@@ -3274,7 +3274,11 @@ sub GetReadPage { # generates page with item listing based on parameters
 			#$queryParams{'join_clause'} = "JOIN vote ON (item_flat.file_hash = vote.file_hash)";
 			#$queryParams{'group_by_clause'} = "GROUP BY vote.file_hash";
 			#$queryParams{'where_clause'} = "WHERE vote.vote_value = '$tagName'";
-			$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%'";
+			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
+				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%'";
+			} else {
+				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score > 0";
+			}
 			$queryParams{'order_clause'} = "ORDER BY item_flat.add_timestamp DESC";
 			$queryParams{'limit_clause'} = "LIMIT 100"; #todo fix hardcoded limit
 
