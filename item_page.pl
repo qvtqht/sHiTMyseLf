@@ -143,6 +143,8 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		my @itemReplies = DBGetItemReplies($fileHash);
 		WriteLog('GetItemPage: scalar(@itemReplies) = ' . scalar(@itemReplies));
 		foreach my $itemReply (@itemReplies) {
+#			$itemReply
+			WriteLog('GetItemPage: $itemReply = ' . $itemReply);
 			my $itemReplyTemplate = GetItemTemplate($itemReply);
 			$txtIndex .= $itemReplyTemplate;
 		}
