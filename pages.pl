@@ -3782,17 +3782,13 @@ sub GetDesktopPage { # returns html for desktop page (/desktop.html)
 	$html .= GetTemplate('html/maincontent.template');
 
 	{
-		my $tosText = GetString('tos');
-		$tosText = str_replace("\n", '<br>', $tosText);
-		my $tosWindow = GetWindowTemplate(
-			$tosText,
-			'Terms of Service',
-		);
+		my $tosText = GetTosDialog();
 
 		if (GetConfig('admin/expo_site_mode')) {
 			$html .= GetQueryAsDialog('speakers', 'Speakers', 'item_title');
 			$html .= GetSimpleWindow('mailing_list');
 		} else {
+			my $tosWindow = GetTosDialog();
 			$html .= $tosWindow;
 
 			$html .= GetQueryAsDialog('authors');
@@ -4508,6 +4504,19 @@ sub GetWritePage { # returns html for write page
 	return $writePageHtml;
 } # GetWritePage()
 
+sub GetTosDialog {
+	my $tosText = GetString('tos');
+	$tosText = str_replace("\n", '<br>', $tosText);
+	$tosText = '<p class=txt>' . $tosText . '</p>';
+	#$tosText .= '<p><a href="/post.html?comment=tos">[Do You Agree?]</a></p>';
+	my $tosWindow = GetWindowTemplate(
+		$tosText,
+		'Terms of Service',
+	);
+#	my @tosItems
+	return $tosWindow;
+}
+
 sub GetProfileWindow {
 	my $profileWindowContents = GetTemplate('form/profile.template');
 
@@ -4584,12 +4593,7 @@ sub GetProfilePage { # returns profile page (allows sign in/out)
 
 		my $profileWindow = GetProfileWindow();
 
-		my $tosText = GetString('tos');
-		$tosText = str_replace("\n", '<br>', $tosText);
-		my $tosWindow = GetWindowTemplate(
-			$tosText,
-			'Terms of Service',
-		);
+		my $tosWindow = GetTosDialog();
 
 		$txtIndex .= $profileWindow;
 		$txtIndex .= $tosWindow;
