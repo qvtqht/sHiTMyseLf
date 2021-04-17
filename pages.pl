@@ -2993,6 +2993,17 @@ sub InjectJs2 { # $html, $injectMode, $htmlTag, @scriptNames, ; inject js templa
 	my $injectMode = shift;
 	my $htmlTag = shift;
 
+	if ($injectMode eq 'before' || $injectMode eq 'after' || $injectMode eq 'append') {
+		#do nothing, leave it alone
+	} else {
+		if (!$injectMode) {
+			$injectMode = '';
+		} else {
+			WriteLog('InjectJs2: warning: $injectMode sanity check failed');
+			$injectMode = '';
+		}
+	}
+
 	my @scriptNames = @_; # array of names of script templates (minus the .js suffix)
 
 	my $scriptsText = '';  # will contain all the js we want to inject
