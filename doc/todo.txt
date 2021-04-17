@@ -1,3 +1,27 @@
+reply field should be focused only after a submission
+	if in php mode
+	or in js mode?
+
+#nn3 netscape 3.04gold {
+	js enabled
+	a) 'netscape' keyboard doesn't work, returns js error
+		on variable hi
+	b) js errors when dragging.js is included (due to nested functions)
+}
+
+#queues pages are not being de-cached
+	in php mode
+	with lazy enabled
+	author page, stats page
+
+#bug #lowpriority
+	in php mode
+		if php files are missing
+			html files return 404
+
+how to detect screen resize?
+	needed to reflow draggable windows
+
 #bug duplicate text files are cropping up
 	html/txt/aa/bb/aabb...
 	html/txt/aabb...
