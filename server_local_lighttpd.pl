@@ -153,6 +153,9 @@ if (GetConfig('admin/lighttpd/enable')) {
 		PutFile('config/lighttpd_htpasswd.conf', $htpasswdAuthUserFile);
 	}
 
+	WriteMessage("===================\n");
+	WriteMessage("Starting server!...\n");
+	WriteMessage("===================\n");
 	StartLighttpd();
 
 	if (GetConfig('admin/lighttpd/open_browser_after_start')) {
