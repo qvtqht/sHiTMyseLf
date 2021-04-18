@@ -26,7 +26,7 @@ if (
 	GetConfig('admin/pages/rewrite') eq 'all' &&
 	GetConfig('admin/php/enable')
 ) {
-	#todo html_clean without disturbing site
+	system('./pages.pl --summary');
 } else {
 	# regenerate all pages (may take a while)
 	system('./pages.pl --all');
