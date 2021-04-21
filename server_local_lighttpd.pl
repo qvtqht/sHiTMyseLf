@@ -154,25 +154,25 @@ if (GetConfig('admin/lighttpd/enable')) {
 		PutFile('config/lighttpd_htpasswd.conf', $htpasswdAuthUserFile);
 	}
 
+	if (GetConfig('admin/lighttpd/open_browser_after_start')) {
+#		WriteMessage('Opening browser in 3...');
+#		sleep 2;
+#		WriteMessage('Opening browser in 2...');
+#		sleep 2;
+#		WriteMessage('Opening browser in 1...');
+#		sleep 2;
+
+		my $openString = 'xdg-open "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
+
+		WriteMessage('Opening browser with `' . $openString . '`');
+		WriteMessage(`$openString &`);
+	}
+
 	WriteMessage("===================\n");
 	WriteMessage("Starting server!...\n");
 	WriteMessage('http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html' . "\n");
 	WriteMessage("===================\n");
 	StartLighttpd();
-
-	if (GetConfig('admin/lighttpd/open_browser_after_start')) {
-		WriteMessage('Opening browser in 3...');
-		sleep 1;
-		WriteMessage('Opening browser in 2...');
-		sleep 1;
-		WriteMessage('Opening browser in 1...');
-		sleep 1;
-
-		my $openString = 'xdg-open "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
-
-		WriteMessage('Opening browser with `' . $openString . '`');
-		WriteMessage(`$openString`);
-	}
 } else {
 	WriteMessage("admin/lighttpd/enable was false");
 }
