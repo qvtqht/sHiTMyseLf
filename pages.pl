@@ -6,6 +6,9 @@
 use strict;
 use warnings;
 use utf8;
+
+use URI::Escape qw(uri_escape);
+
 use 5.010;
 
 my @foundArgs;
@@ -184,9 +187,19 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		$fieldValue = GetTimestampWidget($fieldValue);
 	}
 
+	if ($fieldName eq 'item_url') {
+		$fieldValue = '<a href="' . uri_escape($fieldValue) . '">' . HtmlEscape($fieldValue) . '</a>';
+	}
+
 	if ($fieldName eq 'item_title') {
 		if (%itemHash && $itemHash{'file_hash'}) {
 			$fieldValue = '<b>' . GetItemHtmlLink($itemHash{'file_hash'}, $fieldValue) . '</b>';
+		}
+	}
+
+	if ($fieldName eq 'tagset_compost') {
+		if (%itemHash && $itemHash{'file_hash'}) {
+			$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, 'compost');
 		}
 	}
 
