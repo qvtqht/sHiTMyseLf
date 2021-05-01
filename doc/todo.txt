@@ -1,3 +1,10 @@
+#bug with organize_files=0, GetFileMessage() returns empty
+
+today i realized that w3m on freebsd has glitches with displaying the <hr> tag.
+	so <hr> must be somehow removed from all html templates
+		while still serving something nice in browsers where hr is a section break
+
+
 reply field should be focused only after a submission
 	if in php mode
 	or in js mode?
@@ -2134,9 +2141,6 @@ events, tags, authors all need fallback empty pages #meta #todo
 already done for gif, but now need to replace original image and change its hash.
 
 
-===
-
-#meta #todo need even better keyboard which ie3 and nn2 can use.
 
 ===
 
@@ -2166,10 +2170,8 @@ this item will end up in todo, if i am not mistaken, because it is first in the 
 
 
 
-===
 
-require profile mode is janky and locks out links and any non-cookie users
-	#todo #meta
+#bug {require profile mode} is janky and locks out links and any non-cookie users
 
 ===
 
@@ -2181,9 +2183,7 @@ js/dragging {
 	this is mostly done for modern-ish browsers but needs refinement
 }
 
-===
 
-#todo #meta replying by non-advanced users is not discoverable 
 
 
 ===
@@ -2202,3 +2202,4 @@ config/list/menu_bytag
 
 config/admin/js/dragging
 	when 0, hide in settings
+-M write instead of --write pages.pl

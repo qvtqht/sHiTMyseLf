@@ -3728,3 +3728,7 @@ the skip links look strange in links browser, and they do not collapse the dialo
 
 WriteLog('begin_capture'); end_capture
 Then output what's in between to extended report on page or item
+
+===
+
+output in log/log.log could look more identifiable with the snow output

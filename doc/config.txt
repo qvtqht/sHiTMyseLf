@@ -1,3 +1,33 @@
+The configuration is designed to be self-explanatory
+Under the config/ directory, there are sub-directories and files
+One file is used per configuration setting
+Most of the files have a 0 or 1 inside, sometimes a one-line string.
+Each feature is in a sub-directory, for example, replying:
+
+Examples:
+config/reply/enable turns the feature on or off (1 or 0)
+
+Commands to try:
+cd ~/hike
+ls config
+find config | grep js
+find config | grep php
+find config | less
+
+Information for Developer:
+
+If a value is not found in config/, it is looked up in default/, and copied to config/
+
+Commands to try:
+cd ~/hike
+ls default
+
+If you're improving the software and you want to commit to repo, edit the files in default/ and let them propagate to config/
+
+The _clean_dev script will remove most things under config/
+
+
+
 config is stored in individual files
 
 default/ directory has all the defaults
