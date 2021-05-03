@@ -126,7 +126,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 	if ($debugOn || -e 'config/admin/debug') {
 		my $timestamp = GetTime();
 
-		if (0) { # debug use milliseconds
+		if (0) { # debug use milliseconds #featureflag
 			my $t = time;
 			my $date = $timestamp;#strftime "%Y%m%d %H:%M:%S", localtime $t;
 			$date .= sprintf ".%03d", ($t-int($t))*1000; # without rounding
@@ -134,7 +134,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		}
 
 		AppendFile("log/log.log", $timestamp . " " . $text);
-		$debugOn = 0; #verbose #quiet mode #quietmode
+		$debugOn = 0; #verbose #quiet mode #quietmode #featureflag
 	}
 
 	if ($debugOn) { # this is the part which prints the snow #snow
