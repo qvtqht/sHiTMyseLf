@@ -126,7 +126,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 	if ($debugOn || -e 'config/admin/debug') {
 		my $timestamp = GetTime();
 
-		if (0) { # debug use milliseconds
+		if (0) { # debug use milliseconds #featureflag
 			my $t = time;
 			my $date = $timestamp;#strftime "%Y%m%d %H:%M:%S", localtime $t;
 			$date .= sprintf ".%03d", ($t-int($t))*1000; # without rounding
@@ -134,7 +134,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		}
 
 		AppendFile("log/log.log", $timestamp . " " . $text);
-		$debugOn = 1;
+		$debugOn = 0; #verbose #quiet mode #quietmode #featureflag
 	}
 
 	if ($debugOn) { # this is the part which prints the snow #snow
@@ -348,7 +348,12 @@ sub GetTemplate { # $templateName ; returns specified template from template dir
 	chomp $filename;
 	#	$filename = "$SCRIPTDIR/template/$filename";
 
-	WriteLog("GetTemplate($filename)");
+	my $isHtmlTemplate = 0;
+	if ($filename =~ m/^html/) {
+		$isHtmlTemplate = 1;
+	}
+
+	WriteLog("GetTemplate($filename) caller: " . join(', ', caller));
 	state %templateMemo; #stores local memo cache of template
 	if ($templateMemo{$filename}) {
 		#if already been looked up, return memo version
@@ -394,6 +399,10 @@ sub GetTemplate { # $templateName ; returns specified template from template dir
 	# add \n to the end because it makes the resulting html look nicer
 	# and doesn't seem to hurt anything else
 	$template .= "\n";
+
+	if ($isHtmlTemplate && GetConfig('admin/debug')) {
+		$template .= '<!-- ' . join(', ', caller) . '-->' . "\n";
+	}
 
 	if ($template) {
 		#if template contains something, cache it

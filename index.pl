@@ -1349,20 +1349,31 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 		WriteLog('IndexFile: warning: $indexSuccess FALSE');
 	}
 
-	if ($indexSuccess && GetConfig('admin/index/stat_file')) {
+	if ($indexSuccess) {
 		if (-e $file) {
-			my @fileStat = stat($file);
-			my $fileSize =    $fileStat[7];
-			my $fileModTime = $fileStat[9];
-			WriteLog('IndexFile: $fileModTime = ' . $fileModTime . '; $fileSize = ' . $fileSize);
-			if ($fileModTime) {
-				if (IsItem($indexSuccess)) {
-					DBAddItemAttribute($indexSuccess, 'file_m_timestamp', $fileModTime);
-					DBAddItemAttribute($indexSuccess, 'file_size', $fileSize);
-				} else {
-					WriteLog('IndexFile: warning: IsItem($indexSuccess) was FALSE');
+	 		if (GetConfig('admin/index/stat_file')) {
+				my @fileStat = stat($file);
+				my $fileSize =    $fileStat[7];
+				my $fileModTime = $fileStat[9];
+				WriteLog('IndexFile: $fileModTime = ' . $fileModTime . '; $fileSize = ' . $fileSize);
+				if ($fileModTime) {
+					if (IsItem($indexSuccess)) {
+						DBAddItemAttribute($indexSuccess, 'file_m_timestamp', $fileModTime);
+						DBAddItemAttribute($indexSuccess, 'file_size', $fileSize);
+					} else {
+						WriteLog('IndexFile: warning: IsItem($indexSuccess) was FALSE');
+					}
 				}
 			}
+	 		if (GetConfig('admin/index/add_git_hash_file')) {
+	 			#todo sanity check before running shell command #security
+	 			my $gitHash = `git hash-object $file`;
+	 			if ($gitHash) {
+					DBAddItemAttribute($indexSuccess, 'git_hash_object', $gitHash);
+	 			} else {
+	 				WriteLog('IndexFile: warning: $gitHash returned false');
+	 			}
+	 		}
 		}
 	}
 

@@ -88,6 +88,23 @@ sub HtmlEscape { # encodes supplied string for html output
 	return $text;
 }
 
+sub GetStringHtmlColor {
+	my $string = shift;
+	#todo dark/light or color(s) to match
+	#todo sanity
+
+	if (!defined($string)) {
+		$string = '';
+	}
+
+	my $hash = sha1_hex($string);
+	my $color = substr($hash, 0, 6);
+
+	$color = '#' . $color;
+
+	return $color;
+} # GetStringHtmlColor()
+
 sub str_repeat {
 	my $string = shift;
 	my $count = shift;

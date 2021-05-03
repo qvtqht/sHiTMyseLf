@@ -6,6 +6,9 @@
 use strict;
 use warnings;
 use utf8;
+
+use URI::Escape qw(uri_escape);
+
 use 5.010;
 
 my @foundArgs;
@@ -184,9 +187,19 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		$fieldValue = GetTimestampWidget($fieldValue);
 	}
 
+	if ($fieldName eq 'item_url') {
+		$fieldValue = '<a href="' . uri_escape($fieldValue) . '">' . HtmlEscape($fieldValue) . '</a>';
+	}
+
 	if ($fieldName eq 'item_title') {
 		if (%itemHash && $itemHash{'file_hash'}) {
 			$fieldValue = '<b>' . GetItemHtmlLink($itemHash{'file_hash'}, $fieldValue) . '</b>';
+		}
+	}
+
+	if ($fieldName eq 'tagset_compost') {
+		if (%itemHash && $itemHash{'file_hash'}) {
+			$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, 'compost');
 		}
 	}
 
@@ -848,7 +861,7 @@ sub GetQueryPage {
 		$html .= '<pre class=advanced><br><hr>'.HtmlEscape($query).'</pre>';
 		$html .= GetPageFooter();
 		if (GetConfig('admin/js/enable')) {
-			$html = InjectJs($html, qw(settings utils timestamp));
+			$html = InjectJs($html, qw(settings utils timestamp voting crypto2 avatar));
 			#todo only add timestamp if necessary?
 		}
 		return $html;
@@ -1515,6 +1528,28 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			}
 			$windowParams{'guid'} = substr(sha1_hex($file{'file_hash'}), 0, 8);
 			# $windowParams{'headings'} = 'haedigns';
+
+			if ($file{'tags_list'}) {
+				my @tagsList = split(',', $file{'tags_list'});
+
+				my $headings;
+				foreach my $tag (@tagsList) {
+					if ($tag =~ m/^[0-9a-zA-Z_-]+$/) {
+						#sanity check
+						#$tag = $1;
+					} else {
+						WriteLog('GetItemTemplate: warning: $tag sanity check failed, @tagsList $tag = ' . $tag);
+						$headings .= '[tag]';
+						next;
+					}
+					my $tagColor = GetStringHtmlColor($tag);
+					$headings .= '<a href="/top/' . $tag . '.html"><font color="#' . $tagColor . '">#</font>' . $tag . '</a> ';
+					#$headings .= 'tag='.$tag;
+				}
+
+				$windowParams{'headings'} = '<span class=advanced>' . $headings . '</span>'; #todo this is a kludge
+				#$windowParams{'headings'} = '<a>#' . join('</a> <a>#', split(',', $file{'tags_list'})) . '</a>';
+			} # $file{'tags_list'}
 
 
 			my $statusBar = '';

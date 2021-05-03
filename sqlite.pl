@@ -604,6 +604,8 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 			my $aref;
 			my $sth;
 
+			#todo error handling in case sql query has an error
+
 			$sth = $dbh->prepare($query);
 			my $execResult = $sth->execute(@queryParams);
 
@@ -2003,7 +2005,7 @@ sub DBAddItemAttribute { # $fileHash, $attribute, $value, $epoch, $source # add 
 
 	WriteLog("DBAddItemAttribute()");
 
-	my $fileHash = shift;
+	my $fileHash = shift;#
 
 	if ($fileHash eq 'flush') {
 		WriteLog("DBAddItemAttribute(flush)");
@@ -2029,10 +2031,10 @@ sub DBAddItemAttribute { # $fileHash, $attribute, $value, $epoch, $source # add 
 		$query = '';
 	}
 
-	my $attribute = shift;
-	my $value = shift;
-	my $epoch = shift;
-	my $source = shift;
+	my $attribute = shift;#
+	my $value = shift;#
+	my $epoch = shift;#
+	my $source = shift;#
 
 	if (!$attribute) {
 		WriteLog('DBAddItemAttribute: warning: called without $attribute');

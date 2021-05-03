@@ -10,6 +10,7 @@ use 5.010;
 use utf8;
 
 sub GetItemTagButtons { # $fileHash, [$tagSet], [$returnTo] ; get vote buttons for item in html form
+# GetItemVoteButtons GetVoteButtons GetVoteLinks GetItemVoteLinks {
 	my $fileHash = shift; # item's file hash
 	my $tagSet = shift;   # (optional) use a particular tagset instead of item's default
 	my $returnTo = shift; # (optional) what page to return to instead of current (for use by post.php)
@@ -120,7 +121,7 @@ sub GetItemTagButtons { # $fileHash, [$tagSet], [$returnTo] ; get vote buttons f
 		} # if ($fileHash && $ballotTime)
 	} # foreach my $quickTagValue (@quickVotesList)
 
-	WriteLog('GetItemTagButtons returning: $tagButtons = (' . length($tagButtons) . 'b)');
+	WriteLog('GetItemTagButtons: returning: $tagButtons = (' . length($tagButtons) . 'b)');
 
 	return $tagButtons;
 } # GetItemTagButtons()
