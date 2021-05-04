@@ -16,7 +16,7 @@ sub GetString { # $stringKey, $language, $noSubstitutions ; Returns string from 
 
 	if (!$stringKey) {
 		WriteLog('GetString: warning: called without $stringKey, exiting');
-		return;
+		return '';
 	}
 	if (!$language) {
 		$language = GetConfig('language');
@@ -52,6 +52,8 @@ sub GetString { # $stringKey, $language, $noSubstitutions ; Returns string from 
 
 			if (!$string) {
 				$string = TrimPath($stringKey);
+
+				WriteLog('GetString: warning: string value missing for $stringKey = ' . $stringKey);
 				# if string is not found, display string key
 				# trin string key's path to make it less confusing
 			}
