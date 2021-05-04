@@ -252,6 +252,19 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 		$columns = join(',', @columnsArray);
 	}
 
+	my $columnsDisplay = '';
+	if ($columns) {
+		my $columnsComma = '';
+		foreach my $columnItem (@columnsArray) {
+			my $columnString = GetString('field_name/' . $columnItem) || $columnItem;
+			$columnsDisplay .= $columnsComma;
+			$columnsDisplay .= $columnString;
+			if (!$columnsComma) {
+				$columnsComma = ',';
+			}
+		}
+	}
+
 	if (@result) {
 		my $content = '';
 
@@ -278,7 +291,7 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 			}
 		}
 
-		return GetWindowTemplate($content, $title, $columns);
+		return GetWindowTemplate($content, $title, $columnsDisplay);
 	} else {
 		return GetWindowTemplate('No results.');
 	}
