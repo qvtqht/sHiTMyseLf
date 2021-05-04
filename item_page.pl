@@ -86,8 +86,14 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	if (defined($file{'author_key'}) && $file{'author_key'}) {
 		#todo the .txt extension should not be hard-coded
 		my $alias = GetAlias($file{'author_key'});
-		$alias = HtmlEscape($alias);
-		$title .= " by $alias";
+		if ($alias) {
+			$alias = HtmlEscape($alias);
+			$title .= " by $alias";
+		} else {
+			WriteLog('GetItemPage: warning: author_key was defined, but $alias turned out false');
+			$alias = 'Guest';
+			$title .= ' by Guest';
+		}
 	}
 
 	# Get the HTML page template
