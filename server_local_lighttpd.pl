@@ -162,10 +162,13 @@ if (GetConfig('admin/lighttpd/enable')) {
 #		WriteMessage('Opening browser in 1...');
 #		sleep 2;
 
-		my $openString = 'xdg-open "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
+		my $openString = 'screen -S test -d -m xdg-open "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
 
 		WriteMessage('Opening browser with `' . $openString . '`');
-		WriteMessage(`$openString &`);
+
+		my $openResult = `$openString`;
+
+		WriteMessage('$openResult = ' . $openResult);
 	}
 
 	WriteMessage("===================\n");
