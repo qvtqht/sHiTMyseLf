@@ -651,8 +651,13 @@ sub GetClockFormattedTime() { # returns current time in appropriate format from 
 		return $clockFormattedTime;
 	}
 
-	return GetTime();
-}
+	my $getTime = GetTime();
+	if ($getTime =~ m/^([0-9]+)\.([0-9]+)$/) {
+		$getTime = $1;
+	}
+
+	return $getTime;
+} # GetClockFormattedTime()
 
 sub PutFile { # Writes content to a file; $file, $content, $binMode
 	# $file = file path
