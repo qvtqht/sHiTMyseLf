@@ -1,3 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
-./update.pl --all
+./index.pl --all
+./access_log_read.pl --all
