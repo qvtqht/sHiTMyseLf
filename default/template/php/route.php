@@ -1167,6 +1167,16 @@ if (GetConfig('admin/php/route_enable')) {
 			}
 		}
 
+		{ #default/admin/php/assist_sequence_counter
+
+			if (GetConfig('admin/js/enable') && GetConfig('admin/php/assist_sequence_counter')) {
+				
+				// this allows clients to see the sequence counter
+				// and thus know how many posts they haven't seen yet
+				$html .= '<script><!-- window.sequenceServerValue = 0; // --></script>';
+				#todo make neater
+			}
+		} #default/admin/php/assist_sequence_counter
 
 		////////////////////////////
 		print $html; // final output
