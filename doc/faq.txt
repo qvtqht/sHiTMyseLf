@@ -1,3 +1,8 @@
+Localhost can't connect / server not found
+I tried to connect to http://localhost:2784/ and it didn't work
+A: Run server_local_lighttpd.pl
+
+
 Why bother with supporting older browsers?
 
 One reason is that I want to create something lasting.
