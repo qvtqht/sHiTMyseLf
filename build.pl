@@ -113,9 +113,9 @@ if (GetConfig('admin/ssi/enable') && GetConfig('admin/php/enable')) {
 }
 
 system('echo "\n"');
-system('echo "Running ./index.pl --all in 3..."; sleep 1');
-system('echo "2..."; sleep 1');
-system('echo "1..."; sleep 1');
+system('echo "Running ./index.pl --all in 3..."; sleep 2');
+system('echo "2..."; sleep 2');
+system('echo "1..."; sleep 2');
 system('./index.pl --all');
 
 1;
