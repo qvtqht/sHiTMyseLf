@@ -49,11 +49,14 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 		//alert('DEBUG: OnLoadEverything: WriteOnload()');
 		WriteOnload();
 	}
+
 	if (window.ShowAdvanced) {
 		//alert('DEBUG: OnLoadEverything: ShowAdvanced()');
 		window.eventLoopShowAdvanced = 1;
 		ShowAdvanced(0);
 	}
+	//alert('DEBUG: OnLoadEverything: ShowAdvanced() finished!');
+
 	if (window.SearchOnload) {
 		//alert('DEBUG: OnLoadEverything: SearchOnload()');
 		SearchOnload();
@@ -62,19 +65,29 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 		//alert('DEBUG: OnLoadEverything: UploadAddImagePreviewElement()');
 		UploadAddImagePreviewElement();
 	}
-	if (
-		(
+
+	//alert('DEBUG: OnLoadEverything: checking for editable field...');
+
+	if (window.location && document.compose && window.location.href.indexOf) {
+		if (
+			window.location.href &&
 			window.location.href &&
 			window.location.href.indexOf('write') != -1 ||
-			window.location.hash.indexOf('reply') != -1
-		) &&
-		document.compose &&
-		document.compose.comment &&
-		document.compose.comment.focus
-	) {
-		//alert('DEBUG: OnLoadEverything: document.compose.comment.focus()()');
-		document.compose.comment.focus();
+			window.location.hash.indexOf('reply') != -1 ||
+			(
+				window.location.href.indexOf('message') != -1 &&
+				window.GetPrefs &&
+				GetPrefs('focus_reply')
+			)
+				&&
+			document.compose.comment &&
+			document.compose.comment.focus
+		) {
+			//alert('DEBUG: OnLoadEverything: document.compose.comment.focus()()');
+			document.compose.comment.focus();
+		}
 	}
+
 	if (window.location.href && (window.location.href.indexOf('search') != -1) && document.search.q) {
 		//alert('DEBUG: OnLoadEverything: document.search.q.focus()');
 		document.search.q.focus();
