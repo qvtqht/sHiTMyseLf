@@ -4,6 +4,11 @@ today i realized that w3m on freebsd has glitches with displaying the <hr> tag.
 	so <hr> must be somehow removed from all html templates
 		while still serving something nice in browsers where hr is a section break
 
+allow proof of work by generating html pages
+
+profile page is not updated after public key is shared
+
+tell client when vote has been confirmed
 
 reply field should be focused only after a submission
 	if in php mode
@@ -2202,4 +2207,5 @@ config/list/menu_bytag
 
 config/admin/js/dragging
 	when 0, hide in settings
+
 -M write instead of --write pages.pl
