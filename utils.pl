@@ -134,7 +134,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		}
 
 		AppendFile("log/log.log", $timestamp . " " . $text);
-		$debugOn = 0; #verbose #quiet mode #quietmode #featureflag
+		$debugOn = 1; #verbose #quiet mode #quietmode #featureflag
 	}
 
 	if ($debugOn) { # this is the part which prints the snow #snow
