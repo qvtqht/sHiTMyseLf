@@ -123,8 +123,9 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 
 	# Only if debug mode is enabled
 	state $debugOn;
+	my $timestamp = '';
 	if ($debugOn || -e 'config/admin/debug') {
-		my $timestamp = GetTime();
+		$timestamp = GetTime();
 
 		if (0) { # debug use milliseconds #featureflag
 			my $t = time;
@@ -136,6 +137,8 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		AppendFile("log/log.log", $timestamp . " " . $text);
 		$debugOn = 0; #verbose #quiet mode #quietmode #featureflag
 	}
+
+	my $charPrefix = '';
 
 	if ($debugOn) { # this is the part which prints the snow #snow
 		my $firstWord = substr($text, 0, index($text, ' '));
@@ -150,14 +153,32 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		my $firstWordHash = md5_hex($firstWord);
 		my $firstWordHashFirstChar = substr($firstWordHash, 0, 1);
 		$firstWordHashFirstChar =~ tr/0123456789abcdef/.;*\-,<">'+o:`_|+/;
+		#todo use 2 characters of the hash, convert to 1 out of 64 characters
+
 		WriteMessage($firstWordHashFirstChar); #todo make config/
+
+		$charPrefix = $firstWordHashFirstChar;
+	}
+	
+	if ($debugOn) {
+		if ($charPrefix eq '') {
+			$charPrefix = '$';
+		}
+		AppendFile("log/log.log", $timestamp . " " . $charPrefix . " " . $text);
 	}
 } # WriteLog()
 
 sub WriteMessage { # Writes timestamped message to console (stdout)
-	my $text = shift;
-	chomp $text;
+	#todo fix WriteLog('WriteMessage: caller = ' . join(',', caller));
 
+	my $text = shift;
+	
+	if (!$text) {
+		print('WriteMessage: warning: $text is false; caller = ' . join(',', caller) . "\n");
+		return '';
+	}
+
+	chomp $text;
 	state $previousText = '';
 
 	if ($text eq '.' || length($text) == 1) {
