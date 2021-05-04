@@ -82,6 +82,17 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 			} # -e $fileHashPath
 			else {
 				# new file does not exist, safe to rename
+				#
+				if ($file && $file =~ m/^([0-9a-zA-Z.\-_\/])$/) {
+					$file = $1;
+				} else {
+					WriteLog('OrganizeFile: warning: $file sanity check failed on rename: ' . $file);
+				}
+				if ($fileHashPath && $fileHashPath =~ m/^([0-9a-zA-Z.\-_\/])$/) {
+					$fileHashPath = $1;
+				} else {
+					WriteLog('OrganizeFile: warning: $fileHashPath sanity check failed on rename: ' . $fileHashPath);
+				}
 				rename ($file, $fileHashPath);
 			}
 
@@ -89,11 +100,11 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 			if (-e $fileHashPath) {
 				$file = $fileHashPath; #don't see why not... is it a problem for the calling function?
 			} else {
-				WriteLog("Very strange... \$fileHashPath doesn't exist? $fileHashPath");
+				WriteLog("OrganizeFile: warning: Very strange... \$fileHashPath doesn't exist? $fileHashPath");
 			}
 		} # $file ne $fileHashPath
 		else {
-			WriteLog('IndexTextFile: it already matches, next!');
+			WriteLog('OrganizeFile: it already matches, next!');
 			WriteLog('$file: ' . $file);
 			WriteLog('$fileHashPath: ' . $fileHashPath);
 		}
