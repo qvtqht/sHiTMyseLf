@@ -2,18 +2,28 @@
 
 function PingUrlCallback () {
 	var xmlhttp = window.xmlhttp;
+	var xmlhttpElement = window.xmlhttpElement;
 
 	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-		//alert('DEBUG: PingUrlCallback() found status 200');
+		// alert('DEBUG: PingUrlCallback() found status 200!');
 
-//		window.location.replace(xmlhttp.responseURL);
-//		document.open();
-//		document.write(xmlhttp.responseText);
-//		document.close();
+		if (xmlhttpElement) {
+			var elemOK = document.createElement('span');
+			//elemOK.setAttribute('disabled', true);
+			elemOK.innerHTML = '&check;';
+			xmlhttpElement.setAttribute('disabled', true);
+			xmlhttpElement.appendChild(elemOK);
+		}
+		// window.location.replace(xmlhttp.responseURL);
+		// document.open();
+		// document.write(xmlhttp.responseText);
+		// document.close();
+	} else {
+		// alert('DEBUG: PingUrlCallback: warning: unrecognized: xmlhttp.status = ' + xmlhttp.status + '; xmlhttp.readyState = ' + xmlhttp.readyState);
 	}
 }
 
-function PingUrl (url) { // loads arbitrary url via image or xhr
+function PingUrl (url, ele) { // loads arbitrary url via image or xhr
 // compatible with most js
 	//alert('DEBUG: PingUrl() begins');
 
@@ -21,6 +31,10 @@ function PingUrl (url) { // loads arbitrary url via image or xhr
 	// var img = document.createElement('img');
     // img.setAttribute("src", url);
     // document.body.appendChild(img);
+
+    if (!ele) {
+    	ele = 0;
+	}
 
 	if (window.XMLHttpRequest) {
 		//alert('DEBUG: PingUrl: window.XMLHttpRequest was true');
@@ -36,7 +50,7 @@ function PingUrl (url) { // loads arbitrary url via image or xhr
         xmlhttp.onreadystatechange = window.PingUrlCallback;
 
         xmlhttp.open("HEAD", url, true);
-//		xmlhttp.timeout = 5000; //#xhr.timeout
+		//xmlhttp.timeout = 5000; //#xhr.timeout
         xmlhttp.send();
 
         return false;
@@ -51,7 +65,6 @@ function PingUrl (url) { // loads arbitrary url via image or xhr
 
 				if (img) {
 					img.setAttribute("src", url);
-
 					return false;
 				}
 			} else {
@@ -59,7 +72,6 @@ function PingUrl (url) { // loads arbitrary url via image or xhr
 
 				if (img) {
 					img.setAttribute("src", url);
-
 					return false;
 				}
 			}
@@ -67,8 +79,7 @@ function PingUrl (url) { // loads arbitrary url via image or xhr
 	}
 
 	return true;
-}
-
+} // PingUrl()
 
 //function OptionsDefault(token, privKeyObj) {
 //	this.data = token;
@@ -139,6 +150,8 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 		var privkey = getPrivateKey();
 		//alert('DEBUG: SignVote: privkey: ' + !!privkey);
 
+		window.xmlhttpElement = t;
+		
 		if (!privkey) {
 			//alert('DEBUG: !privkey');
 			// if there is no private key, just do a basic unsigned vote;
@@ -166,7 +179,6 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 		// remember that we voted for this already
 		SetPrefs(token, 1);
 
-
 		if (window.displayNotification) {
 			//displayNotification('Success!', t);
 		} else {
@@ -184,6 +196,8 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 		//	    	return false;
 		//	    }
 	}
+
+	//alert('DEBUG: SignVote: warning: fall-through');
 
 	return true; // allow link click to happen
 }
