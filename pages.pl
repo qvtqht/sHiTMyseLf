@@ -1,4 +1,5 @@
 #!/usr/bin/perl -T
+#freebsd: #!/usr/local/bin/perl -T
 
 # pages.pl
 # to do with html page generation

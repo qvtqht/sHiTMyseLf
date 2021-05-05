@@ -1,4 +1,5 @@
 #!/usr/bin/perl -T
+#freebsd: #!/usr/local/bin/perl -T
 
 # access.pl
 

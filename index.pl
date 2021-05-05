@@ -1,4 +1,5 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -T
+#freebsd: #!/usr/local/bin/perl -T
 
 # indexes one file or all files eligible for indexing
 # --all .... all eligible files

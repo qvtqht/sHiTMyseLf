@@ -1,4 +1,5 @@
 #!/usr/bin/perl -T
+#freebsd: #!/usr/local/bin/perl -T
 #
 # utils.pl
 # utilities which haven't found their own file yet
@@ -6,7 +7,9 @@
 # performs basic state validation whenever run
 # 
 
-$ENV{PATH}="/bin:/usr/bin";
+$ENV{PATH}="/bin:/usr/bin"; #this is needed for -T to work
+
+#freebsd: $ENV{PATH}="/bin:/usr/bin:/usr/local/bin"; #this is needed for -T to work
 
 use strict;
 use warnings;
@@ -304,6 +307,8 @@ sub GetMyVersion { # Get the currently checked out version (current commit's has
 	}
 
 	$myVersion = `git rev-parse HEAD`;
+
+	#freebsd: $myVersion = `/usr/local/bin/git rev-parse HEAD`;
 	if (!$myVersion) {
 		WriteLog('GetMyVersion: warning: sanity check failed, returning default');
 		$myVersion = sha1_hex('hello, world!');

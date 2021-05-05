@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+#freebsd: #!/usr/local/bin/perl
 
 use strict;
 use warnings;

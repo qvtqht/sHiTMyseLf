@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+#freebsd: #!/usr/local/bin/perl
 
 use strict;
 use 5.010;
@@ -55,6 +56,7 @@ sub StartLighttpd {
 
 #	my $pathLighttpd = `which lighttpd`;
 	my $pathLighttpd = '/usr/sbin/lighttpd';
+	#freebsd: my $pathLighttpd = '/usr/local/sbin/lighttpd';
 	WriteLog('$pathLighttpd = ' . $pathLighttpd);
 
 	if ($pathLighttpd =~ m/^([^\s]+)$/) {
