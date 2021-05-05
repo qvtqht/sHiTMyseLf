@@ -13,6 +13,11 @@ function ItsYou () { // tells user it is their profile
 		) {
 			var itsYou = document.getElementById('itsyou');
 			itsYou.innerHTML = 'This is your profile!';
+
+			var pUserHint = document.getElementById('pUserHint');
+			if (pUserHint) {
+				pUserHint.innerHTML = 'Hint: This is your profile!';
+			}
 		}
 	} else {
 		//alert('debug: need fallback for older browsers here');
