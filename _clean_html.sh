@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # this script will clean html to make room for new html
 
@@ -12,7 +12,9 @@ rm -vrf html/*.html html/*/*.html html/*/*/*.html
 echo "rm -rf html/*.js html/*/*.js html/*/*/*.js"
 rm -vrf html/*.js html/*/*.js html/*/*/*.js
 
+echo "================="
 echo "Cleanup complete!"
+echo "================="
 echo "Rebuilding with ./generate_html_frontend.pl in 3...";
 sleep 1
 

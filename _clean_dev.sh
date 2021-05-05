@@ -1,8 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
 # MYDATE=`date +%s`
 # mkdir trash
 # mkdir trash.$MYDATE
+
+date; time;
 
 echo "rm -v cron.lock"
 rm -v cron.lock
@@ -62,13 +64,15 @@ echo "================="
 echo "Cleanup complete!"
 echo "================="
 echo "Rebuilding with ./build.pl in 3..."
-sleep 1
+sleep 2
 
 echo "2... "
-sleep 1
+sleep 2
 
 echo "1... "
-sleep 1
+sleep 2
 
 echo "Running ./build.pl"
-./build.pl
+perl -T ./build.pl
+
+date; time;
