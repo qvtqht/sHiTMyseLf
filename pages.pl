@@ -4077,6 +4077,8 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 	WriteLog('MakeSummaryPages() BEGIN');
 
 	my $HTMLDIR = GetDir('html');
+	
+	MakeSystemPages();
 
 	PutHtmlFile("test.html", GetTemplate('html/test.template'));
 	PutHtmlFile("keyboard.html", GetTemplate('keyboard/keyboard.template'));
@@ -4098,37 +4100,6 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 	my $jsTest1 = GetTemplate('test/jstest1/jstest1.template');
 	$jsTest1 = InjectJs($jsTest1, qw(jstest1));
 	PutHtmlFile("jstest1.html", $jsTest1);
-
-	# Submit page
-	my $submitPage = GetWritePage();
-	PutHtmlFile("write.html", $submitPage);
-
-	if (GetConfig('admin/php/enable')) {
-		# create write_post.html for longer messages if admin/php/enable
-		$submitPage =~ s/method=get/method=post/g;
-		if (index(lc($submitPage), 'method=post') == -1) {
-			$submitPage =~ s/\<form /<form method=post /g;
-		}
-		if (index(lc($submitPage), 'method=post') == -1) {
-			$submitPage =~ s/\<form/<form method=post /g;
-		}
-		$submitPage =~ s/cols=32/cols=50/g;
-		$submitPage =~ s/rows=9/rows=15/g;
-		$submitPage =~ s/please click here/you're in the right place/g;
-		PutHtmlFile("write_post.html", $submitPage);
-	}
-
-	# Upload page
-	my $uploadPage = GetUploadPage();
-	PutHtmlFile("upload.html", $uploadPage);
-
-	# Upload page
-	my $uploadMultiPage = GetUploadPage('html/form/upload_multi.template');
-	PutHtmlFile("upload_multi.html", $uploadMultiPage);
-
-	# Search page
-	my $searchPage = GetSearchPage();
-	PutHtmlFile("search.html", $searchPage);
 
 	# Add Event page
 	my $eventAddPage = GetEventAddPage();
@@ -4175,8 +4146,6 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 	MakePage('compost', 0);
 
 	MakePage('deleted', 0);
-
-	PutStatsPages();
 	#
 	# { # clock test page
 	# 	my $clockTest = '<form name=frmTopMenu>' . GetTemplate('html/widget/clock.template') . '</form>';
@@ -4201,6 +4170,48 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 		PutHtmlFile("error/error-401.html", $accessDeniedPage);
 	}
 
+
+	WriteIndexPages();
+
+	WriteLog('MakeSummaryPages() END');
+} # MakeSummaryPages()
+
+sub MakeSystemPages {
+
+	my $HTMLDIR = GetDir('html');
+
+	# Submit page
+	my $submitPage = GetWritePage();
+	PutHtmlFile("write.html", $submitPage);
+
+	if (GetConfig('admin/php/enable')) {
+		# create write_post.html for longer messages if admin/php/enable
+		$submitPage =~ s/method=get/method=post/g;
+		if (index(lc($submitPage), 'method=post') == -1) {
+			$submitPage =~ s/\<form /<form method=post /g;
+		}
+		if (index(lc($submitPage), 'method=post') == -1) {
+			$submitPage =~ s/\<form/<form method=post /g;
+		}
+		$submitPage =~ s/cols=32/cols=50/g;
+		$submitPage =~ s/rows=9/rows=15/g;
+		$submitPage =~ s/please click here/you're in the right place/g;
+		PutHtmlFile("write_post.html", $submitPage);
+	}
+
+	# Upload page
+	my $uploadPage = GetUploadPage();
+	PutHtmlFile("upload.html", $uploadPage);
+
+	# Upload page
+	my $uploadMultiPage = GetUploadPage('html/form/upload_multi.template');
+	PutHtmlFile("upload_multi.html", $uploadMultiPage);
+
+	# Search page
+	my $searchPage = GetSearchPage();
+	PutHtmlFile("search.html", $searchPage);
+
+	PutStatsPages();
 	# Settings page
 	my $settingsPage = GetSettingsPage();
 	PutHtmlFile("settings.html", $settingsPage);
@@ -4335,14 +4346,11 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 		}
 	}
 
-	WriteIndexPages();
-
 	if (GetConfig('admin/php/enable')) {
 		MakePhpPages();
 	}
 
-	WriteLog('MakeSummaryPages() END');
-} # MakeSummaryPages()
+} # MakeSystemPages()
 
 sub GetUploadWindow { # upload window for upload page
 	if (!GetConfig('admin/upload/enable')) {
@@ -5721,6 +5729,10 @@ while (my $arg1 = shift @foundArgs) {
 		elsif ($arg1 eq '--summary' || $arg1 eq '-s') {
 			print ("recognized --summary\n");
 			MakeSummaryPages();
+		}
+		elsif ($arg1 eq '--system' || $arg1 eq '-S') {
+			print ("recognized --system\n");
+			MakeSystemPages();
 		}
 		elsif ($arg1 eq '--php') {
 			print ("recognized --php\n");
