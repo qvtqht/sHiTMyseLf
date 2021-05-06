@@ -1374,12 +1374,18 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 			}
 	 		if (GetConfig('admin/index/add_git_hash_file')) {
 	 			#todo sanity check before running shell command #security
-	 			my $gitHash = `git hash-object $file`;
-	 			if ($gitHash) {
-					DBAddItemAttribute($indexSuccess, 'git_hash_object', $gitHash);
-	 			} else {
-	 				WriteLog('IndexFile: warning: $gitHash returned false');
-	 			}
+	 			if ($file =~ m/^([0-9a-z.\/_]+)/) {
+	 				$file = $1;
+
+					my $gitHash = `git hash-object $file`;
+					if ($gitHash) {
+						DBAddItemAttribute($indexSuccess, 'git_hash_object', $gitHash);
+					} else {
+						WriteLog('IndexFile: warning: $gitHash returned false');
+					}
+				} else {
+					WriteLog('IndexFile: warning: add_git_hash_file, $file failed sanity check');
+				}
 	 		}
 		}
 	}

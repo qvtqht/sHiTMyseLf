@@ -74,6 +74,13 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 					return '';
 				}
 
+				if ($file =~ m/^([0-9a-zA-Z\/\._\-]+)$/) {
+					$file = $1;
+				} else {
+					WriteLog('OrganizeFile: warning: $file failed sanity check');
+					return '';
+				}
+
 				if (-s $fileHashPath > -s $file) {
 					unlink ($file);
 				} else {
@@ -85,15 +92,17 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 				#
 				if ($file && $file =~ m/^([0-9a-zA-Z.\-_\/])$/) {
 					$file = $1;
+
+					if ($fileHashPath && $fileHashPath =~ m/^([0-9a-zA-Z.\-_\/])$/) {
+						$fileHashPath = $1;
+
+						rename ($file, $fileHashPath);
+					} else {
+						WriteLog('OrganizeFile: warning: $fileHashPath sanity check failed on rename: ' . $fileHashPath);
+					}
 				} else {
 					WriteLog('OrganizeFile: warning: $file sanity check failed on rename: ' . $file);
 				}
-				if ($fileHashPath && $fileHashPath =~ m/^([0-9a-zA-Z.\-_\/])$/) {
-					$fileHashPath = $1;
-				} else {
-					WriteLog('OrganizeFile: warning: $fileHashPath sanity check failed on rename: ' . $fileHashPath);
-				}
-				rename ($file, $fileHashPath);
 			}
 
 			# if new file exists
