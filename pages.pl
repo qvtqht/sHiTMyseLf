@@ -1573,7 +1573,11 @@ sub GetItemTemplate { # returns HTML for outputting one item
 						next;
 					}
 					my $tagColor = GetStringHtmlColor($tag);
-					$headings .= '<a href="/top/' . $tag . '.html"><font color="#' . $tagColor . '">#</font>' . $tag . '</a> ';
+					$headings .=
+						'<a href="/top/' . $tag . '.html">' .
+						'<font color="#' . $tagColor . '">#</font>' .
+						$tag .
+						'</a>; ';
 					#$headings .= 'tag='.$tag;
 				}
 
@@ -1614,7 +1618,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 				$statusBar = $file{'item_statusbar'};
 			}
 
-			if (index($file{'tags_list'}, 'sponsor') != -1) {
+			if ($file{'tags_list'} && index($file{'tags_list'}, 'sponsor') != -1) {
 				$statusBar = '<a href="' . $file{'item_title'} . '" target=_blank>' . $file{'item_title'} . '</a>';
 			}
 
@@ -3350,7 +3354,8 @@ sub GetReadPage { # generates page with item listing based on parameters
 			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
 				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%'";
 			} else {
-				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score > 0";
+				#$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score > 0";
+				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score >= 0";
 			}
 			$queryParams{'order_clause'} = "ORDER BY item_flat.add_timestamp DESC";
 			$queryParams{'limit_clause'} = "LIMIT 100"; #todo fix hardcoded limit
