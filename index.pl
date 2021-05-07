@@ -500,7 +500,10 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 			push @tokenMessages, 'Token #example was found, other tokens will be ignored.';
 		} # #example
 		else { # not #example
-			my $itemTimestamp = DBGetItemAttribute($fileHash, 'chain_timestamp');#todo bug here, depends on chain being on
+			my $itemTimestamp = $addedTime;
+			if (!$itemTimestamp) {
+				$itemTimestamp = DBGetItemAttribute($fileHash, 'chain_timestamp');#todo bug here, depends on chain being on
+			}
 			my @hashTagsAppliedToParent;
 
 			foreach my $tokenFoundRef (@tokensFound) {
@@ -524,14 +527,13 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						# 		otherwise: to self
 						WriteLog('IndexTextFile: token_found: ' . $tokenFound{'recon'});
 
-						if ($addedTime) {
-							$itemTimestamp = $addedTime; #todo #fixme #stupid
-							#todo it currently depends on chainlog
-						} else {
+						if (!$itemTimestamp) {
+							WriteLog('IndexTextFile: warning: $itemTimestamp being set to time()');
 							$itemTimestamp = time(); #todo #fixme #stupid
 						}
 
 						if ($tokenFound{'recon'} && $tokenFound{'message'} && $tokenFound{'param'}) {
+							WriteLog('IndexTextFile: %tokenFound: ' . Dumper(%tokenFound));
 							if ($tokenFound{'apply_to_parent'} && @itemParents) {
 								foreach my $itemParent (@itemParents) {
 									DBAddItemAttribute($itemParent, $tokenFound{'token'}, $tokenFound{'param'}, $itemTimestamp, $fileHash);
@@ -854,10 +856,11 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 			# add #notext label/tag
 			WriteLog('IndexTextFile: no $detokenedMessage, setting #notext; $fileHash = ' . $fileHash);
 			DBAddVoteRecord($fileHash, 0, 'notext');
+			#DBAddItemAttribute($fileHash, 'all_tokens_no_text', 1);
 
 			if ($titleCandidate) {
 				#no message, only tokens. try to get a title from the tokens, which we stashed earlier
-				DBAddItemAttribute($fileHash, 'title', $titleCandidate, 0);
+				DBAddItemAttribute($fileHash, 'title', $titleCandidate);
 			}
 		}
 		else { # has $detokenedMessage
