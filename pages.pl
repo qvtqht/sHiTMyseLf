@@ -257,9 +257,10 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 	if ($columns) {
 		my $columnsComma = '';
 		foreach my $columnItem (@columnsArray) {
-			my $columnString = GetString('field_name/' . $columnItem) || $columnItem;
+			#my $columnString = GetString('field_name/' . $columnItem) || $columnItem;
 			$columnsDisplay .= $columnsComma;
-			$columnsDisplay .= $columnString;
+			#$columnsDisplay .= $columnString;
+			$columnsDisplay .= $columnItem;
 			if (!$columnsComma) {
 				$columnsComma = ',';
 			}
@@ -442,6 +443,9 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 
 	# NOT IMPLEMENTED $windowId = if set, id=foo parameter is added to top-level tag
 
+	WriteLog('GetWindowTemplate2: %param: ' . Dumper(%param));
+	WriteLog('GetWindowTemplate2: caller: ' . join(',', caller));
+
 	my $windowBody = $param{'body'};
 	my $windowTitle = $param{'title'};
 	my $columnHeadings = $param{'headings'};
@@ -498,6 +502,7 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 			$printedColumnsCount++;
 			my $columnHeaderTemplate = GetTemplate('html/window/header_column.template'); # <td></td>
 			if ($columnCaption eq 'file_hash') { #todo config/list/field_advanced
+				#todo caption and field name should be different things
 				$columnHeaderTemplate = AddAttributeToTag(
 					$columnHeaderTemplate,
 					'th',
@@ -510,7 +515,13 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 				# adds a <br> for browsers without table support
 				$columnCaption .= '<br>'; # for no-table browsers
 			}
-			$columnHeaderTemplate =~ s/\$headerCaption/$columnCaption/;
+#			my $columnCaptionString = GetString('field_name/' . $columnCaption);
+#			if ($columnCaptionString) {
+#				$columnHeaderTemplate =~ s/\$headerCaption/$columnCaptionString/;
+#			} else {
+				$columnHeaderTemplate =~ s/\$headerCaption/$columnCaption/;
+#			}
+
 			$windowHeaderColumns .= $columnHeaderTemplate;
 		}
 		$windowHeaderTemplate =~ s/\$windowHeadings/$windowHeaderColumns/;
