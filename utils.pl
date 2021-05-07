@@ -137,7 +137,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 			$timestamp = $date;
 		}
 
-		AppendFile("log/log.log", $timestamp . " " . $text);
+		#AppendFile("log/log.log", $timestamp . " " . $text);
 		$debugOn = 1; #verbose #quiet mode #quietmode #featureflag
 	}
 
