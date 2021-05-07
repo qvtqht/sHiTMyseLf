@@ -209,10 +209,15 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		my @itemReplies = DBGetItemReplies($fileHash);
 		WriteLog('GetItemPage: scalar(@itemReplies) = ' . scalar(@itemReplies));
 		foreach my $itemReply (@itemReplies) {
-#			$itemReply
 			WriteLog('GetItemPage: $itemReply = ' . $itemReply);
-			my $itemReplyTemplate = GetItemTemplate($itemReply);
-			$txtIndex .= $itemReplyTemplate;
+			if ($itemReply->{'tags_list'} && index($itemReply->{'tags_list'}, 'hastext') != -1) {
+				my $itemReplyTemplate = GetItemTemplate($itemReply);
+				$txtIndex .= $itemReplyTemplate;
+			} else {
+				my $itemReplyTemplate = GetItemTemplate($itemReply);
+				$itemReplyTemplate = '<span class=advanced>' . $itemReplyTemplate . '</span>';
+				$txtIndex .= $itemReplyTemplate;
+			}
 		}
 	}
 
