@@ -1065,6 +1065,8 @@ sub GetReplyForm { # $replyTo ; returns reply form for specified item
 } # GetReplyForm();
 
 sub GetItemHtmlLink { # $hash, [link caption], [#anchor] ; returns <a href=...
+# sub GetItemLink {
+# sub GetLink {
 	my $hash = shift;
 
 	if ($hash) {
@@ -1309,6 +1311,8 @@ sub GetImageContainer { # $fileHash, $imageAlt, $boolLinkToItemPage = 1
 	}
 
 	#todo sanity
+
+	WriteLog('GetImageContainer: $fileHash = ' . $fileHash);
 
 	my $permalinkHtml = '';
 	if (!$permalinkHtml) {
@@ -1703,7 +1707,9 @@ sub GetItemTemplate { # returns HTML for outputting one item
 
 		my $replyCount = $file{'child_count'};
 		my $borderColor = '#' . substr($fileHash, 0, 6); # item's border color
-		my $addedTime = GetTimestampWidget(DBGetAddedTime($fileHash)); #todo optimize
+		my $addedTime = DBGetAddedTime($fileHash);
+		$addedTime = ceil($addedTime);
+		my $addedTimeWidget = GetTimestampWidget($addedTime); #todo optimize
 		my $itemTitle = $file{'item_title'};
 
 		{ #todo refactor this to not have title in the template
@@ -1805,7 +1811,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		$itemTemplate =~ s/\$permalinkHtml/$permalinkHtml/g;
 		$itemTemplate =~ s/\$itemText/$itemText/g;
 		$itemTemplate =~ s/\$fileHash/$fileHash/g;
-		$itemTemplate =~ s/\$addedTime/$addedTime/g;
+		$itemTemplate =~ s/\$addedTime/$addedTimeWidget/g;
 		$itemTemplate =~ s/\$replyLink/$replyLink/g;
 		$itemTemplate =~ s/\$itemAnchor/$itemAnchor/g;
 
@@ -2142,6 +2148,7 @@ sub GetClockWidget {
 		if (GetConfig('admin/ssi/enable') && GetConfig('admin/ssi/clock_enhance')) {
 			# ssi-enhanced clock
 			# currently not compatible with javascript clock
+			#todo needs review
 			WriteLog('GetPageHeader: ssi is enabled');
 			$clock = GetTemplate('html/widget/clock_ssi.template');
 			$clock =~ s/\$currentTime/$currentTime/g;
@@ -2718,7 +2725,7 @@ sub GetStatsTable {
 	}
 
 	if (abs($itemsIndexed - $filesTotal) > 3) {
-		$statsTable = str_replace('<p id=diagnostics></p>', '<p id=diagnostics><font color=orange><b>Check engine!</b></font></p>', $statsTable);
+		$statsTable = str_replace('<p id=diagnostics></p>', '<p id=diagnostics><font color=orange style="padding: 2pt; border-radius: 3pt; border: inset 1pt #606060; background-color: #404040;"><b>Check engine!</b></font></p>', $statsTable);
 	}
 
 	my $tagsTotal = DBGetTagCount();
@@ -2941,6 +2948,10 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 				WriteLog('InjectJs(): warning: wanted to $html does not contain <body');
 			}
 		}
+	}
+
+	if (GetConfig('admin/js/debug')) {
+		$html = '<a href=# onclick="window.dbgoff=0; return false;" style="float:right">debug</a>' . $html;
 	}
 
 	return $html;
@@ -3202,7 +3213,8 @@ sub GetAuthorInfoBox {
 	}
 
 	if (IsAdmin($authorKey)) {
-		$authorInfoTemplate =~ s/<p>This page about author listed below.<\/p>/<p>Note: This user is system operator.<\/p>/;
+		#todo make this more proper like
+		$authorInfoTemplate =~ s/<p>This page about author listed below.<\/p>/<p>Note: This user is a system operator.<\/p>/;
 	}
 	$authorInfoTemplate =~ s/\$avatar/$authorAvatarHtml/;
 	$authorInfoTemplate =~ s/\$authorName/$authorAliasHtml/;
@@ -3344,7 +3356,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 			$queryParams{'limit_clause'} = "LIMIT 100"; #todo fix hardcoded limit
 
 			@files = DBGetItemList(\%queryParams);
-		}
+		} # $pageType eq 'tag'
 	} else {
 		return; #this code is deprecated
 		#		$title = GetConfig('home_title') . ' - ' . GetConfig('logo_text');
@@ -5458,11 +5470,13 @@ sub GetTimestampWidget { # $time ; returns timestamp widget
 
 	state $epoch; # state of config
 	if (!defined($epoch)) {
+		#what does this do?
+		# epoch-formatted timestamp, simpler template
 		$epoch = GetConfig('html/timestamp_epoch');
 	}
 
-	if (!$time =~ m/^[0-9]+$/) {
-		WriteLog('GetTimestampWidget: warning: sanity check failed!');
+	if (!$time =~ m/^[0-9.]+$/) {
+		WriteLog('GetTimestampWidget: warning: sanity check failed! $time = ' . $time);
 		return '';
 	}
 
@@ -5490,6 +5504,9 @@ sub GetTimestampWidget { # $time ; returns timestamp widget
 	}
 
 	chomp $widget;
+
+	WriteLog('GetTimestampWidget: returning $widget = ' . $widget);
+
 	return $widget;
 } # GetTimestampWidget()
 
