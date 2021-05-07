@@ -132,6 +132,66 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		$txtIndex .= $itemTemplate;
 	}
 
+	if (GetConfig('html/item_toolbox/enable')) {
+		my $htmlToolbox = '';
+
+		if ($file{'item_title'}) {
+			#todo urlescape
+			$htmlToolbox .=
+				'<a href="http://www.google.com/search?q=' .
+				HtmlEscape($file{'item_title'}) .
+				'">' .
+				'Google' .
+				'</a><br>'
+				;
+			$htmlToolbox .=
+				'<a href="http://html.duckduckgo.com/html?q=' .
+				HtmlEscape($file{'item_title'}) .
+				'">' .
+				'DuckDuckGo' .
+				'</a><br>'
+				;
+			$htmlToolbox .=
+				'<a href="http://yandex.ru/yandsearch?text=' .
+				HtmlEscape($file{'item_title'}) .
+				'">' .
+				'Яндекс' .
+				'</a><br>'
+				;
+			$htmlToolbox .=
+				'<a href="https://teddit.net/r/all/search?q=' .
+				HtmlEscape($file{'item_title'}) .
+				'&nsfw=on' .
+				'">' .
+				'Teddit' .
+				'</a><br>'
+				;
+			$htmlToolbox .=
+				'<a href="https://hn.algolia.com/?q=' .
+				HtmlEscape($file{'item_title'}) .
+				'">' .
+				'Algolia' .
+				'</a><br>'
+				;
+			$htmlToolbox .=
+				'<a href="https://en.wikipedia.org/w/index.php?search=' .
+				HtmlEscape($file{'item_title'}) .
+				'">' .
+				'Wikipedia' .
+				'</a><br>'
+				;
+			$htmlToolbox .=
+				'<a href="https://ru.wikipedia.org/w/index.php?search=' .
+				HtmlEscape($file{'item_title'}) .
+				'">' .
+				'Википедия' .
+				'</a><br>'
+				;
+		}
+
+		$txtIndex .= '<span class=advanced>' . GetWindowTemplate($htmlToolbox, 'Tools') . '</span>';
+	}
+
 	if (GetConfig('reply/enable')) {
 		my $voteButtons = '';
 		if (GetConfig('admin/expo_site_mode')) {
