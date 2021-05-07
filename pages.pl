@@ -5521,18 +5521,25 @@ sub FormatDate { # $epoch ; formats date depending on how long ago it was
 
 	WriteLog('FormatDate: $epoch = ' . $epoch);
 
+	my $millisec = 0; #
 	if ($epoch =~ m/^([0-9])\.([0-9])$/) {
+		$millisec = $epoch;
 		$epoch = $1;
 		#return FormatDate($epoch); #
-	}
+	} #todo edge case for $epoch==0
 
-	if ($epoch =~ m/\D/) { # has non-digits
-		WriteLog('FormatDate: warning: $epoch failed sanity check');
-		return '???';
+	if ($epoch =~ m/\D/ && !($epoch =~ m/\d\.\d/)) { # has non-digits
+		WriteLog('FormatDate: warning: $epoch failed sanity check. $epoch = ' . $epoch);
+		return '[timestamp]';
 	}
 
 	my $time = GetTime();
-	my $difference = $time - $epoch;
+	my $difference = 0;
+	if ($millisec) {
+		$difference = $time - $millisec;
+	} else {
+		$difference = $time - $epoch;
+	}
 	my $formattedDate = '';
 
 	if ($difference < 86400) {
