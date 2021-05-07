@@ -847,15 +847,29 @@ sub str_ireplace { # $replaceWhat, $replaceWith, $string ; emulates some of str_
 		return $string;
 	}
 
-	WriteLog("str_ireplace: sanity check passed, proceeding");
+	WriteLog('str_ireplace: sanity check passed, proceeding');
+	$string =~ s/\Q$replace_this/$with_this/gi;
+	WriteLog('str_ireplace: $string = ' . $string);
+	return $string;
+
+	######## below is old code, not used
 
 	my $length = length($string);
 	my $target = length($replace_this);
+
+	my $loopCounter = 0;
 
 	for (my $i = 0; $i < $length - $target + 1; $i++) {
 		if (lc(substr($string, $i, $target)) eq lc($replace_this)) {
 			$string = substr ($string, 0, $i) . $with_this . substr($string, $i + $target);
 			$i += length($with_this) - length($replace_this); # when new string contains old string
+		}
+
+		$loopCounter++;
+
+		if ($loopCounter > 1000) {
+			WriteLog('str_ireplace: warning: loop has reached 1000 iterations, stopping');
+			last;
 		}
 	}
 
