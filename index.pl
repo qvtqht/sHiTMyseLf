@@ -997,6 +997,14 @@ sub IndexImageFile { # $file ; indexes one image file into database
 
 	my $file = shift;
 	chomp($file);
+
+	if ($file =~ m/^([0-9a-zA-Z\/._\-])$/) {
+		$file = $1;
+	} else {
+		WriteLog(' warning: sanity check failed on $file');
+		return 0;
+	}
+
 	WriteLog("IndexImageFile($file)");
 
 	if ($file eq 'flush') {
