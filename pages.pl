@@ -2227,6 +2227,7 @@ sub GetMenuTemplate { # returns menubar
 			<a href=/write.html>Write</a>
 			<a href=/help.html>Help</a>
 			<a href=/settings.html><font color=gray>Settings</a>
+			<span class=advanced title="Fallback menu is in use">!</span>
 		';
 	}
 
