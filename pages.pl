@@ -2308,7 +2308,9 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 
 	my $topMenuTemplate = GetMenuTemplate();
 
-	if ($pageType ne 'item') {
+	if (
+		$pageType ne 'item'
+	) {
 		$htmlStart =~ s/\$topMenu/$topMenuTemplate/g;
 	} else {
 		$htmlStart =~ s/\$topMenu//g;
@@ -2329,7 +2331,7 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 	$txtIndex .= $htmlStart;
 
 	return $txtIndex;
-}
+} # GetPageHeader()
 
 sub GetItemListing { # returns listing of items based on topic
 	my $htmlOutput = '';
@@ -3870,7 +3872,7 @@ sub GetDesktopPage { # returns html for desktop page (/desktop.html)
 			my $tosWindow = GetTosDialog();
 			$html .= $tosWindow;
 
-			$html .= GetQueryAsDialog('authors');
+			$html .= GetQueryAsDialog('authors', 'Authors');
 			$html .= GetSettingsWindow();
 			$html .= GetProfileWindow();
 			$html .= GetStatsTable();
@@ -5013,6 +5015,7 @@ sub WriteDataPage { # writes /data.html (and zip files if needed)
 } # WriteDataPage()
 
 sub GetItemPageFromHash { # $fileHash, returns html
+# sub GetFilenameFromHash {
 #todo unfinished
 
 	my $fileHash = shift;
