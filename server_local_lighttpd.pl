@@ -54,6 +54,13 @@ sub StartLighttpd {
 		mkdir('./log');
 	}
 
+	my $screenCommand = `which screen`;
+	if ($screenCommand) {
+		$screenCommand = 1;
+	} else {
+		$screenCommand = 0;
+	}
+
 #	my $pathLighttpd = `which lighttpd`;
 	my $pathLighttpd = '/usr/sbin/lighttpd';
 	#freebsd: my $pathLighttpd = '/usr/local/sbin/lighttpd';
@@ -61,7 +68,11 @@ sub StartLighttpd {
 
 	if ($pathLighttpd =~ m/^([^\s]+)$/) {
 		$pathLighttpd = $1;
-		system("$pathLighttpd -D -f config/lighttpd.conf");
+		if ($screenCommand) {
+			system("screen $pathLighttpd -D -f config/lighttpd.conf");
+		} else {
+			system("$pathLighttpd -D -f config/lighttpd.conf");
+		}
 		#todo background it if opening browser
 	} else {
 		WriteMessage('lighttpd path missing or failed sanity check');
