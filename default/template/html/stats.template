@@ -10,48 +10,48 @@
 	<p>Built: $lastBuildTime
 	<p>
 		<a href="/tags.html">
-			$tagsTotal tags
-			<span class=advanced><span class=beginner>have been applied to the items</span></span>
+			<b>$tagsTotal tags</b>
+			<span class=advanced><span class=beginner><br>applied to make content more findable</span></span>
 		</a>
 	</p>
 	<p>
 		<a href="/authors.html">
-			$authorCount authors
-			<span class=advanced><span class=beginner>have shared names or public keys</span></span>
+			<b>$authorCount authors</b>
+			<span class=advanced><span class=beginner><br>shared their names or public keys</span></span>
 		</a>
 	</p>
 	<p class=advanced>
 		<a href="/chain.log">
-			$chainLogLength
-			<span class=beginner>items notarized</span>
+			<b>$chainLogLength</b>
+			<span class=beginner><br>content pieces have been notarized</span>
 		</a>
 	</p>
 	<p class=advanced>
 		<a href="/compost.html">
-			$itemsIndexed
-			<span class=beginner>files indexed into</span>
-			items
+			<b>$itemsIndexed items</b>
+			<span class=beginner><br>pieces of content published on this service</span>
 		</a>
 	</p>
 	<p class=advanced>
 		<a href="/deleted.html">
-			$itemsDeleted deleted
+			<b>$itemsDeleted archived</b>
 			<span class=beginner></span>
 		</a>
 	</p>
 	<p class=advanced>
 		<a href="/data.html">
-			$filesTotal files
-			<span class=beginner>found under /html/txt (click to download)</span>
+			<b>$filesTotal files</b>
+			<span class=beginner><br>found under /html/txt (click to download)</span>
 		</a>
 	</p>
+	<hr>
 	<p class=advanced>
 		Server: $server
-		<span class=beginner>this is the server's public key</span>
+		<span class=beginner><br>this is the server's public key</span>
 	</p>
 	<p class=advanced>
 		Version: $versionShort
-		<span class=beginner>, aka checksum of git commit</span>
+		<span class=beginner><br>checksum of git commit</span>
 	</p>
 </fieldset>
 

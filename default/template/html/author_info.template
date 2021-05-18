@@ -9,7 +9,8 @@
 
 		<tr class=beginner>
 			<td colspan=2>
-				<p>This page about author listed below.</p>
+				<p id=pUserHint>This page about author listed below.</p>
+				<!-- this text is used by templating engine -->
 			</td>
 		</tr>
 
@@ -20,7 +21,7 @@
 		</tr>
 
 		<tr><td>notes:</td><td><b><span id=itsyou>*</span></b></td></tr>
-		<tr class=advanced><td>fingerprint:</td><td>$fingerprint</td></tr>
+		<tr class=advanced><td>fingerprint:</td><td><tt>$fingerprint</tt></td></tr>
 		<tr class=advanced><td>score:</td><td>$authorScore</td></tr>
 		<tr><td>items:</td><td>$itemCount</td></tr>
 		<tr class=advanced><td>description:</td><td>$authorDescription</td></tr>
