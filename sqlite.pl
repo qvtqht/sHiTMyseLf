@@ -1745,6 +1745,10 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 	DBAddItemAttribute($fileHash, 'item_type', $itemType);
 	DBAddItemAttribute($fileHash, 'file_path', $filePathRelative);
 
+	if ($authorKey) {
+		DBAddPageTouch('author', $authorKey);
+	}
+
 	if ($verifyError) {
 		DBAddItemAttribute($fileHash, 'verify_error', '1');
 	}
