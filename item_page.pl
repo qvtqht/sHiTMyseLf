@@ -155,7 +155,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 				'<a href="http://yandex.ru/yandsearch?text=' .
 				HtmlEscape($file{'item_title'}) .
 				'">' .
-				'Яндекс' .
+				'Yandex' .
 				'</a><br>'
 				;
 			$htmlToolbox .=
@@ -184,9 +184,29 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 				'<a href="https://ru.wikipedia.org/w/index.php?search=' .
 				HtmlEscape($file{'item_title'}) .
 				'">' .
-				'Википедия' .
+				'Wikipedia RU' .
 				'</a><br>'
 				;
+
+			$htmlToolbox .=
+				'<a href="https://tildes.net/search?q=' .
+				HtmlEscape($file{'item_title'}) .
+				'">' .
+				'Tildes' .
+				'</a><br>'
+				;
+
+			$htmlToolbox .=
+				'<a href="https://lobste.rs/search?q=' .
+				HtmlEscape($file{'item_title'}) .
+				'&what=stories&order=relevance' .
+				'">' .
+				'Lobsters' .
+				'</a><br>'
+				;
+
+			#todo urlescape should also be used
+			#todo this should be token -> index -> template
 		}
 
 		$txtIndex .= '<span class=advanced>' . GetWindowTemplate($htmlToolbox, 'Tools') . '</span>';
