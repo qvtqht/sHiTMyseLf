@@ -95,4 +95,7 @@ noscript {
 	text-decoration: none;
 	color: $colorText;
 }
+nobr {
+	white-space:nowrap;
+}
 /* end css/default.css */
