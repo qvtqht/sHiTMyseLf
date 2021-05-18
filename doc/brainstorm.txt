@@ -1,3 +1,27 @@
+fun ideas
+==========
+you have used x letters out of the alphabet, here are the ones missing:
+
+=========
+surviving the 21st century as a human being
+1. pay attention
+2. learn quickly
+3. avoid zeitgeist/crowds
+4. exit funnels by jumping
+
+
+#todo items which have a negative score should not be counted towards their parents' scores?
+	this means reweighing constantly or a recursion problem
+
+
+types of muscle memory
+
+demo site
+
+zip reinflating
+
+
+
 set a cookie for javascript enabled, and don't serve it until then?
 	would also allow clipping js-dependent elements
 		(some elements cannot be createElement-ed for compat reasons)
@@ -276,6 +300,8 @@ Ideas from nullprogram
 	
 
 primary tag list
+================
+
 	image
 	hastext/hastitle
 	reply (placed under parent)
@@ -3486,8 +3512,6 @@ very nice
 
 #meta #bug #testing
 
-<<<<<<< Updated upstream
-=======
 1600920213
 
 

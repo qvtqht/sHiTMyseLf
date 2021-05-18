@@ -1461,7 +1461,7 @@ sub DBAddKeyAlias { # adds new author-alias record $key, $alias, $pubkeyFileHash
 
 	ExpireAvatarCache($key); # does fresh lookup, no cache
 	DBAddPageTouch('author', $key);
-}
+} # DBAddKeyAlias()
 
 sub DBAddItemParent { # Add item parent record. $itemHash, $parentItemHash ;
 # Usually this is when item references parent item, by being a reply or a vote, etc.

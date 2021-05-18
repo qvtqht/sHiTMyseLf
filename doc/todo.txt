@@ -1,3 +1,9 @@
+generate [identifier].html
+
+need to do something about timed out requests
+
+===
+
 #bug with organize_files=0, GetFileMessage() returns empty
 
 today i realized that w3m on freebsd has glitches with displaying the <hr> tag.
