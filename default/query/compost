@@ -2,11 +2,12 @@ SELECT
 	item_title,
 	author_key,
 	add_timestamp,
-	item_score,
-	child_count,
+	'' AS tagset_compost,
 	file_hash
 FROM
 	item_flat
+WHERE
+	tags_list NOT LIKE '%notext%'
 ORDER BY
 	child_count ASC,
 	add_timestamp DESC
