@@ -4,6 +4,10 @@ body, table, .item, #txtClock, input {
 	font-size: 14pt;
 	background-color: $colorBackground;
 }
+.dialog {
+	border: 3pt double $colorTitlebar;
+	border-radius: 3pt;
+}
 fieldset {
 	border-color: $colorSecondary;
 }
