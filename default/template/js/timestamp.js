@@ -6,7 +6,7 @@ function RoundNumber (num) {
 	//var ret = Math.floor(num * 10) / 10;
 	//leave one digit after the decimal point
 
-	//alert('DEBUG: document.title = 'RoundNumber: num = ' + num + '; ret = ' + ret + '');
+	//alert('DEBUG: RoundNumber: num = ' + num + '; ret = ' + ret + '');
 
 	return ret;
 }

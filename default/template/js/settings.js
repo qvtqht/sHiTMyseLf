@@ -245,7 +245,7 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 	}
 
 	//alert('DEBUG: ShowAdvanced: returning false');
-	return false;
+	return '';
 } // ShowAdvanced()
 
 function GetPrefs (prefKey) { // get prefs value from localstorage
@@ -271,12 +271,12 @@ function GetPrefs (prefKey) { // get prefs value from localstorage
 		var prefValue = prefsObj[prefKey];
 
 		if (!prefValue && prefValue != 0) {
-			// these settings default to 1/true:
 			if (
 				prefKey == 'beginner' ||
 				prefKey == 'beginner_highlight' ||
 				prefKey == 'notify_on_change'
 			) {
+				// these settings default to 1/true:
 				prefValue = 1;
 			}
 			if (
@@ -284,11 +284,12 @@ function GetPrefs (prefKey) { // get prefs value from localstorage
 				prefKey == 'show_admin' ||
 				prefKey == 'draggable'
 			) {
+				// these settings default to 0/false:
 				prefValue = 0;
 			}
-		}
 
-		SetPrefs(prefKey, prefValue);
+			SetPrefs(prefKey, prefValue);
+		}
 
 		return prefValue;
 	}

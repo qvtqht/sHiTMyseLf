@@ -200,10 +200,10 @@ function AddPrivateKeyLinks () { // adds save/load links to profile page if feat
 						pProfileLink = document.createElement('p');
 					}
 
-					// ATTENTION!
-					// THERE IS A GOTCHA HERE: THIS LINK MAY ALSO BE
-					// ADDED BY PHP; THEN THIS CODE WILL NOT EXECUTE!
-					// BECAUSE pProfileLink WILL ALREADY BE TRUE ABOVE
+			// ATTENTION!
+			// THERE IS A GOTCHA HERE: THIS LINK MAY ALSO BE
+			// ADDED BY PHP; THEN THIS CODE WILL NOT EXECUTE!
+			// BECAUSE pProfileLink WILL ALREADY BE TRUE ABOVE
 
 					// "Go to profile" link
 					var aProfile = document.createElement('a');

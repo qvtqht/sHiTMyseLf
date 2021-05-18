@@ -173,7 +173,7 @@ function MakeKey (t) { //makes key using default settings
 	return true; // signing wasn't scheduled, allow form to submit
 } // MakeKey()
 
-function getPrivateKey() { // get private key from local storage
+function getPrivateKey () { // get private key from local storage
 // returns null otherwise
     //alert('DEBUG: getPrivateKey() begins');
 
