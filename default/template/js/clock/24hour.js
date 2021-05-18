@@ -1,6 +1,6 @@
 // == begin clock/24hour.js
-
-function setClock() {
+function setClock () {
+	//alert('DEBUG: setClock(24hour) caller: ' + setClock.caller);
 	if (document.frmTopMenu) {
 		if (document.frmTopMenu.txtClock) {
 			if (document.frmTopMenu.txtClock.value) {
@@ -38,5 +38,4 @@ function setClock() {
 		}
 	}
 }
-
 // == end clock/24hour.js

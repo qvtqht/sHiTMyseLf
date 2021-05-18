@@ -1,6 +1,6 @@
 // == begin clock/epoch.js
 
-function setClock() {
+function setClock () {
 	if (document.frmTopMenu) {
 		if (document.frmTopMenu.txtClock) {
 			if (document.frmTopMenu.txtClock.value) {
