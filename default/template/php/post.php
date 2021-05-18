@@ -403,7 +403,7 @@ if ($html) {
 }
 
 
-if (isset($fileUrlPath) && $fileUrlPath) {
+if (isset($fileUrlPath) && $fileUrlPath) { #todo GetConfig() or GetTemplate()
 	if (file_exists('../config/template/php/just_posted.template')) {
 		$postedMessage = file_get_contents('../config/template/php/just_posted.template');
 	}
