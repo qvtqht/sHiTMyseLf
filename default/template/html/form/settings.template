@@ -68,7 +68,7 @@
 <p>
 	<label for=chkWriteAutoSave>
 		<input type=checkbox id=chkWriteAutoSave name=chkWriteAutoSave onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_autosave'); }">
-		Auto-save<noscript><b>*</b></noscript>
+		Auto-save when writing<noscript><b>*</b></noscript>
 	</label>
 </p>
 

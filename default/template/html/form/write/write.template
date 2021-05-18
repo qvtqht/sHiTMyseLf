@@ -19,7 +19,7 @@
 		<span class=advanced>
 			<label for=recfing>
 				<input name=recfing id=recfing type=checkbox>
-				Record anonymous identifier
+				Record device identifier</span>
 			</label>
 		</span>
 	</p>
