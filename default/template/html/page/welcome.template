@@ -4,5 +4,16 @@
 	Welcome to the welcome page.<br>
 	Make yourself at home.
 </p>
+<p>
+	If you're new here, please<br>
+	Introduce yourself using<br>
+	Using field and button:
+</p>
+<p>
+	<form action=/post.html>
+		<input type=text size=24 name=comment><br>
+		<input type=submit value=Send>
+	</form>
+</p>
 <!-- / welcome.template -->
 
