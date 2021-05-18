@@ -894,6 +894,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 			DBAddVoteRecord($fileHash, 0, 'hastext');
 			DBAddPageTouch('tag', 'hastext');
+
+			DBAddItemAttribute($fileHash, 'normalized_hash', sha1_hex($detokenedMessage), 0);
 		} # has a $detokenedMessage
 
 		if ($message) {
