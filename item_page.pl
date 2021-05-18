@@ -366,7 +366,7 @@ sub GetItemAttributesWindow {
 						$iaValue = '<a href="' . $iaValue . '">' . $iaValue . '</a>';
 						#todo sanitizing #security
 					}
-					if ($iaName eq 'sha1' || $iaName eq 'md5' || $iaName eq 'chain_previous') { #todo make it match on _hash and use _hash on the names
+					if ($iaName eq 'normalized_hash' || $iaName eq 'sha1' || $iaName eq 'md5' || $iaName eq 'chain_previous') { #todo make it match on _hash and use _hash on the names
 						$iaValue = '<tt>' . $iaValue . '</tt>';
 					}
 				}
