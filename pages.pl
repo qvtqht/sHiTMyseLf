@@ -3968,14 +3968,16 @@ sub MakeSimplePage { # given page name, makes page
 	WriteLog('MakeSimplePage: $pageName = ' . $pageName);
 
 	my $html = '';
-
 	my $title = ucfirst($pageName);
-	if (lc($pageName) eq 'media') {
-		$title = 'Media Partners';
-	}
 
-	if (lc($pageName) eq 'academic') {
-		$title = 'Academic Partners';
+	if (GetConfig('expo_site_mode')) {
+		if (lc($pageName) eq 'media') {
+			$title = 'Media Partners';
+		}
+
+		if (lc($pageName) eq 'academic') {
+			$title = 'Academic Partners';
+		}
 	}
 
 	$html .= GetPageHeader($title, $title, $pageName);
