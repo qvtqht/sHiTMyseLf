@@ -2517,7 +2517,7 @@ sub GetItemPrefixPage { # $prefix ; returns page with items matching specified p
 
 	if ($itemCount) {
 	# at least one item returned
-		my $itemListingWrapper = GetTemplate('html/item_listing_wrapper2.template');
+		my $itemListingWrapper = GetTemplate('html/item_listing_wrapper2.template'); # GetItemPrefixPage()
 
 		my $itemListings = '';
 
@@ -2532,7 +2532,7 @@ sub GetItemPrefixPage { # $prefix ; returns page with items matching specified p
 		}
 
 		while (@topItems) {
-			my $itemTemplate = GetTemplate('html/item_listing.template');
+			my $itemTemplate = GetTemplate('html/item_listing.template'); # GetItemPrefixPage()
 			# it's ok to do this every time because GetTemplate() already stores it in a static
 			# alternative is to store it in another variable above
 
@@ -4769,6 +4769,8 @@ sub GetSettingsPage { # returns html for settings page (/settings.html)
 	$txtIndex .= GetSettingsWindow();
 	$txtIndex .= GetStatsTable();
 	$txtIndex .= GetOperatorWindow();
+
+	#$txtIndex .= GetMenuTemplate();
 
 	$txtIndex .= GetPageFooter();
 
