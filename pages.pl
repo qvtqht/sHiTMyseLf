@@ -2659,6 +2659,8 @@ sub GetStatsTable {
 	my $versionFull = GetMyVersion();
 	my $versionShort = substr($versionFull, 0, 8);
 
+	my $versionSequence = `git log --oneline | wc -l`; #todo don't shell
+
 	UpdateUpdateTime();
 	my $lastUpdateTime = GetCache('system/last_update_time');
 	$lastUpdateTime = GetTimestampWidget($lastUpdateTime);
@@ -2758,6 +2760,7 @@ sub GetStatsTable {
 	$statsTable =~ s/\$tagsTotal/$tagsTotal/;
 	$statsTable =~ s/\$versionFull/$versionFull/;
 	$statsTable =~ s/\$versionShort/$versionShort/;
+	$statsTable =~ s/\$versionSequence/$versionSequence/;
 	$statsTable =~ s/\$itemsIndexed/$itemsIndexed/;
 	$statsTable =~ s/\$itemsDeleted/$itemsDeleted/;
 	$statsTable =~ s/\$authorCount/$authorCount/;
@@ -2765,7 +2768,7 @@ sub GetStatsTable {
 	$statsTable =~ s/\$chainLogLength/$chainLogLength/;
 
 	if ($templateName eq 'html/stats.template') {
-		$statsTable = GetWindowTemplate($statsTable, 'Stats');
+		$statsTable = GetWindowTemplate($statsTable, 'System');
 		#todo remove this once other template is fixed #???
 	}
 

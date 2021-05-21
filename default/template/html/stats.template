@@ -3,6 +3,7 @@
 <fieldset>
 	<p>Operator: $admin</p>
 	<p>Updated: $lastUpdateTime
+	<p>Version: $versionSequence
 	<p></p>
 	<p id=diagnostics></p>
 </fieldset>
@@ -50,8 +51,8 @@
 		<span class=beginner><br>this is the server's public key</span>
 	</p>
 	<p class=advanced>
-		Version: $versionShort
-		<span class=beginner><br>checksum of git commit</span>
+		<span class=beginner><br>git commit: </span>
+		$versionShort
 	</p>
 </fieldset>
 
