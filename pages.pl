@@ -533,7 +533,11 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 
 	# main window content, aka body
 	if ($windowBody) {
-		if (index(lc($windowBody), '<table') == -1) {
+		if (
+			!$columnHeadings &&
+			(index(lc($windowBody), '<table') == -1) &&
+			(index(lc($windowBody), '<tr') == -1)
+		) {
 			$windowBody = '<tr class=content><td>' . $windowBody . '</td></tr>';
 		}
 		elsif (index(lc($windowBody), '<tr') == -1) {
@@ -544,7 +548,11 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 				$windowBody = '<tr class=content><td>' . $windowBody . '</td></tr>';
 			}
 		} else {
-			$windowBody = '<tbody class=content>' . str_replace('$contentColumnCount', $contentColumnCount, $windowBody) . '</tbody>';
+			$windowBody = str_replace('$contentColumnCount', $contentColumnCount, $windowBody);
+		}
+
+		if (index(lc($windowBody), '<tbody') == -1) {
+			$windowBody = '<tbody class=content>' . $windowBody . '</tbody>';
 		}
 
 		$windowTemplate =~ s/\$windowBody/$windowBody/g;
