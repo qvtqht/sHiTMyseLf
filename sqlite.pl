@@ -9,6 +9,38 @@ use DBI;
 use Data::Dumper;
 use 5.010;
 
+
+# different ways db is accessed in here
+# =====================================
+# SqliteGetValue (fetchrow_array)
+# $sth->execute + fetchrow_array
+# $sth->execute + fetchall_arrayref
+# $sth->execute + fetchrow_arrayref
+# $sth->execute + fetchrow_hashref
+# SqliteQueryHashRef (fetchrow_hashref)
+# $sth->execute + bind_columns
+# SqliteQuery2 (fetchall_arrayref)
+# SqliteQuery (calls to shell, doesn't return results)
+# SqliteQueryCachedShell (calls to shell, also uses cache)
+
+# other mentionables
+# ==================
+# SqliteEscape
+# EscapeShellChars
+
+# needs implementing
+# ==================
+# sqlite3
+# dbi::sqlite
+# ---
+# get value
+# get row array-hashref
+# get returned value after insert/update
+# parameter insertion (duplicate parametrized in sqlite3 layer)
+# db creation
+
+
+
 sub GetSqliteDbName {
 	my $cacheDir = GetDir('cache');
 	my $SqliteDbName = "$cacheDir/index.sqlite3"; # path to sqlite db
@@ -1244,6 +1276,7 @@ sub DBDeletePageTouch { # $pageName, $pageParam
 sub DBDeleteItemReferences { # delete all references to item from tables
 # sub RemoveItemReferences {
 # #todo feels not up to date as of 1617729803 / march 6 2021
+# #todo ensure that table lists are up to date
 	WriteLog('DBDeleteItemReferences() ...');
 
 	my $hash = shift;
@@ -2455,6 +2488,7 @@ sub DBGetAdminKey { # Returns the pubkey id of the top-scoring admin (or nothing
 } # DBGetAdminKey()
 
 sub DBGetItemFields { # Returns fields we typically need to request from item_flat table
+# todo this shouldn't have a DB prefix
 	my $itemFields = "
 		item_flat.file_path file_path,
 		item_flat.item_name item_name,
