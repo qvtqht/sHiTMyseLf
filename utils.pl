@@ -1573,31 +1573,36 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
     }
 	WriteLog("IsFileDeleted($file, $fileHash)");
 
+	if ($file && $file =~ m/^([0-9a-zA-Z.\-_\/])$/) {
+		$file = $1;
+	} else {
+		WriteLog('IsFileDeleted: warning: $file failed sanity check: $file = ' . $file);
+		return '';
+	}
+
+
     # if the file is present in deleted.log, get rid of it and its page, return
     if ($fileHash && -e 'log/deleted.log' && GetFile('log/deleted.log') =~ $fileHash) {
         # write to log
         WriteLog("IsFileDeleted: MATCHED! $fileHash exists in deleted.log, removing $file");
 
-		{
-			# unlink the file itself
-			if (-e $file) {
-				unlink($file);
+
+		# unlink the file itself
+		if (-e $file) {
+			unlink($file); #todo -T
+		}
+
+		WriteLog('IsFileDeleted: $fileHash = ' . $fileHash);
+
+		my $htmlFilename = GetHtmlFilename($fileHash);
+
+		if ($htmlFilename) {
+			my $HTMLDIR = GetDir('html');
+			$htmlFilename = $HTMLDIR . '/' . $htmlFilename; #todo this could be a sub?
+			if (-e $htmlFilename) {
+				unlink($htmlFilename);
 			}
-
-			WriteLog('$fileHash = ' . $fileHash);
-
-			my $htmlFilename = GetHtmlFilename($fileHash);
-
-			if ($htmlFilename) {
-				my $HTMLDIR = GetDir('html');
-				$htmlFilename = $HTMLDIR . '/' . $htmlFilename; #todo this could be a sub?
-				if (-e $htmlFilename) {
-					unlink($htmlFilename);
-				}
-			}
-
-
-        }
+		}
 
         return 1;
     } # IsFileDeleted()
@@ -1605,7 +1610,7 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
     # if the file is present in deleted.log, get rid of it and its page, return
     if ($fileHash && -e 'log/archived.log' && GetFile('log/archived.log') =~ $fileHash) {
         # write to log
-        WriteLog("... $fileHash exists in archived.log, archiving $file");
+        WriteLog('IsFileDeleted: $fileHash exists in archived.log, archiving $file = ' . $file);
 
 		{
 			# unlink the file itself
