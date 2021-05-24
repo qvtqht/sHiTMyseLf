@@ -20,7 +20,7 @@ input[type=text], input[type=password], select, option, textarea {
     background-color: #f0f0d0;
 }
 .dialog {
-	box-shadow: 3pt 3pt 0 rgba(0, 20, 20, 0.5);
+	box-shadow: 5pt 5pt 0 rgba(0, 20, 20, 0.5);
 	border: $borderDialog;
 	background-color: $colorWindow;
 	border-radius: 2pt;
