@@ -1,8 +1,6 @@
 WHY USE THIS?
 =============
 Below is an outline of reasons you would want to use sHiTMyseLf.
-I have made an attempt to start with less technical reasons first.
-As you go along, it gets more technical. Technically.
 
 Empowering
 ==========

@@ -33,3 +33,6 @@ browserfp
 ===
 
 
+because lazy_page_generation is on, it just removes the .html files and lets them be re-generated next time they are needed
+
+===
