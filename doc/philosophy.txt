@@ -1,0 +1,14 @@
+PHILOSOPHY
+==========
+
+Always present the appearance of a working, functioning system.
+Be kind and polite to all whenever possible, conditions permitting.
+Readable Perl source code for clarity, honesty, and ease of use.
+
+Make reasonable effort to support every browser.
+Do what the user wants; Don't ask or demand of the user.
+Try to make user comfortable; Do not bother user with trivia.
+
+Tell the truth, the whole truth, and nothing but the truth.
+Whenever you find yourself on the side of majority, pause and reflect.
+You become responsible, forever, for what you have tamed.
