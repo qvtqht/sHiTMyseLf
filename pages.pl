@@ -3185,7 +3185,6 @@ sub GetAuthorInfoBox {
 	my $authorAliasHtml = GetAlias($authorKey);
 	my $authorAvatarHtml = GetAvatar($authorKey);
 	my $authorImportance = 1;
-	my $authorScore = '';#DBGetAuthorScore($authorKey) || 0;
 	my $itemCount = DBGetAuthorItemCount($authorKey);
 	my $authorDescription = '';
 	my $authorLastSeen = DBGetAuthorLastSeen($authorKey) || 0;
@@ -3197,6 +3196,8 @@ sub GetAuthorInfoBox {
 	} else {
 		$publicKeyHashHtml = '*';
 	}
+	my $authorScore = DBGetAuthorScore($authorKey);
+
 	my $authorMessageLink = GetItemHtmlLink($publicKeyHash, 'Contact Them', '#reply');
 
 	if (IsAdmin($authorKey)) {

@@ -513,24 +513,39 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 
-    	#todo deconfusify
-    	# uses sum of entries in vote table combined with vote weights in vote_value table
-    	SqliteQuery2("
-    		CREATE VIEW
-    			item_score
-    		AS
-    			SELECT
-    				item.file_hash AS file_hash,
-    				IFNULL(SUM(vote_value.value), 0) AS item_score
-    			FROM
-    				vote
-    				LEFT JOIN item
-    					ON (vote.file_hash = item.file_hash)
-    				LEFT JOIN vote_value
-    					ON (vote.vote_value = vote_value.vote)
-    			GROUP BY
-    				item.file_hash
-    	");
+	#todo deconfusify
+	# uses sum of entries in vote table combined with vote weights in vote_value table
+	SqliteQuery2("
+		CREATE VIEW
+			item_score
+		AS
+			SELECT
+				item.file_hash AS file_hash,
+				IFNULL(SUM(vote_value.value), 0) AS item_score
+			FROM
+				vote
+				LEFT JOIN item
+					ON (vote.file_hash = item.file_hash)
+				LEFT JOIN vote_value
+					ON (vote.vote_value = vote_value.vote)
+			GROUP BY
+				item.file_hash
+	");
+
+	SqliteQuery2("
+		CREATE VIEW
+			author_score
+		AS
+			SELECT
+				item_flat.author_key AS author_key,
+				SUM(item_flat.item_score) AS author_score
+			FROM
+				item_flat
+			GROUP BY
+				item_flat.author_key
+
+	");
+
 
 
 	my $SqliteDbName = GetSqliteDbName();
@@ -2330,33 +2345,33 @@ sub DBGetAuthorAlias { # returns author's alias by gpg key
 		return "";
 	}
 }
-#
-#sub DBGetAuthorScore { # returns author's total score
-## score is the sum of all the author's items' scores
-## $key = author's gpg key
-#	my $key = shift;
-#	chomp ($key);
-#
-#	if (!IsFingerprint($key)) {
-#		WriteLog('Problem! DBGetAuthorScore called with invalid parameter! returning');
-#		return;
-#	}
-#
-#	state %scoreCache;
-#	if (exists($scoreCache{$key})) {
-#		return $scoreCache{$key};
-#	}
-#
-#	$key = SqliteEscape($key);
-#
-#	if ($key) { #todo fix non-param sql
-#		my $query = "SELECT author_score FROM author_score WHERE author_key = '$key'";
-#		$scoreCache{$key} = SqliteGetValue($query);
-#		return $scoreCache{$key};
-#	} else {
-#		return "";
-#	}
-#} # DBGetAuthorScore()
+
+sub DBGetAuthorScore { # returns author's total score
+# score is the sum of all the author's items' scores
+# $key = author's gpg key
+	my $key = shift;
+	chomp ($key);
+
+	if (!IsFingerprint($key)) {
+		WriteLog('Problem! DBGetAuthorScore called with invalid parameter! returning');
+		return '';
+	}
+
+	state %scoreCache;
+	if (exists($scoreCache{$key})) {
+		return $scoreCache{$key};
+	}
+
+	$key = SqliteEscape($key);
+
+	if ($key) { #todo fix non-param sql
+		my $query = "SELECT IFNULL(author_score, 0) author_score FROM author_score WHERE author_key = '$key'";
+		$scoreCache{$key} = SqliteGetValue($query);
+		return $scoreCache{$key};
+	} else {
+		return "";
+	}
+} # DBGetAuthorScore()
 
 sub DBGetAuthorItemCount { # returns number of items attributed to author identified by $key
 # $key = author's gpg key
