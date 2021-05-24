@@ -1,13 +1,68 @@
 #!/usr/bin/perl -T
 
-use strict;
+# file.pl # contains file operations
+# ==================================
+#
+# OrganizeFile($file)
+# renames file based on hash of its contents
+#
+# GetFileMessage($file)
+#   get file message from cache
+#   if not in cache, determine it and add to cache
+#
+# PutFileMessage($file, $message)
+#   store message of file in cache
+#   message typically contains original text, minus pgp envelope
+
 use strict;
 use 5.010;
 use utf8;
 
+sub GetFileMessageCachePath { # $fileHash/$filePath ;  returns path to file's message hash
+
+	my $fileHash = shift;
+	if (!$fileHash) {
+		WriteLog('GetFileMessageCachePath: warning: parameter $fileHash/$filePath missing');
+		return ''; #todo
+	}
+	if (
+		!IsItem($fileHash) && # not an item
+		-e $fileHash # file exists
+	) {
+		# parameter appears to be a file path, not a file hash
+		# change it to file hash
+		$fileHash = GetFileHash($fileHash);
+	}
+
+	my $CACHEPATH = GetDir('cache');
+	my $cachePathMessage = "$CACHEPATH/message";
+
+	if ($cachePathMessage =~ m/^([a-zA-Z0-9_\/.]+)$/) {
+		$cachePathMessage = $1;
+		WriteLog('GpgParse: $cachePathMessage sanity check passed: ' . $cachePathMessage);
+	} else {
+		WriteLog('GpgParse: warning: sanity check failed, $cachePathMessage = ' . $cachePathMessage);
+		return '';
+	}
+
+	my $fileMessageCachPath = "$cachePathMessage/$fileHash";
+
+	if ($fileMessageCachPath =~ m/^([a-zA-Z0-9_\/.]+)$/) {
+		$fileMessageCachPath = $1;
+		WriteLog('GpgParse: $fileMessageCachPath sanity check passed: ' . $fileMessageCachPath);
+	} else {
+		WriteLog('GpgParse: warning: sanity check failed, $fileMessageCachPath = ' . $fileMessageCachPath);
+		return '';
+	}
+
+	return $fileMessageCachPath;
+} # GetFileMessageCachePath()
+
+
 sub OrganizeFile { # $file ; renames file based on hash of its contents
 	# returns new filename
 	# filename is obtained using GetFileHashPath()
+
 	my $file = shift;
 	chomp $file;
 

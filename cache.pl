@@ -166,37 +166,5 @@ sub ExpireAvatarCache { # $fingerprint ; removes all caches for alias
 #	UnlinkCache('avatar.plain/' . $themeName . '/' . $key);
 } # ExpireAvatarCache()
 
-sub GetFileMessageCachePath {
-	my $fileHash = shift;
-	if (!$fileHash) {
-		return ''; #todo
-	}
-	if (!IsItem($fileHash) && -e $fileHash) {
-		$fileHash = GetFileHash($fileHash);
-	}
-
-	my $CACHEPATH = GetDir('cache');
-	my $cachePathMessage = "$CACHEPATH/message";
-
-	if ($cachePathMessage =~ m/^([a-zA-Z0-9_\/.]+)$/) {
-		$cachePathMessage = $1;
-		WriteLog('GpgParse: $cachePathMessage sanity check passed: ' . $cachePathMessage);
-	} else {
-		WriteLog('GpgParse: warning: sanity check failed, $cachePathMessage = ' . $cachePathMessage);
-		return '';
-	}
-
-	my $fileMessageCachPath = "$cachePathMessage/$fileHash";
-
-	if ($fileMessageCachPath =~ m/^([a-zA-Z0-9_\/.]+)$/) {
-		$fileMessageCachPath = $1;
-		WriteLog('GpgParse: $fileMessageCachPath sanity check passed: ' . $fileMessageCachPath);
-	} else {
-		WriteLog('GpgParse: warning: sanity check failed, $fileMessageCachPath = ' . $fileMessageCachPath);
-		return '';
-	}
-
-	return $fileMessageCachPath;
-}
 
 1;
