@@ -141,7 +141,6 @@ function zalgo_textarea(id) {
     }
 
     document.getElementById(id).value = newtxt;
-    document
 }
 
 function strip_timestamps(id) {
