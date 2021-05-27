@@ -67,11 +67,13 @@ DBAddPageTouch('summary');
 BuildMessage("UpdateUpdateTime()...");
 UpdateUpdateTime();
 
-BuildMessage "require('./pages.pl')...";
-require './pages.pl';
+#BuildMessage "require('./pages.pl')...";
+#require './pages.pl';
+
+#BuildMessage "Calling MakeSystemPages()...";
 
 #PutHtmlFile("/index.html", '<a href="/write.html">write.html</a>');
-MakeSummaryPages();
+#MakeSystemPages();
 #PutHtmlFile("/index.html", GetFile('html/help.html'));
 
 if (GetConfig('admin/build/generate_after')) {
@@ -88,7 +90,7 @@ if (!GetConfig('admin/secret')) {
 UpdateUpdateTime();
 # Stats page
 
-PutStatsPages();
+#PutStatsPages();
 
 if (GetConfig('admin/dev/launch_browser_after_build')) {
 	WriteLog('build.pl: xdg-open http://localhost:2784/ &');
@@ -112,11 +114,5 @@ if (GetConfig('admin/lighttpd/enable')) {
 if (GetConfig('admin/ssi/enable') && GetConfig('admin/php/enable')) {
 	BuildMessage('build.pl: warning: ssi/enable and php/enable are both true');
 }
-
-system('echo "\n"');
-system('echo "Running ./index.pl --all in 3..."; sleep 2');
-system('echo "2..."; sleep 2');
-system('echo "1..."; sleep 2');
-system('./index.pl --all');
 
 1;
