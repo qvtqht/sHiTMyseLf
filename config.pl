@@ -18,7 +18,14 @@ sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configur
 #	eventually, it will be nice for dev mode to not rewrite
 #	the entire config tree on every rebuild
 #	and also not require a rebuild after a default change
+#		note: this is already possible, there's a config for it:
+#		config/admin/dev/skip_putconfig
 #	#todo
+#
+# CONFUSION WARNING there are two separate "unmemo" features,
+# one for the whole thing, another individual keys
+#
+# new "method": get_memo, returns the whole thing for debug output
 
 	my $configName = shift;
 	chomp $configName;
@@ -31,12 +38,25 @@ sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configur
 	#		return;
 	#	}
 	#
+	#todo reinstate sanity check ...
+
 	state %configLookup;
 
 	if ($configName && $configName eq 'unmemo') {
+		#unmemo one particular config
 		undef %configLookup;
 		return '';
 	}
+
+#	if ($configName && $configName eq 'confess_memos') {
+#		#todo
+#		WriteLog('GetConfig: confess_memos: ' . join("\n", keys %configLookup));
+#		if (%configLookup) {
+#			return keys(%configLookup);
+#		} else {
+#			return '';
+#		}
+#	}
 
 	my $token = shift;
 	if ($token) {
@@ -45,9 +65,18 @@ sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configur
 
 	if ($token && $token eq 'unmemo') {
 		WriteLog('GetConfig: unmemo requested, complying');
+		my $unmemoCount = 0;
+		if (exists($configLookup{'_unmemo_count'})) {
+			$unmemoCount = $configLookup{'_unmemo_count'}
+		}
+
 		# unmemo token to remove memoized value
 		if (exists($configLookup{$configName})) {
 			delete($configLookup{$configName});
+			$unmemoCount++;
+			$configLookup{'_unmemo_count'} = $unmemoCount;
+		} else {
+			WriteLog('GetConfig: warning: tried to unmemo non-existing value!');
 		}
 	}
 
