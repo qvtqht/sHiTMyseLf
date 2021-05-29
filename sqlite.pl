@@ -428,7 +428,11 @@ sub SqliteMakeTables { # creates sqlite schema
 		");
 
 		SqliteQuery2("
-			insert into vote_value(vote, value) values('puzzle', 5);
+			insert into vote_value(vote, value) values('signed', 1);
+		");
+
+		SqliteQuery2("
+			insert into vote_value(vote, value) values('puzzle', 1);
 		");
 
 		SqliteQuery2("
@@ -440,11 +444,15 @@ sub SqliteMakeTables { # creates sqlite schema
 		");
 
 		SqliteQuery2("
-			insert into vote_value(vote, value) values('cusses', -5);
+			insert into vote_value(vote, value) values('scunthorpe', -5);
 		");
 
 		SqliteQuery2("
 			insert into vote_value(vote, value) values('stop', -1023);
+		");
+
+		SqliteQuery2("
+			insert into vote_value(vote, value) values('hide', -1023);
 		");
 
 		SqliteQuery2("
