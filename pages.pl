@@ -86,7 +86,7 @@ sub GetDialogPage { # returns html page with dialog
 	#todo is $pageName in list of allowed pages?
 
 	if ($pageName) {
-		if ($pageName eq '404') {
+		if ($pageName eq '404') { #/404.html
 			$pageTitle = '404 Message Received';
 
 			$windowContents = GetTemplate('html/404.template');
@@ -123,7 +123,7 @@ sub GetDialogPage { # returns html page with dialog
 
 			return $pageTemplate;
 		}
-		if ($pageName eq '401') {
+		if ($pageName eq '401') { #/401.html
 			$pageTitle = '401 Welcome to Access Denied';
 
 			$windowContents = GetTemplate('html/401.template');
@@ -824,6 +824,8 @@ sub GetTagLinks { # $tagSelected ; returns html-formatted tags list
 		chomp $tagSelected;
 	}
 
+	my $minimumTagCount = 5;
+
 	WriteLog("GetTagLinks($tagSelected)");
 
 	my $voteCounts;
@@ -842,18 +844,21 @@ sub GetTagLinks { # $tagSelected ; returns html-formatted tags list
 
 		my $tagName = @{$tagArrayRef}[0]; #todo assoc-array
 		my $tagCount = @{$tagArrayRef}[1];
-		my $voteItemLink = "/top/" . $tagName . ".html";
 
-		if ($tagName eq $tagSelected) {
-			#todo template this
-			$voteItems .= "<b>#$tagName</b>\n";
-		}
-		else {
-			$voteItemTemplate =~ s/\$link/$voteItemLink/g;
-			$voteItemTemplate =~ s/\$tagName/$tagName/g;
-			$voteItemTemplate =~ s/\$tagCount/$tagCount/g;
+		if ($tagCount > $minimumTagCount || $tagName eq $tagSelected) {
+			my $voteItemLink = "/top/" . $tagName . ".html";
 
-			$voteItems .= $voteItemTemplate;
+			if ($tagName eq $tagSelected) {
+				#todo template this
+				$voteItems .= "<b>#$tagName</b>\n";
+			}
+			else {
+				$voteItemTemplate =~ s/\$link/$voteItemLink/g;
+				$voteItemTemplate =~ s/\$tagName/$tagName/g;
+				$voteItemTemplate =~ s/\$tagCount/$tagCount/g;
+
+				$voteItems .= $voteItemTemplate;
+			}
 		}
 	}
 
