@@ -22,7 +22,7 @@ use Data::Dumper;
 use Cwd qw(cwd);
 use Digest::MD5 qw( md5_hex );
 use File::Basename qw( fileparse );
-use URI::Encode qw( uri_decode );
+use URI::Encode qw( uri_decode uri_encode );
 use URI::Escape;
 use Storable;
 use Digest::SHA qw( sha1_hex );
