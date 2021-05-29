@@ -1023,6 +1023,11 @@ sub GetReplyForm { # $replyTo ; returns reply form for specified item
 	my $replyTo = shift;
 	chomp $replyTo;
 
+	state $accessKey;
+	if (!$accessKey) {
+		$accessKey = GetAccessKey('reply');
+	}
+
 	if (!$replyTo || !IsItem($replyTo)) {
 		WriteLog('GetReplyForm: warning: sanity check failed');
 		return '';
@@ -1058,6 +1063,10 @@ sub GetReplyForm { # $replyTo ; returns reply form for specified item
 		if (GetConfig('admin/php/enable')) {
 			$replyForm = AddAttributeToTag($replyForm, 'textarea', 'onchange', "if (window.commentOnChange) { return commentOnChange(this, 'compose'); } else { return true; }");
 			$replyForm = AddAttributeToTag($replyForm, 'textarea', 'onkeyup', "if (window.commentOnChange) { return commentOnChange(this, 'compose'); } else { return true; }");
+		}
+
+		if ($accessKey) {
+			$replyForm = AddAttributeToTag($replyForm, 'textarea', 'accesskey', $accessKey);
 		}
 
 		if (GetConfig('admin/js/translit')) {
