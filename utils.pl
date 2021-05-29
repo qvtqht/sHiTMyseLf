@@ -1608,7 +1608,7 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
     }
 	WriteLog("IsFileDeleted($file, $fileHash)");
 
-	if ($file && $file =~ m/^([0-9a-zA-Z.\-_\/])$/) {
+	if ($file && $file =~ m/^([0-9a-zA-Z.\-_\/]+)$/) {
 		$file = $1;
 	} else {
 		WriteLog('IsFileDeleted: warning: $file failed sanity check: $file = ' . $file);
