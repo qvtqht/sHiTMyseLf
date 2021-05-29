@@ -928,10 +928,6 @@ sub PutHtmlFile { # $file, $content, $htmlRoot ; writes content to html file, wi
 		return;
 	}
 
-	if ($file eq 'profile.html') {
-		PutHtmlFile('index.html', $content);
-	}
-
 	WriteLog("PutHtmlFile($file)");
 
 	my $HTMLDIR = GetDir('html');
@@ -1001,7 +997,30 @@ sub PutHtmlFile { # $file, $content, $htmlRoot ; writes content to html file, wi
 	# in the future, this can, perhaps, for example, convert unicode-cyrillic to ascii-cyrillic
 	if ($stripNonAscii == 1) {
 		WriteLog('PutHtmlFile: $stripNonAscii == 1, removing non-ascii characters');
+		my $lengthBefore = length($content);
 		$content =~ s/[^[:ascii:]]//g;
+		if (length($content) != $lengthBefore) {
+			if (index(lc($content), '</body>') != -1) {
+				my $messageNotification = 'Non-ASCII characters removed: ' . ($lengthBefore - length($content));
+				if (GetConfig('admin/debug')) {
+					$messageNotification .= '<br><form><textarea>'.HtmlEscape('<script>alert()</script>').'</textarea></form>';
+				}
+				$content = str_ireplace('</body>', GetWindowTemplate($messageNotification, 'Notice') . '</body>', $content);
+			}
+		}
+	}
+
+
+	if (0) { #todo quick-write setting #quickwrite #quick-write #quick_write
+		my $quickWriteWindow = GetWindowTemplate(GetTemplate('html/form/write/write-quick.template'), 'Quick-Write');
+		$quickWriteWindow =
+			'<form action="/post.html" method=GET id=compose class=submit name=compose target=_top>' .
+			$quickWriteWindow .
+			'</form>';
+
+		$quickWriteWindow = '<span class=advanced>' . $quickWriteWindow . '</span>';
+
+		$content = str_ireplace('</body>', $quickWriteWindow . '</body>', $content);
 	}
 
 	# convert urls to relative if $relativizeUrls is set
@@ -1087,6 +1106,20 @@ sub PutHtmlFile { # $file, $content, $htmlRoot ; writes content to html file, wi
 	#############################################
 	my $putFileResult = PutFile($file, $content);
 	#############################################
+
+	if (!-e ($HTMLDIR . '/index.html')) {
+		if (
+			$file =~ m/profile/ ||
+			$file =~ m/welcome/ ||
+			$file =~ m/read/ ||
+			$file =~ m/write/ ||
+			$file =~ m/help/
+		) {
+			print "\n" . $file . "\n";
+			PutHtmlFile("$HTMLDIR/index.html", $content);
+		}
+	}
+
 
 	{
 		if (index($content, '$') > -1) {
