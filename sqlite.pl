@@ -1088,8 +1088,22 @@ sub DBGetItemTitle { # get title for item ($itemhash)
 
 	my $itemTitle = SqliteGetValue($query, @queryParams);
 
-	return $itemTitle;
-}
+	if ($itemTitle) {
+		my $maxLength = shift;
+		if ($maxLength) {
+			if ($maxLength > 0 && $maxLength < 255) {
+				#todo sanity check failed message
+				if (length($itemTitle) > $maxLength) {
+					$itemTitle = substr($itemTitle, 0, $maxLength) . '...';
+				}
+			}
+		}
+
+		return $itemTitle;
+	} else {
+		return '';
+	}
+} # DBGetItemTitle()
 
 sub DBGetItemAuthor { # get author for item ($itemhash)
 	my $itemHash = shift;
