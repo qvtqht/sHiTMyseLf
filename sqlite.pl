@@ -240,6 +240,16 @@ sub SqliteMakeTables { # creates sqlite schema
 		WHERE attribute = 'order'
 	");
 
+	# item_sequence
+	SqliteQuery("
+		CREATE VIEW item_sequence AS
+		SELECT
+			file_hash,
+			value AS item_sequence
+		FROM item_attribute_latest
+		WHERE attribute = 'chain_sequence'
+	");
+
 	# item_author
 	SqliteQuery("
 		CREATE VIEW item_author AS
@@ -463,6 +473,7 @@ sub SqliteMakeTables { # creates sqlite schema
 				IFNULL(child_count.child_count, 0) AS child_count,
 				IFNULL(parent_count.parent_count, 0) AS parent_count,
 				added_time.add_timestamp AS add_timestamp,
+				IFNULL(item_sequence.item_sequence, '') AS item_sequence,
 				IFNULL(item_title.title, '') AS item_title,
 				IFNULL(item_score.item_score, 0) AS item_score,
 				item.item_type AS item_type,
@@ -480,6 +491,7 @@ sub SqliteMakeTables { # creates sqlite schema
 				LEFT JOIN item_author ON ( item.file_hash = item_author.file_hash)
 				LEFT JOIN item_score ON ( item.file_hash = item_score.file_hash)
 				LEFT JOIN item_tags_list ON ( item.file_hash = item_tags_list.file_hash )
+				LEFT JOIN item_sequence ON ( item.file_hash = item_sequence.file_hash )
 	");
 
 	SqliteQuery2("
@@ -2520,7 +2532,8 @@ sub DBGetItemFields { # Returns fields we typically need to request from item_fl
 		item_flat.item_score item_score,
 		item_flat.tags_list tags_list,
 		item_flat.item_type item_type,
-		item_flat.item_order item_order
+		item_flat.item_order item_order,
+		item_flat.item_sequence item_sequence
 	";
 
 	$itemFields = trim($itemFields);
