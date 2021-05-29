@@ -49,7 +49,7 @@ if (!GetConfig('admin/dev/dont_confirm') || GetYes('kill existing lighttpd proce
 	`killall lighttpd`;
 }
 
-sub StartLighttpd {
+sub StartLighttpd { # run command to start local lighttpd instance
 	if (!-e './log') {
 		mkdir('./log');
 	}
@@ -77,9 +77,9 @@ sub StartLighttpd {
 	} else {
 		WriteMessage('lighttpd path missing or failed sanity check');
 	}
-}
+} # StartLighttpd()
 
-sub GetLighttpdConfig {
+sub GetLighttpdConfig { # generate contents for lighttpd.conf file based on settings
 	my $conf = GetTemplate('lighttpd/lighttpd.conf.template');
 	print $conf;
 
@@ -149,6 +149,7 @@ sub GetLighttpdConfig {
 } # GetLighttpdConfig()
 
 if (GetConfig('admin/lighttpd/enable')) {
+	# lighttpd module enabled
 	WriteMessage("admin/lighttpd/enable was true");
 	my $lighttpdConf = GetLighttpdConfig();
 
@@ -190,7 +191,7 @@ if (GetConfig('admin/lighttpd/enable')) {
 	WriteMessage("===================\n");
 	StartLighttpd();
 } else {
-	WriteMessage("admin/lighttpd/enable was false");
+	WriteMessage("server_local_lighttpd.pl: WARNING: admin/lighttpd/enable was false, not starting server");
 }
 
 1;
