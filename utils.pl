@@ -733,7 +733,8 @@ sub PutFile { # Writes content to a file; $file, $content, $binMode
 
 	if ($file =~ m/^([^\s]+)$/) { #todo this is overly permissive #security #taint
 		$file = $1;
-		if (open (my $fileHandle, ">:encoding(UTF-8)", $file)) {
+		if (open (my $fileHandle, ">", $file)) {
+#		if (open (my $fileHandle, ">:encoding(UTF-8)", $file)) {
 			WriteLog('PutFile: file handle opened, $file = ' . $file);
 			if ($binMode) {
 				WriteLog('PutFile: binmode $fileHandle = ' . $fileHandle . ', :utf8;');
@@ -1127,7 +1128,8 @@ sub AppendFile { # appends something to a file; $file, $content to append
 	my $file = shift;
 	my $content = shift;
 
-	if (open (my $fileHandle, ">>:encoding(UTF-8)", $file)) {
+	if (open (my $fileHandle, ">>", $file)) {
+	#if (open (my $fileHandle, ">>:encoding(UTF-8)", $file)) {
 		say $fileHandle $content;
 		close $fileHandle;
 	}
