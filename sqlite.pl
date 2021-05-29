@@ -2006,6 +2006,7 @@ sub DBAddVoteRecord { # $fileHash, $ballotTime, $voteValue, $signedBy, $ballotHa
 
 	if (!$ballotTime) {
 		WriteLog('DBAddVoteRecord: warning: missing $ballotTime');
+		$ballotTime = 0;
 		#$ballotTime = time();
 		#return '';
 	}
