@@ -62,6 +62,20 @@
 
 <!-- -->
 
+<h4>Title</h4>
+
+<p>The <code><b>title</b></code> token changes the item's title.</p>
+
+<p>Example:</p>
+
+<pre>title: this is the title</pre>
+
+<p>If it is used in a reply, it is applied to the PARENT item, to make it easier to re-title things.</p>
+
+<p>Otherwise, it applies to the current item, and can be placed anywhere, including the "header-footer".</p>
+
+<!-- -->
+
 <h4>Hashtags</h4>
 
 <p>Example: <code>#meta</code></p>
