@@ -70,7 +70,7 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 
 	if (window.location && document.compose && window.location.href.indexOf) {
 		if (
-			window.location.href &&
+			window.location &&
 			window.location.href &&
 			window.location.href.indexOf('write') != -1 ||
 			window.location.hash.indexOf('reply') != -1 ||
@@ -80,6 +80,7 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 				GetPrefs('focus_reply')
 			)
 				&&
+			document.compose &&
 			document.compose.comment &&
 			document.compose.comment.focus
 		) {
