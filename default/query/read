@@ -1,9 +1,11 @@
 SELECT
-	item_flat.item_title item_title,
-	item_flat.author_key author_key,
-	item_flat.add_timestamp add_timestamp,
-	item_flat.file_hash file_hash
+	item_title,
+	author_key,
+	add_timestamp,
+	file_hash
 FROM item_flat
-WHERE item_score > 0
+WHERE
+	item_score > 0 AND
+	tags_list LIKE '%hastitle%'
 ORDER BY add_timestamp DESC
 LIMIT 100
