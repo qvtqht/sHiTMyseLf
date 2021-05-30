@@ -1091,6 +1091,13 @@ sub GetItemHtmlLink { # $hash, [link caption], [#anchor] ; returns <a href=...
 # sub GetLink {
 	my $hash = shift;
 
+	if (IsItem($hash)) {
+		#ok
+	} else {
+		WriteLog('GetItemHtmlLink: warning: sanity check failed on $hash');
+		return '';
+	}
+
 	if ($hash) {
 		#todo templatize this
 		my $linkCaption = shift;
