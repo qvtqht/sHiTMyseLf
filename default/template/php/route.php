@@ -524,7 +524,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 		WriteLog('HandleNotFound: warning: 404.html missing, fallback');
 		$html = '<html>'.
 			'<head><title>404</title></head>'.
-			'<body><h1>404 Message Received</h1><p>Something went wrong, please try again later. Thank you.</body>'.
+			'<body><h1>404 Message Received</h1><p>Page not found, please try again later. <a href=/ accesskey=t title=Thank><u>T</u>hank you.</a><hr></body>'.
 			'</html>';
 	}
 
@@ -834,12 +834,12 @@ if (GetConfig('admin/php/route_enable')) {
 		}
 
 		if ($path == '/jstest1.html' && GetConfig('admin/js/enable')) {
-			WriteLog('inject $userAgentValue into /jstest1.html');
+			WriteLog('route.php: jstest1.html: inject $userAgentValue into /jstest1.html');
 			$userAgentValue = $_SERVER['HTTP_USER_AGENT'];
 			$userAgentValue = htmlspecialchars($userAgentValue);
 			$html = AddAttributeToTag($html, 'input name=txtNetworkUserAgent', 'value', $userAgentValue);
 		} else {
-			WriteLog('xxx $path = ' . $path . '; admin/js/enable = ' . GetConfig('admin/js/enable'));
+			WriteLog('route.php: NOT jstest1.html: $path = ' . $path . '; admin/js/enable = ' . GetConfig('admin/js/enable'));
 		}
 
 		if (isset($_GET['mode'])) {
@@ -1184,6 +1184,11 @@ if (GetConfig('admin/php/route_enable')) {
 		} #default/admin/php/assist_sequence_counter
 
 		////////////////////////////
+		if (!$html) {
+			#todo other sanity checks, like "no html tags" or "nothing but html tags"
+
+			$html = 'System message: Engine may require attention. Please remain calm. <p><a href="/">Home</a> <a href="/help.html">Help</a> <a href="/settings.html">Settings</a><p> <form action=/post.html><label>To:Operator</label><br><label>Message:</label><br><input type=text size=30 name=comment value="thanks"><input type=submit value=Send></form>';
+		}
 		print $html; // final output
 		////////////////////////////
 	}
