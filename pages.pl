@@ -4575,12 +4575,12 @@ sub GetWritePage { # returns html for write page
 	$writePageHtml .= GetTemplate('html/maincontent.template');
 
 	my $writeForm = GetWriteForm();
-	WriteLog('GetWriteForm: js is on, adding write_js.template');
-    my $writeJs = '<span class=advanced>' . GetWindowTemplate(GetTemplate('form/write/write_js.template'), 'Options') . '</span>'; #todo this is a hack
+	WriteLog('GetWriteForm: js is on, adding write_options.template');
+    my $writeOptions = '<span class=advanced>' . GetWindowTemplate(GetTemplate('form/write/write_options.template'), 'Options') . '</span>'; #todo this is a hack
 
     $writePageHtml .= '<form action="/post.html" method=GET id=compose class=submit name=compose target=_top>'; #todo
 	$writePageHtml .= $writeForm;
-	$writePageHtml .= $writeJs;
+	$writePageHtml .= $writeOptions;
 	$writePageHtml .= '</form>'; #todo
 
 #	if (defined($itemCount) && defined($itemLimit) && $itemCount) {
