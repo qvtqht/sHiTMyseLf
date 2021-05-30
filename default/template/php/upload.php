@@ -181,14 +181,19 @@ if (!empty($_FILES['uploaded_file'])) {
 		} else {
 			print 'no uploaded_file #2';
 		}
-
-		exit;
 	}
+} # if (!empty($_FILES['uploaded_file']))
 
+
+if (!$html || !trim($html)) {
+	WriteLog('upload.php: warning: $html missing');
+	$html = 'Thank you for uploading, please choose one of these links: <a href="/help.html">Help</a>; <a href="/index.html">Home</a>';
+}
+
+if ($html) {
 	if (GetConfig('admin/php/debug')) {
 		$html = str_replace('</body>', WriteLog('') . '</body>', $html);
 	}
 
 	print $html;
-} # if (!empty($_FILES['uploaded_file']))
-
+}
