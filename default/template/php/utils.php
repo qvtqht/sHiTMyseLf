@@ -237,17 +237,17 @@ function file_force_contents ($dir, $contents) { // ensures parent directories e
 
 function DoUpdate () { // #todo #untested
 	$pwd = getcwd();
-	WriteLog('$pwd = ' . $pwd);
+	WriteLog('DoUpdate: $pwd = ' . $pwd);
 	$scriptDir = GetScriptDir();
-	WriteLog('$scriptDir = ' . $scriptDir);
+	WriteLog('DoUpdate: $scriptDir = ' . $scriptDir);
 
 	if (file_exists($scriptDir . '/update.pl')) {
-		WriteLog('update.pl found, calling update.pl --all');
+		WriteLog('DoUpdate: update.pl found, calling update.pl --all');
 
-		WriteLog('cd "' . $scriptDir . '" ; perl ./update.pl');
+		WriteLog('DoUpdate: cd "' . $scriptDir . '" ; perl ./update.pl');
 		WriteLog(`cd "$scriptDir" ; perl ./update.pl`);
 
-		WriteLog('cd "' . $pwd . '"');
+		WriteLog('DoUpdate: cd "' . $pwd . '"');
 		WriteLog(`cd "$pwd"`);
 	}
 }
@@ -363,6 +363,7 @@ function GetConfig ($configKey, $token = 0) { // get value for config value $con
 	} elseif (file_exists($defaultDir . '/' . $configKey)) {
 		WriteLog('GetConfig: not found in config/, but found in default/');
 		WriteLog("GetConfig: copy ($defaultDir/$configKey, $configDir/$configKey);"); // copy to config/
+		#todo ensure subdirs exist
 		copy ($defaultDir . '/' . $configKey, $configDir . '/' . $configKey); // copy to config/
 		//#todo this copy should be copy_with_dir_creation
 		$configValue = file_get_contents($configDir . '/' . $configKey);
@@ -630,7 +631,7 @@ function RedirectWithResponse ($url, $message) { // redirects to page with serve
 			WriteLog('<a href="' . $redirectUrl . '">' . $redirectUrl . '</a> <font color=red>(redirect paused because admin/php/debug or admin/php/debug_server_response is true)</font>', 1);
 
 			// #todo template the html
-			print '<div style="background-color: yellow"><a href="' . $redirectUrl . '"><b>Continue</b>: ' . $redirectUrl . '</a><br>Message: '.htmlspecialchars($message).'<br><font color=red size="-2">(redirect paused because of admin/php/debug admin/php/debug_server_response)</font></div><hr>';
+			print '<div style="background-color: yellow"><a href="' . $redirectUrl . '"><b>Continue</b>: ' . $redirectUrl . '</a><br>Message: '.htmlspecialchars($message).'<br><font color=red size="+2">(DEBUG MODE: redirect paused because of admin/php/debug admin/php/debug_server_response)</font></div><hr>';
 		}
 	} else {
 		// do the redirect
