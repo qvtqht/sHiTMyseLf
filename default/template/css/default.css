@@ -21,6 +21,10 @@
 	color: $colorTagPositive;
 }
 
+.tag-hide {
+	color: gray;
+}
+
 div.reply {
 /* creates indented effect for sub-replies */
 	margin-left: 2%;
