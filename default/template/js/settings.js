@@ -21,7 +21,10 @@ function SetElementVisible (element, displayValue, bgColor, borderStyle) { // se
 		if (bgColor == 'initial') {
 			bgColor = '$colorWindow';
 		}
-		element.style.backgroundColor = bgColor;
+
+		if (element.style.backgroundColor != bgColor) {
+			element.style.backgroundColor = bgColor;
+		}
 		// this may cause issues in some themes
 	}
 
