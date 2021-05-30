@@ -342,10 +342,15 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$path == '/crypto.js' ||
 			$path == '/crypto2.js' ||
 			$path == '/media.html' ||
-			$path == '/openpgp.js'
+			$path == '/openpgp.js' ||
+			$path == '/post.html' ||
+			$path == '/jstest1.html' ||
+			$path == '/keyboard.html' ||
+			$path == '/keyboard_netscape.html' ||
+			$path == '/keyboard_android.html'
 		) {
 			WriteLog('HandleNotFound: found a summary page');
-			$pagesPlArgument = '--summary';
+			$pagesPlArgument = '--system';
 		}
 		if ($path == '/desktop.html') {
 			WriteLog('HandleNotFound: found desktop page');
@@ -494,7 +499,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			} else {
 				WriteLog('HandleNotFound: warning: pages.pl was called LESS THAN 60 seconds ago, NOT trying to grow page');
 			}
-		}
+		} # $pagesPlArgument = true
 
 		$pathRel = '.' . $path; // relative path of $path (to current directory, which should be html/)
 
