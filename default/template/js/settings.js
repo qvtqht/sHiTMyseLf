@@ -140,7 +140,7 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 		///////////
 
 		var displayTimestamps = '0';
-		if (GetPrefs('expert_timestamps')) {
+		if (GetPrefs('timestamps_format')) {
 			displayTimestamps = 1;
 		}
 		if (force || window.showTimestampsLastAction != displayTimestamps) {
@@ -288,6 +288,16 @@ function GetPrefs (prefKey) { // get prefs value from localstorage
 				prefValue = 0;
 			}
 
+			if (prefKey == 'timestamps_format') {
+				// default to 'adjusted' timestamp format
+				prefValue = 'adjusted';
+			}
+
+			if (prefKey == 'performance_optimization') {
+				// default to 'adjusted' timestamp format
+				prefValue = 'faster';
+			}
+
 			SetPrefs(prefKey, prefValue);
 		}
 
@@ -305,6 +315,17 @@ function SetPrefs (prefKey, prefValue) { // set prefs key prefKey to value prefV
 		//alert('DEBUG: SetPrefs: setting cookie to match LocalStorage');
 		if (window.SetCookie) {
 			SetCookie(prefKey, (prefValue ? 1 : 0));
+		}
+	}
+
+	if (prefKey == 'performance_optimization') {
+		window.performanceOptimization = prefValue;
+		//alert('DEBUG: SetPrefs: setting cookie to match LocalStorage');
+		if (prefValue != 'none') {
+			if (window.EventLoop) {
+				// todo enable/disable eventloop?
+				EventLoop();
+			}
 		}
 	}
 
@@ -341,11 +362,16 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 
 	//alert('DEBUG: SaveCheckbox(' + ths + ',' + prefKey);
 
-	var checkboxState = (ths.checked ? 1 : 0);
-	//alert('DEBUG: checkboxState = ' + checkboxState);
+	if (prefKey == 'timestamps_format' || prefKey == 'performance_optimization') { //#todo
+		SetPrefs(prefKey, ths.value);
+		ShowTimestamps();
+	} else {
+		// saves checkbox's value as 0/1 value to prefs(prefKey)
 
-	// saves checkbox's value as 0/1 value to prefs(prefKey)
-	SetPrefs(prefKey, (ths.checked ? 1 : 0));
+		var checkboxState = (ths.checked ? 1 : 0);
+		//alert('DEBUG: checkboxState = ' + checkboxState);
+		SetPrefs(prefKey, checkboxState);
+	}
 
 
 	if (prefKey == 'draggable') {
@@ -364,7 +390,7 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 	return 1;
 }
 
-function SetInterfaceMode (ab) { // updates several settings to change to "ui mode" (beginner, advanced, etc.)
+function SetInterfaceMode (ab, thisButton) { // updates several settings to change to "ui mode" (beginner, advanced, etc.)
     //alert('DEBUG: SetInterfaceMode(' + ab + ')');
 
 	if (window.localStorage && window.SetPrefs) {
@@ -377,10 +403,15 @@ function SetInterfaceMode (ab) { // updates several settings to change to "ui mo
 			SetPrefs('show_admin', 0);
 			SetPrefs('write_enhance', 0);
 			SetPrefs('write_autosave', 0);
-			SetPrefs('expert_timestamps', 0);
+			SetPrefs('timestamps_format', 'adjusted');
+			SetPrefs('performance_optimization', 'faster');
 			SetPrefs('draggable', 0);
 			SetPrefs('focus_reply', 0);
 //			SetPrefs('sign_by_default', 1);
+
+			//if (window.displayNotification) {
+				//displayNotification('', thisButton);
+			//}
 		} else if (ab == 'intermediate') {
 			SetPrefs('show_advanced', 1);
 			SetPrefs('advanced_highlight', 1);
@@ -406,6 +437,7 @@ function SetInterfaceMode (ab) { // updates several settings to change to "ui mo
 //             SetPrefs('show_admin', 1);
 		}
 
+		ShowTimestamps();
 		ShowAdvanced(1);
 		LoadCheckboxValues();
 
@@ -424,12 +456,31 @@ function LoadCheckbox (c, prefKey) { // updates checkbox state to reflect settin
 // c = checkbox
 // prefKey = key of preference value
 //
-	//alert('DEBUG: LoadCheckbox(' + c + ',' + prefKey);
-	var checkboxState = GetPrefs(prefKey);
-	//alert('DEBUG: checkboxState = ' + checkboxState);
+	if (prefKey == 'timestamps_format') {
+		var checkboxState = GetPrefs(prefKey);
 
-	if (c && c.checked != (checkboxState ? 1 : 0)) {
-		c.checked = (checkboxState ? 1 : 0);
+		if (document.frmSettings && document.frmSettings.optTimestampsFormat) {
+			document.frmSettings.optTimestampsFormat.value = checkboxState;
+		}
+	}
+	else if (prefKey == 'performance_optimization') {
+		var checkboxState = GetPrefs(prefKey);
+
+		if (document.frmSettings && document.frmSettings.optPerformanceOptimization) {
+			document.frmSettings.optPerformanceOptimization.value = checkboxState;
+		}
+	}
+	else {
+
+		//alert('DEBUG: LoadCheckbox(' + c + ',' + prefKey);
+		var checkboxState = GetPrefs(prefKey);
+		//alert('DEBUG: checkboxState = ' + checkboxState);
+
+		if (c && c.checked != (checkboxState ? 1 : 0)) {
+			c.checked = (checkboxState ? 1 : 0);
+		}
+
+		return 1;
 	}
 
 	return 1;
@@ -442,8 +493,11 @@ function LoadCheckboxValues () {
 	LoadCheckbox(document.getElementById('chkShowAdvanced'), 'show_advanced');
 	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');
 	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');
-	LoadCheckbox(document.getElementById('chkExpertTimestamps'), 'expert_timestamps');
 	LoadCheckbox(document.getElementById('chkFocusReply'), 'focus_reply');
+
+	LoadCheckbox(document.getElementById('optTimestampsFormat'), 'timestamps_format');
+	LoadCheckbox(document.getElementById('optPerformanceOptimization'), 'performance_optimization');
+	//LoadCheckbox(document.getElementById('chkExpertTimestamps'), 'expert_timestamps');
 }
 
 function SettingsOnload () { // onload function for settings page
@@ -452,7 +506,7 @@ function SettingsOnload () { // onload function for settings page
 	if (document.getElementById) {
 	// below is code which sets the checked state of settings checkboxes
 	// based on settings state
-		var pane;
+		//var pane;
 
 		//LoadCheckbox(document.getElementById('chkSignByDefault'), 'sign_by_default');
 		LoadCheckboxValues();

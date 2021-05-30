@@ -3,27 +3,24 @@
 	<legend><b>JavaScript Information</b><br></legend>
 	<p>
 		Enhancements marked with star below (<b>*</b>) <br>
-		require modern <b>JavaScript</b>.
+		require modern* <b>JavaScript</b>.
+		<!--
+			* modern means getElementById and stuff like that.
+			Tested with in IE6+, Presto, Gecko, WebKit, Chrome
+		-->
 	</p>
 
 	<p><hr></p>
 </noscript>
 
 <fieldset>
-	<legend><b>Interface and Appearance</b><br></legend>
+	<legend><b>General</b><br></legend>
 
 	<p>
-		<input type=submit name=ui value="Beginner" onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('beginner'); }">
-		<input type=submit name=ui value="Intermediate" onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('intermediate'); }">
-		<input type=submit name=ui value="Advanced" class=advanced onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('expert'); }">
+		<input type=submit name=ui value="Beginner" onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('beginner', this); }">
+		<input type=submit name=ui value="Intermediate" onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('intermediate', this); }">
+		<input type=submit name=ui value="Advanced" class=advanced onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('expert', this); }">
 		<span class=beginner><br>Use these buttons to adjust interface<noscript><b>*</b></noscript></span>
-	</p>
-
-	<p>
-		<label for=chkExpertTimestamps class=advanced>
-			<input type=checkbox id=chkExpertTimestamps name=chkExpertTimestamps onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'expert_timestamps'); }">
-			Display timestamps as seconds<noscript><b>*</b></noscript>
-		</label>
 	</p>
 
 	<p>
@@ -48,29 +45,70 @@
 	</p>
 </fieldset>
 
+<fieldset class=advanced>
+	<legend><b>Timestamp Format</b></legend>
+	<p>
+		<label for=optTimestampsSeconds>
+			<input type=radio id=optTimestampsSeconds name=optTimestampsFormat value=seconds onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'timestamps_format'); }">
+			Relative seconds: -86400<noscript><b>*</b></noscript>
+		</label>
+		<br>
+		<label for=optTimestampsAdjusted>
+			<input type=radio id=optTimestampsAdjusted name=optTimestampsFormat value=adjusted onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'timestamps_format'); }">
+			Relative adjusted: 1 day ago<noscript><b>*</b></noscript>
+		</label>
+		<br>
+		<label for=optTimestampsExact>
+			<input type=radio id=optTimestampsExact name=optTimestampsFormat value=exact onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'timestamps_format'); }">
+			Exact value: 1900-01-01 12:00<noscript><b>*</b></noscript>
+		</label>
+	</p>
+</fieldset>
+
+
+<fieldset class=advanced>
+	<legend><b>Performance Mode</b></legend>
+	<p>
+		<label for=optPerformanceQuicker>
+			<input type=radio id=optPerformanceQuicker name=optPerformanceOptimization value=quicker onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'performance_optimization'); }">
+			Quicker<noscript><b>*</b></noscript><span class=beginner> (computer works harder)<br></span>
+		</label>
+		<label for=optPerformanceFaster>
+			<input type=radio id=optPerformanceFaster name=optPerformanceOptimization value=faster onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'performance_optimization'); }">
+			Faster<span class=beginner> (computer works less)<br></span>
+		</label>
+		<label for=optPerformanceNone>
+			<input type=radio id=optPerformanceNone name=optPerformanceOptimization value=none onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'performance_optimization'); }">
+			None<noscript><b>*</b></noscript><span class=beginner> (computer rests)<br></span>
+		</label>
+	</p>
+</fieldset>
+
+
+
 <fieldset>
-<legend><b>Writing</b><br></legend>
+	<legend><b>Writing</b><br></legend>
 
-<p>
-	<label for=chkWriteEnhance class=advanced>
-		<input type=checkbox id=chkWriteEnhance name=chkWriteEnhance onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_enhance'); }">
-		Make write box big and blue<noscript><b>*</b></noscript>
-	</label>
-</p>
+	<p>
+		<label for=chkWriteEnhance class=advanced>
+			<input type=checkbox id=chkWriteEnhance name=chkWriteEnhance onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_enhance'); }">
+			Make write box big and blue<noscript><b>*</b></noscript>
+		</label>
+	</p>
 
-<p>
-	<label for=chkFocusReply class=advanced>
-		<input type=checkbox id=chkFocusReply name=chkFocusReply onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'focus_reply'); }">
-		Automatically focus reply field<noscript><b>*</b></noscript>
-	</label>
-</p>
+	<p>
+		<label for=chkFocusReply class=advanced>
+			<input type=checkbox id=chkFocusReply name=chkFocusReply onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'focus_reply'); }">
+			Automatically focus reply field<noscript><b>*</b></noscript>
+		</label>
+	</p>
 
-<p>
-	<label for=chkWriteAutoSave>
-		<input type=checkbox id=chkWriteAutoSave name=chkWriteAutoSave onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_autosave'); }">
-		Auto-save when writing<noscript><b>*</b></noscript>
-	</label>
-</p>
+	<p>
+		<label for=chkWriteAutoSave>
+			<input type=checkbox id=chkWriteAutoSave name=chkWriteAutoSave onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_autosave'); }">
+			Auto-save drafts on device<noscript><b>*</b></noscript>
+		</label>
+	</p>
 
 </fieldset>
 <!-- / settings.template -->

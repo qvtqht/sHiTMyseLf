@@ -20,101 +20,115 @@ function LongAgo (seconds) { // returns string with time units
 		seconds = 0 - seconds;
 	}
 
-	if (seconds < 60) {
-		seconds = RoundNumber(seconds); //#todo milliseconds setting should toggle this
+	var unit = '';
+	var number = seconds;
 
-		if (seconds != 1) {
-			seconds = seconds + ' seconds';
+	if (number < 60) {
+		number = number;
+
+		if (RoundNumber(number) != 1) {
+			unit = ' seconds';
 		} else {
-			seconds = seconds + ' second';
+			unit = ' second';
 		}
 	} else {
-		seconds = RoundNumber(seconds / 60);
+		number = number / 60;
 
-		if (seconds < 60) {
-			if (seconds != 1) {
-				seconds = seconds + ' minutes';
+		if (number < 60) {
+			if (RoundNumber(number) != 1) {
+				unit = ' minutes';
 			} else {
-				seconds = seconds + ' minute';
+				unit = ' minute';
 			}
 		} else {
-			seconds = RoundNumber(seconds / 60);
+			number = number / 60;
 
-			if (seconds < 24) {
-				if (seconds != 1) {
-					seconds = seconds + ' hours';
+			if (number < 24) {
+				if (RoundNumber(number) != 1) {
+					unit =  ' hours';
 				} else {
-					seconds = seconds + ' hour';
+					unit =  ' hour';
 				}
 			} else {
-				seconds = RoundNumber(seconds / 24);
+				number = number / 24;
 
-				if (seconds < 7) {
-					if (seconds != 1) {
-						seconds = seconds + ' days';
+				if (number < 7) {
+					if (RoundNumber(number) != 1) {
+						unit =  ' days';
 					} else {
-						seconds = seconds + ' day';
+						unit =  ' day';
 					}
 				} else {
-					if (seconds < 30) {
-						seconds = RoundNumber(seconds / 7);
-						if (seconds != 1) {
-							seconds = seconds + ' weeks';
+					if (number < 30) {
+						number = number / 7;
+						if (RoundNumber(number) != 1) {
+							unit =  ' weeks';
 						} else {
-							seconds = seconds + ' week';
+							unit =  ' week';
 						}
 					} else {
-						if (seconds < 365) {
-							seconds = RoundNumber(seconds / 30);
+						if (number < 365) {
+							number = number / 30;
 
-							if (seconds != 1) {
-								seconds = seconds + ' months';
+							if (RoundNumber(number) != 1) {
+								unit =  ' months';
 							} else {
-								seconds = seconds + ' month';
+								unit =  ' month';
 							}
 						} else {
-							seconds = RoundNumber(seconds / 365);
-							if (seconds != 1) {
-								seconds = seconds + ' years';
+							number = number / 365;
+							if (RoundNumber(number) != 1) {
+								unit =  ' years';
 							} else {
-								seconds = seconds + ' year';
+								unit =  ' year';
 							}
-						}
-					}
-				}
-			}
-		}
+						} // years
+					} // months
+				} // weeks
+			} // days
+		} // hours
+	} // minutes
+
+	//number = RoundNumber(number);
+
+	var returnValue = '';
+	if (seconds % 1 == 0) {
+		returnValue = RoundNumber(number) + ' ' + unit;
+	} else {
+		returnValue = number + ' ' + unit;
 	}
 
 	if (flip) {
-		return seconds + ' ago';
+		returnValue = returnValue + ' ago';
+	} else {
+		returnValue = returnValue + ' from now';
 	}
 
-	if (seconds != '0 seconds') {
-		return seconds + ' from now';
-	}
+	//alert(returnValue);
 
-	return 'just now!';
-}
+	return returnValue;
+} // LongAgo()
 
 function ShowTimestamps () { // finds any class=timestamp, updates its displayed time as needed
 // currently requires getElementsByClassName()
 // in the future, ie4+, nn4+, and others compat can be improved
-
 	//alert('DEBUG: ShowTimestamps()');
 	if (document.getElementsByClassName) {
 		//alert('DEBUG: ShowTimestamps: document.getElementsByClassName feature check passed');
 		var d = new Date();
-		var curTime = Math.floor(d.getTime() / 1000);
+		var curTime = d.getTime() / 1000;
+		//var curTime = Math.floor(d.getTime() / 1000);
 		var changeLogged = 0;
-		var showAdvancedMode = 0;
+		var showTimestampsFormat = 0;
 
 		if (window.GetPrefs) {
-			if (GetPrefs('expert_timestamps')) {
-				showAdvancedMode = 1;
+			if (GetPrefs('timestamps_format')) {
+				showTimestampsFormat = GetPrefs('timestamps_format');
+			} else {
+				showTimestampsFormat = 0;
 			}
 		}
-	
+
 		// find elements with class=timestamp
 		var te = document.getElementsByClassName("timestamp");
 
@@ -126,11 +140,36 @@ function ShowTimestamps () { // finds any class=timestamp, updates its displayed
 				// a number, which would represent epoch seconds
 				var secs = 0 - (curTime - te[i].getAttribute('epoch')); // number of seconds since epoch begin
 				var longAgo = '';
-				if (!showAdvancedMode) {
-					longAgo = LongAgo(secs); // what the element's displayed value should be
+				if (te[i].getAttribute('epoch') % 1 == 0) {
+					secs = RoundNumber(secs);
+				}
+
+				//alert(showTimestampsFormat);
+
+				//if (te[i].getAttribute('format')) {
+					//showTimestampsFormat = te[i].getAttribute('format');
+				//}
+
+
+				if (showTimestampsFormat) {
+					if (showTimestampsFormat == 'exact') {
+						longAgo = te[i].getAttribute('title');
+					}
+					if (showTimestampsFormat == 'adjusted') {
+						longAgo = LongAgo(RoundNumber(secs)); // what the element's displayed value should be
+					}
+					if (showTimestampsFormat == 'seconds') {
+						longAgo = secs; // what the element's displayed value should be
+					}
+					if (!longAgo) {
+						showTimestampsFormat = 'adjusted';
+						longAgo = LongAgo(RoundNumber(secs));
+					}
 				} else {
 					longAgo = secs;
 				}
+
+				//longAgo = secs;
 
 				if (te[i].innerHTML != longAgo) {
 					// element's content does not already equal what it should equal
@@ -150,11 +189,13 @@ function ShowTimestamps () { // finds any class=timestamp, updates its displayed
 					changeLogged++; // count change logged
 				}
 			}
-		}
+			if (32 < changeLogged) {
+				i = te.length;
+			}
+		} // for (var i = 0; i < te.length; i++)
 
 		if (window.EventLoop) {
 			// do nothing, EventLoop() will call us when needed
-			return changeLogged;
 		} else {
 			// allow ShowTimestamps() to run decoupled from EventLoop()
 			if (changeLogged) {
@@ -162,8 +203,9 @@ function ShowTimestamps () { // finds any class=timestamp, updates its displayed
 			} else {
 				setTimeout('ShowTimestamps()', 15000);
 			}
-			return changeLogged;
 		}
+		
+		return changeLogged;
 	}
 } // ShowTimestamps()
 //

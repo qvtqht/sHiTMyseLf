@@ -3,12 +3,12 @@
 
 /*
 	known issues:
-	* problem: syntax errors on older browsers like netscape
-	  solution: remove nested function declarations
+	* problem: syntax errors on older browsers like netscape and ie3
+	  proposed solution: remove nested function declarations
 	* problem: no keyboard alternative at this time
-	  solution: somehow allow moving through windows and moving them with keyboard
+	  proposed solution: somehow allow moving through windows and moving them with keyboard
 	* problem: slow and janky, needs more polish
-	  solution: optimizations
+	  proposed solution: optimizations
 */
 
 // props https://www.w3schools.com/howto/howto_js_draggable.asp
@@ -28,7 +28,7 @@ window.draggingZ = 0; // keeps track of the topmost box's zindex
 // incremented whenever dragging is initiated, that way element pops to top
 
 function dragElement (elmnt, header) {
-	//alert('DEBUG: dragElement');
+	//alert('DEBUG: dragElement()');
 
 	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 	if (header) {
@@ -101,8 +101,9 @@ function dragElement (elmnt, header) {
 					if (elId && elId.innerHTML.length < 31) {
 						SetPrefs(elId.innerHTML + '.style.top', elmnt.style.top);
 						SetPrefs(elId.innerHTML + '.style.left', elmnt.style.left);
-						//elements[i].style.top = GetPrefs(elId.innerHTML + '.style.top') || elId.style.top;
-						//elements[i].style.left = GetPrefs(elId.innerHTML + '.style.left') || elId.style.left;
+
+						elements[i].style.top = GetPrefs(elId.innerHTML + '.style.top') || elId.style.top;
+						elements[i].style.left = GetPrefs(elId.innerHTML + '.style.left') || elId.style.left;
 					} else {
 						//alert('DEBUG: DraggingInit: elId is false');
 					}
@@ -110,6 +111,24 @@ function dragElement (elmnt, header) {
 			}
 		}
 	}
+} // dragElement()
+
+function DraggingRetile() {
+	//alert('DEBUG: DraggingRetile()');
+	var elements = document.getElementsByClassName('dialog');
+
+	for (var i = elements.length - 1; 0 <= i; i--) {
+		elements[i].style.position = 'static';
+	}
+//	for (var i = elements.length - 1; 0 <= i; i--) {
+//		var newTop = elements[i].style.top;
+//		var newLeft = elements[i].style.left;
+//		elements[i].style.position = 'absolute';
+//		elements[i].style.top = newTop;
+//		elements[i].style.left = newLeft;
+//	}
+
+//	DraggingInit(0);
 }
 
 function DraggingCascade () {
@@ -156,7 +175,7 @@ function DraggingCascade () {
 	}
 } // DraggingCascade()
 
-function DraggingInit (doPosition) {
+function DraggingInit (doPosition) { // initialize all class=dialog elements on the page to be draggable
 // InitDrag {
 // DragInit {
 // initialize all class=dialog elements on the page to be draggable
@@ -165,6 +184,7 @@ function DraggingInit (doPosition) {
 
 	if (!document.getElementsByClassName) {
 		// feature check
+		//alert('DEBUG: DraggingInit: feature check failed');
 		return '';
 	}
 
@@ -179,19 +199,23 @@ function DraggingInit (doPosition) {
 		doPosition = 0;
 	}
 
+	// find all class=dialog elements and walk through them
 	var elements = document.getElementsByClassName('dialog');
-	// for (var i = 0; i < elements.length; i++) {
 	for (var i = elements.length - 1; 0 <= i; i--) { // walk backwards for positioning reasons
 		// walking backwards is necessary to preserve the element positioning on the page
 		// once we remove the element from the page flow, all the other elements reflow to account it
 		// if we walk forwards here, all the elements will end up in the top left corner
 
+		// find all titlebars and remember the first one
 		var allTitlebar = elements[i].getElementsByClassName('titlebar');
 		var firstTitlebar = allTitlebar[0];
 
+		// find the <b> element in the titlebar
+		// future #todo: instead of looking for b, look for element without tags inside of it
 		if (firstTitlebar && firstTitlebar.getElementsByTagName) {
 			dragElement(elements[i], firstTitlebar);
 			var elId = firstTitlebar.getElementsByTagName('b');
+
 			elId = elId[0];
 			if (doPosition && elId && elId.innerHTML.length < 31) {
 				elements[i].style.top = GetPrefs(elId.innerHTML + '.style.top') || elements[i].style.top;

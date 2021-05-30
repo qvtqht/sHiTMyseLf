@@ -92,14 +92,6 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 		//alert('DEBUG: OnLoadEverything: document.search.q.focus()');
 		document.search.q.focus();
 	}
-	if (window.DraggingInit && GetPrefs('draggable')) {
-		//alert('DEBUG: OnLoadEverything: DraggingInit()');
-		if (window.location.href.indexOf('desktop') != -1) {
-			DraggingInit(1);
-		} else {
-			DraggingInit(0);
-		}
-	}
 	if (window.EventLoop) {
 		//alert('DEBUG: OnLoadEverything: EventLoop()');
 		if (window.CheckIfFresh) {
@@ -107,6 +99,14 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 		}
 		window.eventLoopEnabled = 1
 		EventLoop();
+	}
+	if (window.DraggingInit && GetPrefs('draggable')) {
+		//alert('DEBUG: OnLoadEverything: DraggingInit()');
+		if (window.location.href.indexOf('desktop') != -1) {
+			DraggingInit(1);
+		} else {
+			DraggingInit(0);
+		}
 	}
 	if (window.HideLoadingIndicator) {
 		//alert('DEBUG: OnLoadEverything: HideLoadingIndicator()');
@@ -145,6 +145,10 @@ function ShowPreNavigateNotification () {
 	return ''; // true would show a confirmation
 }
 
+if (!window.performanceOptimization && window.GetPrefs) {
+	window.performanceOptimization = GetPrefs('performance_optimization');
+}
+
 function EventLoop () { // for calling things which need to happen on a regular basis
 // sets another timeout for itself when done
 // replaces several independent timeouts
@@ -152,8 +156,6 @@ function EventLoop () { // for calling things which need to happen on a regular 
 
 	var d = new Date();
 	var eventLoopBegin = d.getTime();
-
-	//alert('DEBUG: EventLoop: eventLoopBegin = ' + eventLoopBegin + ' - window.eventLoopPrevious = ' + window.eventLoopPrevious + ' = ' + (eventLoopBegin - window.eventLoopPrevious));
 
 	if (!window.eventLoopPrevious) {
 		window.eventLoopPrevious = 1;
@@ -163,7 +165,20 @@ function EventLoop () { // for calling things which need to happen on a regular 
 		setClock();
 	}
 
-	if (10000 < (eventLoopBegin - window.eventLoopPrevious)) {
+	var m = 1000; // multiplier for performance thresholds
+	if (window.performanceOptimization) {
+		if (window.performanceOptimization == 'quicker') {
+			m = 1;
+		}
+		if (window.performanceOptimization == 'none') {
+			m = 0;
+			return '';
+		}
+	}
+
+	//alert('DEBUG: EventLoop: eventLoopBegin = ' + eventLoopBegin + ' - window.eventLoopPrevious = ' + window.eventLoopPrevious + ' = ' + (eventLoopBegin - window.eventLoopPrevious));
+
+	if (10*m < (eventLoopBegin - window.eventLoopPrevious)) {
 		window.eventLoopPrevious = eventLoopBegin;
 
 		if (window.flagUnloaded) {
@@ -177,7 +192,7 @@ function EventLoop () { // for calling things which need to happen on a regular 
 		// makes js debugging easier
 
 		if (window.eventLoopShowTimestamps && window.ShowTimestamps) {
-			if (13000 < (eventLoopBegin - window.eventLoopShowTimestamps)) {
+			if (13*m < (eventLoopBegin - window.eventLoopShowTimestamps)) {
 				ShowTimestamps();
 				window.eventLoopShowTimestamps = eventLoopBegin;
 			} else {
@@ -186,7 +201,7 @@ function EventLoop () { // for calling things which need to happen on a regular 
 		}
 
 		if (window.eventLoopDoAutoSave && window.DoAutoSave) {
-			if (5000 < (eventLoopBegin - window.eventLoopDoAutoSave)) { // autosave interval
+			if (5*m < (eventLoopBegin - window.eventLoopDoAutoSave)) { // autosave interval
 				DoAutoSave();
 				window.eventLoopDoAutoSave = eventLoopBegin;
 			} else {
@@ -200,6 +215,9 @@ function EventLoop () { // for calling things which need to happen on a regular 
 
 		if (window.eventLoopFresh && window.CheckIfFresh) {
 			if (10000 < (eventLoopBegin - window.eventLoopFresh)) {
+			//if (10*m < (eventLoopBegin - window.eventLoopFresh)) {
+			// this is commented because it may hammer the server. uncomment if using localhost
+
 				//window.eventLoopFresh = eventLoopBegin;
 				if (GetPrefs('notify_on_change')) {
 					CheckIfFresh();
@@ -221,15 +239,23 @@ function EventLoop () { // for calling things which need to happen on a regular 
 
 		if (100 < eventLoopDuration) {
 			// if loop went longer than 100ms, run every 3 seconds or more
+
+			// #todo make it known to user that hitting performance limit
+			if (document.title.substr(0,3) != '// ') {
+				document.title = '// ' + document.title;
+			}
+			SetPrefs('performance_optimization', 'faster');
 			eventLoopDuration = eventLoopDuration * 30;
 		} else {
 			// otherwise run every 1 second
-			eventLoopDuration = 1000;
+			eventLoopDuration = 1*m;
 		}
 		//document.title = eventLoopDuration; // for debugging performance
 
 		window.timeoutEventLoop = setTimeout('EventLoop()', eventLoopDuration);
 	} // window.eventLoopEnabled
+
+	return '';
 
 } // EventLoop()
 
