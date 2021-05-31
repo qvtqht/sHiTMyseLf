@@ -123,7 +123,7 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 // where (gt) is a greater-than sign, omitted here
 	//alert('DEBUG: SignVote(' + t + ',' + token +')');
 
-	if (document.getElementById && window.getPrivateKey) {
+	if (document.getElementById) {
 	// basic dumb feature check #todo make smarter feature check ;
 	// needs better compatibility for older browsers
 		// get private key
@@ -147,7 +147,11 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 
 		IncrementTagLink(t);
 
-		var privkey = getPrivateKey();
+		var privkey = 0; //also serves as feature check flag, sorry
+		if (window.getPrivateKey && window.openpgp) {
+			var privkey = getPrivateKey();
+		}
+
 		//alert('DEBUG: SignVote: privkey: ' + !!privkey);
 
 		window.xmlhttpElement = t;
@@ -157,7 +161,7 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 			// if there is no private key, just do a basic unsigned vote;
 
 			if (PingUrl(t.href)) {
-				// todo increment counter
+				return false;
 			}
 		} else {
 			// there is a private key
@@ -200,6 +204,6 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 	//alert('DEBUG: SignVote: warning: fall-through');
 
 	return true; // allow link click to happen
-}
+} // SignVote()
 
 // == end voting.js
