@@ -104,6 +104,13 @@
 	</p>
 
 	<p>
+		<label for=chkSignByDefault class=advanced>
+			<input type=checkbox id=chkSignByDefault name=chkSignByDefault onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'sign_by_default'); }">
+			Sign messages by default<noscript><b>*</b></noscript>
+		</label>
+	</p>
+
+	<p>
 		<label for=chkWriteAutoSave>
 			<input type=checkbox id=chkWriteAutoSave name=chkWriteAutoSave onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_autosave'); }">
 			Auto-save drafts on device<noscript><b>*</b></noscript>

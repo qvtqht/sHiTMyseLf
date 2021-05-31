@@ -47,7 +47,10 @@ function WriteOnload () { // onload handler for write page
 					chkSignAs.setAttribute('name', 'chkSignAs');
 					chkSignAs.setAttribute('id', 'chkSignAs');
 					chkSignAs.setAttribute('type', 'checkbox');
-					chkSignAs.setAttribute('checked', 1);
+
+					if (!window.GetPrefs || GetPrefs('sign_by_default')) {
+						chkSignAs.setAttribute('checked', 1);
+					}
 					// implied getElementById already been feature checked here
 					//chkSignAs.setAttribute('onclick', "if (document.getElementById('btnSolvePuzzle')) { document.getElementById('btnSolvePuzzle').setAttribute('disabled', !chkSignAs.checked); }");
 					// this checkbox being checked means signMessage() is called in writeSubmit()
