@@ -364,6 +364,28 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		my $detokenedMessage = $message;
 		my %hasToken;
 
+		if ($detokenedMessage) {
+			my $cussWords = GetTemplate('list/scunthorpe');
+			if ($cussWords) {
+				my $cussWordCount = 0;
+
+				my @cussWord = split("\n", $cussWords);
+				if (@cussWord) {
+					for my $word (@cussWord) {
+						$word = trim($word);
+						if ($word && $word =~ m/([0-9a-zA-Z]+)/i) {
+							$cussWordCount ++;
+						}
+					}
+				}
+
+				if ($cussWordCount) {
+					DBAddVoteRecord($fileHash, 0, 'scunthorpe');
+				}
+			}
+		}
+
+
 		my @tokenMessages;
 		my @tokensFound;
 		{ #tokenize into @tokensFound
