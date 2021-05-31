@@ -90,7 +90,7 @@
 
 <form action="/post.html" name="compose">
 
-<table cellpadding=4 cellspacing=0 border=0>
+<table bgcolor="$colorWindow" cellpadding=4 cellspacing=0 border=0>
 
 <tr><td>
     <a href="/post.html" onclick="return hi('`');" ondblclick="return hi('`');">`</a>
