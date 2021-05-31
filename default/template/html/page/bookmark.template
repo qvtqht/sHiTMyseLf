@@ -16,7 +16,7 @@
     </p>
 
     <p>
-        <a href="javascript:window.location='http://localhost:2784/post.html?comment='+encodeURIComponent(window.getSelection())+'&;s='+encodeURIComponent(document.location)">Clip</a>
+        <a href="javascript:window.location='http://localhost:2784/post.html?comment='+encodeURIComponent(window.getSelection())+'&s='+encodeURIComponent(document.location)">Clip</a>
         <br>
         <span class=beginner>Clip selected text and current page URL into new item.</span>
     </p>
