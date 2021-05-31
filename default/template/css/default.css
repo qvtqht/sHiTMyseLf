@@ -91,6 +91,11 @@ div.txt {
 	padding: 3pt;
 	font-size: smaller;
 	font-weight: bold;
+	padding: 3pt;
+	position: fixed;
+	top: 0;
+	right: 0;
+	margin: 0;
 }
 noscript {
 	color: red;
