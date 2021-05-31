@@ -1,37 +1,59 @@
 <!-- help.template -->
 
-<p>Welcome to the help pages.</p>
+<p>Welcome to the help pages!</p>
 
-<p>This website is designed to help communicate.</p>
+<p class=advanced><!-- todo #todo this relies on js-->
+    <a
+        title="Reset interface to beginner mode"
+        onclick="if (window.SetInterfaceMode) { SetInterfaceMode('beginner', this); }"
+        href="#"
+    >
+        Please note, that your interface is set to advanced mode.<br>
+        If you want to <b>reset to beginner mode, click here.</b>
+    </a>
+</p>
 
-<p><a href="/profile.html">Profile</a>: If you want to register or sign in.</p>
+
+
+<h7>Overview of what this site can do.</h7>
+
+<p>
+    <a href="/read.html">Read</a>: Read what is approved for consumption.
+</p>
+
+<p><a href="/write.html">Write</a>: Share something with the resource.</p>
+
 <p><a href="/settings.html">Settings</a>: To adjust how it works.</p>
-<p><a href="/access.html">Accessibility Mode</a>: Make site easier to use.</p>
+
+<p><a href="/profile.html">Profile</a>: Register, sign in, sign out.</p>
+
+<p><a href="/help.html">Help</a>: You are here.</p>
+
+<p><a href="/welcome.html">Welcome</a>: Page which welcomes.</p>
 
 <p>
     <a href="/jstest1.html">Browser Test</a>:
-    Help us help you in just two clicks! <br>
+    Help us help you with a browser test! <br>
 </p>
 
-<hr>
-
-<form action="/post.html">
-    <p>Message site operator:<br>
-    <input type=text size=38 name=comment>
-    <input name=tag value=help type=hidden>
-    <br>
-    <input type=submit value=Send>
-</form>
-
-<hr>
 
 <p>For more information, try these links:</p>
 
 <p><a href="/manual.html">Manual</a></p>
+
 <p><a href="/manual_advanced.html">Advanced Manual</a></p>
+
 <p><a href="/manual_tokens.html">Tokens Reference</a></p>
+
 <p><a href="/data.html">Data</a></p>
+
 <p><a href="/bookmark.html">Bookmarklets</a></p>
+
+<p><a href="/upload.html">Upload</a>: Upload a picture, if allowed.</p>
+
+<p><a href="/desktop.html">Desktop</a>: All the things on one page.</p>
+
+<p><a href="/search.html">Search</a>: Find something specific.</p>
 
 <p>Thanks for reading the help page!</p>
 
