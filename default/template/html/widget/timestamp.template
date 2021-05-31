@@ -1,3 +1,3 @@
 <!-- timestamp.template -->
-<span epoch=$timestamp title="$timeDate" class=timestamp><nobr>$timeDate</nobr></span>
+<span class=timestamp epoch=$timestamp title="$timeDate">$timeDate</span>
 <!-- / timestamp.template -->
