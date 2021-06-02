@@ -385,7 +385,7 @@ sub GetPageLink { # returns one pagination link as html, used by GetPageLinks
 
 	state $pageLinkTemplate;
 	if (!defined($pageLinkTemplate)) {
-		$pageLinkTemplate = GetTemplate('html/pagelink.template');
+		$pageLinkTemplate = GetTemplate('html/widget/pagelink.template');
 	}
 
 	my $pageLink = $pageLinkTemplate;
