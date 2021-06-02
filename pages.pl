@@ -295,7 +295,7 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 
 		return GetWindowTemplate($content, $title, $columnsDisplay);
 	} else {
-		return GetWindowTemplate('No results.');
+		return GetWindowTemplate('This space reserved for future content.', $title);
 	}
 } # GetQueryAsDialog()
 
