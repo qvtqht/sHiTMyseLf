@@ -423,6 +423,23 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 			$message = '';
 		}
 
+		if (
+			GetConfig('admin/index/filter_common_noise')
+			&&
+			$message =~ m/^[0-9a-f][0-9a-f]\/[0-9a-f][0-9a-f]\/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]\.html$/
+			||
+			$message =~ m/^[0-9a-f][0-9a-f]\/[0-9a-f][0-9a-f]\/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]\.html\?message=[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$/
+			||
+			$message =~ m/^\<a href=\"item\?id.+\"\>.+\<\/a\>$/
+
+		) {
+			AppendFile('log/deleted.log', $fileHash);
+			if (IsFileDeleted($file, $fileHash)) {
+				#cool
+			}
+			return 0;
+		}
+
 		my $detokenedMessage = $message;
 		my %hasToken;
 
