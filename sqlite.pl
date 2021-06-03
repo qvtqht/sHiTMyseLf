@@ -137,8 +137,7 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# author
 	SqliteQuery2("
-		CREATE VIEW
-			author
+		CREATE VIEW author
 		AS
 			SELECT DISTINCT
 				value AS key
@@ -188,7 +187,8 @@ sub SqliteMakeTables { # creates sqlite schema
 		)
 	");
 	SqliteQuery2("
-		CREATE VIEW item_attribute_latest AS
+		CREATE VIEW item_attribute_latest
+		AS
 		SELECT
 			file_hash,
 			attribute,
@@ -202,7 +202,8 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# added_time
 	SqliteQuery("
-		CREATE VIEW added_time AS
+		CREATE VIEW added_time
+		AS
 		SELECT
 			file_hash,
 			value AS add_timestamp
@@ -212,7 +213,8 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# item_title
 	SqliteQuery("
-		CREATE VIEW item_title AS
+		CREATE VIEW item_title
+		AS
 		SELECT
 			file_hash,
 			value AS title
@@ -222,7 +224,8 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# item_name
 	SqliteQuery("
-		CREATE VIEW item_name AS
+		CREATE VIEW item_name
+		AS
 		SELECT
 			file_hash,
 			value AS name
@@ -232,7 +235,8 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# item_order
 	SqliteQuery("
-		CREATE VIEW item_order AS
+		CREATE VIEW item_order
+		AS
 		SELECT
 			file_hash,
 			value AS item_order
@@ -242,7 +246,8 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# item_sequence
 	SqliteQuery("
-		CREATE VIEW item_sequence AS
+		CREATE VIEW item_sequence
+		AS
 		SELECT
 			file_hash,
 			value AS item_sequence
@@ -252,7 +257,8 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# item_author
 	SqliteQuery("
-		CREATE VIEW item_author AS
+		CREATE VIEW item_author
+		AS
 		SELECT
 			file_hash,
 			MAX(value) AS author_key
@@ -262,7 +268,8 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 #
 # 	SqliteQuery2("
-# 		CREATE VIEW item_title_latest AS
+# 		CREATE VIEW item_title_latest
+#		AS
 # 		SELECT
 # 			file_hash,
 # 			title,
@@ -280,7 +287,8 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# child_count view
 	SqliteQuery2("
-		CREATE VIEW child_count AS
+		CREATE VIEW child_count
+		AS
 		SELECT
 			parent_hash AS parent_hash,
 			COUNT(*) AS child_count
@@ -380,7 +388,8 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# parent_count view
 	SqliteQuery2("
-		CREATE VIEW parent_count AS
+		CREATE VIEW parent_count
+		AS
 		SELECT
 			item_hash AS item_hash,
 			COUNT(parent_hash) AS parent_count
@@ -461,8 +470,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	}
 
 	SqliteQuery2("
-		CREATE VIEW
-			item_tags_list
+		CREATE VIEW item_tags_list
 		AS
 		SELECT
 			file_hash,
@@ -472,7 +480,8 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	SqliteQuery2("
-		CREATE VIEW item_flat AS
+		CREATE VIEW item_flat
+		AS
 			SELECT
 				item.file_path AS file_path,
 				IFNULL(item_name.name, item.file_name) AS item_name,
@@ -503,7 +512,8 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	SqliteQuery2("
-		CREATE VIEW item_vote_count AS
+		CREATE VIEW item_vote_count
+		AS
 			SELECT
 				file_hash,
 				vote_value AS vote_value,
@@ -536,8 +546,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	#todo deconfusify
 	# uses sum of entries in vote table combined with vote weights in vote_value table
 	SqliteQuery2("
-		CREATE VIEW
-			item_score
+		CREATE VIEW item_score
 		AS
 			SELECT
 				item.file_hash AS file_hash,
@@ -553,8 +562,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	SqliteQuery2("
-		CREATE VIEW
-			author_score
+		CREATE VIEW author_score
 		AS
 			SELECT
 				item_flat.author_key AS author_key,
