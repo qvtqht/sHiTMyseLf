@@ -1653,27 +1653,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			# $windowParams{'headings'} = 'haedigns';
 
 			if ($file{'tags_list'}) {
-				my @tagsList = split(',', $file{'tags_list'});
-
-				my $headings;
-				foreach my $tag (@tagsList) {
-					if ($tag =~ m/^[0-9a-zA-Z_-]+$/) {
-						#sanity check
-						#$tag = $1;
-					} else {
-						WriteLog('GetItemTemplate: warning: $tag sanity check failed, @tagsList $tag = ' . $tag);
-						$headings .= '[tag]';
-						next;
-					}
-					my $tagColor = GetStringHtmlColor($tag);
-					$headings .=
-						'<a href="/top/' . $tag . '.html">' .
-						'<font color="#' . $tagColor . '">#</font>' .
-						$tag .
-						'</a>; ';
-					#$headings .= 'tag='.$tag;
-				}
-
+				my $headings = GetTagsListAsHtmlWithLinks($file{'tags_list'});
 				$windowParams{'headings'} = '<span class=advanced>' . $headings . '</span>'; #todo this is a kludge
 				#$windowParams{'headings'} = '<a>#' . join('</a> <a>#', split(',', $file{'tags_list'})) . '</a>';
 			} # $file{'tags_list'}
