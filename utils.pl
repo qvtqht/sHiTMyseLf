@@ -1012,7 +1012,7 @@ sub PutHtmlFile { # $file, $content, $htmlRoot ; writes content to html file, wi
 		$content =~ s/[^[:ascii:]]//g;
 		if (length($content) != $lengthBefore) {
 			if (index(lc($content), '</body>') != -1) {
-				my $messageNotification = 'Non-ASCII characters removed: ' . ($lengthBefore - length($content));
+				my $messageNotification = 'Non-ASCII characters removed during page printing: ' . ($lengthBefore - length($content));
 				if (GetConfig('admin/debug')) {
 					#$messageNotification .= '<br><form><textarea>'.HtmlEscape('<script>alert()</script>').'</textarea></form>';
 				}
