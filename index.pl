@@ -243,7 +243,7 @@ sub GetTokenDefs {
 			# also, anything under config/admin/ is still restricted to admin user only
 			# admin user must have a pubkey
 			'token' => 'config',
-			'mask'  => '(config)(\W)(.+)$',
+			'mask'  => '^(config)(\W)(.+)$',
 			'mask_params' => 'mgi',
 			'message' => '[Config]',
 			'apply_to_parent' => 1
