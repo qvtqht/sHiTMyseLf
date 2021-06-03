@@ -619,16 +619,21 @@ sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns 
 			# };
 
 			$sth = $dbh->prepare($query);
-			my $execResult = $sth->execute(@queryParams);
+			if ($sth) {
+				my $execResult = $sth->execute(@queryParams);
 
-			WriteLog('SqliteQuery2: $execResult = ' . $execResult);
+				WriteLog('SqliteQuery2: $execResult = ' . $execResult);
 
-			$aref = $sth->fetchall_arrayref();
-			$sth->finish();
+				$aref = $sth->fetchall_arrayref();
+				$sth->finish();
 
-			return $aref;
+				return $aref;
+			} else {
+				WriteLog('SqliteQuery2: warning: $sth=false on $query = ' . $query);
+			}
 		} else {
 			WriteLog('SqliteQuery2: warning: $dbh is missing');
+			WriteLog('SqliteQuery2: caller: ' . join(', ', caller));
 		}
 	}
 	else {
