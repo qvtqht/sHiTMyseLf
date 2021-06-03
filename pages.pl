@@ -1576,7 +1576,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			#$message =~ s/([a-f0-9]{40})/GetItemHtmlLink($1, DBGetItemTitle($1))/eg;
 
 			# just the item id
-			$message =~ s/([a-f0-9]{40})/GetItemHtmlLink($1)/eg;
+			$message =~ s/([a-f0-9]{40})/GetItemHtmlLink($1, DBGetItemTitle($1, 16))/eg;
 
 			#$message =~ s/([a-f0-9]{40})//eg;
 		}
