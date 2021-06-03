@@ -1148,6 +1148,27 @@ sub DBGetItemTitle { # get title for item ($itemhash)
 	}
 } # DBGetItemTitle()
 
+sub DBGetItemFilePath { # get path for item's source file
+	my $itemHash = shift;
+
+	if (!$itemHash || !IsItem($itemHash)) {
+		return;
+	}
+
+	my $query = 'SELECT file_path FROM item WHERE file_hash = ?';
+	my @queryParams = ();
+
+	push @queryParams, $itemHash;
+
+	my $itemFile = SqliteGetValue($query, @queryParams);
+
+	if ($itemFile) {
+		return $itemFile;
+	} else {
+		return '';
+	}
+} # DBGetItemTitle()
+
 sub DBGetItemAuthor { # get author for item ($itemhash)
 	my $itemHash = shift;
 
