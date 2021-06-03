@@ -418,7 +418,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		}
 		my $message = GetFileMessage($file);
 
-		if (!defined($message)) {
+		if (!defined($message) || !$message) {
 			WriteLog('IndexTextFile: warning: $message was not defined, setting to empty string');
 			$message = '';
 		}
