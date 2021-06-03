@@ -1862,7 +1862,6 @@ sub GetItemTemplate { # returns HTML for outputting one item
 				}
 #				my $imageUrl = "/thumb/squared_800_$fileHash.gif"; #todo hardcoding no
 #				my $imageSmallUrl = "/thumb/squared_42_$fileHash.gif"; #todo hardcoding no
-				my $imageAlt = $itemTitle;
 
 				# $imageSmallUrl is a smaller image, used in the "lowsrc" attribute for img tag
 
