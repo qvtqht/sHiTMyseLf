@@ -198,11 +198,26 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		}
 	}
 
-	if ($fieldName eq 'tagset_compost') {
-		if (%itemHash && $itemHash{'file_hash'}) {
-			$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, 'compost');
+	if (substr($fieldName, 0, 7) eq 'tagset_' && !$fieldValue) {
+		if (length($fieldName) > 7) {
+			my $tagsetName = substr($fieldName, 7);
+			if (GetConfig('tagset/' . $tagsetName)) {
+				$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, $tagsetName);
+			}
 		}
 	}
+#
+#	if ($fieldName eq 'tagset_compost') {
+#		if (%itemHash && $itemHash{'file_hash'}) {
+#			$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, 'compost');
+#		}
+#	}
+#
+#	if ($fieldName eq 'tagset_author') {
+#		if (%itemHash && $itemHash{'file_hash'}) {
+#			$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, 'author');
+#		}
+#	}
 
 	if (!$fieldValue || trim($fieldValue) eq '') {
 		WriteLog('RenderField: warning: $fieldValue is missing; $fieldName = ' . $fieldName . '; caller: ' . join(', ', caller));
