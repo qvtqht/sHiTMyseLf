@@ -9,6 +9,7 @@
 use strict;
 use warnings;
 use utf8;
+#use HTML::Entities qw(decode_entities);
 
 my @argsFound;
 while (my $argFound = shift) {
