@@ -1014,7 +1014,7 @@ sub PutHtmlFile { # $file, $content, $htmlRoot ; writes content to html file, wi
 			if (index(lc($content), '</body>') != -1) {
 				my $messageNotification = 'Non-ASCII characters removed: ' . ($lengthBefore - length($content));
 				if (GetConfig('admin/debug')) {
-					$messageNotification .= '<br><form><textarea>'.HtmlEscape('<script>alert()</script>').'</textarea></form>';
+					#$messageNotification .= '<br><form><textarea>'.HtmlEscape('<script>alert()</script>').'</textarea></form>';
 				}
 				$content = str_ireplace('</body>', GetWindowTemplate($messageNotification, 'Notice') . '</body>', $content);
 			}
@@ -1761,7 +1761,8 @@ sub GetItemDetokenedMessage { # $itemHash, $filePath ; retrieves item's message 
 	my $messageCacheName = GetMessageCacheName($itemHash);
 
 	if (!-e $messageCacheName) {
-		WriteLog('GetItemDetokenedMessage: warning: FALSE $messageCacheName = ' . $messageCacheName);
+		WriteLog('GetItemDetokenedMessage: warning: NO FILE: $messageCacheName = ' . $messageCacheName);
+
 	} else {
 		WriteLog('GetItemDetokenedMessage: $message = GetFile(' . $messageCacheName . ');');
 		$message = GetFile($messageCacheName);
@@ -1897,7 +1898,9 @@ sub GetFileHashPath { # $file ; Returns text file's standardized path given its 
 
 sub GetPathFromHash { # gets path of text file based on hash
 #GetFilePath {
+#GetHashPath {
 	# relies on config/admin/organize_files = 1
+	#todo fix
 	my $fileHash = shift;
 	chomp $fileHash;
 
