@@ -1380,6 +1380,32 @@ sub GetImageContainer { # $fileHash, $imageAlt, $boolLinkToItemPage = 1
 	return $imageContainer;
 } # GetImageContainer()
 
+sub GetTagsListAsHtmlWithLinks {
+	my $tagsListParam = shift;
+	my @tagsList = split(',', $tagsListParam);
+
+	my $headings;
+	foreach my $tag (@tagsList) {
+		if ($tag =~ m/^[0-9a-zA-Z_-]+$/) {
+			#sanity check
+			#$tag = $1;
+		} else {
+			WriteLog('GetItemTemplate: warning: $tag sanity check failed, @tagsList $tag = ' . $tag);
+			$headings .= '[tag]';
+			next;
+		}
+		my $tagColor = GetStringHtmlColor($tag);
+		$headings .=
+			'<a href="/top/' . $tag . '.html">' .
+			'<font color="' . $tagColor . '">#</font>' .
+			$tag .
+			'</a>; ';
+		#$headings .= 'tag='.$tag;
+	}
+
+	return $headings;
+} # GetTagsListAsHtmlWithLinks()
+
 sub GetItemTemplate { # returns HTML for outputting one item
 	WriteLog("GetItemTemplate() begin");
 
