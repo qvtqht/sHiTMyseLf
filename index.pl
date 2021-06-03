@@ -274,6 +274,67 @@ sub GetTokenDefs {
 	return @tokenDefs;
 } # GetTokenDefs()
 
+sub IndexHtmlFile { # $file | 'flush' ; indexes one text file into database
+# DRAFT
+# DRAFT
+# DRAFT
+# DRAFT
+# DRAFT
+	my $SCRIPTDIR = GetDir('script');
+	my $HTMLDIR = GetDir('html');
+	my $TXTDIR = GetDir('txt');
+
+	my $file = shift;
+	chomp($file);
+
+	if ($file eq 'flush') {
+		IndexTextFile('flush');
+	}
+
+	my $html = GetFile($file);
+
+	#print $file;
+	#sleep 3;
+
+	#print $html;
+	#sleep 3;
+
+
+	my @matches;
+
+	print length($html)."\n";
+
+	$html =~ s/\<span[^>]+\>/<span>/g;
+
+	print length($html)."\n";
+
+	sleep 3;
+
+	while ($html =~/(?<=<span>)(.*?)(?=<\/span>)/g) {
+	  push @matches, $1;
+	}
+
+	foreach my $m (@matches) {
+		print trim($m), "\n===\n";
+		#todo htmldecode
+
+		$m = str_replace('<p>', "\n\n", $m);
+		#$m = decode_entities($m);
+		my $mHash = sha1_hex($m);
+		my $mFilename = GetPathFromHash($mHash);
+		PutFile($mFilename, $m);
+	}
+
+	#if ($html =~ m/<span.+>(.+)<\/span>/g) {
+		#print Dumper($1);
+		#print ';-)';
+#		print "Word is $1, ends at position ", pos $x, "\n";
+		sleep 3;
+	#}#
+
+	sleep 3;
+} # IndexHtmlFile()
+
 sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 # Reads a given $file, parses it, and puts it into the index database
 # If ($file eq 'flush'), flushes any queued queries
