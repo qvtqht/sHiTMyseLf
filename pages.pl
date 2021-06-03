@@ -1025,7 +1025,7 @@ sub GetReplyForm { # $replyTo ; returns reply form for specified item
 
 	state $accessKey;
 	if (!$accessKey) {
-		$accessKey = GetAccessKey('reply');
+		$accessKey = GetAccessKey('write');
 	}
 
 	if (!$replyTo || !IsItem($replyTo)) {
@@ -1046,13 +1046,21 @@ sub GetReplyForm { # $replyTo ; returns reply form for specified item
 	}
 
 	if (GetConfig('admin/js/enable')) {
-		$replyForm = AddAttributeToTag(
-			$replyForm,
-			'input id=btnSendReply',
-			'onclick',
-#			"this.value='Meditate...';if(window.writeSubmit){return writeSubmit(this);}"
-			"this.value = 'Meditate...'; if (window.writeSubmit) { setTimeout('writeSubmit();', 100); return true; } else { return true; }"
-		);
+		if (GetConfig('admin/js/reply_form_optimize_for_delivery')) {
+			$replyForm = AddAttributeToTag(
+				$replyForm,
+				'input id=btnSendReply',
+				'onclick',
+				"this.value = 'Meditate...'; if (window.writeSubmit) { setTimeout('writeSubmit();', 100); return true; } else { return true; }"
+			);
+		} else {
+			$replyForm = AddAttributeToTag(
+				$replyForm,
+				'input id=btnSendReply',
+				'onclick',
+				"this.value='Meditate...';if(window.writeSubmit){return writeSubmit(this);}"
+			);
+		}
 
 		#todo the return value can be changed from false to true to issue two submissions, one signed and one not
 		#		Use this line instead for improved delivery, but duplicate messages
