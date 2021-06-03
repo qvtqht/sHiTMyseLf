@@ -155,10 +155,21 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		#print($firstWord."\n");
 		my $firstWordHash = md5_hex($firstWord);
 		my $firstWordHashFirstChar = substr($firstWordHash, 0, 1);
-		$firstWordHashFirstChar =~ tr/0123456789abcdef/.;*\-,<">'+o:`_|+/;
+		#$firstWordHashFirstChar =~ tr/0123456789abcdef/><+-.,[]><+-.,[]/; #brainfuck
+		$firstWordHashFirstChar =~ tr/0123456789abcdef/.;]\-,<">'+[:`_|+/; #brainfuckXL
 		#todo use 2 characters of the hash, convert to 1 out of 64 characters
 
 		WriteMessage($firstWordHashFirstChar); #todo make config/
+
+		# FOR DEBUGGING PURPOSES
+		#		print('$firstWord = ' . $firstWord . "\n");
+		#		print('$firstWordHash = ' . $firstWordHash . "\n");
+		#		print('$firstWordHashFirstChar = ' . $firstWordHashFirstChar . "\n");
+		#		print("\n");
+
+		if (!$firstWordHashFirstChar && !($firstWordHashFirstChar == 0)) {
+			$firstWordHashFirstChar = '?';
+		}
 
 		$charPrefix = $firstWordHashFirstChar;
 	}
