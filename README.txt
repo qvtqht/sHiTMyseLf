@@ -7,7 +7,6 @@ At least 30 times slower than Hugo.
 
 SUPPORTED ENVIRONMENTS
 ======================
-As stated above, sHiTMyseLf aims to please, and make do with whatever you got.
 
 Frontend Tested With:
 =====================
@@ -33,14 +32,19 @@ Safari (Mac)
 Safari (Windows) 1, 2, 3, 4, 5
 Some kind of in-TV browser with no monospace font!
 
-Frontend Notes:
-===============
-Some browsers, marked with *, require special accommodations.
+Frontend Notes
+==============
 Not every feature is supported by every browser.
 Not every minor version was tested.
-Many browsers support very few features.
+Some browsers support very few features.
 However, with prior knowledge of system,
 Reading, writing, voting was done successfully.
+
+"*" Asterisk Notes
+==================
+Some browsers, marked with *, require special accommodations.
+IE2 and Mosaic needs config/admin/php/enable=0
+Netscape 2 needs config/admin/js/enable=0
 
    * * *
 
@@ -140,17 +144,21 @@ $ cd ~/hike
 $ ./install.pl
 $ ./build.pl
 
-TROUBLESHOOTING
+TROUBLESHOOTING / COMMON ISSUES / PERL MODULE PROBLEMS
 ===============
-If you get an error about the version of SQLite library during build, do this:
+If you get an error about the VERSION of DBD::SQLite library during build, do this:
    $ cd ~/hike
    $ rm -rvf ./lib/
+
+If you get an error about MISSING of DBD::SQLite library during build, do this:
+   $ cpan DBD::SQLite
 
 LOCAL ADMINISTRATION
 ====================
 Publish an item with some text:
    $ echo "hello, world" > html/txt/hello.txt
-   $ ./update.pl
+   $ ./index.pl html/txt/hello.txt
+   $ ./pages.pl --queue
 
 Publish profile:
    $ gpg --armor --export > ./html/txt/my_profile.txt
