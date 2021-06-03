@@ -1458,6 +1458,20 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		# get formatted/post-processed message for this item
 		my $message = GetItemDetokenedMessage($file{'file_hash'}, $file{'file_path'});
 
+		if (!$message) {
+			WriteLog('GetItemTemplate: warning: $message is empty when retrieved from cache!');
+			if (-e $file{'file_path'}) {
+				$message = GetFile($file{'file_path'});
+
+				if ($message) {
+					$isTextart = 1;
+				} else {
+					WriteLog('GetItemTemplate: warning: $message is empty even after getting file contents!');
+					return '[Item]';
+				}
+			}
+		}
+
 		$message =~ s/\r//g;
 		if (GetConfig('admin/expo_site_mode')) {
 			if (index($message, "\n-- \n") != -1) {
@@ -1571,6 +1585,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 			# what this does is replace [[example]] with
 			# tag buttons for all the tags contained in
 			# tagset/example
+			# keywords for searching: [[johari]] [[tagset]]
 			$message =~ s/\[\[([a-z]+)\]\]/GetItemTagButtons($itemHash, $1)/ge;
 			# REGEX cheatsheet
 			# ================
@@ -1689,8 +1704,12 @@ sub GetItemTemplate { # returns HTML for outputting one item
 #				#$statusBar = $file{'item_title'};
 #			}
 			WriteLog('$statusBar 2 = ' . $statusBar);
-			$windowParams{'status'} = $statusBar;
-
+			if ($itemType eq 'image') {
+				$windowParams{'status'} = $statusBar;
+				#$windowParams{'status'} = $statusBar . '<hr>' . GetQuickVoteButtonGroup($file{'file_hash'}, $file{'vote_return_to'});
+			} else {
+				$windowParams{'status'} = $statusBar;
+			}
 
 #			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
 #				#todo
@@ -1775,6 +1794,10 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		my $replyCount = $file{'child_count'};
 		my $borderColor = '#' . substr($fileHash, 0, 6); # item's border color
 		my $addedTime = DBGetAddedTime($fileHash);
+		if (!$addedTime) {
+			WriteLog('GetItemTemplate: warning: $addedTime was FALSE');
+			$addedTime = 0;
+		}
 		$addedTime = ceil($addedTime);
 		my $addedTimeWidget = GetTimestampWidget($addedTime); #todo optimize
 		my $itemTitle = $file{'item_title'};
@@ -1837,6 +1860,11 @@ sub GetItemTemplate { # returns HTML for outputting one item
 
 				my $imageUrl = "/thumb/thumb_800_$fileHash.gif"; #todo hardcoding no
 				my $imageSmallUrl = "/thumb/thumb_42_$fileHash.gif"; #todo hardcoding no
+				my $imageAlt = $itemTitle;
+
+				if ($file{'image_large'}) {
+				} else {
+				}
 #				my $imageUrl = "/thumb/squared_800_$fileHash.gif"; #todo hardcoding no
 #				my $imageSmallUrl = "/thumb/squared_42_$fileHash.gif"; #todo hardcoding no
 				my $imageAlt = $itemTitle;
@@ -1848,14 +1876,13 @@ sub GetItemTemplate { # returns HTML for outputting one item
 				$imageContainer =~ s/\$imageAlt/$imageAlt/g;
 				$imageContainer =~ s/\$permalinkHtml/$permalinkHtml/g;
 
-				$imageContainer = AddAttributeToTag($imageContainer, 'img', 'width', '300');
 
 				$itemText = $imageContainer;
 
 				$itemClass = 'image';
 			} else {
-				$itemText = 'itemType eq image, but images disabled';
-				WriteLog('$itemType eq image, but images disabled');
+				$itemText = '[image]';
+				WriteLog('GetItemTemplate: warning: $itemType eq image, but images disabled');
 			}
 		} # $itemType eq 'image'
 
