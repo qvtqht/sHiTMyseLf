@@ -1866,6 +1866,17 @@ sub GetItemTemplate { # returns HTML for outputting one item
 
 				# $imageSmallUrl is a smaller image, used in the "lowsrc" attribute for img tag
 
+				if ($file{'image_large'}) {
+					$imageContainer = AddAttributeToTag($imageContainer, 'img', 'width', '800');
+				} else {
+					if ($file{'item_score'} > 0) {
+						$imageUrl = "/thumb/thumb_512_$fileHash.gif"; #todo hardcoding no
+					} else {
+						$imageUrl = "/thumb/thumb_512_g_$fileHash.gif"; #todo hardcoding no
+					}
+					$imageContainer = AddAttributeToTag($imageContainer, 'img', 'width', '300');
+				}
+
 				$imageContainer =~ s/\$imageUrl/$imageUrl/g;
 				$imageContainer =~ s/\$imageSmallUrl/$imageSmallUrl/g;
 				$imageContainer =~ s/\$imageAlt/$imageAlt/g;
