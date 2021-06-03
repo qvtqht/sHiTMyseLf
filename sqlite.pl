@@ -1073,6 +1073,7 @@ sub DBGetItemRelated { # Returns related for item
 			SELECT DISTINCT file_hash
 			FROM item_attribute
 			WHERE
+				file_hash NOT IN ('$itemHash') AND
 				attribute||'='||value IN (
 					SELECT attribute||'='||value
 					FROM item_attribute
