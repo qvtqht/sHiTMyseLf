@@ -1,0 +1,26 @@
+SELECT
+	item_title,
+	author_key,
+	add_timestamp,
+	file_hash
+FROM
+	item_flat
+WHERE file_hash IN (
+	SELECT
+		DISTINCT file_hash
+	FROM
+		item_attribute
+	WHERE
+		attribute||'='||value IN (
+			SELECT
+				attribute||'='||value
+			FROM
+				item_attribute
+			WHERE
+				file_hash IN(?) AND
+				attribute IN('url', 'normalized_hash')
+
+		)
+	
+)
+
