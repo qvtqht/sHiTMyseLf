@@ -45,6 +45,7 @@ Reading, writing, voting was done successfully.
 Some browsers, marked with *, require special accommodations.
 IE2 and Mosaic needs config/admin/php/enable=0
 Netscape 2 needs config/admin/js/enable=0
+IE3, Netscape 2-3 need config/admin/dragging=0 otherwise js error
 
    * * *
 
