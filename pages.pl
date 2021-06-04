@@ -243,6 +243,44 @@ sub GetQueryAsDialog { # $query, $title, $columns
 	return GetResultSetAsDialog(\@result, $title, $columns);
 }
 
+sub LightenColor {
+	my $color = shift;
+	my @rgb;
+
+	WriteLog('LightenColor: before: $color = ' . $color);
+
+	$rgb[0] = hex(substr($color, 0, 2));
+	$rgb[1] = hex(substr($color, 2, 2));
+	$rgb[2] = hex(substr($color, 4, 2));
+
+	while ($rgb[0] < 214 || $rgb[1] < 214 || $rgb[2] < 214) {
+		$rgb[0] = $rgb[0] + 1;
+		$rgb[1] = $rgb[1] + 1;
+		$rgb[2] = $rgb[2] + 1;
+
+		$color = sprintf("%X", $rgb[0]) . sprintf("%X", $rgb[1]) . sprintf("%X", $rgb[2]);
+		WriteLog('LightenColor: after: $color = ' . $color);
+
+	}
+
+	if ($rgb[0] > 255) {
+		$rgb[0] = 255;
+	}
+
+	if ($rgb[1] > 255) {
+		$rgb[1] = 255;
+	}
+
+	if ($rgb[2] > 255) {
+		$rgb[2] = 255;
+	}
+
+	$color = sprintf("%X", $rgb[0]) . sprintf("%X", $rgb[1]) . sprintf("%X", $rgb[2]);
+	WriteLog('LightenColor: after: $color = ' . $color);
+
+	return $color;
+} # LightenColor()
+
 sub GetResultSetAsDialog { # \@result, $title, $columns
 # \@result is an array of hash references
 # ATTENTION: the first member of the array is the list of columns in correct order
