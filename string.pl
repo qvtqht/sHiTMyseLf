@@ -91,6 +91,8 @@ sub HtmlEscape { # encodes supplied string for html output
 }
 
 sub GetStringHtmlColor {
+# GetColorFromHash {
+# GetHashColor {
 	my $string = shift;
 	#todo dark/light or color(s) to match
 	#todo sanity
