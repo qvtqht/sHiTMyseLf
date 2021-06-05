@@ -157,11 +157,12 @@ function EventLoop () { // for calling things which need to happen on a regular 
 // #backlog add secondary EventLoopWatcher timer which ensures this one runs when needed
 
 	var d = new Date();
-	var eventLoopBegin = d.getTime();
+	var eventLoopBegin = d.getTime(); // eventLoopStart
 
 	if (!window.eventLoopPrevious) {
 		window.eventLoopPrevious = 1;
 	}
+	window.eventLoopBegin = eventLoopBegin;
 
 	if (window.eventLoopSetClock && window.setClock) {
 		setClock();
@@ -227,32 +228,46 @@ function EventLoop () { // for calling things which need to happen on a regular 
 				window.eventLoopFresh = eventLoopBegin;
 			}
 		}
+
+		if (window.GetPrefs) {
+			window.performanceOptimization = GetPrefs('performance_optimization');
+		}
 	} // 10000 < (eventLoopBegin - window.eventLoopPrevious)
 
 	if (window.eventLoopEnabled) {
+		// this sets the next setTimeout for the next "loop" iteration
+
+		// see how long this last iteration took
 		var d = new Date();
 		var eventLoopEnd = d.getTime();
 		var eventLoopDuration = eventLoopEnd - eventLoopBegin;
 		//document.title = eventLoopDuration; // for debugging performance
 
+		// unset any timeout if already set
 		if (window.timeoutEventLoop) {
 			clearTimeout(window.timeoutEventLoop);
 		}
 
-		if (100 < eventLoopDuration) {
+		if (30 < eventLoopDuration) {
 			// if loop went longer than 100ms, run every 3 seconds or more
-
-			// #todo make it known to user that hitting performance limit
-			if (document.title.substr(0,3) != '// ') {
-				document.title = '// ' + document.title;
+			//document.title = eventLoopDuration;
+			if (GetPrefs('notify_event_loop')) {
+				displayNotification('EventLoop: ' + eventLoopDuration + 'ms');
 			}
-			SetPrefs('performance_optimization', 'faster');
-			eventLoopDuration = eventLoopDuration * 30;
+//
+//			// #todo make it known to user that hitting performance limit
+//			if (document.title.substr(0,3) != '/ ') {
+//				// for now we just prepend the title with a slash
+//				document.title = '/ ' + document.title;
+//			}
+
+			// set performance setting to 'faster'
+			// SetPrefs('performance_optimization', 'faster');
+			eventLoopDuration = eventLoopDuration * 10;
 		} else {
-			// otherwise run every 1 second
+			// otherwise run again after 1 interval time
 			eventLoopDuration = 1*m;
 		}
-		//document.title = eventLoopDuration; // for debugging performance
 
 		window.timeoutEventLoop = setTimeout('EventLoop()', eventLoopDuration);
 	} // window.eventLoopEnabled
