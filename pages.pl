@@ -249,11 +249,25 @@ sub LightenColor {
 
 	WriteLog('LightenColor: before: $color = ' . $color);
 
+	my $hashPrefix = '';
+	if (substr($color, 0, 1) eq '#') {
+		$hashPrefix = '#';
+		$color = substr($color, 1);
+	}
+
+	if ($color =~ m/^([a-fA-F0-9]{6})$/) {
+		$color = $1;
+		WriteLog('LightenColor: sanity check passed: $color = ' . $color);
+	} else {
+		WriteLog('LightenColor: warning: sanity check FAILED');
+		return '';
+	}
+
 	$rgb[0] = hex(substr($color, 0, 2));
 	$rgb[1] = hex(substr($color, 2, 2));
 	$rgb[2] = hex(substr($color, 4, 2));
 
-	while ($rgb[0] < 214 || $rgb[1] < 214 || $rgb[2] < 214) {
+	while ($rgb[0] < 128 || $rgb[1] < 228 || $rgb[2] < 228) {
 		$rgb[0] = $rgb[0] + 1;
 		$rgb[1] = $rgb[1] + 1;
 		$rgb[2] = $rgb[2] + 1;
@@ -276,6 +290,7 @@ sub LightenColor {
 	}
 
 	$color = sprintf("%X", $rgb[0]) . sprintf("%X", $rgb[1]) . sprintf("%X", $rgb[2]);
+	$color = $hashPrefix . $color;
 	WriteLog('LightenColor: after: $color = ' . $color);
 
 	return $color;
