@@ -1,16 +1,12 @@
 <!-- settings.template -->
 <noscript>
-	<legend><b>JavaScript Information</b><br></legend>
 	<p>
-		Enhancements marked with star below (<b>*</b>) <br>
-		require modern* <b>JavaScript</b>.
+		<b>*</b> Some features may need <b>JavaScript</b>.
 		<!--
-			* modern means getElementById and stuff like that.
+			* getElementById and stuff like that.
 			Tested with in IE6+, Presto, Gecko, WebKit, Chrome
 		-->
 	</p>
-
-	<p><hr></p>
 </noscript>
 
 <fieldset>
@@ -20,7 +16,7 @@
 		<input type=submit name=ui value="Beginner" onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('beginner', this); }">
 		<input type=submit name=ui value="Intermediate" onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('intermediate', this); }">
 		<input type=submit name=ui value="Advanced" class=advanced onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('expert', this); }">
-		<span class=beginner><br>Use these buttons to adjust interface<noscript><b>*</b></noscript></span>
+		<span class=beginner><br>Use these buttons to adjust interface</span>
 	</p>
 
 	<p>
