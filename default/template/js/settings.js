@@ -410,7 +410,7 @@ function SetInterfaceMode (ab, thisButton) { // updates several settings to chan
 			SetPrefs('performance_optimization', 'faster');
 			SetPrefs('draggable', 0);
 			SetPrefs('focus_reply', 0);
-//			SetPrefs('sign_by_default', 1);
+			SetPrefs('sign_by_default', 1);
 
 			//if (window.displayNotification) {
 				//displayNotification('', thisButton);
@@ -497,6 +497,7 @@ function LoadCheckboxValues () {
 	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');
 	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');
 	LoadCheckbox(document.getElementById('chkFocusReply'), 'focus_reply');
+	LoadCheckbox(document.getElementById('chkSignByDefault'), 'sign_by_default');
 
 	LoadCheckbox(document.getElementById('optTimestampsFormat'), 'timestamps_format');
 	LoadCheckbox(document.getElementById('optPerformanceOptimization'), 'performance_optimization');
@@ -511,7 +512,6 @@ function SettingsOnload () { // onload function for settings page
 	// based on settings state
 		//var pane;
 
-		//LoadCheckbox(document.getElementById('chkSignByDefault'), 'sign_by_default');
 		LoadCheckboxValues();
 
 		//if (GetPrefs('sign_by_default') == 1) {
