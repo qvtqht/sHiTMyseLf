@@ -120,7 +120,8 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 
 function ShowPreNavigateNotification () {
 	//alert('DEBUG: ShowPreNavigateNotification() begin');
-	document.title = 'Meditate...';
+	document.title = document.title + '...';
+
 	//document.body.style.opacity="0.8";
 	if (event.target == location.href) {
 	} else {
@@ -144,7 +145,7 @@ function ShowPreNavigateNotification () {
 	}
 
 	return ''; // true would show a confirmation
-}
+} // ShowPreNavigateNotification()
 
 if (!window.performanceOptimization && window.GetPrefs) {
 	window.performanceOptimization = GetPrefs('performance_optimization');
