@@ -589,6 +589,14 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 					'advanced'
 				);
 			}
+			if (GetConfig('admin/js/enable')) {
+				$columnHeaderTemplate = AddAttributeToTag(
+					$columnHeaderTemplate,
+					'th',
+					'onclick',
+					'if (window.SortTable) { SortTable(this); } else { }'
+				);
+			}
 			if ($printedColumnsCount >= scalar(@columnsArray)) {
 				# only printed after the last column
 				# adds a <br> for browsers without table support
@@ -606,7 +614,8 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 		$windowHeaderTemplate =~ s/\$windowHeadings/$windowHeaderColumns/;
 		$windowTemplate =~ s/\$windowHeader/$windowHeaderTemplate/;
 		$contentColumnCount = scalar(@columnsArray);
-	} else {
+	} # / column headings
+	else {
 		$windowTemplate =~ s/\$windowHeader//g;
 	}
 
