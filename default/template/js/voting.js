@@ -18,6 +18,7 @@ function PingUrlCallback () {
 		// document.open();
 		// document.write(xmlhttp.responseText);
 		// document.close();
+		window.xmlhttp = 0;
 	} else {
 		// alert('DEBUG: PingUrlCallback: warning: unrecognized: xmlhttp.status = ' + xmlhttp.status + '; xmlhttp.readyState = ' + xmlhttp.readyState);
 	}
@@ -123,13 +124,41 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 // where (gt) is a greater-than sign, omitted here
 	//alert('DEBUG: SignVote(' + t + ',' + token +')');
 
+	if (
+		t.nextSibling &&
+		t.nextSibling.tagName &&
+		t.nextSibling.getAttribute &&
+		t.nextSibling.getAttribute('class') == 'notification'
+	) {
+		// removes a notification if it is immediately afer this button
+		t.nextSibling.remove();
+	}
+
+	if (window.xmlhttp) {
+		//only allow one vote a time to be happening
+		//unless user is operator
+
+		if (GetPrefs('show_admin')) {
+			// continue
+		} else {
+			if (window.displayNotification) {
+				displayNotification('Too fast', t);
+			}
+			return false;
+		}
+	}
+
+
 	if (document.getElementById) {
 	// basic dumb feature check #todo make smarter feature check ;
 	// needs better compatibility for older browsers
 		// get private key
 
-		if (GetPrefs(token)) {
-			// don't let user vote twice basic
+		if (!GetPrefs('show_admin') && GetPrefs(token)) {
+			// don't let user vote twice -- basic version
+			// the token we'd send to vote is stored as the key to a preference setting
+			// #todo this could be nicer?
+			// doesn't apply if user is showing operator controls
 			if (window.displayNotification) {
 				window.duplicateVoteTries ? window.duplicateVoteTries++ : window.duplicateVoteTries = 1;
 				if (3 <= window.duplicateVoteTries) {
@@ -156,9 +185,11 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 
 		window.xmlhttpElement = t;
 		
-		if (!privkey) {
+		if (GetPrefs('show_admin') || !privkey) {
 			//alert('DEBUG: !privkey');
 			// if there is no private key, just do a basic unsigned vote;
+
+			// if user is operator, they also do this for faster voting
 
 			if (PingUrl(t.href)) {
 				return false;
@@ -184,7 +215,7 @@ function SignVote (t, token) { // signs a vote from referenced vote button
 		SetPrefs(token, 1);
 
 		if (window.displayNotification) {
-			//displayNotification('Success!', t);
+			// displayNotification('Success!', t);
 		} else {
 			//alert('DEBUG: window.displayNotification() was missing');
 		}
