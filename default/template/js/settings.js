@@ -318,6 +318,8 @@ function SetPrefs (prefKey, prefValue) { // set prefs key prefKey to value prefV
 		//alert('DEBUG: SetPrefs: setting cookie to match LocalStorage');
 		if (window.SetCookie) {
 			SetCookie(prefKey, (prefValue ? 1 : 0));
+		} else {
+			//alert('DEBUG: warning: window.SetCookie missing');
 		}
 	}
 
