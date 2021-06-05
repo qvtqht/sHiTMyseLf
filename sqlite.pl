@@ -1865,6 +1865,10 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 	my $itemType = shift;
 	my $verifyError = shift;
 
+	if (!$verifyError) {
+		$verifyError = '';
+	}
+
 	#DBAddItemAttribute($fileHash, 'attribute', 'value', 'epoch', 'source');
 
 	if (!$authorKey) {
