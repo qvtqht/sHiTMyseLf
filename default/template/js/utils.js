@@ -421,6 +421,221 @@ function CollapseWin (t) { // collapses or expands window based on t's caption
 	return true;
 } // CollapseWin()
 
+function SortTable (t, sortOrder) {
+// TableSort (
+	//alert('DEBUG: SortTable() begins');
+	//caution: bubble sort inside
+	var table, rows, switching, i, x, y, shouldSwitch, sortColumn, sortMethod;
+
+	sortColumn = 0;
+	sortMethod = 0;
+
+	// sortMethod = 0 innerHTML
+	// sortMethod = 1 textContent
+	// sortMethod = 2 parseInt(innerHTML)
+
+	if (1 < sortOrder) {
+		return '';
+	}
+
+	sortOrder = sortOrder ? 1 : 0;
+
+	var anyChanges = 0;
+
+	var tOrig = t;
+
+	if (!t) {
+  		//alert('DEBUG: SortTable: warning: t missing');
+		return '';
+	}
+
+	if (t.cellIndex || t.cellIndex == 0) {
+		sortColumn = t.cellIndex;
+		if (
+			t.textContent &&
+			//t.textContent.indexOf('_timestamp') != -1 ||
+			t.textContent.indexOf('_title') != -1
+		) {
+			sortMethod = 1;
+		}
+
+		if (
+			t.textContent &&
+			//t.textContent.indexOf('_timestamp') != -1 ||
+			t.textContent.indexOf('_count') != -1
+		) {
+			sortMethod = 2;
+		}
+	}
+
+	while (!table && t.parentNode) {
+		t = t.parentNode;
+		if (t.tagName == 'TABLE') {
+			table = t;
+		}
+	}
+
+  	if (!table) {
+  		//alert('DEBUG: SortTable: warning: table missing');
+  		return '';
+	}
+
+	// bubble sort below by some website...
+
+	switching = true;
+
+	/* Make a loop that will continue until
+	no switching has been done: */
+	while (switching) {
+    	// Start by saying: no switching is done:
+    	switching = false;
+    	rows = table.rows;
+
+    	/* Loop through all table rows (except the
+    	first, which contains table headers): */
+    	for (i = 1; i < (rows.length - 2); i++) {
+      		// Start by saying there should be no switching:
+      		shouldSwitch = false;
+      		/* Get the two elements you want to compare,
+      		one from current row and one from the next: */
+
+			x = rows[i].getElementsByTagName("TD")[sortColumn];
+			y = rows[i + 1].getElementsByTagName("TD")[sortColumn];
+      		// Check if the two rows should switch place:
+
+      		if (
+      			x &&
+      			y &&
+      			x.innerHTML &&
+      			y.innerHTML
+			) {
+				//if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+				if (
+					(
+						sortOrder == 0
+						&&
+						sortMethod == 0
+						&&
+						x.innerHTML
+						<
+						y.innerHTML
+					)
+					||
+					(
+						sortOrder == 0
+						&&
+						sortMethod == 1
+						&&
+						x.textContent
+						<
+						y.textContent
+					)
+					||
+					(
+						sortOrder == 1
+						&&
+						sortMethod == 0
+						&&
+						y.innerHTML
+						<
+						x.innerHTML
+					)
+					||
+					(
+						sortOrder == 1
+						&&
+						sortMethod == 1
+						&&
+						y.textContent
+						<
+						x.textContent
+					)
+					||
+					(
+						sortOrder == 0
+						&&
+						sortMethod == 2
+						&&
+						parseInt(x.innerHTML)
+						<
+						parseInt(y.innerHTML)
+					)
+					||
+					(
+						sortOrder == 1
+						&&
+						sortMethod == 2
+						&&
+						parseInt(y.innerHTML)
+						<
+						parseInt(x.innerHTML)
+					)
+				) {
+
+					// If so, mark as a switch and break the loop:
+					shouldSwitch = true;
+					anyChanges++;
+					break;
+				}
+      		}
+    	}
+    	if (shouldSwitch) {
+			/* If a switch has been marked, make the switch
+			and mark that a switch has been done: */
+			rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+			switching = true;
+		}
+  	}
+
+  	if (!anyChanges) {
+  		sortOrder++
+  		return SortTable(tOrig, sortOrder);
+  	}
+
+  	return '';
+} // SortTable()
+
+function SetCookie (cname, cvalue, exdays) { // set cookie
+	//alert('DEBUG: SetCookie(' + cname + ', ' + cvalue + ', ' + exdays + ')');
+	var d = new Date();
+	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	var expires = "expires="+d.toUTCString();
+	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	var testSetCookie = GetCookie(cname);
+	if (cvalue == testSetCookie) {
+		return 1;
+	} else {
+		return 0;
+	}
+} // SetCookie()
+
+function GetCookie (cname) { // get cookie value
+	// in js, cookies are accessed via one long string of the form
+	// key1=value1; key2=value2;
+	// so we make an array, splitting the string using the ; separator
+	var ca = document.cookie.split(';');
+
+	// the value we are looking for will be prefixed with cname=
+	var name = cname + "=";
+
+	for(var i = 0; i < ca.length; i++) {
+		// loop through ca array until we find prefix we are looking for
+		var c = ca[i];
+		while (c.charAt(0) == ' ') {
+			// remove any spaces at beginning of string
+			c = c.substring(1);
+		}
+		if (c.indexOf(name) == 0) {
+			// if prefix matches, return value
+			return c.substring(name.length, c.length);
+		}
+	}
+
+	// at this point, nothing left to do but return empty string
+	return "";
+}
+
+
 //function ChangeInputToTextarea (input) { // called by onpaste
 ////#input_expand_into_textarea
 //	//#todo more sanity
