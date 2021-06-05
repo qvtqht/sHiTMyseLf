@@ -54,7 +54,7 @@ sub GetHtmlFilename { # get the HTML filename for specified item hash
 			#print $trace->as_string; # like carp
 		}
 
-		return;
+		return '';
 	}
 
 	WriteLog("GetHtmlFilename($hash)");
@@ -66,7 +66,7 @@ sub GetHtmlFilename { # get the HTML filename for specified item hash
 		# my $trace = Devel::StackTrace->new;
 		# print $trace->as_string; # like carp
 
-		return;
+		return '';
 	}
 
 	#	my $htmlFilename =
