@@ -1,13 +1,13 @@
 SELECT
-	item_score AS item_score,
-	value AS item_url,
-	item_title AS item_title,
-	author_key AS author_key,
-	item_attribute.file_hash AS file_hash
+	item_name AS url,
+	'' AS tagset_compost,
+	file_hash
 FROM
-	item_attribute
-		LEFT JOIN item_flat
-			ON (item_flat.file_hash = item_attribute.file_hash)
+	item_flat
 WHERE
-	item_attribute.attribute = 'url'
+	item_type = 'url' AND
+	item_name like 'http%'
+ORDER BY
+	item_score DESC
+LIMIT 50
 
