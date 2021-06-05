@@ -1,7 +1,9 @@
 SELECT
 	author_key,
 	last_seen,
-	item_count
+	item_count,
+	'' AS tagset_author,
+	file_hash
 FROM author_flat
 ORDER BY item_count DESC
 LIMIT 1024;
