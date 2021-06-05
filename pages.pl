@@ -370,14 +370,9 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 			$content .= '</tr>';
 		} # foreach $row (@result)
 
-			if ($rowBgColor eq $colorRow0Bg) {
-				$rowBgColor = $colorRow1Bg;
-			} else {
-				$rowBgColor = $colorRow0Bg;
-			}
-		}
+		my $statusText = $resultCount . ' item(s)';
 
-		return GetWindowTemplate($content, $title, $columnsDisplay);
+		return GetWindowTemplate($content, $title, $columnsDisplay, $statusText);
 	} else {
 		return GetWindowTemplate('This space reserved for future content.', $title);
 	}
