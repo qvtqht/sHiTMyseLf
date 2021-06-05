@@ -335,10 +335,25 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 		}
 	}
 
+	my $resultCount = scalar(@result);
+
 	if (@result) {
 		my $content = '';
 
 		foreach my $row (@result) {
+			if (GetConfig('html/hash_color_table_rows') && $row->{'file_hash'}) {
+				$rowBgColor = GetStringHtmlColor($row->{'file_hash'});
+				$rowBgColor = substr($rowBgColor, 1);
+				$rowBgColor = LightenColor($rowBgColor);
+				$rowBgColor = '#' . $rowBgColor;
+			} else {
+				if ($rowBgColor eq $colorRow0Bg) {
+					$rowBgColor = $colorRow1Bg;
+				} else {
+					$rowBgColor = $colorRow0Bg;
+				}
+			}
+
 			$content .= '<tr bgcolor="' . $rowBgColor . '">';
 			foreach my $column (split(',', $columns)) {
 				#print $column . ',' . $row->{$column} . "\n";
@@ -353,6 +368,7 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 				$content .= '</td>';
 			}
 			$content .= '</tr>';
+		} # foreach $row (@result)
 
 			if ($rowBgColor eq $colorRow0Bg) {
 				$rowBgColor = $colorRow1Bg;
