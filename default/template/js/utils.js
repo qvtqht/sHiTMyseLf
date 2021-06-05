@@ -350,6 +350,7 @@ function DownloadAsTxt(filename, text) {
 
 
 function displayNotification (strMessage, thisButton) { // adds notificatin to page
+// showNotification (
 // used for loading indicator bar (to top of page, depending on style)
 // also used for "creating profile" and "already voted" notifications
 	var spanNotification = document.createElement('span');
@@ -362,7 +363,14 @@ function displayNotification (strMessage, thisButton) { // adds notificatin to p
 		thisButton.parentNode.appendChild(spanNotification);
 		thisButton.after(spanNotification);
 	} else {
+		// #todo this should be in stylesheet; floating notification should have different class
+		spanNotification.style.position = 'fixed';
+		spanNotification.style.top = '0';
+		spanNotification.style.right = '0';
+		spanNotification.style.margin = '0';
+
 		document.body.appendChild(spanNotification);
+
 	}
 } // displayNotification()
 
