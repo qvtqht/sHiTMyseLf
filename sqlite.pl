@@ -1467,6 +1467,57 @@ sub DBDeleteItemReferences { # delete all references to item from tables
 	#todo any successes deleting stuff should result in a refresh for the affected page
 }
 
+sub DBAddTask { # $taskType, $taskName, $taskParam, $touchTime # make new task
+# DBAddTaskToQueue {
+
+	state $query;
+	state @queryParams;
+
+	my $taskType = shift;
+
+	if ($taskType eq 'flush') {
+		# flush to database queue stored in $query and @queryParams
+		if ($query) {
+			WriteLog("DBAddTask(flush)");
+
+			if (!$query) {
+				WriteLog('DBAddTask: flush: no query, exiting');
+				return;
+			}
+
+			$query .= ';';
+
+			SqliteQuery2($query, @queryParams);
+
+			$query = "";
+			@queryParams = ();
+		}
+
+		return;
+	}
+
+	my $taskName = shift;
+	my $taskParam = shift;
+	my $touchTime = shift;
+
+	WriteLog("DBAddTask($taskType, $taskName, $taskParam, $touchTime)");
+
+	if ($query && (length($query) > DBMaxQueryLength() || scalar(@queryParams) > DBMaxQueryParams())) {
+		DBAddTask('flush');
+		$query = '';
+		@queryParams = ();
+	}
+
+	if (!$query) {
+		$query = "INSERT OR REPLACE INTO task(task_type, task_name, task_param, touch_time) VALUES ";
+	} else {
+		$query .= ',';
+	}
+
+	$query .= "('page', ?, ?, ?)";
+	push @queryParams, $taskType, $taskName, $taskParam, $touchTime;
+} # DBAddTask()
+
 sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an entry to task table
 # task table is used for determining which pages need to be refreshed
 # is called from IndexTextFile() to schedule updates for pages affected by a newly indexed item
