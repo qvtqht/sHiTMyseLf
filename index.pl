@@ -1519,16 +1519,9 @@ while (my $arg1 = shift @argsFound) {
 		if ($arg1 eq '--all') {
 			print "index.pl: --all\n";
 			MakeIndex();
-			MakeChainIndex();
 			print "=========================\n";
 			print "index.pl: --all finished!\n";
 			print "=========================\n";
-
-			system('echo "\n"');
-            system('echo "Running ./_clean_html.sh in 3..."; sleep 1');
-            system('echo "2..."; sleep 1');
-            system('echo "1..."; sleep 1');
-            system('./_clean_html.sh');
 		}
 		if ($arg1 eq '--chain') {
 			# html/chain.log
