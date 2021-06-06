@@ -638,16 +638,21 @@ sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns 
 				return $aref;
 			} else {
 				WriteLog('SqliteQuery2: warning: $sth=false on $query = ' . $query);
+				return '';
 			}
 		} else {
 			WriteLog('SqliteQuery2: warning: $dbh is missing');
 			WriteLog('SqliteQuery2: caller: ' . join(', ', caller));
+			return '';
 		}
 	}
 	else {
 		WriteLog('SqliteQuery2: warning: $query is missing!');
 		return '';
 	}
+
+	WriteLog('SqliteQuery2: warning: unreachable was reached');
+	return '';
 } # SqliteQuery2()
 
 sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
