@@ -123,10 +123,10 @@ my $IMAGEDIR = $HTMLDIR . '/image';
 	print("=================\n");
 
 	system('echo "\n"');
-	system('echo "Running ./_clean_dev.sh in 3..."; sleep 1');
-	system('echo "2..."; sleep 1');
-	system('echo "1..."; sleep 1');
-	system('./_clean_dev.sh');
+	system('echo "Running ./_dev_clean_ALL.sh in 3..."; sleep 2');
+	system('echo "2..."; sleep 2');
+	system('echo "1..."; sleep 2');
+	system('./_dev_clean_ALL.sh');
 }
 
 1;

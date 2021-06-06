@@ -4,8 +4,6 @@
 # mkdir trash
 # mkdir trash.$MYDATE
 
-date; time;
-
 echo "rm -v cron.lock"
 rm -v cron.lock
 
@@ -73,6 +71,65 @@ echo "1... "
 sleep 2
 
 echo "Running ./build.pl"
-perl -T ./build.pl
+time perl -T ./build.pl
 
-date; time;
+echo "==============="
+echo "Build complete!"
+echo "==============="
+
+
+
+echo "Building system pages with ./pages.pl --system in 3..."
+sleep 2
+
+echo "2... "
+sleep 2
+
+echo "1... "
+sleep 2
+
+echo "Running ./pages.pl --system"
+time perl -T ./pages.pl --system
+
+echo "=================="
+echo "System pages done!"
+echo "=================="
+
+
+
+echo "Verifying Chain with ./index.pl --chain in 3..."
+sleep 2
+
+echo "2... "
+sleep 2
+
+echo "1... "
+sleep 2
+
+echo "Running ./index.pl --chain"
+time perl -T ./index.pl --chain
+
+echo "============================"
+echo "Chain verification complete!"
+echo "============================"
+
+
+
+echo "Reindexing all stored files with ./index.pl --all in 3..."
+sleep 2
+
+echo "2... "
+sleep 2
+
+echo "1... "
+sleep 2
+
+echo "Running ./index.pl --all"
+time perl -T ./index.pl --all
+
+echo "======================"
+echo "Reindex of files done!"
+echo "======================"
+
+
+
