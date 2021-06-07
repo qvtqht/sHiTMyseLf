@@ -355,6 +355,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		DBAddEventRecord('flush');
 		DBAddItemParent('flush');
 		DBAddPageTouch('flush');
+		DBAddTask('flush');
 		DBAddConfigValue('flush');
 		DBAddItemAttribute('flush');
 		DBAddLocationRecord('flush');
@@ -820,18 +821,33 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 											unlink($itemParentPath);
 										}
 
-										if (-e $file) {
-											#todo unlink the file represented by $voteFileHash, not $file
-											if (!GetConfig('admin/logging/record_remove_action')) {
+										if (!GetConfig('admin/logging/record_remove_action')) {
+											# log_remove remove_log
+											#todo unlink the file represented by $voteFileHash, not $file (huh???)
+
+											WriteLog('IndexTextFile: #remove: trying to remove #remove action source file');
+
+											if (-e $file) {
+												WriteLog('IndexTextFile: #remove: source file exists! ' . $file . ', calling unlink()');
+
 												# this removes the remove call itself
-												if (!$detokenedMessage) {
-													WriteLog('IndexTextFile: ' . $file . ' exists, calling unlink()');
-													unlink($file);
+												if (!trim($detokenedMessage)) {
+													WriteLog('IndexTextFile: #remove: passed $detokenedMessage sanity check for ' . $file);
+
+
+													DBAddTask('filesys', 'unlink', $file, time());
+													#unlink($file);
+
+													if (-e $file) {
+														WriteLog('IndexTextFile: warning: just called unlink($file), but still exists: $file = ' . $file);
+													}
+												} else {
+													WriteLog('IndexTextFile: #remove: $detokenedMessage is not FALSE, skipping file removal');
 												}
 											}
-										}
-										else {
-											WriteLog('IndexTextFile: ' . $file . ' does NOT exist, very strange');
+											else {
+												WriteLog('IndexTextFile: #remove: warning: $file = ' . $file . ' does NOT exist');
+											}
 										}
 
 										#todo unlink and refresh, or at least tag as needing refresh, any pages which include deleted item
