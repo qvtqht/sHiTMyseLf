@@ -4228,7 +4228,7 @@ sub MakeSimplePage { # given page name, makes page
 	$html .= GetPageFooter();
 
 	if (GetConfig('admin/js/enable')) {
-		my @scripts = qw(avatar settings profile utils timestamp);
+		my @scripts = qw(avatar settings profile utils timestamp clock);
 		if (GetConfig('admin/js/dragging')) {
 			push @scripts, 'dragging';
 		}
