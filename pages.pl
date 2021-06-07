@@ -240,6 +240,9 @@ sub GetQueryAsDialog { # $query, $title, $columns
 
 	my @result = SqliteQueryHashRef($query);
 
+	#WriteLog('GetQueryAsDialog: $query = ' . $query . '; calling GetResultSetAsDialog()');
+	#commented because it prints a lot
+
 	return GetResultSetAsDialog(\@result, $title, $columns);
 }
 
@@ -307,6 +310,8 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 	my $title = shift;
 	my $columns = shift;
 
+	WriteLog('GetResultSetAsDialog: $title = ' . $title . '; caller: ' . join(', ', caller) . '; $columns = ' . ($columns ? $columns : 'UNDEFINED'));
+
 	my $colorRow0Bg = GetThemeColor('row_0');
 	my $colorRow1Bg = GetThemeColor('row_1');
 
@@ -340,7 +345,11 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 	if (@result) {
 		my $content = '';
 
+		my $checkColumnCount = 0;
+
 		foreach my $row (@result) {
+			$checkColumnCount++;
+
 			if (GetConfig('html/hash_color_table_rows') && $row->{'file_hash'}) {
 				$rowBgColor = GetStringHtmlColor($row->{'file_hash'});
 				$rowBgColor = substr($rowBgColor, 1);
@@ -358,6 +367,7 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 			foreach my $column (split(',', $columns)) {
 				#print $column . ',' . $row->{$column} . "\n";
 				if ($column eq 'file_hash') { #todo config/list/field_advanced
+					#this hides the file_hash column from non-advanced users
 					$content .= '<td class=advanced>';
 				} else {
 					$content .= '<td>';
@@ -369,6 +379,10 @@ sub GetResultSetAsDialog { # \@result, $title, $columns
 			}
 			$content .= '</tr>';
 		} # foreach $row (@result)
+
+		if ($checkColumnCount != scalar(@columnsArray)) {
+			WriteLog('GetQueryAsDialog: warning: $checkColumnCount != scalar(@columnsArray)');
+		}
 
 		my $statusText = $resultCount . ' item(s)';
 
@@ -1779,6 +1793,9 @@ sub GetItemTemplate { # returns HTML for outputting one item
 				$windowParams{'status'} = $statusBar;
 			}
 
+			#$windowParams{'status'} = GetQuickVoteButtonGroup($file{'file_hash'}, $file{'vote_return_to'});
+
+
 #			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
 #				#todo
 #				if ($file{'item_name'} eq 'Information') {
@@ -2071,7 +2088,7 @@ sub GetPageFooter { # returns html for page footer
 	}
 
 	return $txtFooter;
-}
+} # GetPageFooter()
 
 sub GetThemeColor { # returns theme color based on html/theme
 	my $colorName = shift;
@@ -2461,7 +2478,7 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 #	my $noJsIndicator = '<noscript><a href="/profile.html">Profile</a></noscript>';
 	#todo profile link should be color-underlined like other menus
 	{
-		if (GetConfig('logo_enabled')) {
+		if (GetConfig('html/logo_enabled')) {
 			state $logoText;
 			if (!defined($logoText)) {
 				$logoText = GetConfig('logo_text');
@@ -2504,13 +2521,13 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 sub GetItemListing { # returns listing of items based on topic
 	my $htmlOutput = '';
 
-	my @topItems;
+	my @topItems; #todo rename this
 
 	my $fileHash = shift;
 	my $title = 'Welcome, Guest!';
 
 	if (!$fileHash) {
-		$fileHash = 'top';
+		$fileHash = 'top'; #what
 	}
 
 	if ($fileHash eq 'top') {
@@ -2618,6 +2635,9 @@ sub GetItemListing { # returns listing of items based on topic
 		);
 
 		$htmlOutput .= $itemListingWrapper;
+
+		#$htmlOutput .= GetWindowTemplate('<tt>... and that is ' . $itemCount . ' item(s) total! beep boop</tt>', 'robot voice');
+
 	} else {
 	# no items returned, use 'no items' template
 		$htmlOutput .= GetWindowTemplate(GetTemplate('html/item/no_items.template'), 'Welcome, Guest!');
@@ -2842,13 +2862,13 @@ sub GetStatsTable {
 			$statsTable =~ s/\$admin/$adminLink/;
 		}
 	} else {
-		$statsTable =~ s/\$admin/(Not defined)/;
+		$statsTable =~ s/\$admin/*/;
 	}
 
 	if ($serverId) {
 		$statsTable =~ s/\$server/$serverLink/;
 	} else {
-		$statsTable =~ s/\$server/(Not defined)/;
+		$statsTable =~ s/\$server/*/;
 	}
 
 	if (!defined($lastUpdateTime) || !$lastUpdateTime) {
@@ -2928,7 +2948,7 @@ sub GetStatsTable {
 	$statsTable =~ s/\$chainLogLength/$chainLogLength/;
 
 	if ($templateName eq 'html/stats.template') {
-		$statsTable = GetWindowTemplate($statsTable, 'System');
+		$statsTable = GetWindowTemplate($statsTable, 'Status');
 		#todo remove this once other template is fixed #???
 	}
 
@@ -2971,6 +2991,11 @@ sub EnableJsDebug { # $scriptTemplate ; enables javascript debug mode
 		$scriptTemplate =~ s/\/\/alert\('DEBUG:/document.title=('DEBUG:/gi;
 	}
 	else {
+		#$scriptTemplate =~ s/\/\/alert\('DEBUG:/if(!window.dbgoff)dbgoff=!confirm('DEBUG:/gi;
+#		$scriptTemplate =~ s/(function\ )([a-zA-Z0-9_]+)( \))(.+?)\)( \{)/$1$2$3$4$5\n\/\/alert('DEBUG: $2: caller: ' + $2.caller);/gi
+		#$scriptTemplate =~ s/(function\ )([a-zA-Z0-9_]+)( \))(.+?)\)( \{)/$1$2$3$4$5\n\/\/hi/gi
+		#todo ..
+
 		$scriptTemplate =~ s/\/\/alert\('DEBUG:/if(!window.dbgoff)dbgoff=!confirm('DEBUG:/gi;
 	}
 
@@ -3129,7 +3154,8 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 	}
 
 	if (GetConfig('admin/js/debug')) {
-		$html = '<a href=# onclick="window.dbgoff=0; return false;" style="float:right">debug</a>' . $html;
+		$html = GetTemplate('html/widget/debug_button.template') . $html;
+		#todo make nice
 	}
 
 	return $html;
@@ -3357,6 +3383,9 @@ sub GetAuthorInfoBox {
 		$publicKeyHashHtml = '*';
 	}
 	my $authorScore = DBGetAuthorScore($authorKey);
+	if (!$authorScore) {
+		$authorScore = 0;
+	}
 
 	my $authorMessageLink = GetItemHtmlLink($publicKeyHash, 'Contact Them', '#reply');
 
@@ -3462,6 +3491,11 @@ sub GetReadPage { # generates page with item listing based on parameters
 	#		for author = author's key hash
 	#		for tag = tag name/value
 
+
+	# GetAuthorPage {
+	# MakeReadPage {
+	# PrintReadPage {
+
 	my $title; # plain-text title for <title>
 	my $titleHtml; # title which can have html formatting
 
@@ -3507,7 +3541,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 			@files = DBGetItemList(\%queryParams);
 		}
 
-		if ($pageType eq 'tag') { #/tag/
+		if ($pageType eq 'tag') { #/top/tag.html #/tag/tag.html
 			# TAG PAGE ##############################################################
 						
 			$pageParam = shift;
@@ -3526,6 +3560,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 			#$queryParams{'join_clause'} = "JOIN vote ON (item_flat.file_hash = vote.file_hash)";
 			#$queryParams{'group_by_clause'} = "GROUP BY vote.file_hash";
 			#$queryParams{'where_clause'} = "WHERE vote.vote_value = '$tagName'";
+
 			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
 				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%'";
 			} else {
@@ -3592,6 +3627,8 @@ sub GetReadPage { # generates page with item listing based on parameters
 		$txtIndex .= GetAuthorInfoBox($authorKey);
 	}
 	my $itemComma = '';
+
+	# LISTING ITEMS BEGINS HERE
 
 	foreach my $row (@files) {
 		my $file = $row->{'file_path'};
@@ -4579,7 +4616,7 @@ sub GetUploadWindow { # upload window for upload page
 
 	my $template = shift;
 	if (!$template) {
-		$template = 'upload.template';
+		$template = 'html/form/upload.template';
 	}
 	my $title = 'Upload';
 	if (index(lc($template), 'multi') != -1) {
@@ -4999,7 +5036,7 @@ sub GetRssFile { # returns rss feed for current site
 
 	my $baseUrl = 'http://' . $myHost . '/';
 
-	my $feedTitle = GetConfig('home_title');
+	my $feedTitle = GetConfig('html/home_title');
 	my $feedLink = GetConfig('admin/my_domain'); # default = http://localhost:2784/
 	my $feedDescription = GetString('site_description');
 	my $aboutUrl = $baseUrl;
@@ -5241,7 +5278,7 @@ sub GetItemTemplateFromHash {
 	} #
 } # DBGetItemTemplateFromHash()
 
-sub PutStatsPages {
+sub PutStatsPages { # stores template for footer stats dialog
 	my $statsPage = GetStatsPage();
 	PutHtmlFile("stats.html", $statsPage);
 
@@ -5249,8 +5286,9 @@ sub PutStatsPages {
 		GetStatsTable('stats-horizontal.template'),
 		'Site Statistics*'
 	);
+	$statsFooter = '<span class=advanced>' . $statsFooter . '</span>';
 	PutHtmlFile("stats-footer.html", $statsFooter);
-}
+} # PutStatsPages()
 
 sub GetPagePath { # $pageType, $pageParam ; returns path to item's html path
 # $pageType, $pageParam match parameters for MakePage()
@@ -5389,7 +5427,7 @@ sub BuildTouchedPages { # $timeLimit, $startTime ; builds pages returned by DBGe
 	}
 
 	return $pagesProcessed;
-} # BuildTouchedPages
+} # BuildTouchedPages()
 
 sub BuildStaticExportPages { #
 	my $pagesProcessed = 0;
@@ -5528,8 +5566,9 @@ sub GetAvatar { # $key, $noCache ; returns HTML avatar based on author key, usin
 						#$alias .= '✔';
 						#$alias .= '&check;';
 						#$alias .= 'V';
+						$alias .= '+';
 					} else {
-						$alias .= '(verified)';
+						$alias .= '+';
 					}
 
 					#$redditUsername = $authorAttributeValue . 'xx';
@@ -5937,6 +5976,17 @@ while (my $arg1 = shift @foundArgs) {
 	print $arg1;
 	# go through all the arguments one at a time
 	if ($arg1) {
+		if (-e $arg1 && -f $arg1) {
+			# if filename was supplied, use its filehash
+			$arg1 = GetFileHash($arg1);
+		}
+
+#this cool feature also had undesired effects, which should be corrected
+#		if ($arg1 =! m/\/([0-9A-F]{16})\//) {
+#			# if it looks like a profile url, use the profile identifier
+#			$arg1 = $1;
+#		}
+#
 		if ($arg1 eq '--theme') {
 			print ("recognized token --theme");
 			my $themeArg = shift @foundArgs;
@@ -5969,7 +6019,10 @@ while (my $arg1 = shift @foundArgs) {
 			MakeSystemPages();
 		}
 		elsif ($arg1 eq '--php') {
-			print ("recognized --php\n");
+			print("\n=========================\n");
+			print("\nrecognized --php argument\n");
+			print("\nREBUILDING PHP PAGES!!!!1\n");
+			print("\n=========================\n");
 			if (!GetConfig('admin/php/enable')) {
 				print("warning: --php was used, but admin/php/enable is false\n");
 			}
@@ -5983,6 +6036,7 @@ while (my $arg1 = shift @foundArgs) {
 			print ("recognized --settings\n");
 			my $settingsPage = GetSettingsPage();
 			PutHtmlFile('settings.html', $settingsPage);
+			PutStatsPages();
 		}
 		elsif ($arg1 eq '--tags') {
 			print ("recognized --tags\n");
@@ -6053,6 +6107,7 @@ while (my $arg1 = shift @foundArgs) {
 		else {
 			print ("Available arguments:\n");
 			print ("--summary or -s for all summary or system pages\n");
+			print ("--system or -S for basic system pages\n");
 			print ("--php for all php pages\n");
 			print ("--queue or -Q for all pages in queue\n");
 			print ("--index or -i for all index pages\n");
@@ -6063,5 +6118,12 @@ while (my $arg1 = shift @foundArgs) {
 		}
 	}
 }
+
+##buggy
+#my %configLookupList = GetConfig('get_memo'); #this gets a memo of all the lookups done with GetConfig so far
+##i know it is confusing to have a "method call" in the function's argument
+#if (%configLookupList) {
+#	print Dumper(keys(%configLookupList));
+#}
 
 1;
