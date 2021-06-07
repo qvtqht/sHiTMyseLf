@@ -1,17 +1,12 @@
 <!-- access.template ; for letting user switch accessibility mode -->
 <form action="/access.html">
 	<p>
-		<input name=btnLightOn value="Compatible Mode" id=lightOn type=submit>
+		<label for=lightOn>
+			<input name=btnLightOn value="Accessible" id=lightOn type=submit>
+		</label>
 	</p>
 	<p>
-		<input name=btnLightOff value="Modern Mode" id=lightOff type=submit>
+		<input name=btnLightOff value="Modern" id=lightOff type=submit>
 	</p>
 </form>
-
-<hr>
-<p>
-	Light Mode is designed for accessibility.<br>
-	All non-essential and convenience features are turned off.<br>
-	Sets a cookie.
-</p>
 <!-- / access.template -->
