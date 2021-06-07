@@ -1,6 +1,8 @@
 Known Issues
 ============
 
+config/admin/js/translit is incompatible with config/admin/php/ascii_only
+
 In w3m browser, when press Enter key
 	Redirection loop detected
 	Workaround: press Ctrl+R to reload page

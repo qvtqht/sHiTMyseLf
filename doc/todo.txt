@@ -1,3 +1,32 @@
+#bug php + htaccess: config/admin/php/rewrite=query doesn't work
+
+etag should be generated based on page content, not output html
+
+AddAccessKey()
+	// this should not only add accesskey= attribute, but also
+		figure out what the tag's title should be and set it
+
+
+profile page ... go to profile link should not resubmit profile
+	especially when backend is static and it doesn't go to profile
+
+===
+
+
+detect duplicate id= and form name= and warn
+
+detect client-server time differences
+
+
+#todo undo vote
+===============
+	needs to submit another action
+		#undo #hashtag ?
+	ui -- needs to subtract 1 from counter?
+
+	
+
+
 generate [identifier].html
 
 need to do something about timed out requests
@@ -99,9 +128,9 @@ OnLoadEverything : may be a bug here wrt HideLoadingIndicator
 	proposed alternative: turn links into form elements
 }
 
-#problem caches have no cleanup process except _clean_dev
+#problem caches have no cleanup process except _dev_clean_ALL
 
-#problem going from ./_clean_dev.sh to ./build.pl is not obvious
+#problem going from ./_dev_clean_ALL.sh to ./build.pl is not obvious
 	should trap db errors or something like that
 	#done clean_dev now automatically runs build.pl with a delay
 
@@ -149,12 +178,10 @@ generate static html {
 	config/admin/js/enable=0
 	config/admin/pages/lazy_page_generation=0
 	config/admin/expo_mode_edit=0
-	./_clean_dev.sh
+	./_dev_clean_ALL.sh
 	time ./build.pl
 	time ./index.pl --all
 	time ./pages.pl --all
-
-
 }
 
 found during mitbtc {

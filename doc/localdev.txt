@@ -69,6 +69,10 @@ Any JS injected into pages will have debug output enabled by InjectJS() function
 Works by uncommenting any statements beginning with "alert('DEBUG:"
 	Each statement only spans one line
 Each JS template has header and footer comments which name the template file
+There is also a "debug" button injected into the top right corner of pages to re-enable debug mode.
+Besides "1", there are a couple of other settings supported:
+config/admin/js/debug=document.title -- the text will be output to the document's title
+config/admin/js/debug=console.log -- console.log() will be used instead (not all browsers support it)
 
 HTML, CSS
 =========

@@ -24,7 +24,7 @@ ls default
 
 If you're improving the software and you want to commit to repo, edit the files in default/ and let them propagate to config/
 
-The _clean_dev script will remove most things under config/
+The _dev_clean_ALL script will remove most things under config/
 
 
 
@@ -57,8 +57,8 @@ this is where access.pl will look for the access log from the web server.
 it's a list of file globs (paths, but with option for wildcards like *), separated by \n
 default: log/access.log
 
-admin/admin_imprint
-if not 0, if admin.key is missing, next public key to be posted becomes admin
+admin/allow_self_admin_when_adminless
+if not 0, user can self-assign #admin tag when no other admins are in database
 default: 0
 
 admin/allow_broken_signatures #todo
@@ -120,8 +120,8 @@ this is where access.pl will look for the access log from the web server.
 \n-separated list of globs (so wildcards allowed, e.g. log/access.log.*)
 default: log/access.log
 
-admin/admin_imprint
-if not 0, when public key posted to board, will be imprinted as root admin
+admin/allow_self_admin_when_adminless
+if not 0, user can self-assign #admin tag when no other admins are in database
 default: 0
 
 admin/html/ascii_only

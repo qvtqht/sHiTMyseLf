@@ -31,20 +31,20 @@ Can be cloned and re-hosted, with portable user accounts usable across all copie
 
 Accessible
 ==========
-Accessible to all beings, regardless of hardware, software, or configuration.
 Tries very hard to accommodate every known and testable client.
 Tested with hundreds of different browsers, devices, and configurations.
 Full support for text-mode, no-JS, screen-readers, mouse-free, etc.
-Registration is optional, unless operator changes default configuration.
-Easier to access via telnet than with most websites.
+Allows registration to be optional, if operator wants to allow it.
+Easier to access via telnet or text-mode than most websites.
+Attempts universal accessibility for all anticipated scenarios.
 
 Securable
 =========
 Can be operated as static HTML for a smaller attack surface.
 JavaScript is also an optional module and optional for clients.
 
-Convenient
-==========
+Convenient Installation
+=======================
 Optional PHP and SSI modules for more convenient usage.
 Optional client-side JS module for easier client signatures.
 
