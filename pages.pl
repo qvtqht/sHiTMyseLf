@@ -1902,21 +1902,22 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		if ($itemType eq 'txt') {
 			$itemText = $message; # output for item's message (formatted text)
 
-			$itemClass = "txt";
-			if ($isSigned) {
-				# if item is signed, add "signed" css class
-				$itemClass .= ' signed';
-			}
-
 			if ($isTextart) {
 				# if item is textart, add "item-textart" css class
 				#todo this may not be necessary anymore
-				$itemClass .= ' item-textart';
+				$itemClass = 'item-textart';
 
 				my $textartContainer = GetTemplate('html/item/container/textart.template');
 				$textartContainer =~ s/\$message/$itemText/g;
 
 				$itemText = $textartContainer;
+			} else {
+				$itemClass = "txt";
+			}
+
+			if ($isSigned) {
+				# if item is signed, add "signed" css class
+				$itemClass .= ' signed';
 			}
 
 			if ($isAdmin) {
