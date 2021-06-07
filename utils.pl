@@ -1,7 +1,7 @@
 #!/usr/bin/perl -T
 #freebsd: #!/usr/local/bin/perl -T
 #
-# utils.pl
+# utils.pl BEGIN
 # utilities which haven't found their own file yet
 # typically used by another file
 # performs basic state validation whenever run
@@ -208,6 +208,7 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 
 		#my @chars=('a'..'f','0'..'9');
 		#print $chars[rand @chars];
+
 		print $text;
 		# my $randomString;
 		# foreach (1..40) {
@@ -1638,6 +1639,7 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
 			unlink($file); #todo -T
 		}
 
+		WriteLog("IsFileDeleted($file, $fileHash) = YES (via deleted.log)");
 		WriteLog('IsFileDeleted: $fileHash = ' . $fileHash);
 
 		my $htmlFilename = GetHtmlFilename($fileHash);
@@ -1675,7 +1677,8 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
 				#unlink($file);
 			}
 
-			WriteLog('$fileHash = ' . $fileHash);
+			WriteLog("IsFileDeleted($file, $fileHash) = YES (via archived.log)");
+			WriteLog('IsFileDeleted: $fileHash = ' . $fileHash);
 
 			my $htmlFilename = GetHtmlFilename($fileHash);
 
@@ -2026,8 +2029,6 @@ sub ProcessTextFile { # $file ; add new text file to index
 
 		IndexFile($file);
 		IndexFile('flush');
-
-		PutCache('indexed/' . $fileHash, '1');
 	} else {
 		# return 0 so that this file is not counted
 		WriteLog('ProcessTextFile: already indexed ' . $fileHash . ', return 0');
@@ -2070,6 +2071,7 @@ sub EnsureDirsThatShouldExist { # creates directories expected later
 	my @dirsThatShouldExist = (
 		"log",
 		"$HTMLDIR",
+		"$HTMLDIR/utils",
 		"$HTMLDIR/txt",
 		"$HTMLDIR/image",
 		"$HTMLDIR/thumb", #thumbnails
