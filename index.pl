@@ -1474,7 +1474,9 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 		$ext eq 'bmp' ||
 		$ext eq 'svg' ||
 		$ext eq 'webp' ||
-		$ext eq 'jfif'
+		$ext eq 'jfif' ||
+		$ext eq 'tiff' ||
+		$ext eq 'tff'
 	) {
 		WriteLog('IndexFile: calling IndexImageFile()');
 		$indexSuccess = IndexImageFile($file);
