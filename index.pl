@@ -399,7 +399,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		#todo there is a bug here, should not depend on chain log
 	}
 
-	if (GetCache("indexed/$fileHash")) {
+	if (GetCache('indexed/' . $fileHash)) {
 		WriteLog('IndexTextFile: aleady indexed, returning. $fileHash = ' . $fileHash);
 		return $fileHash;
 	}
@@ -445,6 +445,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 		if ($detokenedMessage) {
 			my $cussWords = GetTemplate('list/scunthorpe');
+			# #scunthorpe
+
 			if ($cussWords) {
 				my $cussWordCount = 0;
 
@@ -452,15 +454,19 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 				if (@cussWord) {
 					for my $word (@cussWord) {
 						$word = trim($word);
-						if ($word && $word =~ m/([0-9a-zA-Z]+)/i) {
+						if ($word && (index($message, $word) != -1)) {
+							WriteLog('IndexTextFile: scunthorpe: $word = ' . $word);
 							$cussWordCount ++;
 						}
 					}
+
+					if ($cussWordCount) {
+						#print "DBAddVoteRecord($fileHash, 0, 'scunthorpe')\n";
+						#print `sleep 1`;
+						DBAddVoteRecord($fileHash, 0, 'scunthorpe');
+					}
 				}
 
-				if ($cussWordCount) {
-					DBAddVoteRecord($fileHash, 0, 'scunthorpe');
-				}
 			}
 		}
 
@@ -513,10 +519,11 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						WriteLog('IndexTextFile: warning: sanity check failed: $tokenMaskParams unaccounted for');
 					}
 
-					WriteLog('IndexTextFile: found ' . scalar(@tokenLines));
+					WriteLog('IndexTextFile: found tokens: ' . scalar(@tokensFound) . ' + lines: ' . scalar(@tokenLines));
 
 					if (scalar(@tokensFound) + scalar(@tokenLines) > $limitTokensPerFile) {
-						WriteLog('IndexTextFile: warning: found too many tokens, skipping');
+						# i don't remember why both are counted here...
+						WriteLog('IndexTextFile: warning: found too many tokens, skipping. $file = ' . $file);
 						return 0;
 					} else {
 						WriteLog('IndexTextFile: sanity check passed');
@@ -599,6 +606,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 		if ($hasToken{'example'}) {
 			push @tokenMessages, 'Token #example was found, other tokens will be ignored.';
+			DBAddVoteRecord($fileHash, 0, 'example');
 		} # #example
 		else { # not #example
 			my $itemTimestamp = $addedTime;
@@ -686,7 +694,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 									# #todo create a whitelist of safe keys non-admins can change
 
 									DBAddConfigValue($configKeyActual, $configValue, 0, $fileHash);
-									WriteIndexedConfig();
+									WriteIndexedConfig(); # config token in index.pl
 									$message = str_replace($tokenFound{'recon'}, "[Config: $configKeyActual = $configValue]", $message);
 									$detokenedMessage = str_replace($tokenFound{'recon'}, '', $detokenedMessage);
 
@@ -927,6 +935,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 			if (scalar(@hashTagsAppliedToParent)) {
 				if (!$titleCandidate) {
+					# there's no title already
+					 
 					my $titleCandidateComma = '';
 					foreach my $hashTagApplied (@hashTagsAppliedToParent) {
 						$titleCandidate .= ' #' . $hashTagApplied;
@@ -936,7 +946,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						$titleCandidate .= ' applied to ' . scalar(@itemParents) . ' items';
 					}
 				}
-			}
+			} # hash tags applied to parent items
 		} # not #example
 
 		$detokenedMessage = trim($detokenedMessage);
@@ -1090,7 +1100,6 @@ sub AddToChainLog { # $fileHash ; add line to log/chain.log
 		# add to index database
 		DBAddItemAttribute($fileHash, 'chain_timestamp', $newAddedTime);
 		DBAddItemAttribute($fileHash, 'chain_sequence', $chainSequenceNumber);
-		DBAddItemAttribute('flush'); #todo shouldn't be here
 	}
 
 	return $newAddedTime;
@@ -1197,7 +1206,8 @@ sub IndexImageFile { # $file ; indexes one image file into database
 
 		my $itemName = TrimPath($file);
 
-		{
+		{  #thumbnails
+
 			# # make 1024x1024 thumbnail
 			# if (!-e "$HTMLDIR/thumb/thumb_1024_$fileHash.gif") {
 			# 	my $convertCommand = "convert \"$file\" -thumbnail 1024x1024 -strip $HTMLDIR/thumb/thumb_1024_$fileHash.gif";
@@ -1285,13 +1295,16 @@ sub IndexImageFile { # $file ; indexes one image file into database
 		DBAddPageTouch('index');
 		DBAddPageTouch('flush');
 
-		PutCache('indexed/' . $fileHash, 1);
 		return $fileHash;
 	}
 } # IndexImageFile()
 
 sub WriteIndexedConfig { # writes config indexed in database into config/
+	WriteLog('WriteIndexedConfig() begin');
+
 	my @indexedConfig = DBGetLatestConfig();
+
+	WriteLog('WriteIndexedConfig: scalar(@indexedConfig) = ' . scalar(@indexedConfig));
 
 	foreach my $configLine(@indexedConfig) {
 		my $configKey = $configLine->{'key'};
@@ -1301,13 +1314,13 @@ sub WriteIndexedConfig { # writes config indexed in database into config/
 		$configValue = trim($configValue);
 
 		if (IsSha1($configValue)) {
-			WriteLog("It's a hash, try to look it up...");
+			WriteLog('WriteIndexedConfig: Looking up hash: ' . $configValue);
 
-			if (-e 'cache/' . GetMyCacheVersion() . "/message/$configValue") {
-				WriteLog("Lookup of $configValue successful");
-				$configValue = GetCache("message/$configValue");
+			if (-e 'cache/' . GetMyCacheVersion() . "/message/$configValue") { #todo make it cleaner
+				WriteLog('WriteIndexedConfig: success: lookup of $configValue = ' . $configValue);
+				$configValue = GetCache("message/$configValue");#todo should this be GetItemMessage?
 			} else {
-				WriteLog("Lookup of $configValue UNsuccessful");
+				WriteLog('WriteIndexedConfig: warning: no result for lookup of $configValue = ' . $configValue);
 			}
 		}
 
@@ -1318,7 +1331,11 @@ sub WriteIndexedConfig { # writes config indexed in database into config/
 		}
 	}
 
+	WriteLog('WriteIndexedConfig: finished, calling GetConfig(unmemo)');
+
 	GetConfig('unmemo');
+
+	return '';
 }
 
 sub MakeIndex { # indexes all available text files, and outputs any config found
@@ -1328,6 +1345,7 @@ sub MakeIndex { # indexes all available text files, and outputs any config found
 	WriteLog('MakeIndex: $TXTDIR = ' . $TXTDIR);
 
 	#my @filesToInclude = split("\n", `grep txt\$ ~/index/home.txt`); #homedir #~
+	#my @filesToInclude = split("\n", `find $TXTDIR -name \\\*.txt -o -name \\\*.html`); #includes html files #indevelopment
 	my @filesToInclude = split("\n", `find $TXTDIR -name \\\*.txt`);
 
 	my $filesCount = scalar(@filesToInclude);
@@ -1338,11 +1356,11 @@ sub MakeIndex { # indexes all available text files, and outputs any config found
 		$currentFile++;
 		my $percent = ($currentFile / $filesCount) * 100;
 		WriteMessage("*** MakeIndex: $currentFile/$filesCount ($percent %) $file");
-		IndexFile($file);
+		IndexFile($file); # aborts if cache/.../indexed/filehash exists
 	}
 	IndexFile('flush');
 
-	WriteIndexedConfig();
+	WriteIndexedConfig(); # MakeIndex
 
 	if (GetConfig('admin/image/enable')) {
 		my $HTMLDIR = GetDir('html');
@@ -1361,8 +1379,6 @@ sub MakeIndex { # indexes all available text files, and outputs any config found
 
 		IndexImageFile('flush');
 	} # admin/image/enable
-
-	DeindexMissingFiles();
 } # MakeIndex()
 
 sub DeindexMissingFiles { # remove from index data for files which have been removed
@@ -1395,7 +1411,8 @@ sub DeindexMissingFiles { # remove from index data for files which have been rem
 		if ($itemsDeletedCount) {
 			# if any files were de-indexed, report this, and pause for 3 seconds to inform operator
 			WriteMessage('DeindexMissingFiles: deleted items found and removed: ' . $itemsDeletedCount);
-			WriteMessage(`sleep 3`);
+			WriteIndexedConfig(); # DeindexMissingFiles()
+			WriteMessage(`sleep 2`);
 		}
 	}
 
@@ -1424,7 +1441,6 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 		WriteLog('IndexFile: warning: -e $file is false (file does not exist)');
 		return '';
 	}
-
 	if (-d $file) {
 		WriteLog('IndexFile: warning: -d $file was true (file is a directory)');
 		return '';
@@ -1504,7 +1520,7 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 		}
 	}
 
-	PutCache("indexed/$indexSuccess", 1);
+	PutCache('indexed/' . $indexSuccess, $file);
 
 	return $indexSuccess;
 } # IndexFile()
