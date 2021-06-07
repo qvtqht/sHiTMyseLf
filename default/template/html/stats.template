@@ -51,7 +51,7 @@
 		<span class=beginner><br>this is the server's public key</span>
 	</p>
 	<p class=advanced>
-		<span class=beginner><br>git commit: </span>
+		<span class=beginner>git commit: </span>
 		$versionShort
 	</p>
 </fieldset>
