@@ -1,12 +1,5 @@
 <a
-	class=dialog
 	href=#
-	onclick="window.dbgoff=0; alert('debugging enabled! ^_^'); return false;"
-	style="
-		border: 2pt dotted orange;
-		border-radius: 5pt;
-		color: black;
-		background-color: white;
-		float: right
-	"
->debug</a>
+	onclick="window.dbgoff=0; return false;"
+	style="float: right"
+>jsdebug</a>
