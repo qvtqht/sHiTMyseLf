@@ -2,7 +2,7 @@ config admin/php/post/update_on_post 1
 config admin/php/rewrite all
 config admin/token/my_name_is 1
 config admin/token/title 1
-config admin/admin_imprint 1
+config admin/allow_self_admin_when_adminless 1
 config admin/js/loading 1
 config admin/js/translit 1
 config admin/js/fresh 1
