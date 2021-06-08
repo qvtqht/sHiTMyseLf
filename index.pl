@@ -877,7 +877,21 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 									if (
 										$authorKey # is signed
 										&&
-										IsAdmin($authorKey) # signed by admin
+										(
+											IsAdmin($authorKey) # signed by admin
+											||
+											(
+												GetConfig('admin/allow_self_admin_when_adminless') &&
+												!DBGetAdminKey()
+												 #todo parent should be pubkey and item should be signed
+											)
+											||
+											(
+												GetConfig('admin/allow_self_admin_whenever')
+												 #todo parent should be pubkey and item should be signed
+											)
+										)
+
 									) {
 										WriteLog('IndexTextFile: #admin: Found seemingly valid request');
 										DBAddVoteRecord($itemParent, 0, $hashTag, $authorKey, $fileHash);
@@ -900,6 +914,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 										}
 
 										DBAddVoteRecord('flush');
+
+										DBAddPageTouch('stats', 0);
 
 										if (!$titleCandidate) {
 											$titleCandidate = '[#' . $hashTag . ']';
