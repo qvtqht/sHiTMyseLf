@@ -136,6 +136,8 @@ sub GpgParse { # $filePath ; parses file and stores gpg response in cache
 		WriteLog('GpgParse: ' . $fileHash . '; $pubKeyFlag = ' . $pubKeyFlag);
 
 		if ($pubKeyFlag) {
+			### PUBKEY
+			##########
 			my $gpgKeyPub = '';
 
 			if ($gpgStderrOutput =~ /([0-9A-F]{16})/) { # username allowed characters chars filter is here
@@ -161,6 +163,8 @@ sub GpgParse { # $filePath ; parses file and stores gpg response in cache
 
 						DBAddItemAttribute($fileHash, 'gpg_alias', $aliasReturned);
 						DBAddItemAttribute($fileHash, 'title', "$aliasReturned has registered"); #todo templatize
+						DBAddVoteRecord($fileHash, 0, 'pubkey');
+
 #
 #						DBAddKeyAlias($authorKey, $tokenFound{'param'}, $fileHash);
 #						DBAddKeyAlias('flush');
@@ -187,6 +191,8 @@ sub GpgParse { # $filePath ; parses file and stores gpg response in cache
 
 		} # $pubKeyFlag
 		elsif ($signedFlag) {
+			### SIGNED
+			##########
 			my $gpgKeySigned = '';
 			#gpg_naive_regex_signed
 			if ($gpgStderrOutput =~ /([0-9A-F]{16})/) {
@@ -204,7 +210,14 @@ sub GpgParse { # $filePath ; parses file and stores gpg response in cache
 
 				WriteLog('GpgParse: $signTimestamp = ' . $signTimestamp . '; $signTimestampEpoch = ' . $signTimestampEpoch);
 
-				DBAddItemAttribute($fileHash, 'gpg_timestamp', $signTimestampEpoch);
+				if ($gpgStderrOutput =~ /BAD signature from/) {
+					## BAD SIGNATURE
+					DBAddItemAttribute($fileHash, 'gpg_bad_signature', $signTimestampEpoch);
+				} else {
+					## GOOD SIGNATURE
+					DBAddItemAttribute($fileHash, 'gpg_timestamp', $signTimestampEpoch);
+					DBAddVoteRecord($fileHash, 0, 'signed');
+				}
 			}
 			return $gpgKeySigned;
 		}
