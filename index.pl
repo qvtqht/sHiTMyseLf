@@ -657,6 +657,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						} else {
 							WriteLog('IndexTextFile: warning: ' . $tokenFound{'token'} . ' (generic): sanity check failed');
 						}
+
+						DBAddVoteRecord($fileHash, 0, $tokenFound{'token'});
 					} # title, access_log_hash, url, alt, name
 
 					if ($tokenFound{'token'} eq 'config') { #config
