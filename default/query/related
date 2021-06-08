@@ -1,6 +1,5 @@
 SELECT
 	item_title,
-	author_key,
 	add_timestamp,
 	file_hash
 FROM
@@ -21,6 +20,5 @@ WHERE file_hash IN (
 				attribute IN('url', 'normalized_hash')
 
 		)
-	
 )
 
