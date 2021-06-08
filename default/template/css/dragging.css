@@ -1,6 +1,8 @@
 /* dragging.css */
 
-table.dialog {
+/* should be called inline-block.css ? */
+
+fieldset, table.dialog {
 	display: inline-block;
 	vertical-align: top;
 }
