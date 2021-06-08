@@ -362,20 +362,22 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		return 1;
 	}
 
-	WriteLog('IndexTextFile(' . $file . ')');
+	WriteLog('IndexTextFile: $file = ' . $file);
 
 	if (GetConfig('admin/organize_files')) {
 		# renames files to their hashes
 		$file = OrganizeFile($file);
 	}
 
-	my $fileHash; # hash of file contents
+	my $fileHash = ''; # hash of file contents
 	$fileHash = GetFileHash($file);
 
 	my $titleCandidate = '';
 
 	if (!$file || !$fileHash) {
 		WriteLog('IndexTextFile: warning: $file or $fileHash missing; returning');
+		WriteLog('IndexTextFile: warning: $file = ' . ($file ? $file : 'FALSE'));
+		WriteLog('IndexTextFile: warning: $fileHash = ' . ($fileHash ? $fileHash : 'FALSE'));
 		return 0;
 	}
 
@@ -455,7 +457,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 				if (@cussWord) {
 					for my $word (@cussWord) {
 						$word = trim($word);
-						if ($word && (index($message, $word) != -1)) {
+#						if ($word && (index($message, $word) != -1)) {
+						if ($word && $message =~ m/\W$word\W/i) {
 							WriteLog('IndexTextFile: scunthorpe: $word = ' . $word);
 							$cussWordCount ++;
 						}
@@ -488,7 +491,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 			my $limitTokensPerFile = int(GetConfig('admin/index/limit_tokens_per_file'));
 			if (!$limitTokensPerFile) {
-				$limitTokensPerFile = 100;
+				$limitTokensPerFile = 500;
 			}
 
 			#todo sanity check on $limitTokensPerFile;
@@ -818,7 +821,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 											# this only works if organize_files is on and file was put into its path
 											# otherwise it will be removed at another time
 											WriteLog('IndexTextFile: removing $itemParentPath = ' . $itemParentPath);
-											unlink($itemParentPath);
+											WriteLog('IndexTextFile: unlink($itemParentPath); $itemParentPath = ' . $itemParentPath);
+											#unlink($itemParentPath);
 										}
 
 										if (!GetConfig('admin/logging/record_remove_action')) {
@@ -833,7 +837,6 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 												# this removes the remove call itself
 												if (!trim($detokenedMessage)) {
 													WriteLog('IndexTextFile: #remove: passed $detokenedMessage sanity check for ' . $file);
-
 
 													DBAddTask('filesys', 'unlink', $file, time());
 													#unlink($file);
@@ -958,6 +961,9 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						$titleCandidate .= ' #' . $hashTagApplied;
 					}
 					$titleCandidate = trim($titleCandidate);
+					if (length($titleCandidate) > 25) {
+						$titleCandidate = substr($titleCandidate, 0, 25) . ' [...]';
+					}
 					if (scalar(@itemParents) > 1) {
 						$titleCandidate .= ' applied to ' . scalar(@itemParents) . ' items';
 					}
@@ -1031,7 +1037,9 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 			WriteLog('IndexTextFile: Calling PutFile(), $fileHash = ' . $fileHash . '; $messageCacheName = ' . $messageCacheName);
 			PutFile($messageCacheName, $message);
 		} else {
-			WriteLog('IndexTextFile: I was going to save $messageCacheName, but $message is blank!');
+			WriteLog('IndexTextFile: I was going to save $messageCacheName, but $message is blank! $file = ' . $file);
+			WriteLog('IndexTextFile: I was going to save $messageCacheName, but $message is blank! $fileHash = ' . $fileHash);
+			return '';
 		}
 	} # .txt
 
