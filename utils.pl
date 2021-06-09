@@ -343,7 +343,7 @@ sub GetFileHash { # $fileName ; returns hash of file contents
 		WriteLog('GetFileHash: memo hit ' . $memoFileHash{$fileName});
 		return $memoFileHash{$fileName};
 	}
-	WriteLog('GetFileHash: memo miss');
+	WriteLog('GetFileHash: memo miss for $fileName = ' . $fileName);
 
 	if (-e $fileName) {
 		if ((lc(substr($fileName, length($fileName) - 4, 4)) eq '.txt')) {
@@ -361,9 +361,12 @@ sub GetFileHash { # $fileName ; returns hash of file contents
 			return $memoFileHash{$fileName};
 		}
 	} else {
-		return;
+		return '';
 	}
-} #GetFileHash()
+
+	WriteLog('GetFileHash: warning: unreachable reached');
+	return '';
+} # GetFileHash()
 
 sub GetRandomHash { # returns a random sha1-looking hash, lowercase
 	my @chars=('a'..'f','0'..'9');
