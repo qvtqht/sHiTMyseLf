@@ -12,6 +12,11 @@ if (document.createElement && document.head) {
 
 function doSolvePuzzle () { // solves puzzle
 // called from a timeout set by solvePuzzle()
+
+	var d = new Date();
+	var epochStart = d.getTime();
+	epochStart = Math.ceil(epochStart / 1000); // current time in epoch format
+
 	var fp = '0000000000000000';
 	if (window.getUserFp) {
 		fp = getUserFp();
@@ -21,49 +26,59 @@ function doSolvePuzzle () { // solves puzzle
 	var i = 0; // counts iterations
 	var done = 0; // done status
 
-	var d = new Date();
-	var epoch = d.getTime();
-	epoch = Math.ceil(epoch / 1000); // current time in epoch format
-
 	var r = 0 + ''; // stores random number as string
 	var lookingFor = '1337'; // required hash prefix
 	var lookingForLength = lookingFor.length;
 	var cycleLimit = 1000000; // give up after this many tries
+	var secondsLimit = 10; // give up after this many seconds
 	var puzzle = ''; // finished puzzle
-	var hash = ''; // hash of puzzle
 
-	while(!done) {
+	var hash = ''; // starting salt provided by server
+	var txtComment = document.compose.comment;
+
+	var puzzleResult = '';
+
+	while(done < 50) {
+		var d = new Date();
+		var epoch = d.getTime();
+		epoch = Math.ceil(epoch / 1000); // current time in epoch format
+
 		// look for a puzzle which fits criteria
 		i = i + 1; // counter
 		r = Math.random() + '';
+
 		puzzle = fp + ' ' + epoch + ' ' + r;
 		hash = hex_sha512(puzzle);
+
 		if (hash.substring(0, lookingForLength) == lookingFor) {
 			// match found
-			done = 1;
+			puzzleResult = puzzleResult + puzzle + "\n";
+			done++;
 		}
 		if (cycleLimit < i) {
 			// give up
-			done = 2;
+			done = 100;
+		}
+		if (epochStart + secondsLimit < epoch) {
+			done = 100;
 		}
 	} // while(!done) -- solving puzzle
+
+
 
 	// add to compose form, sign, and submit
 	var txtComment = document.compose.comment;
 	if (txtComment && window.solvePuzzle) {
-		var puzzleResult = '';
-		if (done == 1) {
-			puzzleResult = puzzle;
-		} else {
-			puzzleResult = 'puzzle not solved, even after ' + i + ' tries';
-		}
-		if (txtComment.value.substr(txtComment.value.length - 2, 2) == "\n\n") {
-			txtComment.value += puzzleResult;
-		} else {
-			if (txtComment.value.substr(txtComment.value.length - 1, 1) == "\n") {
-				txtComment.value += "\n" + puzzleResult;
+		if (puzzleResult) {
+			//
+			if (txtComment.value.substr(txtComment.value.length - 2, 2) == "\n\n") {
+				txtComment.value += puzzleResult;
 			} else {
-				txtComment.value += "\n\n" + puzzleResult;
+				if (txtComment.value.substr(txtComment.value.length - 1, 1) == "\n") {
+					txtComment.value += "\n" + puzzleResult;
+				} else {
+					txtComment.value += "\n\n" + puzzleResult;
+				}
 			}
 		}
 	}

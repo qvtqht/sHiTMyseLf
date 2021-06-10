@@ -3264,12 +3264,15 @@ sub GetScriptTemplate { # $script ; returns script for name
 		# for voting.js we need to fill in some theme colors
 		my $puzzlePrefix = GetConfig('puzzle/prefix');;
 		my $puzzleCycleLimit = GetConfig('puzzle/cycle_limit');
+		my $puzzleSecondsLimit = GetConfig('puzzle/seconds_limit');
 
 		WriteLog('InjectJs: puzzle: $puzzlePrefix = ' . $puzzlePrefix);
 		WriteLog('InjectJs: puzzle: $puzzleCycleLimit = ' . $puzzleCycleLimit);
+		WriteLog('InjectJs: puzzle: $puzzleSecondsLimit = ' . $puzzleSecondsLimit);
 
 		$scriptTemplate =~ s/var lookingFor = '1337';/var lookingFor = '$puzzlePrefix';/g;
 		$scriptTemplate =~ s/var cycleLimit = 1000000;/var cycleLimit = $puzzleCycleLimit;/g;
+		$scriptTemplate =~ s/var secondsLimit = 10;/var secondsLimit = $puzzleSecondsLimit;/g;
 	}
 
 	if ($script eq 'profile') {
