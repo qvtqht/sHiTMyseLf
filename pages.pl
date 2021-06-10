@@ -471,8 +471,8 @@ sub GetPageLink { # returns one pagination link as html, used by GetPageLinks
 	my $itemCount = shift;
 
 	my $pageLimit = GetConfig('html/page_limit');
-
 	if (!$pageLimit) {
+		#fallback
 		WriteLog('GetPageLink: warning: $pageLimit was FALSE, setting to sane 25');
 		$pageLimit = 25;
 	}
@@ -495,7 +495,7 @@ sub GetPageLink { # returns one pagination link as html, used by GetPageLinks
 	$pageLink =~ s/\$pageNumber/$pageNumber/;
 
 	return $pageLink;
-}
+} # GetPageLink()
 
 sub GetWindowTemplate { # body title headings status menu ; returns html
 # calls GetWindowTemplate2()
