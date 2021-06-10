@@ -1569,8 +1569,18 @@ sub GetItemTemplate { # returns HTML for outputting one item
 	# get %file hash from supplied parameters
 	my %file = %{shift @_};
 
+	my $sourceFileHasGoneAway = 0;
+
 	# verify that referenced file path exists
 	if (-e $file{'file_path'}) {
+		#cool
+	}
+	else {
+		WriteLog('GetItemTemplate: warning: -e $file{file_path} was FALSE; $file{file_path} = ' . $file{'file_path'});
+		$sourceFileHasGoneAway = 1;
+	}
+
+	if (1) {
 		my $itemHash = $file{'file_hash'}; # file hash/item identifier
 		my $gpgKey = $file{'author_key'}; # author's fingerprint
 
@@ -1594,21 +1604,28 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		my $message = GetItemDetokenedMessage($file{'file_hash'}, $file{'file_path'});
 
 		if (!$message) {
-			WriteLog('GetItemTemplate: warning: $message is empty when retrieved from cache!');
-			if (-e $file{'file_path'}) {
+			#message is missing, try to find fallback
+			WriteLog('GetItemTemplate: warning: $message is empty, trying original source');
+
+			if (!$sourceFileHasGoneAway && -e $file{'file_path'}) {
+				#original file still exists
 				$message = GetFile($file{'file_path'});
 
 				if ($message) {
 					$isTextart = 1;
 				} else {
 					WriteLog('GetItemTemplate: warning: $message is empty even after getting file contents!');
-					return '[Item]';
+					$message = '[Message is blank.]';
 				}
+			} else {
+				WriteLog('GetItemTemplate: warning: $sourceFileHasGoneAway is TRUE');
+				$message = '[Unable to retrieve message. Source file has gone away.]';
 			}
 		}
 
 		$message =~ s/\r//g;
 		if (GetConfig('admin/expo_site_mode')) {
+			#trim signature/header-footer
 			if (index($message, "\n-- \n") != -1) {
 				$message = substr($message, 0, index($message, "\n-- \n"));
 			}
@@ -1774,7 +1791,7 @@ sub GetItemTemplate { # returns HTML for outputting one item
 
 			if ($file{'tags_list'}) {
 				my $headings = GetTagsListAsHtmlWithLinks($file{'tags_list'});
-				$windowParams{'headings'} = '<span class=advanced>' . $headings . '</span>'; #todo this is a kludge
+				$windowParams{'headings'} = $headings;
 				#$windowParams{'headings'} = '<a>#' . join('</a> <a>#', split(',', $file{'tags_list'})) . '</a>';
 			} # $file{'tags_list'}
 
@@ -2078,10 +2095,10 @@ sub GetItemTemplate { # returns HTML for outputting one item
 		WriteLog('GetItemTemplate: return $itemTemplate');
 
 		return $itemTemplate;
-	} else {
-		WriteLog('GetItemTemplate: warning: return empty string');
-		return '';
-	}
+	} # (1)
+
+	WriteLog('GetItemTemplate: warning: unreachable reached!');
+	return '';
 } # GetItemTemplate()
 
 sub GetPageFooter { # returns html for page footer
