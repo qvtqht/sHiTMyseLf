@@ -45,17 +45,17 @@ sub GetFileMessageCachePath { # $fileHash/$filePath ;  returns path to file's me
 		return '';
 	}
 
-	my $fileMessageCachPath = "$cachePathMessage/$fileHash";
+	my $fileMessageCachePath = "$cachePathMessage/$fileHash";
 
-	if ($fileMessageCachPath =~ m/^([a-zA-Z0-9_\/.]+)$/) {
-		$fileMessageCachPath = $1;
-		WriteLog('GpgParse: $fileMessageCachPath sanity check passed: ' . $fileMessageCachPath);
+	if ($fileMessageCachePath =~ m/^([a-zA-Z0-9_\/.]+)$/) {
+		$fileMessageCachePath = $1;
+		WriteLog('GpgParse: $fileMessageCachePath sanity check passed: ' . $fileMessageCachePath);
 	} else {
-		WriteLog('GpgParse: warning: sanity check failed, $fileMessageCachPath = ' . $fileMessageCachPath);
+		WriteLog('GpgParse: warning: sanity check failed, $fileMessageCachePath = ' . $fileMessageCachePath);
 		return '';
 	}
 
-	return $fileMessageCachPath;
+	return $fileMessageCachePath;
 } # GetFileMessageCachePath()
 
 
