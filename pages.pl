@@ -549,9 +549,24 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 
 	my $windowBody = $param{'body'};
 	my $windowTitle = $param{'title'};
+	my $windowAnchor = '';# = $param{'anchor'};
 	my $columnHeadings = $param{'headings'};
 	my $windowStatus =  $param{'status'};
 	my $windowMenubarContent = $param{'menu'};
+	my $formAction = $param{'form_action'};
+
+
+	state $windowAnchorCounter;
+	if (!$windowAnchorCounter) {
+		$windowAnchorCounter = 1;
+	} else {
+		$windowAnchorCounter++;
+	}
+
+
+	if (!$windowAnchor) {
+		$windowAnchor = $windowAnchorCounter;
+	}
 
 	my $contentColumnCount = 1;
 	# stores number of columns if they exist
@@ -570,12 +585,14 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 			my $btnCloseCaption = '{-}'; # needs to match one other place in utils.js #collapseButton
 			my $windowTitlebar = GetTemplate('html/window/titlebar_with_button.template');
 			$windowTitlebar =~ s/\$windowTitle/$windowTitle/g;
+			$windowTitlebar =~ s/\$windowAnchor/$windowAnchor/g;
 			$windowTemplate =~ s/\$windowTitlebar/$windowTitlebar/g;
 			$windowTemplate =~ s/\$btnCloseCaption/$btnCloseCaption/g;
 			#$contentColumnCount = 2;
 		} else {
 			my $windowTitlebar = GetTemplate('html/window/titlebar.template');
 			$windowTitlebar =~ s/\$windowTitle/$windowTitle/g;
+			$windowTitlebar =~ s/\$windowAnchor/$windowAnchor/g;
 			$windowTemplate =~ s/\$windowTitlebar/$windowTitlebar/g;
 		}
 	} else {
@@ -701,6 +718,14 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 		WriteLog('GetWindowTemplate2: length($windowTemplate) = ' . length($windowTemplate) . '; $windowGuid = ' . $windowGuid);
 		$windowTemplate =~ s/\$itemEndAnchor/$itemEndAnchor/g;
 		$windowTemplate .= "<a name=$itemEndAnchor></a>";
+	}
+
+	if ($formAction) {
+		#todo sanity checks
+		my $formName = 'frm' . $windowTitle; #todo only first word, no spaces
+		$formName =~ s/\s//g;
+
+		$windowTemplate = "<form name=$formName id=$formName action=\"$formAction\">" . $windowTemplate . '</form>';
 	}
 
 	return $windowTemplate;
