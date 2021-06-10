@@ -57,10 +57,10 @@ sub PutCache { # $cacheName, $content; stores value in cache
 	my $cacheName = shift;
 	chomp($cacheName);
 
-	if ($cacheName =~ m/^([0-9a-zA-Z\/_]+)$/) {
+	if ($cacheName =~ m/^([0-9a-zA-Z\/_.]+)$/) {
 		$cacheName = $1;
 	} else {
-		WriteLog('PutCache: warning: $cacheName failed sanity check');
+		WriteLog('PutCache: warning: $cacheName failed sanity check: ' . $cacheName);
 		return '';
 	}
 
