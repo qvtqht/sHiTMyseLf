@@ -96,14 +96,6 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		}
 	}
 
-	# Get the HTML page template
-	my $htmlStart = GetPageHeader($title, $titleHtml, 'item');
-	$txtIndex .= $htmlStart;
-	if (GetConfig('admin/expo_site_mode')) { # menu at the top on item page
-		$txtIndex .= GetMenuTemplate();
-	}
-	$txtIndex .= GetTemplate('html/maincontent.template');
-
 	$file{'display_full_hash'} = 1;
 	$file{'show_vote_summary'} = 1;
 	# $file{'show_quick_vote'} = 1;
@@ -112,12 +104,30 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	if (!$file{'item_title'}) {
 		$file{'item_title'} = 'Untitled';
 	}
+	$file{'show_easyfind'} = 0;
+	$file{'image_large'} = 1;
 
+	##########################
+	## HTML MAKING BEGINS
+
+	# Get the HTML page template
+	my $htmlStart = GetPageHeader($title, $titleHtml, 'item');
+	$txtIndex .= $htmlStart;
+	if (GetConfig('admin/expo_site_mode')) {
+		#$txtIndex .= GetMenuTemplate(); # menu at the top on item page
+	}
+	$txtIndex .= GetTemplate('html/maincontent.template');
+
+
+
+
+	# ITEM TEMPLATE
 	my $itemTemplate = GetItemTemplate(\%file); # GetItemPage()
 	WriteLog('GetItemPage: child_count: ' . $file{'file_hash'} . ' = ' . $file{'child_count'});
-	$file{'show_easyfind'} = 0;
 
+	# EASY FIND
 	if ($file{'show_easyfind'}) {
+		#todo remove this, unused?
 		my $itemEasyFind = GetItemEasyFind($fileHash);
 		#$itemTemplate =~ s/\$itemEasyFind/EasyFind: $itemEasyFind/g;
 		$itemTemplate .= $itemEasyFind;
@@ -125,42 +135,61 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		#$itemTemplate =~ s/\$itemEasyFind//g;
 	}
 
-	###############
-	### /REPLIES##########
 
+	# ITEM TEMPLATE
 	if ($itemTemplate) {
 		$txtIndex .= $itemTemplate;
+	} else {
+		WriteLog('GetItemPage: warning: $itemTemplate was FALSE');
+		$itemTemplate = '';
 	}
 
+
+
+
+	# TOOLBOX
 	if (GetConfig('html/item_toolbox/enable')) {
 		my $htmlToolbox = '';
-
 		if ($file{'item_title'}) {
-			#todo urlescape
+			my $urlParam = '';
+			$urlParam = $file{'item_title'};
+			$urlParam = str_replace(' ', '+', $urlParam);
+			$urlParam = uri_encode($urlParam);
+
+			my $urlParamFullText = '';
+			$urlParamFullText = $file{'file_path'};
+			$urlParamFullText = GetFile($urlParamFullText);
+			$urlParamFullText = uri_encode($urlParamFullText);
+			$urlParamFullText = str_replace('+', '%2b', $urlParamFullText);
+
+			$htmlToolbox .= '<b>Search:</b><br>';
+
 			$htmlToolbox .=
 				'<a href="http://www.google.com/search?q=' .
-				HtmlEscape($file{'item_title'}) .
-				'">' .
+				$urlParam .
+				'"' .
+				'target=_blank' .
+				'>' .
 				'Google' .
 				'</a><br>'
 				;
 			$htmlToolbox .=
 				'<a href="http://html.duckduckgo.com/html?q=' .
-				HtmlEscape($file{'item_title'}) .
+				$urlParam .
 				'">' .
 				'DuckDuckGo' .
 				'</a><br>'
 				;
 			$htmlToolbox .=
 				'<a href="http://yandex.ru/yandsearch?text=' .
-				HtmlEscape($file{'item_title'}) .
+				$urlParam .
 				'">' .
 				'Yandex' .
 				'</a><br>'
 				;
 			$htmlToolbox .=
 				'<a href="https://teddit.net/r/all/search?q=' .
-				HtmlEscape($file{'item_title'}) .
+				$urlParam .
 				'&nsfw=on' .
 				'">' .
 				'Teddit' .
@@ -168,29 +197,28 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 				;
 			$htmlToolbox .=
 				'<a href="https://hn.algolia.com/?q=' .
-				HtmlEscape($file{'item_title'}) .
+				$urlParam .
 				'">' .
-				'Algolia' .
+				'A1go1ia' .
 				'</a><br>'
 				;
 			$htmlToolbox .=
 				'<a href="https://en.wikipedia.org/w/index.php?search=' .
-				HtmlEscape($file{'item_title'}) .
+				$urlParam .
 				'">' .
-				'Wikipedia' .
+				'Wikipedia EN' .
 				'</a><br>'
 				;
 			$htmlToolbox .=
 				'<a href="https://ru.wikipedia.org/w/index.php?search=' .
-				HtmlEscape($file{'item_title'}) .
+				$urlParam .
 				'">' .
 				'Wikipedia RU' .
 				'</a><br>'
 				;
-
 			$htmlToolbox .=
 				'<a href="https://tildes.net/search?q=' .
-				HtmlEscape($file{'item_title'}) .
+				$urlParam .
 				'">' .
 				'Tildes' .
 				'</a><br>'
@@ -198,7 +226,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 
 			$htmlToolbox .=
 				'<a href="https://lobste.rs/search?q=' .
-				HtmlEscape($file{'item_title'}) .
+				$urlParam .
 				'&what=stories&order=relevance' .
 				'">' .
 				'Lobsters' .
@@ -208,22 +236,42 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 			#todo urlescape should also be used
 			#todo this should be token -> index -> template
 		}
+		$htmlToolbox = '<span class=advanced>' . GetWindowTemplate($htmlToolbox, 'Tools') . '</span>';
+		$txtIndex .= $htmlToolbox;
+	} # GetConfig('html/item_toolbox/enable')
 
-		$txtIndex .= '<span class=advanced>' . GetWindowTemplate($htmlToolbox, 'Tools') . '</span>';
-	}
+#	$txtIndex .= '<hr>';
+
+
+	##
+	##
+	##
+	###############
+	### /REPLY DEPENDENT FEATURES BELOW##########
+
+	$txtIndex .= '<br>';
+
+	#VOTE BUTTONS are below, inside replies
+
 
 	if (GetConfig('reply/enable')) {
 		my $voteButtons = '';
 		if (GetConfig('admin/expo_site_mode')) {
 			if (GetConfig('admin/expo_site_edit')) {
-				$txtIndex .= GetReplyForm($file{'file_hash'});
+				#$txtIndex .= GetReplyForm($file{'file_hash'});
 			}
 			# do nothing
 		} else { # additional dialogs on items page
+			# VOTE  BUTTONS
+			# Vote buttons depend on reply functionality, so they are also in here
 			$voteButtons .= GetItemTagButtons($file{'file_hash'});
-			$txtIndex .= '<p><span class=advanced>'.GetWindowTemplate($voteButtons, 'Classify').'</span></p>';
-			$txtIndex .= GetReplyListing($file{'file_hash'});
+
+			# REPLY FORM
 			$txtIndex .= GetReplyForm($file{'file_hash'});
+
+
+			# CLASSIFY BOX
+			$txtIndex .= '<span class=advanced>'.GetWindowTemplate($voteButtons, 'Classify').'</span>';
 		}
 
 		my @itemReplies = DBGetItemReplies($fileHash);
@@ -239,7 +287,19 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 				$txtIndex .= $itemReplyTemplate;
 			}
 		}
+
+		# REPLIES LIST
+		$txtIndex .= GetReplyListing($file{'file_hash'});
+
+		# RELATED LIST
+		$txtIndex .= GetRelatedListing($file{'file_hash'});
+
+
 	}
+
+	## FINISHED REPLIES
+	## FINISHED REPLIES
+	## FINISHED REPLIES
 
 	if (GetConfig('admin/expo_site_mode')) { # item attributes dialog on items page
 		if (GetConfig('admin/expo_site_edit')) {
@@ -287,7 +347,7 @@ sub GetReplyListing {
 		my @itemReplies = DBGetItemReplies($fileHash);
 
 		if (@itemReplies) {
-			return GetItemListing($fileHash);;
+			return GetItemListing($fileHash);
 		} else {
 			return GetReplyListingEmpty($fileHash);
 		}
@@ -296,6 +356,23 @@ sub GetReplyListing {
 	}
 
 	WriteLog('GetReplyListing: warning: unreachable reached');
+	return '';
+} # GetReplyListing()
+
+sub GetRelatedListing {
+	# if this item has a child_count, we want to print all the child items below
+	# keywords: reply replies subitems child parent
+	# REPLIES #replies #reply GetItemPage()
+	######################################
+
+
+	if (my $fileHash = shift) {
+		my $query = GetConfig("query/related");
+		$query =~ s/\?/'$fileHash'/;
+		return GetQueryAsDialog($query, 'Related');
+	}
+
+	WriteLog('GetRelatedListing: warning: unreachable reached');
 	return '';
 } # GetReplyListing()
 
@@ -366,8 +443,12 @@ sub GetItemAttributesWindow {
 						$iaValue = '<a href="' . $iaValue . '">' . $iaValue . '</a>';
 						#todo sanitizing #security
 					}
-					if ($iaName eq 'normalized_hash' || $iaName eq 'sha1' || $iaName eq 'md5' || $iaName eq 'chain_previous') { #todo make it match on _hash and use _hash on the names
+					if ($iaName eq 'git_hash_object' || $iaName eq 'normalized_hash' || $iaName eq 'sha1' || $iaName eq 'md5') { #todo make it match on _hash and use _hash on the names
 						$iaValue = '<tt>' . $iaValue . '</tt>';
+					}
+					if ($iaName eq 'chain_previous') {
+						$iaValue = GetItemHtmlLink($iaValue, DBGetItemTitle($iaValue, 32));
+
 					}
 				}
 
@@ -401,9 +482,16 @@ sub GetItemAttributesWindow {
 
 		my $itemAttributesWindow = GetWindowTemplate($itemAttributesTable, 'Item Attributes', 'attribute,value');
 		$itemAttributesWindow = '<span class=advanced>' . $itemAttributesWindow . '</span>';
+
+		my $accessKey = GetAccessKey('Item Attributes');
+		if ($accessKey) {
+			$itemAttributesWindow = AddAttributeToTag($itemAttributesWindow, 'a href=#', 'accesskey', $accessKey);
+			$itemAttributesWindow = AddAttributeToTag($itemAttributesWindow, 'a href=#', 'name', 'ia');
+		}
+
 		return $itemAttributesWindow;
 	}
-} #attributes
+} # GetItemAttributesWindow()
 
 sub GetPublishForm {
 	my $template = GetTemplate('html/form/publish.template');
