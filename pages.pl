@@ -188,14 +188,22 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		$fieldValue = GetTimestampWidget($fieldValue);
 	}
 
-	if ($fieldName eq 'item_url') {
-		$fieldValue = '<a href="' . uri_escape($fieldValue) . '">' . HtmlEscape($fieldValue) . '</a>';
+	if ($fieldName eq 'item_url' || $fieldName eq 'url') {
+		if (length($fieldValue) < 64) {
+			$fieldValue = '<a href="' . HtmlEscape($fieldValue) . '">' . HtmlEscape($fieldValue) . '';
+		} else {
+			$fieldValue = '<a href="' . HtmlEscape($fieldValue) . '">' . HtmlEscape(substr($fieldValue, 0, 60) . '...') . '';
+		}
 	}
 
 	if ($fieldName eq 'item_title') {
 		if (%itemHash && $itemHash{'file_hash'}) {
 			$fieldValue = '<b>' . GetItemHtmlLink($itemHash{'file_hash'}, $fieldValue) . '</b>';
 		}
+	}
+
+	if ($fieldName eq 'file_hash') {
+		$fieldValue = substr($fieldValue, 0, 8);
 	}
 
 	if (substr($fieldName, 0, 7) eq 'tagset_' && !$fieldValue) {
