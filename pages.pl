@@ -2935,12 +2935,6 @@ sub GetStatsTable {
 		$statsTable =~ s/\$admin/*/;
 	}
 
-	if ($serverId) {
-		$statsTable =~ s/\$server/$serverLink/;
-	} else {
-		$statsTable =~ s/\$server/*/;
-	}
-
 	if (!defined($lastUpdateTime) || !$lastUpdateTime) {
 		$lastUpdateTime = 0;
 	}
