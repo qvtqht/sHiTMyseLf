@@ -247,7 +247,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		}
 	} else {
 		$txtIndex .= GetItemAttributesWindow(\%file);
-		$txtIndex .= GetMenuTemplate();
+		#$txtIndex .= GetMenuTemplate(); # bottom of item page
 	}
 
 	# end page with footer
