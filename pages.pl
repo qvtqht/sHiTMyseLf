@@ -203,7 +203,11 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 	}
 
 	if ($fieldName eq 'file_hash') {
-		$fieldValue = substr($fieldValue, 0, 8);
+		if ($fieldValue) {
+			$fieldValue = substr($fieldValue, 0, 8);
+		} else {
+			$fieldValue = '';
+		}
 	}
 
 	if (substr($fieldName, 0, 7) eq 'tagset_' && !$fieldValue) {
