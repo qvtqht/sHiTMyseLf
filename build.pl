@@ -6,8 +6,10 @@ use utf8;
 use Cwd qw(cwd);
 
 sub BuildMessage { # prints timestamped message to output
-	print time();
 	print ' ';
+	print "\n";
+	print time();
+	print ': ';
 	print shift;
 	print "\n";
 } # BuildMessage()
@@ -34,9 +36,9 @@ require './index.pl';
 
 	BuildMessage "SqliteMakeTables()...";
 	SqliteMakeTables();
-
-	BuildMessage "Remove cache/indexed/*";
-	system('rm cache/*/indexed/*');
+#
+#	BuildMessage "Remove cache/indexed/*";
+#	system('rm cache/*/indexed/*');
 }
 
 
@@ -58,11 +60,11 @@ if (!-e $IMAGEDIR) {
 
 BuildMessage "Looking for files...";
 
-BuildMessage "MakeChainIndex()...";
-MakeChainIndex();
+#BuildMessage "MakeChainIndex()...";
+#MakeChainIndex();
 
 BuildMessage "DBAddPageTouch('summary')...";
-DBAddPageTouch('summary');
+DBAddPageTouch('system');
 
 BuildMessage("UpdateUpdateTime()...");
 UpdateUpdateTime();
@@ -76,25 +78,19 @@ UpdateUpdateTime();
 #MakeSystemPages();
 #PutHtmlFile("/index.html", GetFile('html/help.html'));
 
-if (GetConfig('admin/build/generate_after')) {
-	BuildMessage "require('./generate.pl')...";
-	require('./generate.pl');
-}
-
 PutFile('config/admin/build_end', GetTime());
 
 if (!GetConfig('admin/secret')) {
 	PutConfig('admin/secret', md5_hex(time()));
 }
 
-UpdateUpdateTime();
-# Stats page
-
-#PutStatsPages();
-
 if (GetConfig('admin/dev/launch_browser_after_build')) {
 	WriteLog('build.pl: xdg-open http://localhost:2784/ &');
 	WriteLog(`xdg-open http://localhost:2784/ &`);
+}
+
+if (GetConfig('admin/ssi/enable') && GetConfig('admin/php/enable')) {
+	BuildMessage('build.pl: warning: ssi/enable and php/enable are both true');
 }
 
 BuildMessage("===============");
@@ -102,17 +98,8 @@ BuildMessage("Build finished!");
 BuildMessage("===============");
 WriteLog("Finished!");
 
-if (GetConfig('admin/build/loop_after')) {
-	WriteLog('Starting loop.pl...');
-	system('perl ./loop.pl');
-}
-
 if (GetConfig('admin/lighttpd/enable')) {
-	system('screen -S lighttpd -d -m perl ./lighttpd.pl');
-}
-
-if (GetConfig('admin/ssi/enable') && GetConfig('admin/php/enable')) {
-	BuildMessage('build.pl: warning: ssi/enable and php/enable are both true');
+	system('screen -d -m -S perl ./server_local_lighttpd.pl');
 }
 
 1;
