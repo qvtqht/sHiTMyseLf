@@ -88,6 +88,8 @@ sub PutCache { # $cacheName, $content; stores value in cache
 } # PutCache()
 
 sub UnlinkCache { # removes cache by unlinking file it's stored in
+# DeleteCache {
+# RemoveCache {
 	my $cacheName = shift;
 	chomp($cacheName);
 
@@ -104,7 +106,12 @@ sub UnlinkCache { # removes cache by unlinking file it's stored in
 
 	if (scalar(@cacheFiles)) {
 		WriteLog('UnlinkCache: scalar(@cacheFiles) = ' . scalar(@cacheFiles));
-		unlink(@cacheFiles);
+
+		for my $cacheFile (@cacheFiles) {
+			if ($cacheFile =~ m/^([0-9a-zA-Z_.\/]+)$/) {
+				unlink($1);
+			}
+		}
 	} else {
 		WriteLog('UnlinkCache: scalar(@cacheFiles) is false for $cacheFile = ' . $cacheFile);
 	}
@@ -135,12 +142,17 @@ sub GetMessageCacheName {
 	chomp($itemHash);
 
 	if (!IsItem($itemHash)) {
-		WriteLog('GetMessageCacheName: sanity check failed');
+		WriteLog('GetMessageCacheName: sanity check failed on $itemHash = ' . $itemHash);
 		return '';
 	}
 
 	my $cacheDir = GetDir('cache');
 	my $messageCacheName = $cacheDir . "/message/$itemHash"; #todo
+
+	if (!-e $messageCacheName) {
+		WriteLog('GetMessageCacheName: warning: NO FILE: $messageCacheName = ' . $messageCacheName);
+	}
+
 	return $messageCacheName;
 }
 
