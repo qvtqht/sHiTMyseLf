@@ -8,5 +8,17 @@
 	<p>
 		<input name=btnLightOff value="Modern" id=lightOff type=submit>
 	</p>
+
+	<hr>
+
+	<p>
+		<input value="Beginner" type=submit name=ui>
+	</p>
+	<p>
+		<input value="Intermediate" type=submit name=ui>
+	</p>
+	<p>
+		<input value="Advanced" type=submit name=ui>
+	</p>
 </form>
 <!-- / access.template -->

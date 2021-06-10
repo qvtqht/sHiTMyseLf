@@ -10,17 +10,10 @@
 </noscript>
 
 <fieldset>
-	<legend><b>General</b><br></legend>
+	<legend><b>Settings</b><br></legend>
 
 	<p>
-		<input type=submit name=ui value="Beginner" onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('beginner', this); }">
-		<input type=submit name=ui value="Intermediate" onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('intermediate', this); }">
-		<input type=submit name=ui value="Advanced" class=advanced onclick="if (window.SetInterfaceMode) { return SetInterfaceMode('expert', this); }">
-		<span class=beginner><br>Use these buttons to adjust interface</span>
-	</p>
-
-	<p>
-		<label for=chkShowAdvanced class=advanced>
+		<label for=chkShowAdvanced>
 			<input type=checkbox id=chkShowAdvanced name=chkShowAdmin onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'show_advanced'); }">
 			Show advanced controls<noscript><b>*</b></noscript>
 		</label>
@@ -36,7 +29,7 @@
 	<p>
 		<label for=chkDraggable class=advanced>
 			<input type=checkbox id=chkDraggable name=chkDraggable onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable'); }">
-			Enable draggable interface<noscript><b>*</b></noscript>
+			Enable quirky enhancements<noscript><b>*</b></noscript>
 		</label>
 	</p>
 </fieldset>
