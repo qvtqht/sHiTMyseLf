@@ -453,7 +453,7 @@ sub SqliteMakeTables { # creates sqlite schema
 		");
 
 		SqliteQuery2("
-			insert into vote_value(vote, value) values('scunthorpe', -5);
+			insert into vote_value(vote, value) values('scunthorpe', -1);
 		");
 
 		SqliteQuery2("
@@ -599,6 +599,7 @@ sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns 
 
 		WriteLog('SqliteQuery2: $query = ' . $queryOneLine);
 		WriteLog('SqliteQuery2: caller: ' . join(', ', caller));
+		#print('SqliteQuery2: caller: ' . join(', ', caller)); #for debugging
 
 		foreach my $qpTest (@queryParams) {
 			if (!defined($qpTest)) {
@@ -1648,8 +1649,8 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 	#     0) + 1);
 
 
-	$query .= "('page', ?, ?, ?)";
-	push @queryParams, $pageName, $pageParam, $touchTime;
+	$query .= "(?, ?, ?, ?)";
+	push @queryParams, 'page', $pageName, $pageParam, $touchTime;
 } # DBAddPageTouch()
 
 sub DBGetVoteCounts { # Get total vote counts by tag value
@@ -1911,6 +1912,7 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 
 	if ($query && (length($query) > DBMaxQueryLength() || scalar(@queryParams) > DBMaxQueryParams())) {
 		DBAddItem('flush');
+
 		$query = '';
 		@queryParams = ();
 	}
@@ -2206,7 +2208,7 @@ sub DBGetItemAttribute { # $fileHash, [$attribute] ; returns all if attribute no
 		$attribute = '';
 	}
 
-	my $query = "SELECT attribute, value FROM item_attribute_latest WHERE file_hash LIKE '$fileHash%'";
+	my $query = "SELECT attribute, value FROM item_attribute WHERE file_hash LIKE '$fileHash%'";
 	if ($attribute) {
 		$query .= " AND attribute = '$attribute'";
 	}
