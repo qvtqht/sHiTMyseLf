@@ -5,7 +5,7 @@ body, table, .item, #txtClock, input {
 	background-color: $colorBackground;
 	color: $colorText;
 }
-.dialog {
+.dialog, hr {
 	border: 3pt double $colorTitlebar;
 	border-radius: 3pt;
 }
@@ -27,11 +27,10 @@ button, input[type=button], input[type=submit], input[type=checkbox] {
 }
 
 #serverResponse {
-/* messages from server */
+	/* messages from server */
     background-color: $colorHighlightAlert;
     color: $colorText;
     padding: 5pt;
-    spacing: 5pt;
     border: 10pt $colorWindow double;
     display: block;
 }

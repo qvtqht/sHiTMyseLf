@@ -1,4 +1,7 @@
 /* theme/news/additional.css */
+
+/* below this line (c) news.ycombinator.com */
+
 body  { font-family:Verdana, Geneva, sans-serif; font-size:10pt; color:#828282; }
 td    { font-family:Verdana, Geneva, sans-serif; font-size:10pt; color:#828282; }
 input    { font-family:monospace; font-size:10pt; }
@@ -38,5 +41,7 @@ a:visited { color:$colorVlink; text-decoration:none; }
 @media only screen and (min-width : 1260px) and (max-width : 1349px) {
   .txt { max-width: 1130px; overflow: hidden }
 }
+
+/* above this line (c) news.ycombinator.com */
 
 /* theme/news/additional.css */

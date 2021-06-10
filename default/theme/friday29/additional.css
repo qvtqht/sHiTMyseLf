@@ -7,6 +7,15 @@ body {
 .dialog {
 	box-shadow: 5pt 5pt 5pt #aabbcc;
 }
+@media only screen and (min-width : 30em) {
+	.item-textart {
+		max-width: 90%;
+		background-color: #808080;
+	}
+	.dialog .txt {
+		max-width: 30em;
+	}
+}
 #txtClock {
 	border: 0;
 	background-color: $colorWindow;
@@ -30,7 +39,6 @@ textarea:focus {
     background-color: $colorHighlightAlert;
     color: $colorText;
     padding: 5pt;
-    spacing: 5pt;
 }
 #aBackToTop {
 	background-color: $colorHighlightBeginner;

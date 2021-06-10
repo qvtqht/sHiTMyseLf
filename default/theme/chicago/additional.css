@@ -20,12 +20,23 @@ input[type=text], input[type=password], select, option, textarea {
     background-color: #f0f0d0;
 }
 .dialog {
-	box-shadow: 5pt 5pt 0 rgba(0, 20, 20, 0.5);
+	box-shadow: 5pt 5pt 0 rgba(0, 20, 20, 0.3);
 	border: $borderDialog;
 	background-color: $colorWindow;
 	border-radius: 2pt;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
+	margin-right: 8pt;
+	margin-bottom: 8pt;
+}
+@media only screen and (min-width : 30em) {
+	.item-textart {
+		max-width: 90%;
+		background-color: #808080;
+	}
+	.dialog .txt {
+		max-width: 30em;
+	}
 }
 td {
 	border-radius: 2pt;
@@ -49,6 +60,7 @@ textarea {
 a:focus, a:active {
     color: red !important;
     background-color: orange !important;
+    border-radius: 2pt;
 }
 textarea:focus {
     background-color: #fff0e0;
@@ -61,7 +73,6 @@ input:focus {
     background-color: $colorHighlightAlert;
     color: $colorText;
     padding: 5pt;
-    spacing: 5pt;
     border: 0;
 	box-shadow: 5pt 5pt 0 rgba(0, 20, 20, 0.5);
 }
