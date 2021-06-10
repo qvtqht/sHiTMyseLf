@@ -3458,7 +3458,12 @@ sub GetAuthorInfoBox {
 		$authorScore = 0;
 	}
 
-	my $authorMessageLink = GetItemHtmlLink($publicKeyHash, 'Contact Them', '#reply');
+	my $authorMessageLink = GetItemHtmlLink($publicKeyHash, 'Message Publicly', '#reply');
+
+	# not sure what the reasoning behind this was
+	#if (GetConfig('reply/enable') || GetConfig('admin/expo_site_mode')) { #todo unhack
+	#	$authorMessageLink = '';
+	#}
 
 	if (IsAdmin($authorKey)) {
 		if ($authorDescription) {
@@ -3515,7 +3520,11 @@ sub GetAuthorInfoBox {
 		$authorInfoTemplate =~ s/\$authorMessageLink/*/g;
 	}
 
-	##### friends list begin #####
+	return $authorInfoTemplate;
+} # GetAuthorInfoBox()
+
+sub GetAuthorFriendsList { # $authorKey ; returns friends list as html with avatars and links
+	my $authorKey = shift;
 
 	# get list of friends from db
 	my @authorFriendsArray = DBGetAuthorFriends($authorKey);
@@ -3547,11 +3556,7 @@ sub GetAuthorInfoBox {
 	my $authorFriendsWrapper = GetTemplate('author/author_friends.template');
 	$authorFriendsWrapper =~ s/\$authorFriendsList/$authorFriends/;
 
-	# insert list of friends into authorinfo template
-	$authorInfoTemplate =~ s/\$authorFriends/$authorFriendsWrapper/;
-
-	return $authorInfoTemplate;
-} # GetAuthorInfoBox()
+} # GetAuthorFriendsList()
 
 sub GetReadPage { # generates page with item listing based on parameters
 	# GetReadPage
