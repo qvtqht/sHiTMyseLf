@@ -2138,6 +2138,13 @@ sub GetPageFooter { # returns html for page footer
 		WriteLog('GetPageFooter: ssi footer conditions NOT met!');
 	}
 
+	$txtFooter = str_replace(
+		'</body>',
+		'<br>' . GetMenuTemplate() . '</body>',
+		$txtFooter
+	);
+
+
 	return $txtFooter;
 } # GetPageFooter()
 
@@ -2434,7 +2441,7 @@ sub GetMenuTemplate { # returns menubar
 			$topMenuTemplate,
 			'a href="/etc.html"',
 			'onclick',
-			"if (window.ShowAll) { ShowAll(this); } if (window.DraggingInit) { DraggingInit(0); } return false;"
+			"if (window.ShowAll) { ShowAll(this); } return false;"
 		); # &pi;
 	}
 
@@ -2478,6 +2485,17 @@ sub GetMenuTemplate { # returns menubar
 		$topMenuTemplate = '<form action="/stats.html" name=frmTopMenu>' . $topMenuTemplate . '</form>';
 		$topMenuTemplate =~ s/<span id=spnClock><\/span>/$clockTemplate/g;
 	}
+
+	if (GetConfig('admin/js/enable')) {
+	#if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+		my $cascadeButtons = GetTemplate('html/widget/cascade_button.template');
+		$topMenuTemplate = str_replace(
+			'<span id=controls></span>',
+			'<span id=controls>' . $cascadeButtons. '</span>',
+			$topMenuTemplate
+		);
+	}
+
 
 	return $topMenuTemplate;
 } # GetMenuTemplate()
@@ -2532,7 +2550,7 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 		if (GetConfig('html/logo_enabled')) {
 			state $logoText;
 			if (!defined($logoText)) {
-				$logoText = GetConfig('logo_text');
+				$logoText = GetConfig('html/logo_text');
 				if (!$logoText) {
 					$logoText = '';
 				}
@@ -2542,9 +2560,10 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 		}
 	}
 
-	my $topMenuTemplate = GetMenuTemplate();
+	my $topMenuTemplate = '';#GetMenuTemplate(); #GetPageHeader()
 
-	if (
+
+	if (1||
 		$pageType ne 'item'
 	) {
 		$htmlStart =~ s/\$topMenu/$topMenuTemplate/g;
