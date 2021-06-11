@@ -1052,7 +1052,30 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 			DBAddVoteRecord($fileHash, 0, 'hastext');
 			DBAddPageTouch('tag', 'hastext');
 
-			DBAddItemAttribute($fileHash, 'normalized_hash', sha1_hex($detokenedMessage), 0);
+			my $normalizedHash = sha1_hex(trim($detokenedMessage));
+			#v1
+
+			{#v2
+				my $hash = sha1_hex('');
+				#draft better normalized hash
+				my @lines = split("\n", $detokenedMessage);
+				my @lines2;
+				for my $line (@lines) {
+					$line = trim($line);
+					if ($line ne '') {
+						push @lines2, lc($line);
+					}
+				}
+				my @lines3 = uniq(sort(@lines2));
+				for my $line (@lines3) {
+					$hash = sha1_hex($hash . $line);
+				}
+				$normalizedHash = $hash;
+			}
+
+			DBAddItemAttribute($fileHash, 'normalized_hash', $normalizedHash, 0);
+
+			#todo reparent item if another with the same normhash already exists
 		} # has a $detokenedMessage
 
 		if ($message) {
