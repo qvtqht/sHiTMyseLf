@@ -1093,6 +1093,12 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 	return $fileHash;
 } # IndexTextFile()
 
+sub uniq { # @array ; return array without duplicate elements
+# copied from somewhere like perlmonks
+    my %seen;
+    grep !$seen{$_}++, @_;
+}
+
 sub AddToChainLog { # $fileHash ; add line to log/chain.log
 	# line format is:
 	# file_hash|timestamp|checksum
