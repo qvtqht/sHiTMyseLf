@@ -57,11 +57,11 @@ sub GetHtmlFilename { # get the HTML filename for specified item hash
 		return '';
 	}
 
-	WriteLog("GetHtmlFilename($hash)");
+	WriteLog('GetHtmlFilename: $hash = ' . $hash);
 
 	if (!IsItem($hash)) {
 		WriteLog("GetHtmlFilename: warning: called with parameter that isn't a SHA-1. Returning.");
-		WriteLog("$hash");
+		#WriteLog("$hash");
 		#
 		# my $trace = Devel::StackTrace->new;
 		# print $trace->as_string; # like carp
@@ -116,6 +116,8 @@ sub GetHtmlFilename { # get the HTML filename for specified item hash
 				substr($hash, 0, 8) .
 				'.html';
 	}
+
+	WriteLog('GetHtmlFilename: returning: $htmlFilename = ' . $htmlFilename);
 
 	return $htmlFilename;
 } # GetHtmlFilename()
