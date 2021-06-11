@@ -700,6 +700,12 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 									# #todo create a whitelist of safe keys non-admins can change
 
 									DBAddConfigValue($configKeyActual, $configValue, 0, $fileHash);
+
+									#this must be called before WriteIndexedConfig()
+									#because we must flush to indexing database
+									#because that's where WriteIndexedConfig() gets its new config
+									IndexTextFile('flush'); #todo optimize
+
 									WriteIndexedConfig(); # config token in index.pl
 									$message = str_replace($tokenFound{'recon'}, "[Config: $configKeyActual = $configValue]", $message);
 									$detokenedMessage = str_replace($tokenFound{'recon'}, '', $detokenedMessage);
