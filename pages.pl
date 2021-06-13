@@ -3660,8 +3660,8 @@ sub GetReadPage { # generates page with item listing based on parameters
 		} # $pageType eq 'tag'
 	} else {
 		return; #this code is deprecated
-		#		$title = GetConfig('home_title') . ' - ' . GetConfig('logo_text');
-		#		$titleHtml = GetConfig('home_title');
+		#		$title = GetConfig('html/home_title') . ' - ' . GetConfig('logo_text');
+		#		$titleHtml = GetConfig('html/home_title');
 		#
 		#		my %queryParams;
 		#
@@ -3674,7 +3674,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 
 	# this will hold the title of the page
 	if (!$title) {
-		$title = GetConfig('home_title');
+		$title = GetConfig('html/home_title');
 	}
 
 	chomp $title;
@@ -4120,7 +4120,7 @@ sub WriteIndexPages { # writes the compost pages (index0-n.html)
 			PutHtmlFile("index$i.html", $indexPage);
 		} # for ($i)
 	} else {
-		my $indexPage = GetPageHeader(GetConfig('home_title'), GetConfig('home_title'), 'home_empty');
+		my $indexPage = GetPageHeader(GetConfig('html/home_title'), GetConfig('html/home_title'), 'home_empty');
 #		$indexPage .= '<p>It looks like there is nothing to display here. Would you like to write something?</p>';
 		#todo this should be in template
 		my $infoMessage = '<p>It looks like there is nothing to display here.</p><p><a href="/write.html">Would you like to write something?</a></p>';
