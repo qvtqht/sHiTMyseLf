@@ -3461,7 +3461,7 @@ sub GetAuthorInfoBox {
 		$authorScore = 0;
 	}
 
-	my $authorMessageLink = GetItemHtmlLink($publicKeyHash, 'Message Publicly', '#reply');
+	my $authorMessageLink = GetItemHtmlLink($publicKeyHash, 'Message', '#reply');
 
 	# not sure what the reasoning behind this was
 	#if (GetConfig('reply/enable') || GetConfig('admin/expo_site_mode')) { #todo unhack
