@@ -4206,11 +4206,24 @@ sub GetDesktopPage { # returns html for desktop page (/desktop.html)
 			my $tosWindow = GetTosDialog();
 			$html .= $tosWindow;
 
+			$html .= GetWindowTemplate(
+				GetTemplate("html/page/help.template"),
+				'Help'
+			);
+
+			my $quickWriteWindow = GetWindowTemplate(GetTemplate('html/form/write/write-quick.template'), 'Quick-Write');
+			$quickWriteWindow =
+				'<form action="/post.html" method=GET id=compose class=submit name=compose target=_top>' .
+				$quickWriteWindow .
+				'</form>';
+			$html .= $quickWriteWindow;
+
 			$html .= GetQueryAsDialog('authors', 'Authors');
+			$html .= GetQueryAsDialog('tags', 'Tags');
 			$html .= GetSettingsWindow();
 			$html .= GetProfileWindow();
 			$html .= GetStatsTable();
-			$html .= GetWriteForm();
+			#$html .= GetWriteForm();
 
 			if (GetConfig('admin/php/enable')) {
 				if (GetConfig('admin/upload/enable')) {
@@ -4234,6 +4247,7 @@ sub GetDesktopPage { # returns html for desktop page (/desktop.html)
 				push @scripts, 'upload';
 			}
 		}
+		push @scripts, 'write';
 		$html = InjectJs($html, @scripts);
 	}
 
