@@ -3643,10 +3643,17 @@ sub GetReadPage { # generates page with item listing based on parameters
 			if (GetConfig('admin/expo_site_mode') && !GetConfig('admin/expo_site_edit')) {
 				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%'";
 			} else {
+				my $scoreThreshold = -100;
+				if ($tagName eq 'flag' || $tagName eq 'scunthorpe') {
+					# the flag page should show almost everything
+					# all other pages should have a filter
+					$scoreThreshold = -100;
+				}
 				#$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score > 0";
-				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score >= 0";
+				#$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score >= 0";
+				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score >= $scoreThreshold";
 			}
-			$queryParams{'order_clause'} = "ORDER BY item_flat.add_timestamp DESC";
+			$queryParams{'order_clause'} = "ORDER BY item_score DESC, item_flat.add_timestamp DESC";
 			$queryParams{'limit_clause'} = "LIMIT 100"; #todo fix hardcoded limit
 
 			@files = DBGetItemList(\%queryParams);
