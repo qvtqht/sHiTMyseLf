@@ -3902,8 +3902,9 @@ sub GetItemListHtml { # @files(array of hashes) ; takes @files, returns html lis
 			$itemList = $itemList . $itemComma . $itemTemplate;
 
 			if ($itemComma eq '') {
-				$itemComma = '<hr><br>';
-				# $itemComma = '<p>';
+				$itemComma = '';
+				#$itemComma = '<hr><br>';
+				##$itemComma = '<p>';
 			}
 		}
 	}
