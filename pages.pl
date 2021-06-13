@@ -2478,11 +2478,14 @@ sub GetMenuTemplate { # returns menubar
 		';
 	}
 
+	my $siteName = GetConfig('site_name');
+
 	$topMenuTemplate =~ s/\$menuItemsAdvanced/$menuItemsAdvanced/g;
 	$topMenuTemplate =~ s/\$menuItemsAdmin/$menuItemsAdmin/g;
 	$topMenuTemplate =~ s/\$menuItemsTag/$menuItemsTag/g;
 	$topMenuTemplate =~ s/\$menuItems/$menuItems/g;
 	$topMenuTemplate =~ s/\$selfLink/$selfLink/g;
+	$topMenuTemplate =~ s/\$siteName/$siteName/g;
 
 	if (GetConfig('html/clock')) {
 		my $clockTemplate = GetClockWidget();
