@@ -1638,15 +1638,16 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
 	}
 
 
-    # if the file is present in deleted.log, get rid of it and its page, return
     if ($fileHash && -e 'log/deleted.log' && GetFile('log/deleted.log') =~ $fileHash) {
+	    # if the file is present in deleted.log, get rid of it and its page, return
         # write to log
         WriteLog("IsFileDeleted: MATCHED! $fileHash exists in deleted.log, removing $file");
 
-
 		# unlink the file itself
 		if (-e $file) {
-			unlink($file); #todo -T
+	        WriteLog("IsFileDeleted: warning: file exists, would call unlink($file)");
+	        #WriteLog("IsFileDeleted: warning: file exists, calling unlink($file)");
+			#unlink($file); #todo -T
 		}
 
 		WriteLog("IsFileDeleted($file, $fileHash) = YES (via deleted.log)");
@@ -1655,57 +1656,24 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
 		my $htmlFilename = GetHtmlFilename($fileHash);
 
 		if ($htmlFilename) {
-			my $HTMLDIR = GetDir('html');
-			$htmlFilename = $HTMLDIR . '/' . $htmlFilename; #todo this could be a sub?
-			if (-e $htmlFilename) {
-				unlink($htmlFilename);
+			if ($htmlFilename =~ m/^([a-zA-Z0-9._\/]+\.html)/) {
+				$htmlFilename = $1;
+
+				my $HTMLDIR = GetDir('html');
+				$htmlFilename = $HTMLDIR . '/' . $htmlFilename; #todo this could be a sub?
+				if (-e $htmlFilename) {
+					WriteLog('IsFileDeleted: warning: calling unlink: $htmlFilename = ' . $htmlFilename);
+					unlink($htmlFilename);
+				} else {
+					WriteLog('IsFileDeleted: warning: file NOT exist: $htmlFilename = ' . $htmlFilename);
+				}
+			} else {
+				WriteLog('IsFileDeleted: warning: failed sanity check: $htmlFilename = ' . $htmlFilename);
 			}
 		}
 
         return 1;
-    } # IsFileDeleted()
-
-    # if the file is present in deleted.log, get rid of it and its page, return
-    if ($fileHash && -e 'log/archived.log' && GetFile('log/archived.log') =~ $fileHash) {
-        # write to log
-        WriteLog('IsFileDeleted: $fileHash exists in archived.log, archiving $file = ' . $file);
-
-		{
-			# unlink the file itself
-			if (-e $file) {
-				my $archiveDir = './archive';
-				my $newFilename = $archiveDir . '/' . TrimPath($file) . "." . GetFileExtension($file);
-				my $suffixCounter = '';
-				while (-e $newFilename . $suffixCounter) {
-					if (!$suffixCounter) {
-						$suffixCounter = 1;
-					} else {
-						$suffixCounter++;
-					}
-				}
-				rename($file, $newFilename);
-				#unlink($file);
-			}
-
-			WriteLog("IsFileDeleted($file, $fileHash) = YES (via archived.log)");
-			WriteLog('IsFileDeleted: $fileHash = ' . $fileHash);
-
-			my $htmlFilename = GetHtmlFilename($fileHash);
-
-			if ($htmlFilename) {
-				my $HTMLDIR = GetDir('html');
-				$htmlFilename = $HTMLDIR . '/' . $htmlFilename;
-
-				if (-e $htmlFilename) {
-					unlink($htmlFilename);
-				}
-			}
-
-
-        }
-
-        return 1;
-    }
+    } # $fileHash is in 'log/deleted.log'
 
     return 0;
 } # IsFileDeleted()
