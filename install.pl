@@ -119,7 +119,7 @@ if ($yumPath) {
 	my $installYum = GetYes("yum is available. Install pre-requisite packages? ", 1);
 
 	if ($installYum) {
-		my $yumCommand = 'sudo yum install perl-Digest-MD5 perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite perl-URI-Encode perl-Digest-SHA1 sqlite gnupg gnupg2 perl-Devel-StackTrace perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite lighttpd-fastcgi ImageMagick';
+		my $yumCommand = 'sudo yum install perl-Digest-MD5 perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite perl-URI-Encode perl-Digest-SHA1 sqlite gnupg gnupg2 perl-Devel-StackTrace perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite lighttpd-fastcgi ImageMagick screen';
 		my $yumResult = `$yumCommand`;
 
 		WriteConfigureMessage($yumResult);
@@ -132,7 +132,7 @@ if ($dnfPath) {
 	my $installYum = GetYes("dnf is available. Install pre-requisite packages? ", 1);
 
 	if ($installYum) {
-		my $dnfCommand = 'sudo dnf install perl-Digest-MD5 perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite perl-URI-Encode perl-Digest-SHA1 sqlite gnupg gnupg2 perl-Devel-StackTrace perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite lighttpd-fastcgi ImageMagick';
+		my $dnfCommand = 'sudo dnf install perl-Digest-MD5 perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite perl-URI-Encode perl-Digest-SHA1 sqlite gnupg gnupg2 perl-Devel-StackTrace perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite lighttpd-fastcgi ImageMagick screen';
 		my $dnfResult = `$dnfCommand`;
 
 		WriteConfigureMessage($dnfResult);
@@ -142,7 +142,7 @@ if ($dnfPath) {
 }
 
 if ($aptPath) {
-	my $aptCommand = 'sudo apt-get install liburi-encode-perl libany-uri-escape-perl libhtml-parser-perl libdbd-sqlite3-perl libdigest-sha-perl sqlite3 gnupg gnupg2 imagemagick';
+	my $aptCommand = 'sudo apt-get install liburi-encode-perl libany-uri-escape-perl libhtml-parser-perl libdbd-sqlite3-perl libdigest-sha-perl sqlite3 gnupg gnupg2 imagemagick screen';
 	WriteConfigureMessage("apt is available. Install pre-requisite packages?");
 	WriteConfigureMessage("Actual Command: $aptCommand");
 	my $installApt = GetYes("Run command to install packages?", 1);
