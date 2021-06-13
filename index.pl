@@ -74,8 +74,8 @@ sub MakeChainIndex { # $import = 1; reads from log/chain.log and puts it into it
 					return 0;
 				}
 
-				DBAddItemAttribute($fileHash, 'chain_timestamp', $addedTime);
-				DBAddItemAttribute($fileHash, 'chain_sequence', $sequenceNumber);
+				DBAddItemAttribute($fileHash, 'chain_timestamp', $addedTime);#todo may not need
+				DBAddItemAttribute($fileHash, 'chain_sequence', $sequenceNumber, $addedTime);
 				DBAddItemAttribute($fileHash, 'chain_previous', $previousLine);
 				WriteLog('MakeChainIndex: $sequenceNumber = ' . $sequenceNumber);
 				WriteLog('MakeChainIndex: (next item stub/aka checksum) $previousLine = ' . $previousLine);
