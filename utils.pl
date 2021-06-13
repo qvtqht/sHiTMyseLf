@@ -2127,7 +2127,12 @@ sub GetThemeAttribute { # returns theme color from config/theme/
 	} # foreach $themeName (@activeThemes)
 
 	if (trim($returnValue) eq '') {
-		WriteLog('GetThemeAttribute: warning: $returnValue is empty for $attributeName = ' . $attributeName);
+		if ($attributeName =~ m/^template/) {
+			# this is ok
+		} else {
+			# not ok
+			WriteLog('GetThemeAttribute: warning: $returnValue is empty for $attributeName = ' . $attributeName);
+		}
 	}
 
 	WriteLog('GetThemeAttribute: $returnValue = ' . $returnValue . '; $attributeName = ' . $attributeName);
