@@ -3701,8 +3701,17 @@ sub GetReadPage { # generates page with item listing based on parameters
 		# add tag buttons with selected tag emphasized
 		$txtIndex .= GetTagLinks($pageParam);
 
-		if ($pageParam eq 'image') {
-			$txtIndex .= GetUploadWindow();
+		my $tagInfo = GetString('tag_info/' . $pageParam);
+		if ($tagInfo) {
+			$txtIndex .= GetWindowTemplate($tagInfo, 'Tag Information');
+		}
+		if ($pageParam eq 'image') { # GetReadPage()
+			#$txtIndex .= GetUploadWindow();
+
+			if (GetConfig('admin/js/enable')) {
+				$txtIndex .= GetWindowTemplate('<a href=# onclick="if (window.UnmaskBlurredImages) { UnmaskBlurredImages() }">Show Masked Images</a>', 'One Lonesome Link');
+			}
+
 			$needUploadJs = 1;
 		}
 	}
@@ -3711,6 +3720,25 @@ sub GetReadPage { # generates page with item listing based on parameters
 	if ($pageType eq 'author') {
 		# author info box
 		$txtIndex .= GetAuthorInfoBox($authorKey);
+		$txtIndex .= GetQueryAsDialog(
+			"SELECT
+				item_title,
+				add_timestamp,
+				item_score,
+				file_hash
+			FROM
+				item_flat
+			WHERE
+				parent_count = 0 AND
+				author_key = '$authorKey'
+			ORDER BY
+				item_score DESC,
+				add_timestamp DESC
+			LIMIT 20
+			",
+			'Threads by Author'
+		); #todo use config/query/author_threads
+		$txtIndex .= '<hr 5>';
 	}
 	my $itemComma = '';
 
@@ -3718,6 +3746,10 @@ sub GetReadPage { # generates page with item listing based on parameters
 
 	foreach my $row (@files) {
 		my $file = $row->{'file_path'};
+
+		if ($pageType eq 'tag' && $pageParam) {
+			$row->{'vote_return_to'} = '/top/' . $pageParam . '.html'; #todo unhardcode
+		}
 
 		WriteLog('GetReadPage: calling DBAddItemPage (1)');
 		DBAddItemPage($row->{'file_hash'}, $pageType, $pageParam);
@@ -3794,6 +3826,12 @@ sub GetReadPage { # generates page with item listing based on parameters
 		else {
 			WriteLog('GetReadPage: warning: file not found, $file = ' . $file);
 		}
+	}
+
+	# LISTING ITEMS ENDS HERE
+
+	if ($pageType eq 'tag' && $pageParam eq 'image') { # GetReadPage()
+		$txtIndex .= GetUploadWindow();
 	}
 
 	# Close html
