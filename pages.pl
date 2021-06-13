@@ -3839,7 +3839,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 
 	if ($pageType eq 'author') {
 		# for author page, add itsyou.js, which will tell the user if the profile is theirs
-		$txtIndex = InjectJs($txtIndex, qw(itsyou settings timestamp voting utils profile));
+		$txtIndex = InjectJs($txtIndex, qw(itsyou settings timestamp voting utils profile fresh));
 	} else {
 		if ($needUploadJs) {
 			$txtIndex = InjectJs($txtIndex, qw(settings voting timestamp utils profile upload));
