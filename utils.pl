@@ -1546,63 +1546,70 @@ sub ServerSign { # Signs a given file with the server's key
 	# Key ID should be stored in config/admin/server_key_id
 	#
 
-	WriteLog('ServerSign()');
+	WriteLog('ServerSign() BEGINS');
 
 	# get filename from parameters and ensure it exists
 	my $file = shift;
 	if (!-e $file) {
-		return;
+		return 0;
 	}
 
-	WriteLog('ServerSign(' . $file . ')');
+	WriteLog('ServerSign: $file = ' . $file);
 
 	# see if config/admin/server_key_id is set
 	my $serverKeyId = trim(GetConfig('admin/server_key_id'));
 
-	WriteLog('$serverKeyId = ' . $serverKeyId);
+	WriteLog('ServerSign: $serverKeyId = ' . $serverKeyId);
 
 	# return if it is not
 	if (!$serverKeyId) {
-		return;
+		return 0;
 	}
 
 	# verify that key exists in gpg keychain
-	WriteLog("gpg --list-keys $serverKeyId");
+	WriteLog("ServerSign: gpg --list-keys $serverKeyId");
 
 	my $serverKey = `gpg --list-keys $serverKeyId`;
-	WriteLog($serverKey);
+	WriteLog('ServerSign: $serverKey = ' . $serverKey);
 
 	# if public key has not been published yet, do it
 	my $TXTDIR = GetDir('txt');
 
 	if (!-e "$TXTDIR/server.key.txt") {
 		#todo move to gpgp.pl
-		WriteLog("gpg --batch --yes --armor --export $serverKeyId");
+		WriteLog("ServerSign: gpg --batch --yes --armor --export $serverKeyId");
 		my $gpgOutput = `gpg --batch --yes --armor --export $serverKeyId`;
 
 		PutFile($TXTDIR . '/server.key.txt', $gpgOutput);
 
-		WriteLog($gpgOutput);
+		WriteLog('ServerSign: $gpgOutput = ' . $gpgOutput);
 	} #todo here we should also verify that server.key.txt matches server_key_id
 
 	# if everything is ok, proceed to sign
 	if ($serverKey) {
-		WriteLog("We have a server key, so go ahead and sign the file.");
+		WriteLog("ServerSign: We have a server key, so go ahead and sign the file.");
 
-		WriteLog("gpg --batch --yes -u $serverKeyId --clearsign \"$file\"");
+		WriteLog("ServerSign: gpg --batch --yes -u $serverKeyId --clearsign \"$file\"");
 		system("gpg --batch --yes -u $serverKeyId --clearsign \"$file\"");
 
 		if (-e "$file.asc") {
-			WriteLog("Sign appears successful, rename .asc file to .txt");
+			WriteLog("ServerSign: Sign appears successful, rename .asc file to .txt");
 			rename("$file.asc", "$file");
+
+			return 1; #success
 		} else {
-			WriteLog("Tried to sign, but no .asc file. PROBLEM!!!");
+			WriteLog("ServerSign: warning: Tried to sign, but no .asc file.");
+			return 0;
 		}
 	} else {
 		#$changeLogMessage .= "\n\n(No server key found, not signing.)";
-		WriteLog("No server key found, will not sign changelog.");
+		WriteLog("ServerSign: warning: No server key found, will not sign changelog.");
+		return 0;
 	}
-}
+
+	WriteLog('ServerSign: warning: unreachable reached.');
+	return 0;
+} # ServerSign()
 
 sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log and removes it if found
 #todo rename to IsFileMarkedAsDeleted()
