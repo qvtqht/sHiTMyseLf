@@ -1,0 +1,11 @@
+SELECT
+	item_title,
+	value chain_order,
+	epoch chain_timestamp,
+	item_attribute.file_hash AS file_hash
+FROM
+	item_attribute
+	JOIN item_flat ON (item_flat.file_hash = item_attribute.file_hash)
+WHERE
+	attribute = 'chain_sequence';
+
