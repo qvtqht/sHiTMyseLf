@@ -476,7 +476,8 @@ sub encode_entities2 { # returns $string with html entities <>"& encoded
 		return;
 	}
 
-	WriteLog("encode_entities2($string)");
+	WriteLog('encode_entities2() BEGIN, length($string) is ' . length($string));
+	#WriteLog('encode_entities2() BEGIN, $string = ' . $string);
 
 	$string =~ s/&/&amp;/g;
 	$string =~ s/\</&lt;/g;
@@ -596,7 +597,7 @@ sub GetFile { # Gets the contents of file $fileName
 	}
 
 	my $length = shift || 209715200;
-	# default to reading a max of 2MB of the file. #scaling #bug
+	# default to reading a max of 2MB of the file. #scaling #bug #todo
 
 	WriteLog('GetFile: trying to open file...');
 	if (
@@ -609,8 +610,12 @@ sub GetFile { # Gets the contents of file $fileName
 		WriteLog('GetFile: opened successfully, trying to read...');
 		my $return;
 		read ($file, $return, $length);
-		WriteLog('GetFile: read success, returning.');
+		#WriteLog('GetFile: read success, returning.');
+		#WriteLog('GetFile: read success, returning. $return = ' . $return);
+		WriteLog('GetFile: read success, returning. length($return) = ' . ($return ? length($return) : 'FALSE'));
 		return $return;
+	} else {
+		WriteLog('GetFile: warning: open failed! $fileName = ' . $fileName);
 	}
 
 	return;
@@ -843,7 +848,7 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 		}
 	}
 
-	WriteLog("str_replace: result: ($stringLength)");
+	WriteLog('str_replace: length$string) = ' . length($string));
 
 	return $string;
 } # str_replace()
@@ -879,9 +884,14 @@ sub str_ireplace { # $replaceWhat, $replaceWith, $string ; emulates some of str_
 
 	WriteLog('str_ireplace: sanity check passed, proceeding');
 	$string =~ s/\Q$replace_this/$with_this/gi;
-	WriteLog('str_ireplace: $string = ' . $string);
+	WriteLog('str_ireplace: length$string) = ' . length($string));
+	# WriteLog('str_ireplace: $string = ' . $string);
 	return $string;
 
+	######## below is old code, not used
+	######## below is old code, not used
+	######## below is old code, not used
+	######## below is old code, not used
 	######## below is old code, not used
 
 	my $length = length($string);
@@ -2129,7 +2139,7 @@ sub GetThemeAttribute { # returns theme color from config/theme/
 		WriteLog('GetThemeAttribute: $attributeName = ' . $attributeName . '; $themeName = ' . $themeName . '; $attributePath = ' . $attributePath);
 
 		if ($attributeValue && trim($attributeValue) ne '') {
-			WriteLog('GetThemeAttribute: ' . $attributeName . ' + ' . $themeName . ' -> ' . $attributePath . ' -> ' . $attributeValue);
+			WriteLog('GetThemeAttribute: ' . $attributeName . ' + ' . $themeName . ' -> ' . $attributePath . ' -> length($attributeValue) = ' . length($attributeValue));
 			if ($attributeName ne 'additional.css') {
 				$returnValue = GetConfig($attributePath) || '';
 				last;
@@ -2149,7 +2159,8 @@ sub GetThemeAttribute { # returns theme color from config/theme/
 		}
 	}
 
-	WriteLog('GetThemeAttribute: $returnValue = ' . $returnValue . '; $attributeName = ' . $attributeName);
+	WriteLog('GetThemeAttribute: length($returnValue) = ' . length($returnValue) . '; $attributeName = ' . $attributeName);
+	#WriteLog('GetThemeAttribute: $returnValue = ' . $returnValue . '; $attributeName = ' . $attributeName);
 
 	return trim($returnValue);
 
