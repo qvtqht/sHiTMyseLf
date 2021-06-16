@@ -1392,7 +1392,8 @@ sub IsTextFile { # $file ; returns 1 if txt file, 0 if not
 	return 0;
 } # IsTextFile()
 
-sub IsItem { # $string ; returns 1 if parameter is in item hash format (40 or 8 lowercase hex chars), 0 otherwise
+sub IsItem { # $string ; returns untained string, 0 if not item
+# should be called IsValidItemHash {
 # todo more validation
 	my $string = shift;
 
@@ -1901,7 +1902,7 @@ sub GetFileHashPath { # $file ; Returns text file's standardized path given its 
 	}
 } # GetFileHashPath()
 
-sub GetPathFromHash { # gets path of text file based on hash
+sub GetPathFromHash { # guesses path of text file based on hash
 #GetFilePath {
 #GetHashPath {
 	# relies on config/admin/organize_files = 1
@@ -1910,11 +1911,20 @@ sub GetPathFromHash { # gets path of text file based on hash
 	chomp $fileHash;
 
 	if (!$fileHash) {
-		return;
+		WriteLog('GetPathFromHash: warning: $fileHash is false');
+		return '';
 	}
 
-	my $TXTDIR = 'html/txt'; #todo #todo
+	chomp $fileHash;
+	WriteLog('GetPathFromHash: $fileHash = '. $fileHash);
+
+	my $TXTDIR = GetDir('txt');
+
+	WriteLog('GetPathFromHash: $TXTDIR = '. $TXTDIR);
+
 #	my $TXTDIR = GetDir('txt');
+
+
 	if ($fileHash =~ m/^([0-9a-f]+)$/) { #todo should this be unlimited length?
 		$fileHash = $1;
 		WriteLog('GetPathFromHash: $fileHash sanity check passed: ' . $fileHash);
