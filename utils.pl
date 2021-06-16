@@ -222,6 +222,7 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 		#my @chars=('a'..'f','0'..'9');
 		#print $chars[rand @chars];
 
+		#print "\b";
 		print $text;
 		# my $randomString;
 		# foreach (1..40) {
@@ -243,7 +244,7 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 	WriteLog($text);
 	my $timestamp = GetTime();
 
-	print "\n$timestamp $text\n";
+	print "\n$timestamp $text";
 
 	$previousText = $text;
 }
