@@ -178,7 +178,20 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		if ($charPrefix eq '') {
 			$charPrefix = '$';
 		}
-		AppendFile("log/log.log", $timestamp . " " . $charPrefix . " " . $text);
+		if (1) {
+			#fully verbose
+			AppendFile("log/log.log", $timestamp . " " . $charPrefix . " " . $text);
+		} else {
+			#only print first line
+			$text = trim($text);
+			if (index($text, "\n") != -1) {
+				$text = substr($text, 0, index($text, "\n"));
+			}
+			if (length($text) > 80) {
+				#$text = substr($text, 0, 80);
+			}
+			AppendFile("log/log.log", $timestamp . " " . $charPrefix . " " . $text);
+		}
 	}
 } # WriteLog()
 
