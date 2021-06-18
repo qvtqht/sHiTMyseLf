@@ -952,7 +952,7 @@ sub IsUrl { # add basic isurl()
 } # IsUrl()
 #
 
-sub PutHtmlFile { # $file, $content, $htmlRoot ; writes content to html file, with special rules; parameters: $file, $content
+sub PutHtmlFile { # $file, $content ; writes content to html file, with special rules; parameters: $file, $content
 	# the special rules are:
 	# * if config/admin/html/ascii_only is set, all non-ascii characters are stripped from output to file
 	# * if $file matches config/html/home_page, the output is also written to index.html
@@ -961,7 +961,6 @@ sub PutHtmlFile { # $file, $content, $htmlRoot ; writes content to html file, wi
 
 	my $file = shift;
 	my $content = shift;
-	my $htmlRoot = shift; #optional
 
 	if (!$file) {
 		return;
@@ -969,10 +968,12 @@ sub PutHtmlFile { # $file, $content, $htmlRoot ; writes content to html file, wi
 
 	WriteLog("PutHtmlFile($file)");
 
-	my $HTMLDIR = GetDir('html');
-	if ($htmlRoot) {
-		$HTMLDIR = $htmlRoot;
-	}
+	my $HTMLDIR = '';
+	$HTMLDIR = GetDir('html');
+	#todo sanitycheck $HTMLDIR
+
+	WriteLog('PutHtmlFile: $HTMLDIR = ' . $HTMLDIR);
+	WriteLog('PutHtmlFile: caller = ' . join(',', caller));
 
 	if ($HTMLDIR && !-e $HTMLDIR) {
 		WriteLog('PutHtmlFile: warning: $HTMLDIR was missing, trying to mkdir(' . $HTMLDIR . ')');
