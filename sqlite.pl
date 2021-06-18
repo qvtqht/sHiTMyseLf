@@ -12,7 +12,7 @@ use 5.010;
 
 # different ways db is accessed in here
 # =====================================
-# SqliteGetValue (fetchrow_array)
+# SqliteGetValue() (fetchrow_array)
 # $sth->execute + fetchrow_array
 # $sth->execute + fetchall_arrayref
 # $sth->execute + fetchrow_arrayref
@@ -48,6 +48,17 @@ sub GetSqliteDbName {
 }
 
 my $dbh; # handle for sqlite interface
+
+#
+#sub SqliteMakeItemFlatTable {
+#	state $tableBeenMade;
+#	if (!$tableBeenMade) {
+#		$tableBeenMade = 1;
+#		my $itemFlatQuery = "create temp table item_flat as select * from item_flat_view";
+#		SqliteQuery2($itemFlatQuery);
+#	}
+#}
+
 
 sub SqliteConnect { # Establishes connection to sqlite db
 # tries up to 5 times, because sometimes the first try fails
@@ -102,7 +113,10 @@ sub SqliteConnect { # Establishes connection to sqlite db
 			return SqliteConnect();
 		}
 	}
+
+	#SqliteMakeItemFlatTable();
 } # SqliteConnect()
+
 
 SqliteConnect();
 
@@ -253,7 +267,7 @@ sub SqliteMakeTables { # creates sqlite schema
 			value AS item_sequence
 		FROM item_attribute_latest
 		WHERE attribute = 'chain_sequence'
-	");
+	"); #todo rename columns
 
 	# item_author
 	SqliteQuery("
@@ -629,7 +643,14 @@ sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns 
 
 			$sth = $dbh->prepare($query);
 			if ($sth) {
+				my $timeBeforeQuery = time();
+
 				my $execResult = $sth->execute(@queryParams);
+
+				if (time() - $timeBeforeQuery > 1) {
+					WriteLog('SqliteQuery2: warning: query took more than 1 second: ' . $query);
+
+				}
 
 				WriteLog('SqliteQuery2: $execResult = ' . $execResult);
 
@@ -698,20 +719,26 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 			#todo error handling in case sql query has an error
 
 			$sth = $dbh->prepare($query);
-			my $execResult = $sth->execute(@queryParams);
+			if ($sth) {
+				my $execResult = $sth->execute(@queryParams);
 
-			WriteLog('SqliteQueryHashRef: $execResult = ' . $execResult);
+				WriteLog('SqliteQueryHashRef: $execResult = ' . $execResult);
 
-			my @resultsArray = ();
-			push @resultsArray, $sth->{'NAME'};
+				my @resultsArray = ();
+				push @resultsArray, $sth->{'NAME'};
 
-			while (my $row = $sth->fetchrow_hashref()) {
-				push @resultsArray, $row;
+				while (my $row = $sth->fetchrow_hashref()) {
+					push @resultsArray, $row;
+				}
+
+				return @resultsArray;
+			} else {
+				WriteLog('SqliteQueryHashRef: warning: prepare failed on $query = ' . $query);
+				return '';
 			}
-
-			return @resultsArray;
 		} else {
 			WriteLog('SqliteQueryHashRef: warning: $dbh is missing');
+			return '';
 		}
 	}
 	else {
@@ -965,12 +992,17 @@ sub SqliteGetValue { # Returns the first column from the first row returned by s
 	my $query = shift;
 	chomp $query;
 
-	WriteLog('SqliteGetValue: ' . $query);
+	my $queryOneLine = $query;
+	$queryOneLine =~ s/\s+/ /g;
+	WriteLog('SqliteGetValue: $query = ' . $queryOneLine);
 
-	my ($package, $filename, $line) = caller;
-	WriteLog('SqliteGetValue: caller: ' . $package . ',' . $filename . ', ' . $line);
 
-	my $sth = $dbh->prepare($query);
+	WriteLog('SqliteGetValue: caller: ' . join (',', caller));
+	#my ($package, $filename, $line) = caller;
+	#WriteLog('SqliteGetValue: caller: ' . $package . ',' . $filename . ', ' . $line);
+
+	#SqliteMakeItemFlatTable();
+	my $sth = $dbh->prepare("$query");
 	$sth->execute(@_);
 
 	my @aref = $sth->fetchrow_array();
@@ -991,7 +1023,12 @@ sub DBGetAuthorCount { # Returns author count.
 	} else {
 		$authorCount = SqliteGetValue("SELECT COUNT(*) FROM author_flat");
 	}
-	chomp($authorCount);
+	if ($authorCount) {
+		chomp($authorCount);
+	} else {
+		#todo warning
+		$authorCount = 0;
+	}
 
 	return $authorCount;
 
@@ -1010,7 +1047,12 @@ sub DBGetItemCount { # Returns item count.
 	} else {
 		$itemCount = SqliteGetValue("SELECT COUNT(*) FROM item_flat");
 	}
-	chomp($itemCount);
+	if ($itemCount) {
+		chomp($itemCount);
+	} else {
+		#todo warning
+		$itemCount = 0;
+	}
 
 	return $itemCount;
 } # DBGetItemCount()
