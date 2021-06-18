@@ -264,7 +264,8 @@ sub SqliteMakeTables { # creates sqlite schema
 		AS
 		SELECT
 			file_hash,
-			value AS item_sequence
+			value AS item_sequence,
+			epoch AS item_timestamp
 		FROM item_attribute_latest
 		WHERE attribute = 'chain_sequence'
 	"); #todo rename columns
