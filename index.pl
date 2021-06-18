@@ -118,6 +118,12 @@ sub GetTokenDefs {
 			'mask_params'    => 'mgi',
 			'message' => '[Cookie]'
 		},
+		{ # host user used to post message
+			'token'   => 'host',
+			'mask'    => '^(host)(\W+)([0-9a-z\.:]+)',
+			'mask_params'    => 'mgi',
+			'message' => '[Host]'
+		},
 		{ # allows cookied user to set own name
 			'token'   => 'my_name_is',
 			'mask'    => '^(my name is)(\W+)([A-Za-z0-9\'_\., ]+)\r?$',
@@ -633,6 +639,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						$tokenFound{'token'} eq 'begin' ||
 						$tokenFound{'token'} eq 'duration' ||
 						$tokenFound{'token'} eq 'track' ||
+						$tokenFound{'token'} eq 'host' ||
 						$tokenFound{'token'} eq 'url'
 					) {
 						# these tokens are applied to:
