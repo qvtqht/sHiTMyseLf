@@ -18,7 +18,11 @@ require './utils.pl';
 system('./access_log_read.pl --all');
 
 # index any files which haven't been indexed already
-system('./index.pl --all');
+#system('./index.pl --all');
+
+system('time find html/image -cmin -100 | grep \\\\.txt$ | head -n 20 | xargs ./index.pl');
+system('time find html/txt -cmin -100 | grep \\\\.txt$ | head -n 20 | xargs ./index.pl');
+
 
 # rebuild static html files if necessary
 if (
@@ -26,14 +30,15 @@ if (
 	GetConfig('admin/pages/rewrite') eq 'all' &&
 	GetConfig('admin/php/enable')
 ) {
-	system('./pages.pl --summary');
+	system('./pages.pl --system');
 } else {
 	# regenerate all pages (may take a while)
-	system('./pages.pl --all');
+	#system('./pages.pl --all');
+	WriteLog('update.pl: warning: not calling --all because it takes too long');
 }
 
 # build /compost and /index0.html pages
-system('./pages.pl --index');
+#system('./pages.pl --index');
 
 # update status of page queue
 system('./query/page_touch.sh');
