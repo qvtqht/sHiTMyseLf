@@ -250,7 +250,7 @@ sub GetTokenDefs {
 			# also, anything under config/admin/ is still restricted to admin user only
 			# admin user must have a pubkey
 			'token' => 'config',
-			'mask'  => '^(config)(\W)(.+)$',
+			'mask'  => '^(config)(\W)(.+)$', #bughere #todo
 			'mask_params' => 'mgi',
 			'message' => '[Config]',
 			'apply_to_parent' => 1
@@ -346,12 +346,18 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 # Reads a given $file, parses it, and puts it into the index database
 # If ($file eq 'flush'), flushes any queued queries
 # Also sets appropriate task entries
+	WriteLog('IndexTextFile() BEGINS');
+
 	my $SCRIPTDIR = GetDir('script');
 	my $HTMLDIR = GetDir('html');
 	my $TXTDIR = GetDir('txt');
 
+	WriteLog('IndexTextFile: $SCRIPTDIR = ' . $SCRIPTDIR . '; $HTMLDIR = ' . $HTMLDIR . '; $TXTDIR = ' . $TXTDIR);
+
 	my $file = shift;
 	chomp($file);
+
+	WriteLog('IndexTextFile: $file = ' . $file);
 
 	if ($file eq 'flush') {
 		WriteLog("IndexTextFile(flush)");
@@ -368,15 +374,13 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		return 1;
 	}
 
-	WriteLog('IndexTextFile: $file = ' . $file);
-
 	if (GetConfig('admin/organize_files')) {
 		# renames files to their hashes
 		$file = OrganizeFile($file);
 	}
 
 	my $fileHash = ''; # hash of file contents
-	$fileHash = GetFileHash($file);
+	$fileHash = GetFileHash($file); #IndexTextFile()
 
 	my $titleCandidate = '';
 
@@ -546,7 +550,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 						$foundTokenParam = trim($foundTokenParam);
 
-						my $reconLine = $foundTokenName . $foundTokenSpacer . $foundTokenParam;
+						my $reconLine = $foundTokenName . $foundTokenSpacer . $foundTokenParam; #todo #bughere
 						WriteLog('IndexTextFile: token/' . $tokenName . ' : ' . $reconLine);
 
 						my %newTokenFound;
@@ -854,6 +858,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 													WriteLog('IndexTextFile: #remove: passed $detokenedMessage sanity check for ' . $file);
 
 													DBAddTask('filesys', 'unlink', $file, time());
+
 													#unlink($file);
 
 													if (-e $file) {
@@ -1010,7 +1015,9 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 			$detokenedMessage = '';
 		}
 
-		WriteLog('IndexTextFile: $fileHash = ' . $fileHash . '; length($detokenedMessage) = ' . length($detokenedMessage) . '; $detokenedMessage = "' . $detokenedMessage . '"');
+		WriteLog('IndexTextFile: $fileHash = ' . $fileHash . '; length($detokenedMessage) = ' . length($detokenedMessage));
+		#WriteLog('IndexTextFile: $fileHash = ' . $fileHash . '; $detokenedMessage = "' . $detokenedMessage . '"');
+
 		
 #		if ($fileHash eq 'ef5f020ffae013876493cf25e323a2c67a3f09db') {
 #			die($detokenedMessage);
@@ -1312,6 +1319,9 @@ sub IndexImageFile { # $file ; indexes one image file into database
 
 				my $convertCommandResult = `$convertCommand`;
 				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
+
+				#sub DBAddTask { # $taskType, $taskName, $taskParam, $touchTime # make new task
+
 			}
 #			if (!-e "$HTMLDIR/thumb/squared_800_$fileHash.gif") {
 #				my $convertCommand = "convert \"$fileShellEscaped\" -crop 800x800 -strip $HTMLDIR/thumb/squared_800_$fileHash.gif";
@@ -1529,6 +1539,16 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 		WriteLog('IndexFile: warning: -d $file was true (file is a directory)');
 		return '';
 	}
+
+#this causes bug
+#	if ($file =~ m/([0-9a-f]{40})/) {
+#		#attempted optimization of next block
+#		my $fileHash = $1;
+#		if (-e "./cache/b/indexed/$fileHash" || GetCache("indexed/$fileHash")) {
+#			WriteLog('IndexFile: aleady indexed, returning. $fileHash = ' . $fileHash);
+#			return $fileHash;
+#		}
+#	}
 
 	my $fileHash = GetFileHash($file);
 	if (GetCache("indexed/$fileHash")) {
