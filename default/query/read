@@ -8,4 +8,4 @@ WHERE
 	item_score > 0 AND
 	tags_list LIKE '%hastitle%'
 ORDER BY add_timestamp DESC
-LIMIT 100
+LIMIT 25
