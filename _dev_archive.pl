@@ -1,16 +1,75 @@
 #!/usr/bin/perl -T
 #
-# archive_dev.pl
-# archive current site state into .tar.gz file
-# remove site state to defaults (except config/)
+# _dev_archive.pl
+# 
+# archive current data/user state into .tar.gz file
+#   html/txt/
+#   html/image/
+#   log/access.log
+#   html/chain.log
+#   config/
 # rebuild basic frontend
 #
 #
+
+print "========================================\n";
+print "About to archive content and reset site!\n";
+print "========================================\n";
+print "You have 3 seconds to press Ctrl + C ...\n";
+print "========================================\n";
+print "3...\n";
+sleep 2;
+print "2...\n";
+sleep 2;
+print "1...\n";
+sleep 2;
 
 use strict;
 use 5.010;
 use warnings;
 use utf8;
+
+sub GetYes { # $message, $defaultYes ; print $message, and get Y response from the user
+	# $message is printed to output
+	# $defaultYes true:  allows pressing enter
+	# $defaultYes false: user must type Y or y
+
+	my $message = shift;
+	my $defaultYes = shift;
+
+	if ($message) {
+		chomp $message;
+	}
+	$defaultYes = ($defaultYes ? 1 : 0);
+
+	print "=" x length($message);
+	print "\n";
+	print $message;
+	print "\n";
+	print "=" x length($message);
+	print "\n";
+	if ($defaultYes) {
+		print ' [Y] ';
+	} else {
+		print " Enter 'Y' to proceed: ";
+	}
+
+	my $input = <STDIN>;
+	chomp $input;
+
+	if ($input eq 'Y' || $input eq 'y' || ($defaultYes && $input eq '')) {
+		print "====================================================\n";
+		print "====== Thank you for your vote of confidence! ======\n";
+		print "====================================================\n";
+
+		return 1;
+	}
+	return 0;
+}
+
+if (!GetYes('Archive content and reset website?')) {
+	exit;
+}
 
 $ENV{PATH}="/bin:/usr/bin";
 
@@ -126,7 +185,14 @@ my $IMAGEDIR = $HTMLDIR . '/image';
 	system('echo "Running ./_dev_clean_ALL.sh in 3..."; sleep 2');
 	system('echo "2..."; sleep 2');
 	system('echo "1..."; sleep 2');
+
 	system('./_dev_clean_ALL.sh');
+
+	print("=============================\n");
+	print("Archive and Rebuild finished!\n");
+	print("=============================\n");
+
+
 }
 
 1;

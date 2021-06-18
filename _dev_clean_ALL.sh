@@ -1,5 +1,17 @@
 #!/bin/sh
 
+echo ====================================
+echo Script about to reset configuration!
+echo ====================================
+echo You have 3 seconds to press Ctrl + C
+echo ====================================
+echo 3
+sleep 2
+echo 2
+sleep 2
+echo 1
+sleep 2
+
 # MYDATE=`date +%s`
 # mkdir trash
 # mkdir trash.$MYDATE
