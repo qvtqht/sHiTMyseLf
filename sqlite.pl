@@ -369,34 +369,46 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# config
 	SqliteQuery2("CREATE TABLE config(key, value, reset_flag, file_hash);");
-	SqliteQuery2("CREATE UNIQUE INDEX config_unique ON config(key, value, reset_flag);");
-	SqliteQuery2("
-   		CREATE VIEW config_latest
-   		AS
-   			SELECT
-   				key,
-   				value,
-   				reset_flag,
-   				file_hash FROM config
-			GROUP BY key
-    	;");
-
-	SqliteQuery2("
-		CREATE VIEW config_bestest
-		AS
-			SELECT
-				config.key,
-				config.value,
-				MAX(config.timestamp) config_timestamp,
-				config.reset_flag,
-				config.file_hash,
-				item_score.item_score
-			FROM config
-				 LEFT JOIN item_score ON (config.file_hash = item_score.file_hash)
-			GROUP BY config.key
-			ORDER BY item_score.item_score DESC, timestamp DESC
-	;");
-
+#	SqliteQuery2("CREATE UNIQUE INDEX config_unique ON config(key, value, reset_flag);");
+#	SqliteQuery2("
+#   		CREATE VIEW config_latest
+#   		AS
+#   			SELECT
+#   				key,
+#   				value,
+#   				reset_flag,
+#   				file_hash FROM config
+#			GROUP BY key
+#    	;");
+#
+#	SqliteQuery2("
+#		CREATE VIEW config_bestest
+#		AS
+#			SELECT
+#				config.key,
+#				config.value,
+#				MAX(config.timestamp) config_timestamp,
+#				config.reset_flag,
+#				config.file_hash,
+#				item_score.item_score
+#			FROM config
+#				 LEFT JOIN item_score ON (config.file_hash = item_score.file_hash)
+#			GROUP BY config.key
+#			ORDER BY item_score.item_score DESC, timestamp DESC
+#	;");
+#
+#	SqliteQuery2("
+#		CREATE VIEW config_latest_timestamp
+#		AS
+#			SELECT
+#				key,
+#				max(add_timestamp) max_timestamp
+#			FROM
+#				config
+#				LEFT JOIN item_flat ON (config.file_hash = item_flat.file_hash)
+#			GROUP BY
+#				key
+#	");
 
 	### VIEWS BELOW ############################################
 	############################################################
@@ -949,6 +961,10 @@ sub DBGetAuthorFriends { # Returns list of authors which $authorKey has tagged a
 
 sub DBGetLatestConfig { # Returns everything from config_latest view
 # config_latest contains the latest set value for each key stored
+	WriteLog('DBGetLatestConfig() BEGIN');
+	WriteLog('DBGetLatestConfig: warning: disabled');
+	return '';
+
 	my $query = "SELECT * FROM config_latest";
 	#todo write out the fields
 
