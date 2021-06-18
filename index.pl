@@ -1631,6 +1631,31 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 	return $indexSuccess;
 } # IndexFile()
 
+sub SweepDeleted {
+	my %queryParams;
+	my @files = DBGetItemList(\%queryParams);
+
+	my $itemsDeletedCounter = 0;
+
+	foreach my $file(@files) {
+		my $fileName = $file->{'file_path'};
+		my $fileHash = $file->{'file_hash'};
+
+		if (IsFileDeleted($fileName, $fileHash)) {
+			WriteMesage('Found deleted item: $fileHash = ' . $fileHash);
+			DBDeleteItemReferences($fileHash);
+			$itemsDeletedCounter++;
+		}
+	}
+
+	WriteMesage('Total deleted items found: $itemsDeletedCounter = ' . $itemsDeletedCounter);
+
+	#if ($itemsDeletedCounter) {
+		DeindexMissingFiles();
+	#}
+
+}
+
 while (my $arg1 = shift @argsFound) {
 	WriteLog('index.pl: $arg1 = ' . $arg1);
 	if ($arg1) {
@@ -1644,6 +1669,11 @@ while (my $arg1 = shift @argsFound) {
 			print "=========================\n";
 			print "index.pl: --all finished!\n";
 			print "=========================\n";
+		}
+		if ($arg1 eq '--sweep') {
+			# sweep deleted files
+			print "index.pl: --sweep\n";
+			SweepDeleted();
 		}
 		if ($arg1 eq '--chain') {
 			# html/chain.log
