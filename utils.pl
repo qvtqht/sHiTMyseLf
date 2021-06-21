@@ -868,7 +868,8 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 		return "";
 	}
 
-	WriteLog("str_replace($replace_this, $with_this, ($stringLength))");
+	WriteLog('str_replace($replace_this = ' . length($replace_this) . ', $with_this = ' . length($with_this) . ' , ($stringLength = ' . $stringLength . '))');
+	#WriteLog("str_replace($replace_this, $with_this, ($stringLength))");
 
 	if (!defined($replace_this) || !defined($with_this)) {
 		WriteLog('str_replace: warning: sanity check failed, missing $replace_this or $with_this');
