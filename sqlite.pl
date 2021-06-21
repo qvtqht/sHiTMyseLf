@@ -1118,45 +1118,6 @@ sub DBGetItemReplies { # Returns replies for item (actually returns all child it
 	return DBGetItemList(\%queryParams);
 }
 
-sub DBGetItemRelated { # Returns related for item
-# $itemHash = item's hash/identifier
-# Sets up parameters and calls DBGetItemList
-	my $itemHash = shift;
-	if (!IsItem($itemHash)) {
-		WriteLog('DBGetItemRelated: warning: sanity check failed, returning');
-		return '';
-	}
-	if ($itemHash ne SqliteEscape($itemHash)) {
-		WriteLog('DBGetItemRelated: warning: $itemHash contains escapable characters');
-		return '';
-	}
-	WriteLog("DBGetItemRelated($itemHash)");
-
-	my %queryParams;
-	$queryParams{'where_clause'} = "
-		WHERE file_hash IN (
-			SELECT DISTINCT file_hash
-			FROM item_attribute
-			WHERE
-				file_hash NOT IN ('$itemHash') AND
-				attribute||'='||value IN (
-					SELECT attribute||'='||value
-					FROM item_attribute
-					WHERE
-						file_hash IN('$itemHash') AND
-						attribute IN('url', 'normalized_hash')
-					)
-				)
-			;
-		)
-	";
-
-
-	$queryParams{'order_clause'} = "ORDER BY (tags_list NOT LIKE '%hastext%'), add_timestamp";
-
-	return DBGetItemList(\%queryParams);
-} # DBGetItemRelated();
-
 sub SqliteEscape { # Escapes supplied text for use in sqlite query
 # Just changes ' to ''
 	my $text = shift;
