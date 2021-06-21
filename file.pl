@@ -218,7 +218,15 @@ sub GetFileMessage {
 	} else {
 		WriteLog('GetFileMessage: return GetPathFromHash(' . $fileHash . ')');
 		my $filePath = GetPathFromHash($fileHash);
-		return GetFile($filePath);
+		#my $filePath = DBGetItemFilePath($fileHash);
+
+		if (!-e $filePath) {
+			WriteLog('GetFileMessage: warning: !-e $filePath = ' . $filePath . ')');
+
+			return '';
+		} else {
+			return GetFile($filePath);
+		}
 	}
 } # GetFileMessage()
 
