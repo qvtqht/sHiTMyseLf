@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -T
 #freebsd: #!/usr/local/bin/perl
 
 use strict;
@@ -45,37 +45,58 @@ if (!GetConfig('admin/lighttpd/enable')) {
 	}
 }
 
-if (!GetConfig('admin/dev/dont_confirm') || GetYes('kill existing lighttpd process?', 1)) {
-	`killall lighttpd`;
-}
-
 sub StartLighttpd { # run command to start local lighttpd instance
+	WriteLog('StartLighttpd() BEGIN');
 	if (!-e './log') {
 		mkdir('./log');
 	}
 
 	my $screenCommand = `which screen`;
 	if ($screenCommand) {
+		#use screen command
 		$screenCommand = 1;
 	} else {
 		$screenCommand = 0;
 	}
+	WriteLog('StartLighttpd: $screenCommand = ' . $screenCommand);
 
-#	my $pathLighttpd = `which lighttpd`;
+	my $insanityLevel = 2; # track sanity checklist
+	my $portNumber = GetConfig('admin/lighttpd/port');
+	if ($portNumber =~ m/([0-9]+)/) {
+		$portNumber = $1;
+		$insanityLevel--;
+	}
+	my $port = $portNumber;
+
 	my $pathLighttpd = '/usr/sbin/lighttpd';
+	# my $pathLighttpd = `which lighttpd`;
 	#freebsd: my $pathLighttpd = '/usr/local/sbin/lighttpd';
-	WriteLog('$pathLighttpd = ' . $pathLighttpd);
-
 	if ($pathLighttpd =~ m/^([^\s]+)$/) {
 		$pathLighttpd = $1;
+		$insanityLevel--;
+	}
+
+	WriteLog('StartLighttpd: $pathLighttpd = ' . $pathLighttpd);
+	WriteLog('StartLighttpd: $insanityLevel = ' . $insanityLevel);
+
+	if ($insanityLevel == 0) {
 		if ($screenCommand) {
-			system("screen $pathLighttpd -D -f config/lighttpd.conf");
+			if (!GetConfig('admin/dev/dont_confirm') || GetYes('kill existing lighttpd process?', 1)) {
+				#kill existing instance using killall lighttpd
+				`killall lighttpd`;
+
+				#kill existing instance using screen's session name
+				#todo this doesn't work yet for some reason
+				WriteMessage("StartLighttpd: screen -X -S hike$port kill");
+				`screen -X -S hike$port kill`;
+			}
+			system("screen -S hike$port $pathLighttpd -D -f config/lighttpd.conf");
 		} else {
 			system("$pathLighttpd -D -f config/lighttpd.conf");
 		}
 		#todo background it if opening browser
 	} else {
-		WriteMessage('lighttpd path missing or failed sanity check');
+		WriteMessage('StartLighttpd: lighttpd path missing or failed sanity check. $insanityLevel = ' . $insanityLevel);
 	}
 } # StartLighttpd()
 
@@ -175,14 +196,15 @@ if (GetConfig('admin/lighttpd/enable')) {
 #		sleep 2;
 #		WriteMessage('Opening browser in 1...');
 #		sleep 2;
-
-		my $openString = 'screen -S test -d -m xdg-open "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
-
-		WriteMessage('Opening browser with `' . $openString . '`');
-
-		my $openResult = `$openString`;
-
-		WriteMessage('$openResult = ' . $openResult);
+		my $portNumber = GetConfig('admin/lighttpd/port');
+		if ($portNumber =~ m/^([0-9]{0-6})$/) {
+			$portNumber = $1;
+			my $openString = 'screen -S test -d -m xdg-open "http://localhost:' . GetConfig('admin/lighttpd/port') . '/help.html"';
+			WriteMessage('Opening browser with `' . $openString . '`');
+			
+			my $openResult = `$openString`;
+			WriteMessage('$openResult = ' . $openResult);
+		}
 	}
 
 	WriteMessage("===================\n");
