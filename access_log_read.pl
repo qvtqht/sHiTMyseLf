@@ -152,6 +152,9 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 #		0 = default site log
 #		1 = vhost log
 # )
+	my $newLineCountLimit = 10000;
+	my $totalLineCountLimit = 20000;
+
 	WriteLog("ProcessAccessLog() begin");
 
 	if (GetConfig('admin/expo_site_mode')) {
@@ -204,9 +207,15 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 	# The following section parses the access log
 	# Thank you, StackOverflow
 	my $lineCounter = 0;
+	my $newLineCounter = 0;
 	foreach my $line (<LOGFILE>) {
 		WriteLog('ProcessAccessLog: $lineCounter = ' . $lineCounter . '; $line = ' . $line);
 		$lineCounter++;
+
+		if ($lineCounter >= $totalLineCountLimit) {
+			WriteLog('ProcessAccessLog: $totalLineCountLimit limit reached');
+			last;
+		}
 
 		#Check to see if we've already processed this line
 		# by hashing it and looking for its hash in %prevLines
@@ -217,9 +226,20 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 			next;
 		} else {
 			# Otherwise add the hash to processed.log
-			#AppendFile("./log/processed.log", $lineHash);
+
+			AppendFile("./log/processed.log", $lineHash); #todo why is this commented out?
+			# this makes the file keep trying the same thing if it is interrupted
+
 			$prevLines{$lineHash} = 1;
+			$newLineCounter++;
+
 		}
+
+		if ($newLineCounter >= $newLineCountLimit) {
+			WriteLog('ProcessAccessLog: $newLineCountLimit limit reached');
+			last;
+		}
+
 
 		# These are the values we will pull out of access.log
 		my $site;
@@ -435,9 +455,13 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 
 						elsif ($paramName eq 'recfing') {
 							WriteLog('ProcessAccessLog: found recfing');
+							$recordFingerprint = 1;
+
 							if ($paramValue eq 'on') {
-								WriteLog('ProcessAccessLog: $recordFingerprint = 1;');
-								$recordFingerprint = 1;
+								WriteLog('ProcessAccessLog: recfing: $recordFingerprint = 1;');
+								print('ProcessAccessLog: $recordFingerprint = 1;');
+							} else {
+								WriteLog('ProcessAccessLog: warning: recfing was unexpected value');
 							}
 						}
 
@@ -516,7 +540,8 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 										# leave it alone, and remove file we just created instead
 										#
 										if (-s $hashFilename > -s $pathedFilename) {
-											unlink($pathedFilename);
+											WriteLog('ProcessAccessLog: unlink($pathedFilename); $pathedFilename = ' . $pathedFilename);
+											#unlink($pathedFilename);
 											$pathedFilename = $hashFilename;
 										} else {
 											rename($pathedFilename, $hashFilename);
@@ -609,10 +634,14 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 								$addedMessage .= "AddedTime: $addedTime\n";
 							}
 
-							if (GetConfig('admin/logging/record_clients') && $recordFingerprint) {
-								WriteLog('ProcessAccessLog: admin/logging/record_clients && $recordFingerprint');
-								my $clientFingerprint = uc(substr(md5_hex($clientHostname . $userAgent), 0, 16));
-								$addedMessage .= "Client: $clientFingerprint\n";
+							if ($recordFingerprint) {
+								if (GetConfig('admin/logging/record_clients')) {
+									WriteLog('ProcessAccessLog: admin/logging/record_clients && $recordFingerprint');
+									my $clientFingerprint = uc(substr(md5_hex($clientHostname . $userAgent), 0, 16));
+									$addedMessage .= "Cookie: $clientFingerprint\n";
+								} else {
+									WriteLog('ProcessAccessLog: warning: $recordFingerprint was requested, but admin/logging/record_clients is off');
+								}
 							}
 
 							if (GetConfig('admin/logging/record_sha512')) {
@@ -621,9 +650,11 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 							}
 
 							if ($addedMessage) {
-								$addedMessage = '>>' . $fileHash . "\n\n" . $addedMessage;
+								$addedMessage = '#addendum' . "\n-- \n" . '>>' . $fileHash . "\n" . $addedMessage;
 
 								PutFile($addedFilename, $addedMessage);
+								IndexFile($addedFilename);
+
 
 								WriteLog('ProcessAccessLog: $addedMessage = ' . $addedMessage);
 #
