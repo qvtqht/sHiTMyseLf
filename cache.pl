@@ -30,7 +30,7 @@ sub GetCache { # get cache by cache key
 	if ($cacheName =~ m/^([\/[a-z0-9A-Z_.\/]+)$/i) {
 		# sanity check passed
 		$cacheName = $1;
-		WriteLog('GetCache: sanity check passed');
+		WriteLog('GetCache: sanity check passed, $cacheName = ' . $cacheName);
 	} else {
 		WriteLog('GetCache: warning: sanity check failed on $cacheName = "' . $cacheName . '"');
 		return '';
