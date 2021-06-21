@@ -152,10 +152,10 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 			else {
 				# new file does not exist, safe to rename
 				#
-				if ($file && $file =~ m/^([0-9a-zA-Z.\-_\/])$/) {
+				if ($file && $file =~ m/^([0-9a-zA-Z.\-_\/]+)$/) {
 					$file = $1;
 
-					if ($fileHashPath && $fileHashPath =~ m/^([0-9a-zA-Z.\-_\/])$/) {
+					if ($fileHashPath && $fileHashPath =~ m/^([0-9a-zA-Z.\-_\/]+)$/) {
 						$fileHashPath = $1;
 
 						rename ($file, $fileHashPath);
