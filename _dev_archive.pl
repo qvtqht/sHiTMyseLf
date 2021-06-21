@@ -18,11 +18,11 @@ print "========================================\n";
 print "You have 3 seconds to press Ctrl + C ...\n";
 print "========================================\n";
 print "3...\n";
-sleep 2;
+sleep 1;
 print "2...\n";
 sleep 2;
 print "1...\n";
-sleep 2;
+sleep 3;
 
 use strict;
 use 5.010;
@@ -108,7 +108,7 @@ if (-d $ARCHIVEDIR) {
 	mkdir("$ARCHIVE_DATE_DIR");
 }
 
-my $CACHEDIR = $SCRIPTDIR . '/cache';
+my $CACHEDIR = $SCRIPTDIR . '/cache/b';
 my $CONFIGDIR = $SCRIPTDIR . '/config';
 my $LOGDIR = $SCRIPTDIR . '/log';
 my $HTMLDIR = $SCRIPTDIR . '/html';
@@ -138,6 +138,10 @@ my $IMAGEDIR = $HTMLDIR . '/image';
 	print("copy($HTMLDIR/chain.log, $ARCHIVE_DATE_DIR/html/chain.log)\n");
 	copy("$HTMLDIR/chain.log", "$ARCHIVE_DATE_DIR/html/chain.log");
 	unlink("$HTMLDIR/chain.log");
+
+	print("copy($CACHEDIR/index.sqlite3, $ARCHIVE_DATE_DIR/index.sqlite3)\n");
+	copy("$CACHEDIR/index.sqlite3", "$ARCHIVE_DATE_DIR/index.sqlite3");
+	#unlink("$HTMLDIR/chain.log");
 
 	if (-e "$LOGDIR/access.log" && !-l "$LOGDIR/access.log") {
 		print("copy($LOGDIR/access.log, $ARCHIVE_DATE_DIR/html/access.log)\n");
@@ -181,10 +185,10 @@ my $IMAGEDIR = $HTMLDIR . '/image';
 	print("Archive finished!\n");
 	print("=================\n");
 
-	system('echo "\n"');
-	system('echo "Running ./_dev_clean_ALL.sh in 3..."; sleep 2');
-	system('echo "2..."; sleep 2');
-	system('echo "1..."; sleep 2');
+	#system('echo "\n"');
+	#system('echo "Running ./_dev_clean_ALL.sh in 3..."; sleep 2');
+	#system('echo "2..."; sleep 2');
+	#system('echo "1..."; sleep 2');
 
 	system('./_dev_clean_ALL.sh');
 

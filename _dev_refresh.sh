@@ -2,17 +2,19 @@
 
 # notification
 
-echo ====================================
-echo Script about to reset configuration!
-echo ====================================
-echo You have 3 seconds to press Ctrl + C
-echo ====================================
+echo ==================================
+echo Attention: Resetting all templates
+echo ==================================
+echo All queues will also be refreshed.
+echo ==================================
+echo You have 3 seconds to press Ctrl+C
+echo ==================================
 echo 3
-sleep 2
+#sleep 2
 echo 2
-sleep 2
+#sleep 2
 echo 1
-sleep 2
+sleep 1 
 
 
 # default/template
@@ -41,6 +43,19 @@ then
 	./pages.pl --php
 
 	mv -v php_templates_checksum_new php_templates_checksum
+fi
+
+# default/query
+find default/query -type f | sort | xargs sha1sum | sha1sum | cut -d ' ' -f 1 > config_query_checksum_new
+
+if ! diff ./config_query_checksum_new ./config_query_checksum
+then
+	echo config_query_checksum
+
+	./_dev_clean_query.sh
+	./_dev_clean_html.sh
+
+	mv -v config_query_checksum_new config_query_checksum
 fi
 
 

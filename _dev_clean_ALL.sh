@@ -6,11 +6,11 @@ echo ====================================
 echo You have 3 seconds to press Ctrl + C
 echo ====================================
 echo 3
-sleep 2
+sleep 1
 echo 2
 sleep 2
 echo 1
-sleep 2
+sleep 3
 
 # MYDATE=`date +%s`
 # mkdir trash
@@ -74,13 +74,13 @@ echo "================="
 echo "Cleanup complete!"
 echo "================="
 echo "Rebuilding with ./build.pl in 3..."
-sleep 2
+sleep 1
 
 echo "2... "
 sleep 2
 
 echo "1... "
-sleep 2
+sleep 3
 
 echo "Running ./build.pl"
 time perl -T ./build.pl
@@ -91,14 +91,14 @@ echo "==============="
 
 
 
-echo "Building system pages with ./pages.pl --system in 3..."
-sleep 2
+echo "Writing system pages with ./pages.pl --system in 3..."
+sleep 1
 
 echo "2... "
 sleep 2
 
 echo "1... "
-sleep 2
+sleep 3
 
 echo "Running ./pages.pl --system"
 time perl -T ./pages.pl --system
@@ -110,13 +110,13 @@ echo "=================="
 
 
 echo "Verifying Chain with ./index.pl --chain in 3..."
-sleep 2
+sleep 1
 
 echo "2... "
 sleep 2
 
 echo "1... "
-sleep 2
+sleep 3
 
 echo "Running ./index.pl --chain"
 time perl -T ./index.pl --chain
@@ -128,13 +128,13 @@ echo "============================"
 
 
 echo "Reindexing all stored files with ./index.pl --all in 3..."
-sleep 2
+sleep 1
 
 echo "2... "
 sleep 2
 
 echo "1... "
-sleep 2
+sleep 3
 
 echo "Running ./index.pl --all"
 time perl -T ./index.pl --all
@@ -143,5 +143,18 @@ echo "======================"
 echo "Reindex of files done!"
 echo "======================"
 
+
+
+echo "Relaunching local web server with ./server_local_lighttpd.pl in 3..."
+sleep 1
+
+echo "2... "
+sleep 2
+
+echo "1... "
+sleep 3
+
+echo "Running ./server_local_lighttpd.pl"
+time perl -T ./server_local_lighttpd.pl
 
 
