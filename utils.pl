@@ -129,6 +129,18 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 	my $timestamp = '';
 	if ($debugOn || -e 'config/admin/debug') {
 		$timestamp = GetTime();
+		if ($timestamp =~ m/^[0-9]+\.[0-9]{1}$/) {
+			$timestamp .= '0';
+		}
+		if ($timestamp =~ m/^[0-9]+\.[0-9]{2}$/) {
+			$timestamp .= '0';
+		}
+		if ($timestamp =~ m/^[0-9]+\.[0-9]{3}$/) {
+			$timestamp .= '0';
+		}
+		if ($timestamp =~ m/^[0-9]+\.[0-9]{4}$/) {
+			$timestamp .= '0';
+		}
 
 		if (0) { # debug use milliseconds #featureflag
 			my $t = time;
@@ -151,27 +163,28 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 		if (index($firstWord, ':') != -1) {
 			$firstWord = substr($firstWord, 0, index($firstWord, ':'));
 		}
+		if ($firstWord ne 'WriteMessage') {
+			#print($firstWord."\n");
+			my $firstWordHash = md5_hex($firstWord);
+			my $firstWordHashFirstChar = substr($firstWordHash, 0, 1);
+			#$firstWordHashFirstChar =~ tr/0123456789abcdef/><+-.,[]><+-.,[]/; #brainfuck
+			$firstWordHashFirstChar =~ tr/0123456789abcdef/.;]\-,<">'+[:`_|+/; #brainfuckXL
+			#todo use 2 characters of the hash, convert to 1 out of 64 characters
 
-		#print($firstWord."\n");
-		my $firstWordHash = md5_hex($firstWord);
-		my $firstWordHashFirstChar = substr($firstWordHash, 0, 1);
-		#$firstWordHashFirstChar =~ tr/0123456789abcdef/><+-.,[]><+-.,[]/; #brainfuck
-		$firstWordHashFirstChar =~ tr/0123456789abcdef/.;]\-,<">'+[:`_|+/; #brainfuckXL
-		#todo use 2 characters of the hash, convert to 1 out of 64 characters
+			WriteMessage($firstWordHashFirstChar); #todo make config/
 
-		WriteMessage($firstWordHashFirstChar); #todo make config/
+			# FOR DEBUGGING PURPOSES
+			#		print('$firstWord = ' . $firstWord . "\n");
+			#		print('$firstWordHash = ' . $firstWordHash . "\n");
+			#		print('$firstWordHashFirstChar = ' . $firstWordHashFirstChar . "\n");
+			#		print("\n");
 
-		# FOR DEBUGGING PURPOSES
-		#		print('$firstWord = ' . $firstWord . "\n");
-		#		print('$firstWordHash = ' . $firstWordHash . "\n");
-		#		print('$firstWordHashFirstChar = ' . $firstWordHashFirstChar . "\n");
-		#		print("\n");
+			if (!$firstWordHashFirstChar && !($firstWordHashFirstChar == 0)) {
+				$firstWordHashFirstChar = '?';
+			}
 
-		if (!$firstWordHashFirstChar && !($firstWordHashFirstChar == 0)) {
-			$firstWordHashFirstChar = '?';
+			$charPrefix = $firstWordHashFirstChar;
 		}
-
-		$charPrefix = $firstWordHashFirstChar;
 	}
 	
 	if ($debugOn) {
@@ -187,7 +200,7 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 			if (index($text, "\n") != -1) {
 				$text = substr($text, 0, index($text, "\n"));
 			}
-			if (length($text) > 80) {
+			if (length($text) >= 60) {
 				#$text = substr($text, 0, 80);
 			}
 			AppendFile("log/log.log", $timestamp . " " . $charPrefix . " " . $text);
@@ -198,8 +211,24 @@ sub WriteLog { # $text; Writes timestamped message to console (stdout) AND log/l
 sub WriteMessage { # Writes timestamped message to console (stdout)
 	#todo fix WriteLog('WriteMessage: caller = ' . join(',', caller));
 
+	my $timestamp = GetTime();
 	my $text = shift;
-	
+
+	if ($timestamp =~ m/^[0-9]+\.[0-9]{1}$/) {
+		$timestamp .= '0';
+	}
+	if ($timestamp =~ m/^[0-9]+\.[0-9]{2}$/) {
+		$timestamp .= '0';
+	}
+	if ($timestamp =~ m/^[0-9]+\.[0-9]{3}$/) {
+		$timestamp .= '0';
+	}
+	if ($timestamp =~ m/^[0-9]+\.[0-9]{4}$/) {
+		$timestamp .= '0';
+	}
+
+
+
 	if (!$text) {
 		print('WriteMessage: warning: $text is false; caller = ' . join(',', caller) . "\n");
 		return '';
@@ -207,6 +236,8 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 
 	chomp $text;
 	state $previousText = '';
+
+	state $snowPrinted;
 
 	if ($text eq '.' || length($text) == 1) {
 		$previousText = $text;
@@ -230,8 +261,23 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 		# }
 		# return $randomString;
 
+		if (!$snowPrinted) {
+			$snowPrinted = $text;
+		} else {
+			$snowPrinted .= $text;
+		}
+		if (length($snowPrinted) >= 60) {
+			print "\n$timestamp ";
+			WriteLog('WriteMessage: ' . $snowPrinted);
+			$snowPrinted = '';
+		}
+
 		return;
 	}
+	if ($snowPrinted) {
+		#WriteLog($snowPrinted);
+	}
+	$snowPrinted = '';
 
 	# just an idea
 	# doesn't seem to work well because the console freezes up if there's no \n coming
@@ -241,13 +287,19 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 	# 	return;
 	# }
 
-	WriteLog($text);
-	my $timestamp = GetTime();
+	#WriteLog('WriteMessage: ' . $timestamp . ' ' . $text);
 
-	print "\n$timestamp $text";
+	WriteLog('WriteMessage: ' . $timestamp . ' ' . $text);
+
+	my $output = "$text";
+	if (length($output) > 60) {
+		$output = substr($output, 0, 60) . '...';
+	}
+
+	print "\n$timestamp $output\n$timestamp ";
 
 	$previousText = $text;
-}
+} # WriteMessage()
 
 sub MakePath { # $newPath ; ensures all subdirs for path exist
 	my $newPath = shift;
