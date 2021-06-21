@@ -86,7 +86,7 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 	}
 
 	if (GetConfig('admin/dev/block_organize')) {
-		WriteLog('OrganizeFile: dev/block_organize is true, returning');
+		WriteLog('OrganizeFile: warning: dev/block_organize is true, returning');
 		return $file;
 	}
 
@@ -106,6 +106,7 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 	if ($fileHashPath) {
 		use File::Spec;
 		$fileHashPath = File::Spec->rel2abs( $fileHashPath ) ;
+		#get absolute path
 
 		if ($file eq $fileHashPath) {
 			# Does it match? No action needed
@@ -136,9 +137,15 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 					return '';
 				}
 
-				if (-s $fileHashPath > -s $file) {
-					unlink ($file);
+				if (-s $fileHashPath >= -s $file) {
+					# file at new filename is larger or the same, keep it and remove this one
+					WriteLog('OrganizeFile: $file >= $fileHashPath; unlink($file); $file = ' . $file);
+					#unlink($file);
+
+					$file = $fileHashPath;
 				} else {
+					# file at new filename is smaller, overwrite it
+					WriteLog('OrganizeFile: warning: #rename ($file, $fileHashPath); $file = ' . $file . '; $fileHashPath = ' . $fileHashPath);
 					rename ($file, $fileHashPath);
 				}
 			} # -e $fileHashPath
@@ -160,8 +167,8 @@ sub OrganizeFile { # $file ; renames file based on hash of its contents
 				}
 			}
 
-			# if new file exists
 			if (-e $fileHashPath) {
+				# if new file exists
 				$file = $fileHashPath; #don't see why not... is it a problem for the calling function?
 			} else {
 				WriteLog("OrganizeFile: warning: Very strange... \$fileHashPath doesn't exist? $fileHashPath");
