@@ -884,6 +884,13 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 
 	WriteLog("str_replace: sanity check passed, proceeding");
 
+	WriteLog('str_ireplace: sanity check passed, proceeding');
+	$string =~ s/\Q$replace_this/$with_this/g;
+	WriteLog('str_ireplace: length$string) = ' . length($string));
+	# WriteLog('str_ireplace: $string = ' . $string);
+	return $string;
+
+
 	my $length = length($string);
 	my $target = length($replace_this);
 
