@@ -160,7 +160,8 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 	my $fieldValue = shift;
 
 	if (!defined($fieldName) || defined(!$fieldValue)) {
-		WriteLog('RenderField: warning: missing $fieldName or $fieldValue');
+		WriteLog('RenderField: warning: missing $fieldName or $fieldValue; caller = ' . join(',', caller));
+		#return '';
 	}
 
 	#todo more sanity
@@ -232,8 +233,10 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 #	}
 
 	if (!$fieldValue || trim($fieldValue) eq '') {
-		WriteLog('RenderField: warning: $fieldValue is missing; $fieldName = ' . $fieldName . '; caller: ' . join(', ', caller));
-		$fieldValue = '-';
+		if ($fieldValue ne '0') {
+			WriteLog('RenderField: warning: $fieldValue is missing; $fieldName = ' . $fieldName . '; caller: ' . join(', ', caller));
+			$fieldValue = '-';
+		}
 	}
 	
 	return $fieldValue;
