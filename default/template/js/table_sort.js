@@ -1,0 +1,199 @@
+/* table_sort.js */
+
+function SortTable (t, sortOrder) {
+// TableSort (
+	//alert('DEBUG: SortTable() begins');
+	//caution: bubble sort inside
+
+	if (! document.body.textContent) {
+		//alert('DEBUG: SortTable: warning: textContent feature check FAILED');
+		return '';
+	}
+
+	var table, rows, switching, i, x, y, shouldSwitch, sortColumn, sortMethod;
+
+	sortColumn = 0;
+	sortMethod = 0;
+
+
+	// sortMethod = 0 innerHTML
+	// sortMethod = 1 textContent
+	// sortMethod = 2 parseInt(innerHTML)
+
+	if (1 < sortOrder) {
+		return '';
+	}
+
+//	var rowColor0 = 'white';
+//	var rowColor1 = 'black';
+
+	sortOrder = sortOrder ? 1 : 0;
+
+	var anyChanges = 0;
+
+	var tOrig = t;
+
+	if (!t) {
+  		//alert('DEBUG: SortTable: warning: t missing');
+		return '';
+	}
+
+	if (t.cellIndex || t.cellIndex == 0) {
+		sortColumn = t.cellIndex;
+		if (
+			t.textContent &&
+			t.textContent.indexOf('_title') != -1 ||
+			t.textContent.indexOf('author_key') != -1
+		) {
+			sortMethod = 1; //textContent
+		}
+
+		if (
+			t.textContent &&
+			(t.textContent.indexOf('_count') != -1 ||
+			t.textContent.indexOf('_order') != -1)
+		) {
+			sortMethod = 2; // // innerHTML
+		}
+	}
+
+	while (!table && t.parentNode) {
+		t = t.parentNode;
+		if (t.tagName == 'TABLE') {
+			table = t;
+		}
+	}
+
+  	if (!table) {
+  		//alert('DEBUG: SortTable: warning: table missing');
+  		return '';
+	}
+
+	// bubble sort below by some website...
+
+	switching = true;
+
+	/* Make a loop that will continue until
+	no switching has been done: */
+	while (switching) {
+    	// Start by saying: no switching is done:
+    	switching = false;
+    	rows = table.rows;
+
+    	/* Loop through all table rows (except the
+    	first, which contains table headers): */
+    	for (i = 1; i < (rows.length - 2); i++) {
+      		// Start by saying there should be no switching:
+      		shouldSwitch = false;
+      		/* Get the two elements you want to compare,
+      		one from current row and one from the next: */
+
+			x = rows[i].getElementsByTagName("TD")[sortColumn];
+			y = rows[i + 1].getElementsByTagName("TD")[sortColumn];
+      		// Check if the two rows should switch place:
+
+      		if (
+      			x &&
+      			y &&
+      			x.innerHTML &&
+      			y.innerHTML
+			) {
+				//if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+				if (
+					(
+						sortOrder == 0
+						&&
+						sortMethod == 0
+						&&
+						x.innerHTML
+						<
+						y.innerHTML
+					)
+					||
+					(
+						sortOrder == 0
+						&&
+						sortMethod == 1
+						&&
+						x.textContent
+						<
+						y.textContent
+					)
+					||
+					(
+						sortOrder == 1
+						&&
+						sortMethod == 0
+						&&
+						y.innerHTML
+						<
+						x.innerHTML
+					)
+					||
+					(
+						sortOrder == 1
+						&&
+						sortMethod == 1
+						&&
+						y.textContent
+						<
+						x.textContent
+					)
+					||
+					(
+						sortOrder == 0
+						&&
+						sortMethod == 2
+						&&
+						parseInt(x.innerHTML)
+						<
+						parseInt(y.innerHTML)
+					)
+					||
+					(
+						sortOrder == 1
+						&&
+						sortMethod == 2
+						&&
+						parseInt(y.innerHTML)
+						<
+						parseInt(x.innerHTML)
+					)
+				) {
+
+					// If so, mark as a switch and break the loop:
+					shouldSwitch = true;
+					anyChanges++;
+					break;
+				}
+      		}
+    	}
+    	if (shouldSwitch) {
+			/* If a switch has been marked, make the switch
+			and mark that a switch has been done: */
+			rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+			switching = true;
+		}
+  	} // while (switching)
+
+  	if (!anyChanges) {
+  		sortOrder++
+  		return SortTable(tOrig, sortOrder);
+//  	} else {
+//		rows = table.rows;
+//
+//  		for (i = 1; i < rows.length; i++) {
+//  			if (i % 2) {
+//				rows[i].getElementsByTagName("TR").style.backgroundColor = rowColor0;
+//				rows[i].getElementsByTagName("TD").style.backgroundColor = rowColor0;
+//  			} else {
+//				rows[i].getElementsByTagName("TR").style.backgroundColor = rowColor1;
+//				rows[i].getElementsByTagName("TD").style.backgroundColor = rowColor1;
+//  			}
+//  		}
+  	}
+
+  	return '';
+} // SortTable()
+
+/* / table_sort.js */
