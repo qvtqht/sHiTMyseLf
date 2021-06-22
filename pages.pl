@@ -166,19 +166,57 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 
 	#todo more sanity
 
-	my $itemHashRef = shift;
-	my %itemHash;
-	if ($itemHashRef) {
-		%itemHash = %{$itemHashRef};
+	my $itemRowRef = shift;
+
+#	if (!$itemRowRef) {
+#		WriteLog('RenderField: warning: missing $itemRowRef; caller = ' . join(',', caller));
+#		return '';
+#	}
+
+	my %itemRow;
+	if ($itemRowRef) {
+		%itemRow = %{$itemRowRef};
+	}
+
+	my $longMode = 0; #attrmode
+	if ($itemRow{'attribute'} && $itemRow{'value'}) { #attrmode
+		##### this is special hack for item attributes dialog
+		##### this is special hack for item attributes dialog
+		##### this is special hack for item attributes dialog
+		##### this is special hack for item attributes dialog
+		##### this is special hack for item attributes dialog
+		if ($fieldName eq 'attribute') {
+			$fieldValue = GetString('item_attribute/' . $itemRow{'attribute'}) . ':';
+		}
+		if ($fieldName eq 'value') {
+			$fieldName = $itemRow{'attribute'};
+		}
+		$longMode = 1;
 	}
 
 	if ($fieldName eq 'last_seen') {
 		$fieldValue = GetTimestampWidget($fieldValue);
 	}
 
-	if ($fieldName eq 'author_key') {
-		$fieldValue = GetAuthorLink($fieldValue);
+	if ($longMode) {
+		if (
+			$fieldName eq 'author_key' ||
+			$fieldName eq 'cookie_id' ||
+			$fieldName eq 'gpg_id'
+		) {
+			# turn author key into linked avatar
+			if ($longMode) {
+				$fieldValue = GetAuthorLink($fieldValue) . '<tt class=advanced> ' . $fieldValue . '</tt>';
+			} else {
+				$fieldValue = GetAuthorLink($fieldValue);
+			}
+		}
+	} else {
+		if ($fieldName eq 'author_key') {
+			$fieldValue = GetAuthorLink($fieldValue);
+		}
 	}
+
 
 	if ($fieldName eq 'vote_value') {
 		my $link = "/top/" . $fieldValue . ".html";
@@ -186,20 +224,50 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 	}
 
 	if ($fieldName =~ /.+timestamp/) {
-		$fieldValue = GetTimestampWidget($fieldValue);
+		if ($longMode) {
+			$fieldValue = GetTimestampWidget($fieldValue) . '<tt class=advanced> ' . $fieldValue . '</tt>';
+		} else {
+			$fieldValue = GetTimestampWidget($fieldValue);
+		}
 	}
 
-	if ($fieldName eq 'item_url' || $fieldName eq 'url') {
+	if (
+		$fieldName eq 'git_hash_object' ||
+		$fieldName eq 'normalized_hash' ||
+		$fieldName eq 'sha1' ||
+		$fieldName eq 'md5'
+	) { #todo make it match on _hash and use _hash on the names
+		$fieldValue = '<tt>' . $fieldValue . '</tt>';
+	}
+
+	if ($fieldName eq 'item_url' || $fieldName eq 'url') { #url
 		if (length($fieldValue) < 64) {
 			$fieldValue = '<a href="' . HtmlEscape($fieldValue) . '">' . HtmlEscape($fieldValue) . '';
 		} else {
-			$fieldValue = '<a href="' . HtmlEscape($fieldValue) . '">' . HtmlEscape(substr($fieldValue, 0, 60) . '...') . '';
+			$fieldValue =
+				'<a href="' .
+					HtmlEscape($fieldValue) .
+				'">' .
+					HtmlEscape(
+						substr(
+							$fieldValue,
+							0,
+							60
+						) .
+						'...'
+					) .
+				''
+			;
 		}
 	}
 
 	if ($fieldName eq 'item_title') {
-		if (%itemHash && $itemHash{'file_hash'}) {
-			$fieldValue = '<b>' . GetItemHtmlLink($itemHash{'file_hash'}, $fieldValue) . '</b>';
+		if (%itemRow && $itemRow{'file_hash'}) {
+			if ($itemRow{'this_row'}) {
+				$fieldValue = '<b>' . $fieldValue . '</b>';
+			} else {
+				$fieldValue = '<b>' . GetItemHtmlLink($itemRow{'file_hash'}, $fieldValue) . '</b>';
+			}
 		}
 	}
 
@@ -211,24 +279,47 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		}
 	}
 
+
+	if ($fieldName eq 'chain_previous') {
+		if ($fieldValue) {
+			my $itemHash = substr($fieldValue, 0, 40); #todo unhack
+			$fieldValue = GetItemHtmlLink($itemHash, DBGetItemTitle($itemHash, 16));
+		} else {
+			$fieldValue = '';
+		}
+	}
+
+
+
+
+	if ($fieldName eq 'file_path') {
+		# link file path to file
+		my $HTMLDIR = GetDir('html'); #todo
+		#problem here is GetDir() returns full path, but here we already have relative path
+		#currently we assume html dir is 'html'
+		$fieldValue =~ s/^html\//\//;
+		$fieldValue = HtmlEscape($fieldValue);
+		$fieldValue = '<a href="' . $fieldValue . '">' . $fieldValue . '</a>';
+	}
+
 	if (substr($fieldName, 0, 7) eq 'tagset_' && !$fieldValue) {
 		if (length($fieldName) > 7) {
 			my $tagsetName = substr($fieldName, 7);
 			if (GetConfig('tagset/' . $tagsetName)) {
-				$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, $tagsetName);
+				$fieldValue .= GetItemTagButtons($itemRow{'file_hash'}, $tagsetName);
 			}
 		}
 	}
 #
 #	if ($fieldName eq 'tagset_compost') {
-#		if (%itemHash && $itemHash{'file_hash'}) {
-#			$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, 'compost');
+#		if (%itemRow && $itemRow{'file_hash'}) {
+#			$fieldValue .= GetItemTagButtons($itemRow{'file_hash'}, 'compost');
 #		}
 #	}
 #
 #	if ($fieldName eq 'tagset_author') {
-#		if (%itemHash && $itemHash{'file_hash'}) {
-#			$fieldValue .= GetItemTagButtons($itemHash{'file_hash'}, 'author');
+#		if (%itemRow && $itemRow{'file_hash'}) {
+#			$fieldValue .= GetItemTagButtons($itemRow{'file_hash'}, 'author');
 #		}
 #	}
 
