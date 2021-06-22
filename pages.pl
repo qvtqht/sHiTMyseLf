@@ -159,7 +159,9 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 	my $fieldName = shift;
 	my $fieldValue = shift;
 
-	if (!defined($fieldName) || defined(!$fieldValue)) {
+	WriteLog('RenderField: $fieldName = ' . ($fieldName ? $fieldName : 'FALSE') . '; $fieldValue = ' . ($fieldValue ? $fieldValue : 'FALSE'));
+
+	if (!defined($fieldName) || !defined(!$fieldValue)) {
 		WriteLog('RenderField: warning: missing $fieldName or $fieldValue; caller = ' . join(',', caller));
 		#return '';
 	}
@@ -217,15 +219,15 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		}
 	}
 
-
 	if ($fieldName eq 'vote_value') {
+		#todo redo
 		my $link = "/top/" . $fieldValue . ".html";
 		$fieldValue = RenderLink($link, $fieldValue);
 	}
 
 	if ($fieldName =~ /.+timestamp/) {
 		if ($longMode) {
-			$fieldValue = GetTimestampWidget($fieldValue) . '<tt class=advanced> ' . $fieldValue . '</tt>';
+			$fieldValue = GetTimestampWidget($fieldValue) . ' <tt class=advanced> ' . $fieldValue . '</tt>';
 		} else {
 			$fieldValue = GetTimestampWidget($fieldValue);
 		}
@@ -288,9 +290,6 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 			$fieldValue = '';
 		}
 	}
-
-
-
 
 	if ($fieldName eq 'file_path') {
 		# link file path to file
