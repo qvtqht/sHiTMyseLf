@@ -1,0 +1,14 @@
+<!-- dialog_controls.template -->
+<noscript>*</noscript>
+
+<fieldset>
+	<a href=#ExpandMore onclick="if (window.ShowAll) { return ShowAll(this); }" title=ExpandMore accesskey=o>M<u>o</u>re</a>
+</fieldset>
+
+<fieldset class=advanced>
+	<a href=# onclick="if (window.DraggingSaveAllDialogPositions) { DraggingSaveAllDialogPositions() }" title=Save>Save</a>;
+	<a href=# onclick="if (window.DraggingInit) { DraggingInit(1) }" title=Restore>Restore</a>;
+	<a href=# onclick="if (window.DraggingRetile) { DraggingRetile(); DraggingInit(0); }" title=Tile>Tile</a>;
+	<a href=# onclick="if (window.DraggingInit) { DraggingCascade() }" title=Cascade>Cascade</a>;
+</fieldset>
+<!-- dialog_controls.template -->
