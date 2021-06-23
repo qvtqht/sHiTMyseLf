@@ -380,6 +380,12 @@ sub GetQueryAsDialog { # $query, $title, $columns
 	my $title = shift;
 	my $columns = shift;
 
+	my $paramHashRef = shift;
+	my %flags;
+	if ($paramHashRef) {
+		%flags = %$paramHashRef; #todo
+	}
+
 	#todo sanity
 
 	if (ConfigKeyValid("query/$query")) {
@@ -391,8 +397,12 @@ sub GetQueryAsDialog { # $query, $title, $columns
 	#WriteLog('GetQueryAsDialog: $query = ' . $query . '; calling GetResultSetAsDialog()');
 	#commented because it prints a lot
 
-	return GetResultSetAsDialog(\@result, $title, $columns);
-}
+	if (scalar(@result) < 2 && $flags{'no_empty'}) {
+		return '';
+	} else {
+		return GetResultSetAsDialog(\@result, $title, $columns);
+	}
+} # GetQueryAsDialog()
 
 sub LightenColor {
 	my $color = shift;
