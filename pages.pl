@@ -159,12 +159,14 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 	my $fieldName = shift;
 	my $fieldValue = shift;
 
-	WriteLog('RenderField: $fieldName = ' . ($fieldName ? $fieldName : 'FALSE') . '; $fieldValue = ' . ($fieldValue ? $fieldValue : 'FALSE'));
+	WriteLog('RenderField()');
 
 	if (!defined($fieldName) || !defined(!$fieldValue)) {
 		WriteLog('RenderField: warning: missing $fieldName or $fieldValue; caller = ' . join(',', caller));
 		#return '';
 	}
+
+	WriteLog('RenderField: $fieldName = ' . (($fieldName || $fieldName eq '' || $fieldName == 0) ? $fieldName : 'FALSE') . '; $fieldValue = ' . (($fieldValue || $fieldValue eq '' || $fieldValue == 0) ? $fieldValue : 'FALSE'));
 
 	#todo more sanity
 
@@ -196,36 +198,44 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		$longMode = 1;
 	}
 
-	if ($fieldName eq 'last_seen') {
+	if (0) {
+		# BEGIN
+		# this if statement is just
+		# a placeholder to make all the elsif
+		# statements look similar
+	}
+	elsif ($fieldName eq 'last_seen') {
 		$fieldValue = GetTimestampWidget($fieldValue);
 	}
 
-	if ($longMode) {
-		if (
-			$fieldName eq 'author_key' ||
-			$fieldName eq 'cookie_id' ||
-			$fieldName eq 'gpg_id'
-		) {
-			# turn author key into linked avatar
-			if ($longMode) {
-				$fieldValue = GetAuthorLink($fieldValue) . '<tt class=advanced> ' . $fieldValue . '</tt>';
-			} else {
-				$fieldValue = GetAuthorLink($fieldValue);
-			}
+	elsif ($fieldName eq 'file_size') {
+		if ($fieldValue > 1024) {
+			$fieldValue = GetFileSizeWidget($fieldValue) . ' <tt class=advanced>' . $fieldValue . '</tt>';
+		} else {
+			$fieldValue = GetFileSizeWidget($fieldValue);
 		}
-	} else {
-		if ($fieldName eq 'author_key') {
+	}
+
+	elsif (
+		$fieldName eq 'author_id' ||
+		$fieldName eq 'cookie_id' ||
+		$fieldName eq 'gpg_id'
+	) {
+		# turn author key into linked avatar
+		if ($longMode) {
+			$fieldValue = GetAuthorLink($fieldValue) . ' <tt class=advanced> ' . $fieldValue . '</tt>';
+		} else {
 			$fieldValue = GetAuthorLink($fieldValue);
 		}
 	}
 
-	if ($fieldName eq 'vote_value') {
+	elsif ($fieldName eq 'vote_value') {
 		#todo redo
 		my $link = "/top/" . $fieldValue . ".html";
 		$fieldValue = RenderLink($link, $fieldValue);
 	}
 
-	if ($fieldName =~ /.+timestamp/) {
+	elsif ($fieldName =~ /.+timestamp/) {
 		if ($longMode) {
 			$fieldValue = GetTimestampWidget($fieldValue) . ' <tt class=advanced> ' . $fieldValue . '</tt>';
 		} else {
@@ -233,7 +243,7 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		}
 	}
 
-	if (
+	elsif (
 		$fieldName eq 'git_hash_object' ||
 		$fieldName eq 'normalized_hash' ||
 		$fieldName eq 'sha1' ||
@@ -242,7 +252,10 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		$fieldValue = '<tt>' . $fieldValue . '</tt>';
 	}
 
-	if ($fieldName eq 'item_url' || $fieldName eq 'url') { #url
+	elsif (
+		$fieldName eq 'item_url' ||
+		$fieldName eq 'url'
+	) { #url
 		if (length($fieldValue) < 64) {
 			$fieldValue = '<a href="' . HtmlEscape($fieldValue) . '">' . HtmlEscape($fieldValue) . '';
 		} else {
@@ -263,7 +276,7 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		}
 	}
 
-	if ($fieldName eq 'item_title') {
+	elsif ($fieldName eq 'item_title') {
 		if (%itemRow && $itemRow{'file_hash'}) {
 			if ($itemRow{'this_row'}) {
 				$fieldValue = '<b>' . $fieldValue . '</b>';
@@ -273,7 +286,7 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		}
 	}
 
-	if ($fieldName eq 'file_hash') {
+	elsif ($fieldName eq 'file_hash') {
 		if ($fieldValue) {
 			$fieldValue = substr($fieldValue, 0, 8);
 		} else {
@@ -281,8 +294,15 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		}
 	}
 
+	elsif ($fieldName eq 'tags_list') {
+		if ($fieldValue) {
+			$fieldValue = GetTagsListAsHtmlWithLinks($fieldValue);
+		} else {
+			$fieldValue = '';
+		}
+	}
 
-	if ($fieldName eq 'chain_previous') {
+	elsif ($fieldName eq 'chain_previous') {
 		if ($fieldValue) {
 			my $itemHash = substr($fieldValue, 0, 40); #todo unhack
 			$fieldValue = GetItemHtmlLink($itemHash, DBGetItemTitle($itemHash, 16));
@@ -291,7 +311,7 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		}
 	}
 
-	if ($fieldName eq 'file_path') {
+	elsif ($fieldName eq 'file_path') {
 		# link file path to file
 		my $HTMLDIR = GetDir('html'); #todo
 		#problem here is GetDir() returns full path, but here we already have relative path
@@ -301,7 +321,7 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		$fieldValue = '<a href="' . $fieldValue . '">' . $fieldValue . '</a>';
 	}
 
-	if (substr($fieldName, 0, 7) eq 'tagset_' && !$fieldValue) {
+	elsif (substr($fieldName, 0, 7) eq 'tagset_' && !$fieldValue) {
 		if (length($fieldName) > 7) {
 			my $tagsetName = substr($fieldName, 7);
 			if (GetConfig('tagset/' . $tagsetName)) {
@@ -309,23 +329,46 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 			}
 		}
 	}
-#
-#	if ($fieldName eq 'tagset_compost') {
-#		if (%itemRow && $itemRow{'file_hash'}) {
-#			$fieldValue .= GetItemTagButtons($itemRow{'file_hash'}, 'compost');
-#		}
-#	}
-#
-#	if ($fieldName eq 'tagset_author') {
-#		if (%itemRow && $itemRow{'file_hash'}) {
-#			$fieldValue .= GetItemTagButtons($itemRow{'file_hash'}, 'author');
-#		}
-#	}
+	#
+	#	if ($fieldName eq 'tagset_compost') {
+	#		if (%itemRow && $itemRow{'file_hash'}) {
+	#			$fieldValue .= GetItemTagButtons($itemRow{'file_hash'}, 'compost');
+	#		}
+	#	}
+	#
+	#	if ($fieldName eq 'tagset_author') {
+	#		if (%itemRow && $itemRow{'file_hash'}) {
+	#			$fieldValue .= GetItemTagButtons($itemRow{'file_hash'}, 'author');
+	#		}
+	#	}
 
-	if (!$fieldValue || trim($fieldValue) eq '') {
-		if ($fieldValue ne '0') {
+	elsif (
+	
+		$fieldName eq 'attribute' ||
+		$fieldName eq 'author_key' ||
+		$fieldName eq 'chain_order' ||
+		$fieldName eq 'chain_sequence' ||
+		$fieldName eq 'gpg_alias' ||
+		$fieldName eq 'item_count' ||
+		$fieldName eq 'item_score' ||
+		$fieldName eq 'item_type' ||
+		$fieldName eq 'this_row' ||
+		$fieldName eq 'title' ||
+		$fieldName eq 'url_domain' ||
+		$fieldName eq 'vote_count'
+	) {
+		#cool
+	}
+
+
+	else {
+
+		if ((!$fieldValue && $fieldValue != 0 && $fieldValue ne '0') || trim($fieldValue) eq '') {
 			WriteLog('RenderField: warning: $fieldValue is missing; $fieldName = ' . $fieldName . '; caller: ' . join(', ', caller));
 			$fieldValue = '-';
+		} else {
+			WriteLog('RenderField: warning: unhandled $fieldName = ' . (($fieldName || $fieldName == 0) ? $fieldName : 'FALSE') . '; $fieldValue = ' . (($fieldValue || $fieldValue == 0) ? $fieldValue : 'FALSE') . '; caller: ' . join(', ', caller));
+			$fieldValue = htmlspecialchars($fieldValue);
 		}
 	}
 	
