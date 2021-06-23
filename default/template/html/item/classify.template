@@ -1,0 +1,5 @@
+<!-- item/classify.template -->
+<fieldset>
+	<span id=itemAddTagButtons></span>
+</fieldset>
+<!-- / item/classify.template -->
