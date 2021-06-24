@@ -5,9 +5,6 @@ At least 30 times slower than Hugo.
 
    * * *
 
-SUPPORTED ENVIRONMENTS
-======================
-
 Frontend Tested With:
 =====================
 Mozilla Firefox
@@ -142,8 +139,7 @@ INSTALLATION FOR LOCAL TESTING
 $ cd ~
 $ git clone https://www.github.com/qvthqt/shitmyself hike
 $ cd ~/hike
-$ ./install.pl
-$ ./build.pl
+$ ./_dev_clean_ALL.sh
 
 TROUBLESHOOTING / COMMON ISSUES / PERL MODULE PROBLEMS
 ===============
