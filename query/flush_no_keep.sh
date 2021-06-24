@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo script is disabled until further refinemenet
+exit;
+
 # Adds all non-essential and non-#keep items to archived.log
 # This results in their archiving on next pass
 
