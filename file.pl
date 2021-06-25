@@ -203,9 +203,12 @@ sub GetFileMessage {
 	if (GetConfig('admin/gpg/enable')) {
 		$messagePath = GetFileMessageCachePath($fileHash) . '_gpg';
 		WriteLog('GetFileMessage: $messagePath1: ' . $messagePath);
+
 		if (-e $messagePath) {
-			WriteLog('GetFileMessage: (message_gpg) return GetFile(' . $fileHash . ')');
+			WriteLog('GetFileMessage: (message_gpg) return GetFile(' . $messagePath . ')');
 			return GetFile($messagePath);
+		} else {
+			WriteLog('GetFileMessage: warning: not returning, no file at $messagePath = '. $messagePath);
 		}
 	}
 
@@ -218,13 +221,12 @@ sub GetFileMessage {
 	} else {
 		WriteLog('GetFileMessage: return GetPathFromHash(' . $fileHash . ')');
 		my $filePath = GetPathFromHash($fileHash);
-		#my $filePath = DBGetItemFilePath($fileHash);
 
 		if (!-e $filePath) {
 			WriteLog('GetFileMessage: warning: !-e $filePath = ' . $filePath . ')');
-
 			return '';
 		} else {
+			WriteLog('GetFileMessage: return GetFile(' . $filePath . ');');
 			return GetFile($filePath);
 		}
 	}
