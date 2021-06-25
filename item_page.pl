@@ -90,7 +90,9 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 			$alias = HtmlEscape($alias);
 			$title .= " by $alias";
 		} else {
-			WriteLog('GetItemPage: warning: author_key was defined, but $alias turned out false');
+			WriteLog('GetItemPage: warning: author_key was defined, but $alias is FALSE');
+			#$alias = '...';
+			#$title .= ' by ...'; #guest...
 			$alias = 'Guest';
 			$title .= ' by Guest';
 		}
