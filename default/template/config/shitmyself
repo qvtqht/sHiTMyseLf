@@ -11,3 +11,4 @@ config home_title s * i * * y s e * f . c o m ( . h t m l )
 config html/clock 1
 config html/clock_format epoch
 config html/relativize_urls 0
+config site_name sHiTMyseLf.com
