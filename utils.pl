@@ -1273,6 +1273,10 @@ sub AppendFile { # appends something to a file; $file, $content to append
 	my $file = shift;
 	my $content = shift;
 
+	# uncomment this for debugging AppendFile()
+	# cannot use WriteLog() here because it calls this sub
+	#print('AppendFile($file = ' . $file . '; $content = ' . length($content) . ' bytes)');
+
 	if (open (my $fileHandle, ">>", $file)) {
 	#if (open (my $fileHandle, ">>:encoding(UTF-8)", $file)) {
 		say $fileHandle $content;
