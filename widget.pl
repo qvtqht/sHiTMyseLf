@@ -17,7 +17,7 @@ sub GetItemTagButtons { # $fileHash, [$tagSet], [$returnTo] ; get vote buttons f
 	WriteLog('GetItemTagButtons(' . ($fileHash ? $fileHash : '-') . ', ' . ($tagSet ? $tagSet : '-') . ')');
 
 	if (!IsItem($fileHash)) {
-		WriteLog('GetItemTagButtons: warning: sanity check failed, returning');
+		WriteLog('GetItemTagButtons: warning: sanity check failed: $fileHash = ' . $fileHash);
 		return '';
 	}
 
