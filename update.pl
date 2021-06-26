@@ -34,6 +34,7 @@ if (
 } else {
 	# regenerate all pages (may take a while)
 	#system('./pages.pl --all');
+	system('./pages.pl --system');
 	WriteLog('update.pl: warning: not calling --all because it takes too long');
 }
 
