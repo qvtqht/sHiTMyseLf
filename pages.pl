@@ -338,6 +338,35 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 			}
 		}
 	}
+	elsif (
+		substr($fieldName, 0, 8) eq 'special_' &&
+		!$fieldValue &&
+		length($fieldName) > 8 &&
+		%itemRow
+	) {
+		# special field name which produces several things joined together
+		# value should be empty
+		# produced like this:
+		#    SELECT '' AS special_title_and_tags_list
+		if (1) {
+			my $specialName = substr($fieldName, 8);
+			if ($specialName eq 'title_and_tags_list') {
+				# title, tags list, and author avatar (if any)
+				# special_title_and_tags_list
+				# this should become a template
+				$fieldValue =
+					'<b>' .
+						GetItemHtmlLink($itemRow{'file_hash'}, $itemRow{'item_title'}) .
+					'</b>' .
+					'<br>'.
+					'<span style="float:right">' .
+						GetTagsListAsHtmlWithLinks($itemRow{'tags_list'}) .
+						($itemRow{'author_id'} ? '; ' . GetAuthorLink($itemRow{'author_id'}) : '') .
+					'</span>';
+				;
+			}
+		}
+	}
 	#
 	#	if ($fieldName eq 'tagset_compost') {
 	#		if (%itemRow && $itemRow{'file_hash'}) {
