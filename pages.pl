@@ -393,15 +393,15 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		$fieldName eq 'this_row' ||
 		$fieldName eq 'title' ||
 		$fieldName eq 'url_domain' ||
-		$fieldName eq 'vote_count'
+		$fieldName eq 'vote_count' ||
+		$fieldName eq 'author_score'
 	) {
 		#cool
 	}
 
 
 	else {
-
-		if ((!$fieldValue && $fieldValue != 0 && $fieldValue ne '0') || trim($fieldValue) eq '') {
+		if (trim($fieldValue) eq '' || (!$fieldValue && $fieldValue != 0 && $fieldValue ne '0')) {
 			WriteLog('RenderField: warning: $fieldValue is missing; $fieldName = ' . $fieldName . '; caller: ' . join(', ', caller));
 			$fieldValue = '-';
 		} else {
