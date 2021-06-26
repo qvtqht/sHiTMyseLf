@@ -1236,6 +1236,24 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 		}
 	}
 
+	#############################################
+	my $putFileResult = PutFile($file, $content);
+	#############################################
+
+	if (!-e ($HTMLDIR . '/index.html')) {
+		if (
+			$file =~ m/profile/ ||
+			$file =~ m/welcome/ ||
+			$file =~ m/read/ ||
+			$file =~ m/write/ ||
+			$file =~ m/help/
+		) {
+			#if index is missing, put anything
+			print "\n" . $file . "\n";
+			PutHtmlFile("$HTMLDIR/index.html", $content);
+		}
+	}
+
 	return $putFileResult;
 } # PutHtmlFile()
 
