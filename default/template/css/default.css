@@ -101,7 +101,7 @@ div.txt {
 noscript {
 	color: red;
 }
-.menubar a, .titlebar a {
+.menubar a, .titlebar a, .topmenubar a {
 	text-decoration: none;
 	color: $colorText;
 }
