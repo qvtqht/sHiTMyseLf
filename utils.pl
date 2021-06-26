@@ -1218,7 +1218,19 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 				WriteLog('PutHtmlFile: warning: "maincontent" not found in file! $file = ' . ($file ? $file : '-'));
 			}
 		}
-		if ($content =~ m/<html.+<html/) {
+		if (
+			index(lc($content), '<td></td>') != -1 ||
+			index(lc($content), '<td class=advanced></td>') != -1 #||
+			#$content =~ m|<td[^>]+></td>| #todo make this work
+		) {
+			# empty table cells present rendering issues in netscape,
+			# and may also be a sign of larger problems.
+			WriteLog('PutHtmlFile: warning: content has empty table cells <td></td>');
+			$content = str_ireplace('<td></td>', '<td>-</td>', $content);
+			$content = str_ireplace('<td class=advanced></td>', '<td class=advanced>-</td>', $content);
+			#$content =~ s|(<td[^>]+>)(</td>)|$1-$2|i; #todo make this work
+		}
+		if ($content =~ m/<html.+<html/i) {
 			# test for duplicate <html> tag
 			WriteLog('PutHtmlFile: warning: $content contains duplicate <html> tags');
 		}
