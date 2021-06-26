@@ -1,6 +1,6 @@
 SELECT
 	item_title,
-	author_key,
+	author_key AS author_id,
 	add_timestamp,
 	file_hash
 FROM item_flat
