@@ -1203,25 +1203,7 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 	#}
 
 
-	#############################################
-	my $putFileResult = PutFile($file, $content);
-	#############################################
-
-	if (!-e ($HTMLDIR . '/index.html')) {
-		if (
-			$file =~ m/profile/ ||
-			$file =~ m/welcome/ ||
-			$file =~ m/read/ ||
-			$file =~ m/write/ ||
-			$file =~ m/help/
-		) {
-			print "\n" . $file . "\n";
-			PutHtmlFile("$HTMLDIR/index.html", $content);
-		}
-	}
-
-
-	{
+	{ # tests and warnings
 		if (index($content, '$') > -1) {
 			# test for $ character in html output, warn/crash if it is there
 			if (!($fileProvided eq 'openpgp.js')) {
