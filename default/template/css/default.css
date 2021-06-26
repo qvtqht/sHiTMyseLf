@@ -3,9 +3,11 @@
 .tag-troll,
 .tag-spam,
 .tag-remove,
+.tag-slash,
 .tag-abuse {
 /* negative (red) tags */
 	color: $colorTagNegative;
+	font-weight: bold;
 }
 
 .tag-remove {
@@ -16,9 +18,12 @@
 .tag-approve,
 .tag-accept,
 .tag-friend,
-.tag-attend {
+.tag-attend,
+.tag-like,
+.tag-vouch {
 /* positive (green) tags */
 	color: $colorTagPositive;
+	font-weight: bold;
 }
 
 .tag-hide {
