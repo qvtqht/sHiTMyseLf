@@ -166,7 +166,16 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		#return '';
 	}
 
-	WriteLog('RenderField: $fieldName = ' . (($fieldName || $fieldName eq '' || $fieldName == 0) ? $fieldName : 'FALSE') . '; $fieldValue = ' . (($fieldValue || $fieldValue eq '' || $fieldValue == 0) ? $fieldValue : 'FALSE'));
+	if (defined($fieldName)) {
+		WriteLog('RenderField: $fieldName = ' . $fieldName);
+	} else {
+		WriteLog('RenderField: warning: $fieldName NOT DEFINED; caller = ' . join(', ', caller));
+	}
+	if (defined($fieldValue)) {
+		WriteLog('RenderField: $fieldValue = ' . $fieldValue);
+	} else {
+		WriteLog('RenderField: warning: $fieldValue NOT DEFINED; caller = ' . join(', ', caller));
+	}
 
 	#todo more sanity
 
