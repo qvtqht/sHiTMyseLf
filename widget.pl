@@ -65,6 +65,8 @@ sub GetItemTagButtons { # $fileHash, [$tagSet], [$returnTo] ; get vote buttons f
 
 	WriteLog('GetItemTagButtons: @quickVotesList = ' . scalar(@quickVotesList));
 
+	my $commaCount = scalar(@quickVotesList) - 1; # actually semicolons
+
 	foreach my $quickTagValue (@quickVotesList) {
 		my $ballotTime = GetTime();
 
@@ -117,7 +119,14 @@ sub GetItemTagButtons { # $fileHash, [$tagSet], [$returnTo] ; get vote buttons f
 			$tagButton =~ s/\$voteValue/$quickTagValue/g;
 			$tagButton =~ s/\$voteCaption/$quickTagCaption/g;
 
-			$tagButtons .= $tagButton;
+			if ($commaCount) {
+				$tagButton =~ s|</a>|</a>;|; #it's this way instead of just appending it
+				# because it needs to be right after the tag, and the template has
+				# \n and a comment after it
+				$commaCount--;
+			}
+
+			$tagButtons .= trim($tagButton);
 		} # if ($fileHash && $ballotTime)
 	} # foreach my $quickTagValue (@quickVotesList)
 
