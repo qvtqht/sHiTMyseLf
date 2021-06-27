@@ -401,8 +401,9 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 
 
 	else {
-		if (trim($fieldValue) eq '' || (!$fieldValue && $fieldValue != 0 && $fieldValue ne '0')) {
-			WriteLog('RenderField: warning: $fieldValue is missing; $fieldName = ' . $fieldName . '; caller: ' . join(', ', caller));
+		#if (trim($fieldValue) eq '' || (!$fieldValue && $fieldValue != 0 && $fieldValue ne '0')) {
+		if (!$fieldValue) {
+			WriteLog('RenderField: warning: unhandled $fieldValue is also missing; $fieldName = ' . $fieldName . '; caller: ' . join(', ', caller));
 			$fieldValue = '-';
 		} else {
 			WriteLog('RenderField: warning: unhandled $fieldName = ' . (($fieldName || $fieldName == 0) ? $fieldName : 'FALSE') . '; $fieldValue = ' . (($fieldValue || $fieldValue == 0) ? $fieldValue : 'FALSE') . '; caller: ' . join(', ', caller));
