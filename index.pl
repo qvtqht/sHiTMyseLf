@@ -1395,6 +1395,10 @@ sub IndexImageFile { # $file ; indexes one image file into database
 
 sub WriteIndexedConfig { # writes config indexed in database into config/
 	WriteLog('WriteIndexedConfig() begin');
+	WriteLog('WriteIndexedConfig: warning: it is skipped, because needs fixing');
+	WriteMessage('WriteIndexedConfig() skipped');
+	print('WriteIndexedConfig() skipped');
+	return '';
 
 	my @indexedConfig = DBGetLatestConfig();
 
