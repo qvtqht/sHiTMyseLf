@@ -23,7 +23,7 @@ input[type=text], input[type=password], select, option, textarea {
 	box-shadow: 5pt 5pt 0 rgba(0, 20, 20, 0.3);
 	border: $borderDialog;
 	background-color: $colorWindow;
-	border-radius: 2pt;
+	border-radius: 1pt;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	margin-right: 8pt;
@@ -38,9 +38,6 @@ input[type=text], input[type=password], select, option, textarea {
 		max-width: 30em;
 	}
 }
-td {
-	border-radius: 2pt;
-}
 .statusbar td {
 	border: 1pt inset $colorWindow;
 }
@@ -51,7 +48,8 @@ textarea {
 
 .txt {
 /* regular text */
-	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-family: "Times New Roman", Times, sans-serif;
+	/*font-family: Tahoma, Arial, Helvetica, sans-serif;*/
 	font-size: 14pt;
 	background-color: #d0d2d4;
 	border: 1pt #ffffff inset;
@@ -60,7 +58,7 @@ textarea {
 a:focus, a:active {
     color: red !important;
     background-color: orange !important;
-    border-radius: 2pt;
+    border-radius: 1pt;
 }
 textarea:focus {
     background-color: #fff0e0;
