@@ -552,7 +552,7 @@ sub GetResultSetAsDialog { # \@result, $title, $columns, \%flags
 		my @columnsNew;
 		for my $columnText (@columnsSpecified) {
 			$columnText = trim($columnText);
-			if ($columnText =~ m/^([0-9a-zA-Z]+)$/) {
+			if ($columnText =~ m/^([0-9a-zA-Z_]+)$/) {
 				#todo restrict length of column?
 				$columnText = $1;
 				push @columnsNew, trim($columnText);
