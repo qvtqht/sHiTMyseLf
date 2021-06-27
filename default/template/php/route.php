@@ -1186,9 +1186,32 @@ if (GetConfig('admin/php/route_enable')) {
 		////////////////////////////
 		if (!$html) {
 			#todo other sanity checks, like "no html tags" or "nothing but html tags"
+			WriteLog('route.php: warning: $html is empty');
 
-			$html = 'System message: Engine may require attention. Please remain calm. <p><a href="/">Home</a> <a href="/help.html">Help</a> <a href="/settings.html">Settings</a><p> <form action=/post.html><label>To:Operator</label><br><label>Message:</label><br><input type=text size=30 name=comment value="thanks"><input type=submit value=Send></form>';
+			$html = '<body bgcolor="#808080">';
+			$html .= '<center><table bgcolor="#c0e0e0" border=10 bordercolor="#ffe0c0" width=99%><tr><td align=center valign=middle>';
+			$html .= '<h1>Please remain calm.</h1>';
+			$html .= '<h2>System Message: Engine requires attention.</h2>';
+			$html .= '<hr>';
+			$html .= '<p>';
+			$html .= '<a href="/">Home</a> | ';
+			$html .= '<a href="/help.html">Help</a> | ';
+			$html .= '<a href="/settings.html">Settings</a>';
+			$html .= '<p>';
+			$html .= '<hr>';
+			$html .= '<form action=/post.html><label>Message Operator:</label><br><input type=text size=30 name=comment value="test"><input type=submit value=Send></form>';
+			$html .= '</td></tr></table></center>';
+			$html .= '</body>';
 		}
+
+		if (function_exists('WriteLog') && GetConfig('admin/php/debug')) {
+			if ($foo = stripos($html, '</body>')) {
+				$html = str_replace('</body>', '<p class=advanced>' . WriteLog(0) . '</p></body>', $html);
+			} else {
+				$html .= WriteLog(0);
+			}
+		}
+
 		print $html; // final output
 		////////////////////////////
 	}
