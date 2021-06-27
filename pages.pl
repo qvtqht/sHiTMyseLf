@@ -795,9 +795,10 @@ sub GetWindowTemplate { # body title headings status menu ; returns html
 
 	if (!$param{'title'}) {
 		WriteLog('GetWindowTemplate: warning: untitled window');
-		my ($package, $filename, $line) = caller;
-		WriteLog('GetWindowTemplate: caller: ' . $package . ',' . $filename . ', ' . $line);
-		#$param{'title'} = 'Untitled';
+		#my ($package, $filename, $line) = caller;
+		#WriteLog('GetWindowTemplate: caller: ' . $package . ',' . $filename . ', ' . $line);
+		WriteLog('GetWindowTemplate: caller: ' . join(',', caller));
+		$param{'title'} = 'Untitled';
 	}
 
 	return GetWindowTemplate2(\%param);
