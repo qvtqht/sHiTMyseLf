@@ -1,0 +1,20 @@
+<!-- printed_notice.template -->
+<div class=dialog style="float: right;">
+	<p class=titlebar>
+		<b>Page Information</b>
+	</p>
+	<p>
+		When was this page printed?
+		<br>
+		<span class=timestamp epoch=$printedEpoch>$printedHuman</span>
+	</p>
+	<p>
+		How old was the file when served?
+		<br>
+		$printedAgeSeconds
+	</p>
+	<p>
+		<a href="$selfPath">[Reprint]</a>
+	</p>
+</div>
+<!-- / printed_notice.template -->
