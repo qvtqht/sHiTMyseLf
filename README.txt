@@ -114,6 +114,11 @@ Optional Components
 * SSI
 * PHP
 
+Web Servers Tested
+==================
+lighttpd 1.4.55
+Apache 2.x
+
    * * *
 
 PACKAGE INSTALLATION
