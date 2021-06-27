@@ -729,7 +729,7 @@ sub GetAuthorLink { # $fingerprint, $showPlain ; returns avatar'ed link for an a
 
 	# verify $fingerprint is valid
 	if (!IsFingerprint($fingerprint)) {
-		WriteLog('GetAuthorLink: warning: sanity check failed on $fingerprint = ' . $fingerprint);
+		WriteLog('GetAuthorLink: warning: sanity check failed on $fingerprint = ' . $fingerprint . '; caller: ' . join(',', caller));
 		return '';
 	}
 
