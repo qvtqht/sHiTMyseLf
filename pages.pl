@@ -804,6 +804,25 @@ sub GetWindowTemplate { # body title headings status menu ; returns html
 	return GetWindowTemplate2(\%param);
 } # GetWindowTemplate()
 
+sub GetWindowTemplate3 { # $body $title \%param
+# use when need several parameters and not much else
+	my $body = shift;
+	my $title = shift;
+
+	my $paramHashRef = shift;
+	my %param;
+	if ($paramHashRef) {
+		%param = %$paramHashRef;
+	}
+
+	WriteLog('GetWindowTemplate3($body = ' . $body . '; $title = ' . $title . '; %param has ' . length(keys(%param)) . ')');
+
+	$param{'body'} = $body;
+	$param{'title'} = $title;
+
+	return GetWindowTemplate2(\%param);
+} # GetWindowTemplate3()
+
 sub GetWindowTemplate2 { # \%paramHash ; returns window template
 	my $paramHashRef = shift;
 	my %param = %$paramHashRef;
