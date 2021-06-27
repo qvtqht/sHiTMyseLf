@@ -1155,11 +1155,22 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 
 		# here is where we do substitutions
 		# it may be wiser to use str_replace here
+		#todo test this more
+
+		# html
 		$content =~ s/src="\//src="$subDir/ig;
 		$content =~ s/href="\//href="$subDir/ig;
 		$content =~ s/action="\//action="$subDir/ig;
+		$content =~ s/src=\//src=$subDir/ig;
+		$content =~ s/href=\//href=$subDir/ig;
+		$content =~ s/action=\//action=$subDir/ig;
+
+		# javascript
 		$content =~ s/\.src = '\//.src = '$subDir/ig;
 		$content =~ s/\.location = '\//.location = '$subDir/ig;
+
+		# css
+		$content =~ s/url\(\/\//url=$subDir/ig;
 	}
 
 	# fill in colors
