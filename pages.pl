@@ -793,6 +793,18 @@ sub GetWindowTemplate { # body title headings status menu ; returns html
 	$param{'status'} =  shift;
 	$param{'menu'} = shift;
 
+	#hack
+	my $id = lc($param{'title'});
+	if (
+		$id eq 'read' ||
+		$id eq 'write' ||
+		$id eq 'settings' ||
+		$id eq 'help' ||
+		$id eq 'profile'
+	) {
+		$param{'id'} = $id;
+	}
+
 	if (!$param{'title'}) {
 		WriteLog('GetWindowTemplate: warning: untitled window');
 		#my ($package, $filename, $line) = caller;
