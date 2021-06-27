@@ -22,9 +22,9 @@
 		</a>
 	</p>
 	<p class=advanced>
-		<a href="/chain.log">
-			<b>$chainLogLength</b>
-			<span class=beginner><br>content pieces have been notarized</span>
+		<a href="/chain.html">
+			<b>$chainLogLength notarized</b>
+			<span class=beginner><br>time was recorded into server's chain log</span>
 		</a>
 	</p>
 	<p class=advanced>
