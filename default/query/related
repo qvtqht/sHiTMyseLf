@@ -33,5 +33,4 @@ WHERE
 	file_hash IN (
 		SELECT parent_hash FROM item_parent WHERE item_hash = ?
 	)
-
-
+LIMIT 25
