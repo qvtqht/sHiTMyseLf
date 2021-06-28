@@ -78,17 +78,19 @@ use Time::Local;
 
 sub TestYear {
 	my $year = shift;
-	print "=======\n";
+	print "<h1>\n";
 	print " $year \n";
-	print "=======\n";
+	print "<h1>\n";
+
+	my @months = qw(January February March April May June July August September October November December);
 
 	for (my $month = 1; $month <= 12; $month++) {
 		my $daysInMonth = GetNumberOfDaysInMonth($year, $month);
 
-		print '<table border=1>';
+		print '<table style="display: inline-block" border=1>';
 		print "\n";
 
-		print '<tr><th colspan=7>' . $month . '</th></tr>';
+		print '<tr><th colspan=7>' . $months[$month-1] . '</th></tr>';
 		print "\n";
 
 		my $time;
@@ -159,7 +161,14 @@ sub TestYear {
 	}
 }
 
-TestYear(2021);
+my $yearStart = 2021;
+my $yearEnd = 2016;
+
+for (my $year = $yearStart; $year != $yearEnd; $year--) {
+	TestYear($year);
+}
+
+
 
 
 
