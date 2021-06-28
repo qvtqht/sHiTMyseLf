@@ -13,6 +13,15 @@ touch -d @0 html/*.html html/*/*.html html/*/*/*.html
 echo "touch -d @0 html/*.js html/*/*.js html/*/*/*.js"
 touch -d @0 html/*.js html/*/*.js html/*/*/*.js
 
+echo find html -iname '*.html' -type f -exec rm {} \;
+find html -iname '*.html' -type f -exec rm {} \;
+
+#echo find html -iname '*.html' -type f -mtime +5 -exec rm {} \;
+#find html -iname '*.html' -type f -mtime +5 -exec rm {} \;
+
+#echo find html -mtime +5 -exec ls {} \;
+#find html -mtime +5 -exec ls {} \;
+
 echo "================="
 echo "Cleanup complete!"
 echo "================="
