@@ -927,6 +927,12 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 			#$contentColumnCount = 2;
 		} else {
 			my $windowTitlebar = GetTemplate('html/window/titlebar.template');
+			#
+			#			if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+			#				$windowTitlebar = AddAttributeToTag($windowTemplate, 'a href=#$windowAnchor', 'onfocus', 'document.title=this.innerHTML;');
+			#				$windowTitlebar = AddAttributeToTag($windowTemplate, 'a href=#$windowAnchor', 'onclick', 'document.title=this.innerHTML;');
+			#			}
+			#
 			$windowTitlebar =~ s/\$windowTitle/$windowTitle/g;
 			$windowTitlebar =~ s/\$windowAnchor/$windowAnchor/g;
 			$windowTemplate =~ s/\$windowTitlebar/$windowTitlebar/g;
