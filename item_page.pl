@@ -146,6 +146,10 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		$itemTemplate = '';
 	}
 
+	if (index($file{'tags_list'}, 'pubkey') != -1) {
+		$txtIndex .= GetWindowTemplate('This is a special item, a "public key".<br>A public key allows for reusing the profile and signing messages.', 'Information');
+		#todo templatify + use GetString()
+	}
 
 
 
