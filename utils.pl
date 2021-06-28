@@ -1058,6 +1058,14 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 		return;
 	}
 
+	# keep track of files written so we can report them to user
+	state @debugFilesWritten;
+	# my $timeBegin = GetTime(); #todo
+	if ($file eq 'report_files_written') {
+		return @debugFilesWritten;
+	}
+	push @debugFilesWritten, GetFormattedTimestamp() . ' ' . $file;
+
 	WriteLog("PutHtmlFile($file)");
 
 	my $HTMLDIR = '';
