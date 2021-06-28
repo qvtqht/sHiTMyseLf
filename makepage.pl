@@ -293,10 +293,11 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 			# get the page for this item and write it
 			WriteLog('MakePage: my $filePage = GetItemPage($file = "' . $file . '")');
 			my $filePage = GetItemPage($file);
-			WriteLog('PutHtmlFile($targetPath = ' . $targetPath . ', $filePage = ' . $filePage . ')');
+			WriteLog('PutHtmlFile($targetPath = ' . $targetPath . ', $filePage = ' . length($filePage) . ' bytes)');
 			PutHtmlFile($targetPath, $filePage);
 		} else {
-			WriteLog("pages.pl: item page: warning: Asked to index file $fileHash, but it is not in the database! Returning.");
+			WriteLog("pages.pl: item page: warning: Asked to make page for $fileHash, but it is not in the database!");
+			return '';
 		}
 	} #item page
 
