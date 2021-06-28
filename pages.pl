@@ -1716,7 +1716,11 @@ sub GetTagsListAsHtmlWithLinks {
 	my @tagsList = split(',', $tagsListParam);
 
 	my $headings;
+	my $comma = '';
 	foreach my $tag (@tagsList) {
+		$headings .= $comma;
+		$comma = '; ';
+		
 		if ($tag =~ m/^[0-9a-zA-Z_-]+$/) {
 			#sanity check
 			#$tag = $1;
@@ -1730,7 +1734,7 @@ sub GetTagsListAsHtmlWithLinks {
 			'<a href="/top/' . $tag . '.html">' .
 			'<font color="' . $tagColor . '">#</font>' .
 			$tag .
-			'</a>; ';
+			'</a>';
 		#$headings .= 'tag='.$tag;
 	}
 
