@@ -975,13 +975,19 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 					'advanced'
 				);
 			}
-			if (GetConfig('admin/js/enable')) {
+			if (GetConfig('admin/js/enable') && GetConfig('admin/js/table_sort')) {
 				$columnHeaderTemplate = AddAttributeToTag(
 					$columnHeaderTemplate,
 					'th',
 					'onclick',
 					'if (window.SortTable) { SortTable(this); } else { }'
 				);
+				$columnHeaderTemplate = AddAttributeToTag(
+					$columnHeaderTemplate,
+					'th',
+					'style',
+					'cursor: pointer'
+				); #todo this shouldn't be here
 			}
 			if ($printedColumnsCount >= scalar(@columnsArray)) {
 				# only printed after the last column
