@@ -5,7 +5,14 @@
 		<p>
 			Handle: <b><span id=lblHandle></span></b><br>
 			<span id=lblFingerprint></span><br>
-			<span id=lblSigningIndicator></span>
+			<span id=lblSigningIndicator>
+				<noscript>*</noscript>
+				<script>
+                <!--
+                document.write('Loading...');
+                // -->
+                </script>
+			</span>
 		</p>
 		<p>
 			<input
