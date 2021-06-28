@@ -5,7 +5,7 @@
 		<p>
 			Handle: <b><span id=lblHandle></span></b><br>
 			<span id=lblFingerprint></span><br>
-			<span id=lblSigningIndicator class=advanced></span>
+			<span id=lblSigningIndicator></span>
 		</p>
 		<p>
 			<input
