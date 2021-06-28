@@ -837,11 +837,11 @@ sub GetWindowTemplate3 { # $body $title \%param
 
 sub GetWindowTemplate2 { # \%paramHash ; returns window template
 	my $paramHashRef = shift;
-	my %param = %$paramHashRef;
+	my %param = %{$paramHashRef};
 
 	#return GetWindowTemplate ($param{'body'}, $param{'title'}, $param{'headings'}, $param{'status'}, $param{'menu'});
 
-# returns template for html-table-based-"window"
+	# returns template for html-table-based-"window"
 
 	# $windowBody
 	# what goes inside the biggest table cell in the middle
@@ -862,7 +862,7 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 
 	# NOT IMPLEMENTED $windowId = if set, id=foo parameter is added to top-level tag
 
-	WriteLog('GetWindowTemplate2: %param: ' . Dumper(%param));
+	WriteLog('GetWindowTemplate2: %param: ' . join(',', keys(%param)));
 	WriteLog('GetWindowTemplate2: caller: ' . join(',', caller));
 
 	my $windowBody = $param{'body'};
@@ -872,15 +872,15 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 	my $windowStatus =  $param{'status'};
 	my $windowMenubarContent = $param{'menu'};
 	my $formAction = $param{'form_action'};
+	my $windowId = $param{'id'};
 
 
-	state $windowAnchorCounter;
+	state $windowAnchorCounter; #todo #wtf, this sub is called for many different pages, does this need to be reset?
 	if (!$windowAnchorCounter) {
 		$windowAnchorCounter = 1;
 	} else {
 		$windowAnchorCounter++;
 	}
-
 
 	if (!$windowAnchor) {
 		$windowAnchor = $windowAnchorCounter;
@@ -896,12 +896,30 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 	# base template
 	my $windowTemplate = GetTemplate('html/window/standard.template');
 
+	if ($windowId) {
+		# todo sanity check
+		if ($windowId =~ m/^([0-9a-zA-Z_]+)$/) {
+			$windowId = $1;
+			WriteLog('GetWindowTemplate2: $windowId = ' . $windowId);
+			$windowTemplate = AddAttributeToTag($windowTemplate, 'table', 'id', $windowId);
+		} else {
+			WriteLog('GetWindowTemplate2: warning: sanity check failed: $windowId = ' . $windowId);
+		}
+	} else {
+		WriteLog('GetWindowTemplate2: $windowId is FALSE');
+	}
+
+	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+		#$windowTemplate = AddAttributeToTag($windowTemplate, 'table', 'onmousedown', 'this.style.zIndex = ++window.draggingZ;');
+		$windowTemplate = AddAttributeToTag($windowTemplate, 'table', 'onmousedown', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }');
+	}
+
 	# titlebar, if there is a title
 	my $showButtons = GetConfig('html/window_titlebar_buttons'); # titlebar hide and skip buttons; #todo GetConfig('titlebar_with_button');
 	if ($windowTitle) {
 		if ($showButtons) {
-			my $btnCloseCaption = '{-}'; # needs to match one other place in utils.js #collapseButton
-			my $windowTitlebar = GetTemplate('html/window/titlebar_with_button.template');
+			my $btnCloseCaption = '{-}'; # needs to match one other place in dragging.js #collapseButton
+			my $windowTitlebar = GetTemplate('html/window/titlebar_with_button.template'); #window_titlebar_buttons
 			$windowTitlebar =~ s/\$windowTitle/$windowTitle/g;
 			$windowTitlebar =~ s/\$windowAnchor/$windowAnchor/g;
 			$windowTemplate =~ s/\$windowTitlebar/$windowTitlebar/g;
@@ -977,6 +995,13 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 	}
 
 	# main window content, aka body
+	# this accounts for two different scenarios
+	# may need to be split into different subs
+	# but for now, it's only these two
+	# one scenario is if the content already has tr's and td's
+	# in this case, nothing else is needed
+	# the other scenario is if it is not enclosed in tr and td
+	# in this case we need to do it, because the dialog is a table
 	if ($windowBody) {
 		if (
 			!$columnHeadings &&
@@ -1022,7 +1047,7 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 		$windowTemplate =~ s/\ colspan=\$contentColumnCount//g;
 	}
 
-	if ($showButtons) {
+	if ($showButtons) {#todo review this area
 		my $windowGuid = md5_hex($windowTemplate);
 		if (defined($param{'guid'})) {
 			if ($param{'guid'} =~ m/^[0-9a-f]{8}$/) {
