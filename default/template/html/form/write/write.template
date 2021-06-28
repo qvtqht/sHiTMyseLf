@@ -23,5 +23,6 @@
 			</label>
 		</span>
 	</p>
+	<span id=writefooter></span>
 </fieldset>
 <!--/ write.template -->
