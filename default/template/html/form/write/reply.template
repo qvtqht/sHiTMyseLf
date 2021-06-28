@@ -19,6 +19,10 @@
 			<br>
 		</span>
 		<input type=text name=replyto id=replyto value="$replyTo" size=45>
+		<span class=beginner>
+			<br>
+			Clear this field to post a new thread.
+		</span>
 	</span>
 </form>
 <!-- / reply.template -->
