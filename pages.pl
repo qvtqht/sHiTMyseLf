@@ -961,7 +961,12 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 		foreach my $columnCaption (@columnsArray) {
 			$printedColumnsCount++;
 			my $columnHeaderTemplate = GetTemplate('html/window/header_column.template'); # <td></td>
-			if ($columnCaption eq 'file_hash') { #todo config/list/field_advanced
+			if (
+				$columnCaption eq 'file_hash' || #todo config/list/field_advanced
+				$columnCaption eq 'author_key' || #todo config/list/field_advanced
+				$columnCaption eq 'child_count' || #todo config/list/field_advanced
+				$columnCaption eq 'this_row' #todo config/list/field_advanced
+			) {
 				#todo caption and field name should be different things
 				$columnHeaderTemplate = AddAttributeToTag(
 					$columnHeaderTemplate,
