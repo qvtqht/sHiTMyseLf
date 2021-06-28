@@ -1548,7 +1548,19 @@ sub GetItemHtmlLink { # $hash, [link caption], [#anchor] ; returns <a href=...
 
 		$linkCaption = HtmlEscape($linkCaption);
 
-		return '<a href="/' . GetHtmlFilename($hash) . $hashAnchor . '">' . $linkCaption . '</a>';
+		my $htmlFilename = GetHtmlFilename($hash);
+		if (
+			GetConfig('html/overline_links_with_missing_html_files') &&
+			-e GetDir('html').'/'.$htmlFilename
+		) {
+			# html file exists, nice
+			return '<a href="/' . $htmlFilename . $hashAnchor . '" style="text-decoration: overline">' . $linkCaption . '</a>';
+		} else {
+			# html file does't exist, annotate link to indicate this
+			# the html file may be generated as needed
+			#return '<a href="/' . $htmlFilename . $hashAnchor . '">' . $linkCaption . '</a>';
+			return '<a href="/' . $htmlFilename . $hashAnchor . '">' . $linkCaption . '</a>';
+		}
 	} else {
 	}
 } # GetItemHtmlLink()
