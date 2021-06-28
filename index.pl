@@ -17,6 +17,7 @@ while (my $argFound = shift) {
 }
 
 use Digest::SHA qw(sha512_hex);
+use POSIX qw(floor);
 
 require('./gpgpg.pl');
 require('./utils.pl');
