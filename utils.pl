@@ -395,7 +395,6 @@ sub GetMyVersion { # Get the currently checked out version (current commit's has
 	return $myVersion;
 } # GetMyVersion()
 
-
 sub GetFileHash { # $fileName ; returns hash of file contents
 # // GetItemHash GetHash
 	WriteLog("GetFileHash()");
@@ -674,29 +673,31 @@ sub GetFile { # Gets the contents of file $fileName
 	#todo do something for a file which is missing
 } # GetFile()
 
-
 sub GetTime () { # Returns time in epoch format.
 	# Just returns time() for now, but allows for converting to 1900-epoch time
 	# instead of Unix epoch
+
 	#	return (time() + 2207520000);
 	return (time());
 }
 
 sub GetClockFormattedTime() { # returns current time in appropriate format from config
-	#formats supported: union, epoch (default)
+	# this formats the user-facing time, like the clock on the pages (if enabled)
+	# formats supported: 24hour, union, epoch (default)
 
 	my $clockFormat = GetConfig('html/clock_format');
 	chomp $clockFormat;
 
 	if ($clockFormat eq '24hour') {
 	    my $time = GetTime();
-
         my $hours = strftime('%H', localtime $time);
         my $minutes = strftime('%M', localtime $time);
-        # my $seconds = strftime('%S', localtime $time);
+		my $clockFormattedTime = $hours . ':' . $minutes;
 
-        my $clockFormattedTime = $hours . ':' . $minutes;
-        # my $clockFormattedTime = $hours . ':' . $minutes . ':' . $seconds;
+        if (0) { # 24-hour with seconds
+        	my $seconds = strftime('%S', localtime $time);
+        	my $clockFormattedTime = $hours . ':' . $minutes . ':' . $seconds;
+		}
 
         return $clockFormattedTime;
     }
@@ -763,12 +764,21 @@ sub GetClockFormattedTime() { # returns current time in appropriate format from 
 		return $clockFormattedTime;
 	}
 
-	my $getTime = GetTime();
-	if ($getTime =~ m/^([0-9]+)\.([0-9]+)$/) {
-		$getTime = $1;
+	# this is fallback, with sanity check
+	my $fallbackTime = time();
+	if (
+		$fallbackTime =~ m/^([0-9]+)\.([0-9]+)$/ ||
+		$fallbackTime =~ m/^([0-9]+)$/
+	) {
+		# sanity check passed
+		$fallbackTime = $1;
+	}
+	else {
+		# sanity check failed
+		$fallbackTime = '';
 	}
 
-	return $getTime;
+	return $fallbackTime;
 } # GetClockFormattedTime()
 
 sub PutFile { # Writes content to a file; $file, $content, $binMode
@@ -853,6 +863,28 @@ sub EpochToHuman2 { # not sure what this is supposed to do, and it's unused
 	$month = $month + 1;
 
 }
+
+sub GetFormattedTimestamp { # returns zero-padded formatted epoch time
+	# this is used to get log timestamps to line up nicely when float/millisecond is used
+	# if there is no period, it should return unchanged.
+
+	my $time = GetTime();
+
+	if ($time =~ m/^[0-9]+\.[0-9]{1}$/) {
+		$time .= '0';
+	}
+	if ($time =~ m/^[0-9]+\.[0-9]{2}$/) {
+		$time .= '0';
+	}
+	if ($time =~ m/^[0-9]+\.[0-9]{3}$/) {
+		$time .= '0';
+	}
+	if ($time =~ m/^[0-9]+\.[0-9]{4}$/) {
+		$time .= '0';
+	}
+
+	return $time;
+} # GetFormattedTimestamp()
 
 #props http://www.bin-co.com/perl/scripts/str_replace.php
 sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_replace() from php
