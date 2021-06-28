@@ -414,7 +414,7 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 	return $fieldValue;
 } # RenderField()
 
-sub GetQueryAsDialog { # $query, $title, $columns
+sub GetQueryAsDialog { # $query, $title, $columns, \%param
 	my $query = shift;
 	my $title = shift;
 	my $columns = shift;
