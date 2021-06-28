@@ -1366,7 +1366,7 @@ sub GetTagLinks { # $tagSelected ; returns html-formatted tags list
 	return $voteItemsWrapper;
 } # GetTagLinks()
 
-sub GetQueryPage {
+sub GetQueryPage { # $pageName, $title, $columns ;
 	my $pageName = shift;
 	my $title = shift;
 	my $columns = shift;
