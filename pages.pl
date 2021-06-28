@@ -916,8 +916,14 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 
 	# titlebar, if there is a title
 	my $showButtons = GetConfig('html/window_titlebar_buttons'); # titlebar hide and skip buttons; #todo GetConfig('titlebar_with_button');
+	WriteLog('GetWindowTemplate2: $showButtons = ' . $showButtons);
+
 	if ($windowTitle) {
+		WriteLog('GetWindowTemplate2: $showButtons = ' . $showButtons . '; $windowTitle = ' . $windowTitle);
+
 		if ($showButtons && GetConfig('admin/js/dragging')) {
+			WriteLog('GetWindowTemplate2: $showButtons = ' . $showButtons . '; $windowTitle = ' . $windowTitle . '; dragging = ' . GetConfig('admin/js/dragging'));
+
 			my $btnCloseCaption = '{-}'; # needs to match one other place in dragging.js #collapseButton
 			my $windowTitlebar = GetTemplate('html/window/titlebar_with_button.template'); #window_titlebar_buttons
 			$windowTitlebar =~ s/\$windowTitle/$windowTitle/g;
