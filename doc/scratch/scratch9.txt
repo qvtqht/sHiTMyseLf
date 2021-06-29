@@ -1017,7 +1017,7 @@ function CheckIfFresh () {
 <tr bgcolor="#aaaacc" class=titlebar>
         <td>
                 <span>
-                        <a href="#e3dc6c0d" style="color: #444466;" class=btnSkip title=skip onclick="if (window.CollapseWin) { return CollapseWin(this); } return false;">{-}</a>
+                        <a href="#e3dc6c0d" style="color: #444466;" class=btnSkip title=skip onclick="if (window.CollapseWindowFromButton) { return CollapseWindowFromButton(this); } return false;">{-}</a>
                 </span>
                 <font color="#444466"><b>Upload</b></font>
                 <br>
@@ -1188,6 +1188,13 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
         if (window.HideLoadingIndicator) {
                 //alert('DEBUG: OnLoadEverything: HideLoadingIndicator()');
                 HideLoadingIndicator();
+        }
+        if (document.getElementsByClassName) {
+        	//todo factor out of here
+        	var clicks = document.getElementsByClassName('fileHashShort');
+        	if (clicks) {
+				clicks.setAttribute('onclick', 'SelectMe(this);');
+        	}
         }
 
         // everything is set now, start event loop
@@ -1404,7 +1411,7 @@ function newA (href, target, innerHTML, parent) { // makes new a element and app
         return newLink;
 }
 
-function CollapseWin (t) { // collapses or expands window based on t's caption
+function CollapseWindowFromButton (t) { // collapses or expands window based on t's caption
 // t is presumed to be clicked element's this, but can be any other element
 // if t's caption is 'v', window is re-expanded
 // if 'x' (or anything else) collapses window
@@ -1440,7 +1447,7 @@ function CollapseWin (t) { // collapses or expands window based on t's caption
                 }
         }
         return true;
-} // CollapseWin()
+} // CollapseWindowFromButton()
 
 //function ChangeInputToTextarea (input) { // called by onpaste
 ////#input_expand_into_textarea

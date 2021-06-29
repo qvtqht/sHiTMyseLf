@@ -1,12 +1,23 @@
 OPERATOR'S MANUAL
 =================
 Introduction:
-Designed to be easily maintainable from console on any POSIX system.
-Content is stored in ./html/txt/ and ./html/image/
-Cache is stored in ./cache/
-HTML root is ./html (can be symlinked TO, but shouldn't be a symlink itself)
 
-text files -> sqlite database -> html frontend
+Designed for easy maintainance from console.
+
+Content is stored in ./html/txt/ and ./html/image/
+
+Cache is stored in ./cache/
+    Including the SQLite index-database index.sqlite3
+
+HTML root is ./html
+    Can be symlinked TO, but shouldn't be a symlink itself
+
+Basic flow diagram:
+    text files -> sqlite database -> html
+    html -> webserver -> reader
+    author -> webserver -> access.log -> textfiles
+    author -> webserver -> php -> textfiles
+    author -> filesystem -> textfiles
 
    * * *
 DEPENDENCIES
@@ -16,10 +27,11 @@ DEPENDENCIES
 # sudo yum install perl-Digest-MD5 perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite perl-URI-Encode perl-Digest-SHA1 sqlite lighttpd gnupg gnupg2 perl-Devel-StackTrace perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite lighttpd-fastcgi ImageMagick php-cgi zip
 
 # WORKS ON FREEBSD with lighttpd and without php (./config/admin/php/enable=0)
+# 	I don't know how to install php on freebsd yet
 
-imagemagick package can be excluded if image module will not be used
+# imagemagick package can be excluded if image module will not be used
 
-php can be excluded if php module will not be used
+# php can be excluded if php module will not be used
 
 BUILD
 =====
@@ -45,49 +57,50 @@ $ lynx http://admin:admin@localhost:2784/
 (see also: install.pl, README)
 
    * * *
-ROOT USER
-=========
-The Root Operator key is the "authority source".
-This user has full privileges, and can #admin other users.
-Path: ./admin.key
-Format: -----BEGIN PGP PUBLIC KEY BLOCK-----
 
-SETTING ROOT KEY
-================
-Put ASCII-armored PGP key into admin.key:
-$ gpg --armor --export > ./admin.key
+ADMINISTERING THROUGH WEB INTERFACE
+===================================
+In order to do this, you first need to give yourself #admin tag.
 
-GIVING ANOTHER USER #ADMIN TAG
-==============================
-Comment #admin under the user's join item.
+$ ./_dev_sqlite3.sh
+sqlite> INSERT INTO vote(file_hash, vote_value) VALUES('02985c8b2452789a12f5ec8f14235a067f14f78c', 'admin');
 
-$ gpg --armor --export Bobob > ./html/txt/bobob.txt
-$ md5sum ./html/txt/bobob.txt > ./html/txt/bobob_admin.txt
-$ echo "#admin" > ./html/txt/bobob_admin.txt
-$ gpg --clearsign ./html/txt/bobob_admin.txt
-$ mv ./html/txt/bobob_admin.txt.asc ./html/txt/bobob_admin.txt
-$ time ./update.pl --all
+(Substitute of the hash of your public key for mine.)
+(To get yours, go to your profile, and look in Item Attributes.)
+
+If you are in a low-security setting, you can also allow self-adminning, 
+either when no existing admin is present, or just whenever.
+
 
    * * *
 COMMON TASKS
 ============
 Scripts:
-./rebuild_dev.sh
-#Rebuild entire site and reimport data, useful during dev
+./_dev_clean_ALL.sh
+#Rebuild entire site and reimport data
+#Useful during dev
 
-./generate.pl
+./_dev_refresh.sh
+#Checksums various parts of the code and refreshes queues which are affected
+#For example, checks "default/template/" and cleans "config/template/" on change
+#Also useful during dev
+
+./generate_frontend.pl
 #Regenerate entire frontend from index database
 
 ./index.pl --all
 #Index all unindexed files in ./html/txt and ./html/image
+#It skips files it has already indexed
+#If you want to re-index a particular file, remove the tag in cache/indexed/...
 
-./clean_dev.sh
-#Remove cache and non-default templates.
+./pages.pl --queue
+./pages.pl -Q
+#Build pages which have a task with a priority
 
 ./pages.pl --all
-#Build all touched pages
+#Build all pages which have a task (even when priority is 0)
 
-./query/touch_all.sh
+./query/update_increment_all_page_touch.sh
 #Touch all pages in index
 
    * * *
@@ -100,6 +113,8 @@ Defaults are stored in ./default/
 	This includes things like template/, and string/
 
 Config is stored in ./config/
+Under the same structure as defaults above
+This allows defaults to change between versions without affecting already prior-set setting
 	Example: ./config/admin/html/ascii_only
 	Copied from default/ the first time it is accessed
 		#todo This can be toggled, but there's no toggle yet
@@ -127,29 +142,24 @@ It is possible for users to share responsibility being Root Operator.
 Very convenient for non-critical, localized, or secured instances.
 All of these settings are off by default.
 
-./config/admin/allow_deop=1
-# this allows server to consider "overthrow" request)
-
-./config/admin/overthrow_interval=3600
-# this is how long since RO's last action before overthrow is allowed)
-
-./config/admin/latest_admin_action=1602741820
-# epoch time of admin's last action)
-
 ./config/admin/allow_self_admin_when_adminless=1
 # if no admins are in database, allows user to self-assign #admin tag
 
+./config/admin/allow_self_admin_whenever=1
+# allows user to self-assign #admin tag WHENEVER
+
 ./config/admin/allow_admin_permissions_tag_lookup=1
-# allows Root Operator to add other admin users by tagging them #admin
+# enables the #admin tag to be working at all
 
 ./config/admin/anyone_can_config=1
-# allows anyone at all to change server config, with no restrictions
+# allows anyone at all to change server config
 
 ./config/admin/cookied_can_config=1
 # allows anyone with a cookie to change server config
 
 ./config/admin/signed_can_config=1
 # allows anyone to configure as long as message is signed. useful for testing
+
    * * *
 TROUBLESHOOTING
 ===============
@@ -164,9 +174,9 @@ $ ./build.pl
 If site is taking too long to update
 ====================================
 The following will archive content to make room for new content.
-Archived files go into ./archive/
+	*** Archived files go into ./archive/ ***
 $ cd ~/hike
-$ ./archive.pl
+$ ./_dev_archive.pl
 
 If config is messed up
 ======================
@@ -174,18 +184,21 @@ If you are using manual configuration, use this to back up your
 existing configuration and reset it:
 $ cd ~/hike
 $ mv config config.`date +%s`
-$ ./clean.sh ; ./build.pl
-If you are using signed configuration, do this first:
+$ ./build.pl
+
+If using signed configuration, do this first:
 $ cd ~/hike
 $ grep config html/txt
 (Move these files into ./archive/)
 
-If having trouble accessing instance
-====================================
+If having trouble accessing public instance
+===========================================
 Try using http, it is more compatible
+
 Disable extra features:
 ./config/admin/php/enable=0
 ./config/admin/js/enable=0
+
 Alternatively, with PHP enabled, you can use Light Mode:
 ./config/admin/php/enable=1
 ./config/admin/php/light_mode_always_on=1
@@ -201,21 +214,25 @@ Older browsers may have problems with PHP-added headers. Disable php. #todo fix 
 DEBUG LOGGING
 =============
 # ./config/admin/debug
-Controls Perl (top-level) debugging, including build, index, and generate frontend.
+Controls Perl (top-level) debugging.
 Set its contents to 1 to enable debug output to ./log/log.log
-Differs from other config keys in that its presence is what turns on debugging.
-NOTE: Delete the file to disable logging. Setting it to 0 will not disable debugging.
+!!! TO TURN OFF PERL DEBUGGING TO log/log.log, DELETE THE FILE !!!
+DIFFERS FROM OTHER CONFIG KEYS IN THAT ITS PRESENCE IS WHAT TURNS ON DEBUGGING.
+NOTE: DELETE THE FILE TO DISABLE PERL DEBUG LOGGING.
+SETTING IT TO 0 WILL NOT DISABLE DEBUGGING.
 
 # ./config/admin/php/debug
 Controls debugging in PHP module. Set to 1 to enable.
 Debug output is dumped at the bottom of HTML.
-You must have advanced layer visible enabled to see.
+You must have advanced UI layer visible enabled to see. (Accesskey = O)
 
 # ./config/admin/js/debug
 Controls debugging in JS module.
 Set to 1 to display messages as confirm() dialogs
 	When dialog appars, choose Yes/OK to continue seeing messages
 	Choose No/Cancel to ignore all debug messages
-Set to "console.log" to display messages there
+	Press "js-debug" button on page to re-enable
+"console.log" to display messages there
 	Note: Not all browsers support this
-Set to "document.title" to display messages in document title
+	Press "event-loop" button on page to pause/resume event loop
+"document.title" to display messages in document title

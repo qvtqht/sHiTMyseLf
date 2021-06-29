@@ -3225,7 +3225,7 @@ Host: www.shitmyself.com
 
 ===
 
-#todo #meta #brainstorm existing hashtags should not need hashtag symbol to be picked up
+existing hashtags should not need hashtag symbol to be picked up
 
 
 ===
@@ -3756,3 +3756,7 @@ Then output what's in between to extended report on page or item
 ===
 
 output in log/log.log could look more identifiable with the snow output
+
+===
+
+if page is getting replies, user should have a choice to auto-display new comments

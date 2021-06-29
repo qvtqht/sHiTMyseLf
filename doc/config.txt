@@ -5,7 +5,7 @@ Most of the files have a 0 or 1 inside, sometimes a one-line string.
 Each feature is in a sub-directory, for example, replying:
 
 Examples:
-config/reply/enable turns the feature on or off (1 or 0)
+config/reply/enable turns the reply feature on or off (1 or 0)
 
 Commands to try:
 cd ~/hike
@@ -22,13 +22,16 @@ Commands to try:
 cd ~/hike
 ls default
 
-If you're improving the software and you want to commit to repo, edit the files in default/ and let them propagate to config/
+If you're improving the software and you want to commit to repo,
+ edit the files in default/ and let them propagate to config/
 
 The _dev_clean_ALL script will remove most things under config/
 
 
+SUMMARY
+=======
 
-config is stored in individual files
+config is stored in individual files per key
 
 default/ directory has all the defaults
 

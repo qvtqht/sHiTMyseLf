@@ -10,7 +10,7 @@ sms notifications
 
 reply by sms
 
-tag permission system
+*tag permission system
 
 video
 
@@ -22,11 +22,12 @@ import rss
 
 ability to add more usernames/passwords for first login
 
-buttons to insert hash tags into textarea
+*buttons to insert hash tags into textarea
+ (sort of, there are buttons to insta-vote)
 
 flush (by filter, typically #approve)
 
-tree of trust
+*tree of trust
 	encourage to #admin previous admin
 
 set profile image

@@ -1,3 +1,64 @@
+remove default/html (rename to html_settings or smth like that)
+	so that it's not confusing to where to put new html templates
+		because that's not where they go
+
+
+dialogs should have loading indicator, because some connections are slow
+
+
+when item is deleted and then another resubmit attempt is made, you end up at a 404 page
+	would be nice to have some (optional) feedback that that's what happened
+
+
+meta importer should also include items which have been tagged #meta
+
+
+improve upload.php error feedback page
+
+#bug access log timestamp not recorded properly (recording time is recorded instead)
+
+
+
+
+
+required for usefulness
+	new items alerts and view
+	more memorable item id's, either shorter hash or words
+
+
+
+
+
+
+
+
+
+
+
+
+
+plan for getting rid of progress indicator on pages which are returned to
+	meditate... element should get attribute of timestamp tick
+	every time eventloop runs, it sets the attribute to timestamp
+	when the page navigates away, the eventloop stops ticking
+	therefore, if page is returned to, when eventloop starts ticking again, the
+		timestamp is a big difference away and can be detected
+
+
+
+
+consolidate multiple header-footer signatures into one
+	example:
+	--
+    #c024f260
+    -- ###### <-- take this out
+    Cookie: 714A8EC5B64FFD5D
+    Host: localhost:2784
+
+
+grep apt-get install and synchronize the three different lines
+	same for yum and freebsd
+
 #bug php + htaccess: config/admin/php/rewrite=query doesn't work
 
 etag should be generated based on page content, not output html
@@ -2065,18 +2126,6 @@ timestamp=1601009222
 Authorization: admin
 Cookie: EB8132749B4913F4
 
-no more templates outside of a subdir in template/
-
-eventually html/ template subdir?
-
-
-===
-
->>aa9e0f23260baa14f1bd613a5a23489eaaaf4678
-
-#todo reply form should set auto reload to true
-
-
 
 ===
 
@@ -2100,73 +2149,56 @@ or perhaps finally architect it all into one queue? #tEcHnIcAlDeBt
 
 ===
 
->>de32fa865b8300c3bbba277e00c0fb1cef2cb226
-
-attention this message is public
-
-#todo #meta
-
-
+"attention this message is public"
 
 ===
-
->>4e706751c33940ed26cbf0cf1b588ca52e2795a3
 
 #todo maybe files should stop after the page queue builds up a certain number?
 
 or perhaps finally architect it all into one queue? #tEcHnIcAlDeBt
-
 
 ===
 
 #todo #meta
 
 fun things to work on
+	tag permissions ... basic workable prototype ready
+		#approve and #admin
+		server-side setting to allow self-#admin
+		anyone with #admin can apply any tag, including #admin and #approve
+		anyone who is #approve can also apply #approve
 
-tag permissions ... so close!
-
-upload menu button: attach SpawnUploadForm()
-   which will create upload form, with file filed, click the field, and then perhaps even start upload?
-
-todo disable fresh.js if 4xx response #meta #todo
-
->>8b63e10cf06028ff34a8e9e421fdc9d804bcc253
--- 
-Host: shitmyself.com
 
 
 ===
 
 profile page should be not cached?
+	#todo fix setup for this in lighttpd and apache templates
 
 somehow needs to do a better job of getting rid of old logged in displayed status after logout
-
-maybe as simple as another setTimeout
-
-#meta #todo
+	no-cache all profile page things with a username on them #todo
+	add check to eventloop
 
 ===
 
-#meta #todo textart is jacked on bromite
-
->>7c9731d0e87e24368d11da7941ba2b7dfb8d4944
--- 
-Host: www.shitmyself.com
+textart is jacked on bromite
+	partial workaround is request desktop site
+	actual solution is viewport modes for textart items
 
 
 ===
 
-#todo #meta #brainstorm existing hashtags should not need hashtag symbol to be picked up
+
 
 
 ===
 
-#todo #meta echochamber for votes
+echochamber for votes
 
 #todo #meta standardize on configKey vs configName
--- 
-Cookie: 47000B9BF2D025BA
-Host: localhost:2784
+	should probably be Key?
+
+===
 
 
 ===
@@ -2183,11 +2215,16 @@ already done for gif, but now need to replace original image and change its hash
 ===
 
 #meta #todo need even better keyboard which ie3 and nn2 can use.
+	plan:
+		make server-side handler for keypress
+		keep track of user's text in url
+		target from keyboard to write dialog
+			button pressed -> targed to large frame up top -> new write page reloads with textarea prefilled
 
 
 ===
 
-require profile mode is janky and locks out links and any non-cookie users
+
 #todo #meta
 
 ===
@@ -2202,9 +2239,13 @@ require profile mode is janky and locks out links and any non-cookie users
 
 >>51cc55aa4b0452ab1d5d33a6c5dd13eb06d3d9d6
 
-another new feature is dev_mode, which allows writing directly into the project docs from browser ui by using #meta tag along with #todo, #bug, or #brainstorm.
+another new feature is dev_mode, which allows writing directly
+into the project docs from browser ui by using #meta tag along
+with #todo, #bug, or #brainstorm.
 
-this item will end up in todo, if i am not mistaken, because it is first in the list. i decided against writing to all three in this situation (for now)
+this item will end up in todo, if i am not mistaken, because
+it is first in the list. i decided against writing to all three
+in this situation (for now)
 
 
 
@@ -2212,16 +2253,6 @@ this item will end up in todo, if i am not mistaken, because it is first in the 
 #bug {require profile mode} is janky and locks out links and any non-cookie users
 
 ===
-
-js/dragging {
-	#todo auto arrange windows one by one,
-		adding height values,
-		placing them one after the next,
-		unless already in preferences #meta
-	this is mostly done for modern-ish browsers but needs refinement
-}
-
-
 
 
 ===
@@ -2238,7 +2269,4 @@ js/dragging {
 #todo #todo #todo
 config/list/menu_bytag
 
-config/admin/js/dragging
-	when 0, hide in settings
 
--M write instead of --write pages.pl

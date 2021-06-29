@@ -1,10 +1,11 @@
 brainfuckXL
 ===========
 
-brainfuckXL is a non-existing language using the following characters for syntax:
+brainfuckXL is a language using the following characters for syntax:
 
 .;]\-,<">'+[:`_|+
 
-the purpose of this is to expand brainfuck's original 8 character set to 16 characters, in order to print snow for debug output of various scripts.
+the purpose of this is to expand brainfuck's original 8 character set 
+to 16 characters, in order to print snow for debug output of various scripts.
 
 

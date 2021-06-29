@@ -1,4 +1,21 @@
-				<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<a href="/settings.html"
+   onclick="if (!document.getElementById('settings')) { return FetchDialog('settings'); }">Settings</a>
+
+
+<br>
 				<label for=bits title="Algorithm">:
 					<select name=bits id=bits>
 						<option value=0>simple (cookie)</option>
@@ -10,3 +27,20 @@
 					</select>
 				</label>
 
+
+
+
+
+				<p class=advanced>
+					<code><pre>
+javascript:
+    window.location =
+        'http://localhost:2784/post.html' +
+            '?comment=' +
+                encodeURIComponent(
+                    window.getSelection()
+                ) +
+            '&s=' +
+                encodeURIComponent(document.location)
+            </pre></code>
+				</p>

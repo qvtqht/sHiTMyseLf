@@ -1,3 +1,390 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+		my $message = '';
+		if ($isTextart) {
+			# if textart, format with extra spacing to preserve character arrangement
+			#$message = TextartForWeb($message);
+
+			$message = TextartForWeb(GetFile($file{'file_path'}));
+			WriteLog('GetItemTemplate: textart: $message = TextartForWeb(GetFile(' . $file{'file_path'} . ')) = ' . length($message));
+		} else {
+			# get formatted/post-processed message for this item
+			$message = GetItemDetokenedMessage($file{'file_hash'}, $file{'file_path'});
+
+			if (!$message) {
+				#message is missing, try to find fallback
+				WriteLog('GetItemTemplate: warning: $message is empty, trying original source');
+
+				if (!$sourceFileHasGoneAway && -e $file{'file_path'}) {
+					#original file still exists
+					$message = GetFile($file{'file_path'});
+
+					if ($message) {
+						$isTextart = 1;
+					} else {
+						WriteLog('GetItemTemplate: warning: $message is empty even after getting file contents!');
+						$message = '[Message is blank.]';
+					}
+				} else {
+					WriteLog('GetItemTemplate: warning: $sourceFileHasGoneAway is TRUE');
+					$message = '[Unable to retrieve message. Source file has gone away.]';
+				}
+			}
+
+			$message =~ s/\r//g;
+
+			if (GetConfig('admin/expo_site_mode')) {
+				#trim signature/header-footer
+				if (index($message, "\n-- \n") != -1) {
+					$message = substr($message, 0, index($message, "\n-- \n"));
+				}
+			}
+
+
+			if ($file{'remove_token'}) {
+				# if remove_token is specified, remove it from the message
+				WriteLog('GetItemTemplate: $file{\'remove_token\'} = ' . $file{'remove_token'});
+
+				$message =~ s/$file{'remove_token'}//g;
+				$message = trim($message);
+
+				#todo there is a #bug here, but it is less significant than the majority of cases
+				#  the bug is that it removes the token even if it is not by itself on a single line
+				#  this could potentially be mis-used to join together two pieces of a forbidden string
+				#todo make it so that post does not need to be trimmed, but extra \n\n after the token is removed
+			} else {
+				WriteLog('GetItemTemplate: $file{\'remove_token\'} is not set');
+			}
+
+			# if not textart, just escape html characters
+			WriteLog('GetItemTemplate: calling FormatForWeb');
+			$message = FormatForWeb($message);
+
+
+			# WriteLog($message);
+
+
+			if ($file{'item_type'}) {
+				$itemType = $file{'item_type'};
+			} else {
+				$itemType = 'txt';
+			}
+
+			if (!$file{'item_title'}) {
+				#hack #todo
+				$file{'item_title'} = 'Untitled';
+				#$file{'item_title'} = '';
+			}
+
+			# } elsif ($isSurvey) {
+			# 	# if survey, format with text fields for answers
+			# 	$message = SurveyForWeb($message);
+
+
+			#hint GetHtmlFilename()
+			#todo verify that the items exist before turning them into links,
+			# so that we don't end up with broken links
+			# can be done here or in the function (return original text if no item)?
+			#$message =~ s/([a-f0-9]{40})/GetItemHtmlLink($1)/eg;
+			#$message =~ s/([a-f0-9]{40})/GetItemTemplateFromHash($1)/eg;
+
+			# if format_avatars flag is set, replace author keys with avatars
+			if ($file{'format_avatars'}) {
+				$message =~ s/([A-F0-9]{16})/GetHtmlAvatar($1)/eg;
+			}
+		} # NOT $isTextart
+
+
+
+				if ($itemType eq 'txt') {
+					WriteLog('GetItemTemplate: 2');
+					if ($isTextart) {
+						$itemText = 'asdfad';
+					} else {
+						$itemText = $message; # output for item's message (formatted text)
+					}
+
+					$itemClass = "txt";
+
+
+					if ($isSigned) {
+						# if item is signed, add "signed" css class
+						$itemClass .= ' signed';
+					}
+
+					if ($isAdmin) {
+						# if item is signed by an admin, add "admin" css class
+						$itemClass .= ' byadmin';
+
+						my $adminContainer = GetTemplate('html/item/container/admin.template');
+
+						my $colorAdmin = GetThemeColor('admin') || '#c00000';
+						$adminContainer =~ s/\$colorAdmin/$colorAdmin/g;
+
+						$adminContainer =~ s/\$message/$itemText/g;
+
+						$itemText = $adminContainer;
+					} # $isAdmin
+				} # $itemType eq 'txt'
+
+				if ($itemType eq 'image') {
+					if (GetConfig('admin/image/enable')) {
+						my $imageContainer = '';
+						if ($file{'no_permalink'}) {
+							$imageContainer = GetTemplate('html/item/container/image.template');
+						} else {
+							$imageContainer = GetTemplate('html/item/container/image_with_link.template');
+						}
+
+						my $imageUrl = "/thumb/thumb_800_$fileHash.gif"; #todo hardcoding no
+						my $imageSmallUrl = "/thumb/thumb_42_$fileHash.gif"; #todo hardcoding no
+						my $imageAlt = $itemTitle;
+
+						if ($file{'image_large'}) {
+						} else {
+						}
+		#				my $imageUrl = "/thumb/squared_800_$fileHash.gif"; #todo hardcoding no
+		#				my $imageSmallUrl = "/thumb/squared_42_$fileHash.gif"; #todo hardcoding no
+
+						# $imageSmallUrl is a smaller image, used in the "lowsrc" attribute for img tag
+
+						if ($file{'image_large'}) {
+							#$imageContainer = AddAttributeToTag($imageContainer, 'img', 'width', '500');
+							#$imageContainer = AddAttributeToTag($imageContainer, 'img', 'width', '100%');
+						} else {
+							if ($file{'item_score'} > 0) {
+								$imageUrl = "/thumb/thumb_512_$fileHash.gif"; #todo hardcoding no
+							} else {
+								$imageUrl = "/thumb/thumb_512_g_$fileHash.gif"; #todo hardcoding no
+							}
+							$imageContainer = AddAttributeToTag($imageContainer, 'img', 'width', '300');
+						}
+
+						$imageContainer =~ s/\$imageUrl/$imageUrl/g;
+						$imageContainer =~ s/\$imageSmallUrl/$imageSmallUrl/g;
+						$imageContainer =~ s/\$imageAlt/$imageAlt/g;
+						$imageContainer =~ s/\$permalinkHtml/$permalinkHtml/g;
+
+
+						$itemText = $imageContainer;
+
+						$itemClass = 'image';
+					} else {
+						$itemText = '[image]';
+						WriteLog('GetItemTemplate: warning: $itemType eq image, but images disabled');
+					}
+				} # $itemType eq 'image'
+
+
+				if ($isTextart) {
+					WriteLog('GetItemTemplate: 3');
+					# if item is textart, add "item-textart" css class
+					#todo this may not be necessary anymore
+					$itemClass = 'item-textart';
+
+					#die $itemText;
+
+					my $textartContainer = GetTemplate('html/item/container/textart.template');
+					$textartContainer =~ s/\$message/$itemText/g;
+
+					$itemText = $textartContainer;
+
+					$windowBody = GetTemplate('html/item/item.template'); # GetItemTemplate() #textart
+
+					$windowBody =~ s/\$itemName/$itemName/g;
+					$windowBody =~ s/\$itemText/$itemText/g;
+				} else {
+
+					$windowBody = GetTemplate('html/item/item.template'); # GetItemTemplate() NOT #textart
+
+					$windowBody =~ s/\$itemName/$itemName/g;
+					$windowBody =~ s/\$itemText/$itemText/g;
+				}
+
+
+		my $itemHash = $file{'file_hash'}; # file hash/item identifier
+		my $gpgKey = $file{'author_key'}; # author's fingerprint
+
+		my $isTextart = 0; # if textart, need extra formatting
+		my $isSurvey = 0; # if survey, need extra formatting
+		my $isTooLong = 0; # if survey, need extra formatting
+
+		my $alias; # stores author's alias / name
+		my $isAdmin = 0; # author is admin? (needs extra styles)
+
+		my $itemType = '';
+
+		my $isSigned = 0; # is signed by user (also if it's a pubkey)
+		if ($gpgKey) { # if there's a gpg key, it's signed
+			$isSigned = 1;
+		} else {
+			$isSigned = 0;
+		}
+
+		if ($file{'tags_list'}) {
+			# if there is a list of tags, check to see if there is a 'textart' tag
+
+			# split the tags list into @itemTags array
+			my @itemTags = split(',', $file{'tags_list'});
+
+			# loop through all the tags in @itemTags
+			while (scalar(@itemTags)) {
+				my $thisTag = pop @itemTags;
+				if ($thisTag eq 'textart') {
+					$isTextart = 1; # set isTextart to 1 if 'textart' tag is present
+				}
+				if ($thisTag eq 'survey') {
+					$isSurvey = 1; # set $isSurvey to 1 if 'survey' tag is present
+				}
+				if ($thisTag eq 'toolong') {
+					$isTooLong = 1; # set $isTooLong to 1 if 'survey' tag is present
+				}
+			}
+		}
+		if ($file{'tags_list'}) {
+			# if there is a list of tags, check to see if there is a 'textart' tag
+
+			# split the tags list into @itemTags array
+			my @itemTags = split(',', $file{'tags_list'});
+
+			# loop through all the tags in @itemTags
+			while (scalar(@itemTags)) {
+				my $thisTag = pop @itemTags;
+				if ($thisTag eq 'textart') {
+					$isTextart = 1; # set isTextart to 1 if 'textart' tag is present
+				}
+				if ($thisTag eq 'survey') {
+					$isSurvey = 1; # set $isSurvey to 1 if 'survey' tag is present
+				}
+				if ($thisTag eq 'toolong') {
+					$isTooLong = 1; # set $isTooLong to 1 if 'survey' tag is present
+				}
+			}
+		}
+		my $isTextart = 0; # if textart, need extra formatting
+		my $isSurvey = 0; # if survey, need extra formatting
+		my $isTooLong = 0; # if survey, need extra formatting
+
+		my $alias; # stores author's alias / name
+		my $isAdmin = 0; # author is admin? (needs extra styles)
+
+		my $itemType = '';
+
+		my $isSigned = 0; # is signed by user (also if it's a pubkey)
+		if ($gpgKey) { # if there's a gpg key, it's signed
+			$isSigned = 1;
+		} else {
+			$isSigned = 0;
+		}
+
+		if ($file{'tags_list'}) {
+			# if there is a list of tags, check to see if there is a 'textart' tag
+
+			# split the tags list into @itemTags array
+			my @itemTags = split(',', $file{'tags_list'});
+
+			# loop through all the tags in @itemTags
+			while (scalar(@itemTags)) {
+				my $thisTag = pop @itemTags;
+				if ($thisTag eq 'textart') {
+					$isTextart = 1; # set isTextart to 1 if 'textart' tag is present
+				}
+				if ($thisTag eq 'survey') {
+					$isSurvey = 1; # set $isSurvey to 1 if 'survey' tag is present
+				}
+				if ($thisTag eq 'toolong') {
+					$isTooLong = 1; # set $isTooLong to 1 if 'survey' tag is present
+				}
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #
 #			DBAddItemPage($$replyItem{'file_hash'}, 'item', $file{'file_hash'});
 #
@@ -55,7 +442,7 @@
 #					WriteLog('$$subReplyItem{\'vote_return_to\'} = ' . $$subReplyItem{'vote_return_to'});
 #
 #					$$subReplyItem{'trim_long_text'} = 1;
-#					my $subReplyTemplate = GetItemTemplate2($subReplyItem); # GetItemPage()
+#					my $subReplyTemplate = GetItemTemplate($subReplyItem); # GetItemPage()
 #					if ($subReplyComma eq '') {
 #						$subReplyComma = '<hr size=4>';
 #					}
@@ -123,8 +510,8 @@
 
 
 
-		$writeForm = str_replace('<span id=write_js></span>', $writeJs, $writeForm);
-		$writeForm = str_replace('<span id=write_js></span>', $writeJs, $writeForm);
+		$writeForm = str_replace('<span id=write_options></span>', $writeOptions, $writeForm);
+		$writeForm = str_replace('<span id=write_options></span>', $writeOptions, $writeForm);
 
 
 
@@ -1530,7 +1917,7 @@ sub DBAddItem { # $filePath, $itemName, $authorKey, $fileHash, $itemType, $verif
 # $itemName = item's 'name' (currently hash)
 # $authorKey = author's gpg fingerprint
 # $fileHash = hash of item
-# $itemType = type of item (currently 'txt' is supported)
+# $itemType = type of item (currently 'txt', 'image', 'url' supported)
 # $verifyError = whether there was an error with gpg verification of item
 
 	state $query;
@@ -1552,7 +1939,7 @@ sub DBAddItem { # $filePath, $itemName, $authorKey, $fileHash, $itemType, $verif
 			DBAddItemAttribute('flush');
 		}
 
-		return;
+		return '';
 	}
 
 	if ($query && (length($query) > DBMaxQueryLength() || scalar(@queryParams) > DBMaxQueryParams())) {
@@ -1595,7 +1982,7 @@ sub DBAddItem { # $filePath, $itemName, $authorKey, $fileHash, $itemType, $verif
 	WriteLog('DBAddItem: $filePathRelative = ' . $filePathRelative . '; $htmlDir = ' . $htmlDir);
 
 	DBAddItemAttribute($fileHash, 'sha1', $fileHash);
-	DBAddItemAttribute($fileHash, 'md5', md5_hex(GetFile($filePath)));
+	#DBAddItemAttribute($fileHash, 'md5', md5_hex(GetFile($filePath)));
 	DBAddItemAttribute($fileHash, 'item_type', $itemType);
 	DBAddItemAttribute($fileHash, 'file_path', $filePathRelative);
 
@@ -1977,7 +2364,7 @@ sub DBGetAddedTime { # return added time for item specified
 		FROM item_attribute
 		WHERE
 			file_hash = '$fileHash' AND
-			attribute IN ('chain_timestamp', 'gpg_timestamp', 'puzzle_timestamp')
+			attribute IN ('chain_timestamp', 'gpg_timestamp', 'puzzle_timestamp', 'access_log_timestamp')
 	";
 	# my $query = "SELECT add_timestamp FROM added_time WHERE file_hash = '$fileHash'";
 
@@ -2494,8 +2881,6 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 		DBAddPageTouch('index');
 		DBAddPageTouch('flush'); #todo shouldn't be here
 	}
-
-	PutCache('indexed/'.$fileHash, 1);
 	return $fileHash;
 } # IndexTextFile()
 
@@ -2937,3 +3322,76 @@ sub RemoveOldItems {
 		ORDER BY add_timestamp
 	";
 }
+
+
+
+
+===
+
+
+#sub GetItemTemplate-1 {
+#	my %file = %{shift @_}; #todo should be better formatted
+#
+#	if (
+#		defined($file{'file_hash'}) &&
+#		defined($file{'item_type'})
+#	) {
+#		WriteLog('GetItemTemplate: sanity check passed, defined($file{file_path}');
+#
+#		if ($file{'item_type'} eq 'txt') {
+#			my $message = GetItemDetokenedMessage($file{'file_hash'});
+#			$message = FormatMessage($message, \%file);
+#		}
+#
+#		my $itemTemplate = '';
+#		{
+#			my %windowParams;
+#			$windowParams{'body'} = GetTemplate('html/item/item.template'); # GetItemTemplate()
+#			$windowParams{'title'} = HtmlEscape($file{'item_title'});
+#			$windowParams{'guid'} = substr(sha1_hex($file{'file_hash'}), 0, 8);
+#
+#			$windowParams{'body'} =~ s/\$itemText/$message/;
+#
+#			{
+#				my $statusBar = '';
+#
+#				$statusBar .= GetItemHtmlLink($file{'file_hash'}, GetTimestampWidget($file{'add_timestamp'}));
+#				$statusBar .= '; ';
+#
+#				$statusBar .= '<span class=advanced>';
+#				$statusBar .= substr($file{'file_hash'}, 0, 8);
+#				$statusBar .= '; ';
+#				$statusBar .= '</span>';
+#
+#				if ($file{'author_key'}) {
+#					$statusBar .= trim(GetAuthorLink($file{'author_key'}));
+#					$statusBar .= '; ';
+#				}
+#
+#				WriteLog('GetItemTemplate: ' . $file{'file_hash'} . ': $file{child_count} = ' . $file{'child_count'});
+#
+#				if ($file{'child_count'}) {
+#					$statusBar .= '<a href="' . GetHtmlFilename($file{'file_hash'}) . '#reply">';
+#					if ($file{'child_count'}) {
+#						$statusBar .= 'reply(' . $file{'child_count'} . ')';
+#					} else {
+#						$statusBar .= 'reply';
+#					}
+#					$statusBar .= '</a>; ';
+#				}
+#
+#				$statusBar .= GetItemTagButtons($file{'file_hash'}, 'all');
+#				$windowParams{'status'} = $statusBar;
+#			}
+#
+#			$windowParams{'content'} = $message;
+#
+#			$itemTemplate = GetWindowTemplate2(\%windowParams);
+#		}
+#		return $itemTemplate;
+#
+#	} else {
+#		WriteLog('GetItemTemplate: sanity check FAILED, defined($file{file_path}');
+#		return '';
+#	}
+#} # GetItemTemplate()
