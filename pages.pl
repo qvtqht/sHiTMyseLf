@@ -2311,8 +2311,18 @@ sub GetPageFooter { # returns html for page footer
 
 	$txtFooter = FillThemeColors($txtFooter);
 
-	if (GetConfig('admin/js/enable') && GetConfig('admin/js/loading')) {
+	if (GetConfig('admin/js/enable') && GetConfig('admin/js/loading')) { #finished loading
 		$txtFooter = InjectJs2($txtFooter, 'after', '</html>', qw(loading_end));
+
+		# # #templatize #loading
+		#this would hide all dialogs until they are ready to be shown
+		#it is a major impediment for many browsers, and should not be enabled willy-nilly
+		#it's challenging to show the dialogs reliably, especially with the !important bit
+		#todo how to override this style and remove it? remove node?
+		#the reason for trying this is trying to avoid windows changing position after page load
+		# # #
+		#$txtFooter .= "<style><!-- .dialog { display: table !important; } --></style>";
+		# # #
 	}
 
 	if (GetConfig('html/back_to_top_button')) {
@@ -2504,10 +2514,11 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 
 	my $listText = GetTemplate('list/' . $listName);
 
-	WriteLog('GetMenuFromList: $listText = ' . $listText);
 
 #	$listText = str_replace(' ', "\n", $listText);
 	$listText = str_replace("\n\n", "\n", $listText);
+
+	#WriteLog('GetMenuFromList: $listText = ' . $listText);
 
 	my @menuList = split("\n", $listText);
 
@@ -2628,7 +2639,8 @@ sub GetClockWidget {
 		$clock = '+';
 	}
 
-	WriteLog('GetClockWidget: $clock = ' . $clock);
+	#WriteLog('GetClockWidget: $clock = ' . $clock);
+	WriteLog('GetClockWidget: length($clock) = ' . length($clock));
 
 	return $clock;
 }
@@ -2688,17 +2700,6 @@ sub GetMenuTemplate { # returns menubar
 		$topMenuTemplate = '<form action="/stats.html" name=frmTopMenu>' . $topMenuTemplate . '</form>';
 		$topMenuTemplate =~ s/<span id=spnClock><\/span>/$clockTemplate/g;
 	}
-
-	if (GetConfig('admin/js/enable')) {
-	#if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
-		my $cascadeButtons = GetTemplate('html/widget/cascade_button.template');
-		$topMenuTemplate = str_replace(
-			'<span id=controls></span>',
-			'<span id=controls>' . $cascadeButtons. '</span>',
-			$topMenuTemplate
-		);
-	}
-
 
 	return $topMenuTemplate;
 } # GetMenuTemplate()
@@ -2780,8 +2781,11 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 
 	$htmlStart =~ s/\$introText/$introText/g;
 
-	if (GetConfig('admin/js/enable') && GetConfig('admin/js/loading')) {
+	if (GetConfig('admin/js/enable') && GetConfig('admin/js/loading')) { #begin loading
 		$htmlStart = InjectJs2($htmlStart, 'after', '<body>', qw(loading_begin));
+
+		# # #todo #templatize #hide #loading
+		#$htmlStart .= '<style><!-- .dialog {display: none !important; } --></style>';
 	}
 
 	$htmlStart = FillThemeColors($htmlStart);
@@ -3145,14 +3149,13 @@ sub GetStatsTable {
 	$statsTable =~ s/\$lastUpdateTime/$lastUpdateTime/;
 
 	# count total number of files
+	#
 	my $filesTotal = 0;
 	WriteLog('GetStatsTable: $filesTotal = 0');
-
 	my $TXTDIR = GetDir('txt');
-
 	if ($TXTDIR =~ m/^([^\s]+)$/) { #security #taint
 		$TXTDIR = $1;
-		my $findResult = `find $TXTDIR -name \\\*.txt | wc -l`;
+		my $findResult = `find $TXTDIR -name \\\*.txt | wc -l`; #todo get rid of this, #performance
 		if ($findResult =~ m/(.+)/) { #todo add actual check of some kind
 			$findResult = $1;
 			my $filesTxt = trim($findResult); #todo cache GetCache('count_txt')
@@ -3163,6 +3166,8 @@ sub GetStatsTable {
 	} else {
 		WriteLog('GetStatsTable: warning: sanity check failed: $TXTDIR contains space');
 	}
+	#
+	# finished counting files
 
 	if (GetConfig('admin/image/enable')) {
 		my $IMAGEDIR = GetDir('image');
@@ -3185,11 +3190,14 @@ sub GetStatsTable {
 
 	my $chainLogLength = 0;
 	if (GetConfig('admin/logging/write_chain_log')) {
-		$chainLogLength = `wc -l html/chain.log`;
+		#$chainLogLength = `wc -l html/chain.log`;
+		$chainLogLength = SqliteGetValue("SELECT COUNT(file_hash) FROM item_attribute WHERE attribute = 'chain_sequence'");
+		#todo make sqlite optional
+		#todo templatize query
 	}
 
 	if (abs($itemsIndexed - $filesTotal) > 3) {
-		$statsTable = str_replace('<p id=diagnostics></p>', '<p id=diagnostics><font color=orange style="padding: 2pt; border-radius: 3pt; border: inset 1pt #606060; background-color: #404040;"><b>Check engine!</b></font></p>', $statsTable);
+		$statsTable = str_replace('<p id=diagnostics></p>', '<p id=diagnostics><a href="/warning.html"><b><font color=orange style="padding: 2pt; border-radius: 3pt; border: inset 1pt #606060; background-color: #404040;">Check engine!</font></b></a></p>', $statsTable);
 	}
 
 	my $tagsTotal = DBGetTagCount();
@@ -3214,13 +3222,14 @@ sub GetStatsTable {
 	$statsTable =~ s/\$filesTotal/$filesTotal/;
 	$statsTable =~ s/\$chainLogLength/$chainLogLength/;
 
-	if ($templateName eq 'html/stats.template') {
+	if ($templateName eq 'html/stats.template') { # GetStatsTable() conditional
 		$statsTable = GetWindowTemplate($statsTable, 'Status');
 		#todo remove this once other template is fixed #???
 	}
 
+	WriteLog('GetStatsTable() FINISHED in ' . (time()-$timeBegin) . '. length($statsTable) = ' . length($statsTable));
 	return $statsTable;
-}
+} # GetStatsTable()
 
 sub GetStatsPage { # returns html for stats page
 	my $statsPage;
@@ -3228,7 +3237,7 @@ sub GetStatsPage { # returns html for stats page
 	$statsPage = GetPageHeader('Stats', 'Stats', 'stats');
 
 	$statsPage .= GetTemplate('html/maincontent.template');
-	my $statsTable = GetStatsTable();
+	my $statsTable = GetStatsTable(); # GetStatsPage()
 	$statsPage .= $statsTable;
 
 	$statsPage .= GetPageFooter();
@@ -3289,7 +3298,9 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 	my %scriptsDone = ();  # hash to keep track of scripts we've already injected, to avoid duplicates
 
 	if (in_array('settings', @scriptNames)) {
-	#if (@scriptNames ~~ 'settings') {
+		# some hard-coded script additions
+		# these can be more selective in the future
+
 		if (GetConfig('html/clock')) {
 			push @scriptNames, 'clock';
 		}
@@ -3299,15 +3310,22 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 		}
 
 		if (GetConfig('admin/js/dragging')) {
-			push @scriptNames, 'dragging';
+			push @scriptNames, 'dragging'; # InjectJs()
 		}
 	}
+	#
+
+	###############################################
+	# NO MORE ADDITIONS TO SCRIPT LIST AFTER HERE #
+	###############################################
 
 	#output list of all the scripts we're about to include
 	my $scriptNamesList = join(' ', @scriptNames);
 
-	# loop through all the scripts
 	foreach my $script (@scriptNames) {
+	################################
+	# loop through all the scripts #
+	################################
 		if ($script eq 'clock') {
 			my $clockFormat = GetConfig('html/clock_format');
 			if ($clockFormat eq 'epoch' || $clockFormat eq 'union' || $clockFormat eq '24hour') {
@@ -3324,12 +3342,11 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 			}
 		}
 
-		# only inject each script once, otherwise move on
-		#todo may want to make this dependent on 'settings' too
 		if (defined($scriptsDone{$script})) {
+			# only inject each script once, otherwise move on
+			#todo may want to make this dependent on 'settings' too
 			next;
 		} else {
-			$scriptsDone{$script} = 1;
 		}
 
 		# separate each script with \n\n
@@ -3342,12 +3359,15 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 		my $scriptTemplate = GetScriptTemplate("$script");
 
 		if (trim($scriptTemplate) eq '') {
-			WriteLog('InjectJs: warning: $scriptTemplate is empty');
+			WriteLog('InjectJs: warning: $scriptTemplate is FALSE. $script = ' . $script);
 		} else {
 			# add to the snowball of javascript
 			$scriptsText .= $scriptTemplate;
 		}
-	}
+
+		# remember we've done this script
+		$scriptsDone{$script} = 1;
+	} # foreach $script (@scriptNames)
 
 	my $needOnload = 0; # remember if we need to add <body onload attribute later
 	{
@@ -3357,6 +3377,10 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 			$needOnload = 1;
 		}
 	}
+
+	#####################################################
+	# NO MORE ADDITIONS TO SCRIPTS TEXT BELOW THIS LINE #
+	#####################################################
 
 	# get the wrapper, i.e. <script>$javascript</script>
 	my $scriptInject = GetTemplate('html/utils/scriptinject.template');
@@ -3421,6 +3445,7 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 	}
 
 	if (GetConfig('admin/js/debug')) {
+		# add "jsdebug" button if js debugging is enabled
 		$html = GetTemplate('html/widget/debug_button.template') . $html;
 		#todo make nice
 	}
@@ -3767,9 +3792,10 @@ sub GetReadPage { # generates page with item listing based on parameters
 	#		for tag = tag name/value
 
 
-	# GetAuthorPage {
-	# MakeReadPage {
-	# PrintReadPage {
+	# sub MakeAuthorPage {
+	# sub GetAuthorPage {
+	# sub MakeReadPage {
+	# sub PrintReadPage {
 
 	my $title; # plain-text title for <title>
 	my $titleHtml; # title which can have html formatting
@@ -3812,12 +3838,14 @@ sub GetReadPage { # generates page with item listing based on parameters
 			my %queryParams;
 			$queryParams{'where_clause'} = $whereClause;
 			$queryParams{'order_clause'} = 'ORDER BY add_timestamp DESC';
+			$queryParams{'limit_clause'} = "LIMIT 25"; #todo fix hardcoded limit #todo pagination
 
 			@files = DBGetItemList(\%queryParams);
 		}
 
 		if ($pageType eq 'tag') { #/top/tag.html #/tag/tag.html
 			# TAG PAGE ##############################################################
+			#todo tell user how many items we found
 						
 			$pageParam = shift;
 			my $tagName = $pageParam;
@@ -3850,7 +3878,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score >= $scoreThreshold";
 			}
 			$queryParams{'order_clause'} = "ORDER BY item_score DESC, item_flat.add_timestamp DESC";
-			$queryParams{'limit_clause'} = "LIMIT 100"; #todo fix hardcoded limit
+			$queryParams{'limit_clause'} = "LIMIT 25"; #todo fix hardcoded limit #todo pagination
 
 			@files = DBGetItemList(\%queryParams);
 		} # $pageType eq 'tag'
@@ -4003,10 +4031,10 @@ sub GetReadPage { # generates page with item listing based on parameters
 
 				WriteLog('GetReadPage: GetItemTemplate($row)');
 
-				$itemTemplate = GetItemTemplate($row); # GetReadPage()
+				$itemTemplate = GetItemTemplate($row); # GetReadPage() $message
 			}
 			else {
-				$itemTemplate = GetItemTemplate($row); # GetReadPage()
+				$itemTemplate = GetItemTemplate($row); # GetReadPage() missing $message
 				WriteLog('GetReadPage: warning: missing $message');
 			}
 
@@ -4064,13 +4092,15 @@ sub GetItemListHtml { # @files(array of hashes) ; takes @files, returns html lis
 
 	my $itemListTemplate = '<span class=itemList>$itemList</span>'; #todo templatize
 
-	foreach my $row (@files) { # loop through each file
-		my $file = $row->{'file_path'};
+	foreach my $rowHashRef (@files) { # loop through each file
+		my %row = %{$rowHashRef};
+
+		my $file = $row{'file_path'};
 
 		if ($file && -e $file) { # file exists
-			my $itemHash = $row->{'file_hash'};
+			my $itemHash = $row{'file_hash'};
 
-			my $gpgKey = $row->{'author_key'};
+			my $gpgKey = $row{'author_key'};
 			my $isSigned;
 			if ($gpgKey) {
 				$isSigned = 1;
@@ -4087,13 +4117,13 @@ sub GetItemListHtml { # @files(array of hashes) ; takes @files, returns html lis
 				$message = GetFile($file);
 			}
 
-			$row->{'vote_buttons'} = 1;
-			$row->{'show_vote_summary'} = 1;
-			$row->{'display_full_hash'} = 0;
-			$row->{'trim_long_text'} = 0;
+			$row{'vote_buttons'} = 1;
+			$row{'show_vote_summary'} = 1;
+			$row{'display_full_hash'} = 0;
+			$row{'trim_long_text'} = 0;
 
 			my $itemTemplate;
-			$itemTemplate = GetItemTemplate($row); # GetIndexPage()
+			$itemTemplate = GetItemTemplate(\%row); # GetIndexPage()
 
 			$itemList = $itemList . $itemComma . $itemTemplate;
 
@@ -4111,6 +4141,7 @@ sub GetItemListHtml { # @files(array of hashes) ; takes @files, returns html lis
 } # GetItemListHtml()
 
 sub GetIndexPage { # returns html for an index page, given an array of hash-refs containing item information
+	# MakeIndexPage {
 	# Called from WriteIndexPages() and generate.pl
 	# Should probably be replaced with GetReadPage()
 
@@ -4418,7 +4449,7 @@ sub GetDesktopPage { # returns html for desktop page (/desktop.html)
 			$html .= GetQueryAsDialog('tags', 'Tags');
 			$html .= GetSettingsWindow();
 			$html .= GetProfileWindow();
-			$html .= GetStatsTable();
+			$html .= GetStatsTable(); # GetDesktopPage()
 			#$html .= GetWriteForm();
 
 			if (GetConfig('admin/php/enable')) {
@@ -4436,7 +4467,7 @@ sub GetDesktopPage { # returns html for desktop page (/desktop.html)
 	if (GetConfig('admin/js/enable')) {
 		my @scripts = qw(settings avatar profile timestamp pingback utils);
 		if (GetConfig('admin/js/dragging')) {
-			push @scripts, 'dragging';
+			push @scripts, 'dragging'; # GetDesktopPage()
 		}
 		if (GetConfig('admin/php/enable')) {
 			if (GetConfig('admin/upload/enable')) {
@@ -4480,6 +4511,7 @@ sub ListItemsByTag { #todo
 }
 
 sub GetSimpleWindow { # windowType ; gets simple window based on template/page/$windowType.template
+# sub GetSimpleDialog {
 	my $windowType = shift;
 
 	WriteLog('GetSimpleWindow: $windowType = ' . $windowType);
@@ -4564,7 +4596,7 @@ sub MakeSimplePage { # given page name, makes page
 	if (GetConfig('admin/js/enable')) {
 		my @scripts = qw(avatar settings profile utils timestamp clock);
 		if (GetConfig('admin/js/dragging')) {
-			push @scripts, 'dragging';
+			push @scripts, 'dragging'; # MakeSimplePage()
 		}
 		$html = InjectJs($html, @scripts);
 	}
@@ -4580,17 +4612,17 @@ sub MakePhpPages {
 	WriteLog('MakePhpPages() begin');
 
 	if (GetConfig('admin/php/enable')) {
-		# post.php
-		# test2.php
-		# config.php
-		# test.php
-		# write.php
-		# upload.php
-		# search.php
-		# cookie.php
-		# cookietest.php
-		# route.php
-		# quick.php
+		# 'post.php'
+		# 'test2.php'
+		# 'config.php'
+		# 'test.php'
+		# 'write.php'
+		# 'upload.php'
+		# 'search.php'
+		# 'cookie.php'
+		# 'cookietest.php'
+		# 'route.php'
+		# 'quick.php'
 		my @templatePhpSimple = qw(post test2 config test write upload search cookie cookietest utils route);
 		if (GetConfig('admin/php/quickchat')) {
 			push @templatePhpSimple, 'quick';
@@ -4766,6 +4798,24 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 
 	WriteLog('MakeSummaryPages() END');
 } # MakeSummaryPages()
+
+sub MakePostPage {
+	# Target page for the submit page
+	my $postPage = GetPageHeader("Thank You", "Thank You", 'post');
+	# $postPage =~ s/<\/head>/<meta http-equiv="refresh" content="10; url=\/"><\/head>/;
+	$postPage .= GetTemplate('html/maincontent.template');
+	my $postTemplate = GetTemplate('page/post.template');
+	$postPage .= $postTemplate;
+	$postPage .= GetPageFooter();
+	$postPage = InjectJs($postPage, qw(settings avatar post));
+	if (GetConfig('admin/js/enable')) {
+		$postPage =~ s/<body /<body onload="makeRefLink();" /;
+		$postPage =~ s/<body>/<body onload="makeRefLink();">/;
+	}
+	my $HTMLDIR = GetDir('html');
+	WriteLog('MakeSummaryPages: ' . "$HTMLDIR/post.html");
+	PutHtmlFile("post.html", $postPage);
+}
 
 sub MakeSystemPages {
 
@@ -5101,6 +5151,11 @@ sub GetWritePage { # returns html for write page
 	$writePageHtml .= $writeOptions;
 	$writePageHtml .= '</form>'; #todo
 
+	#if (GetConfig('admin/js/zalgo')) {
+		#$writePageHtml .= GetWindowTemplate(GetTemplate('html/form/write/write_zalgo_button.template'), 'Zalgo');
+	#}
+
+
 #	if (defined($itemCount) && defined($itemLimit) && $itemCount) {
 #		my $itemCounts = GetTemplate('form/itemcount.template');
 #		$itemCounts =~ s/\$itemCount/$itemCount/g;
@@ -5153,6 +5208,7 @@ sub GetTosDialog {
 }
 
 sub GetProfileWindow {
+# sub GetProfileDialog {
 	my $profileWindowContents = GetTemplate('form/profile.template');
 
 	if (GetConfig('admin/gpg/use_gpg2')) {
@@ -5497,7 +5553,7 @@ sub GetVersionPage { # returns html with version information for $version (git c
 	return $txtPageHtml;
 }
 
-sub WriteDataPage { # writes /data.html (and zip files if needed)
+sub WriteDataPage { # writes /data.html (and zip files if needed) # MakeZip txt.zip
 	#This makes the zip file as well as the data.html page that lists its size
 	WriteLog('MakeDataPage() called');
 
@@ -5519,7 +5575,7 @@ sub WriteDataPage { # writes /data.html (and zip files if needed)
 		#todo write zip call
 		system("zip -qr $HTMLDIR/txt.tmp.zip $HTMLDIR/txt/ $HTMLDIR/chain.log");
 		rename("$HTMLDIR/txt.tmp.zip", "$HTMLDIR/txt.zip");
-		
+
 		system("zip -qr $HTMLDIR/index.sqlite3.zip.tmp cache/" . GetMyCacheVersion() . "/index.sqlite3");
 		rename("$HTMLDIR/index.sqlite3.zip.tmp", "$HTMLDIR/index.sqlite3.zip");
 
@@ -5583,10 +5639,10 @@ sub GetItemPageFromHash { # $fileHash, returns html
 
 		return $filePage;
 	} else {
-		WriteLog("GetItemPageFromHash: \@files loop: warning: Asked to index file $fileHash, but it is not in the database! Returning.");
+		WriteLog("GetItemPageFromHash: \@files loop: warning: Asked to make page for $fileHash, but it is not in the database! Returning.");
 		return '';
 	}
-}
+} # GetItemPageFromHash()
 
 sub GetItemTemplateFromHash {
 #todo unfinished
