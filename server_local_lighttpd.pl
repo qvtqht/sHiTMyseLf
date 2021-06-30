@@ -90,7 +90,7 @@ sub StartLighttpd { # run command to start local lighttpd instance
 				WriteMessage("StartLighttpd: screen -X -S hike$port kill");
 				`screen -X -S hike$port kill`;
 			}
-			system("screen -S hike$port $pathLighttpd -D -f config/lighttpd.conf");
+			system("screen -m -d -S hike$port $pathLighttpd -D -f config/lighttpd.conf");
 		} else {
 			system("$pathLighttpd -D -f config/lighttpd.conf");
 		}
