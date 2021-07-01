@@ -9,7 +9,7 @@
 				<noscript>*</noscript>
 				<script>
                 <!--
-                document.write('Loading...');
+                document.write('...');
                 // -->
                 </script>
 			</span>
