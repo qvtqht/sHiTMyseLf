@@ -1727,6 +1727,11 @@ sub GetImageContainer { # $fileHash, $imageAlt, $boolLinkToItemPage = 1
 
 sub GetTagsListAsHtmlWithLinks {
 	my $tagsListParam = shift;
+
+	if (!$tagsListParam) {
+		WriteLog('GetItemTemplate: warning: $tagsListParam is missing. caller: ' . join(',', caller));
+		return '';
+	}
 	my @tagsList = split(',', $tagsListParam);
 
 	my $headings;
