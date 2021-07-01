@@ -101,7 +101,18 @@ sub GetItemTemplate { # \%file ; returns HTML for outputting one item WITH WINDO
 	# trim_long_text = trim text if it is longer than config/html/item_long_threshold
 
 	# get %file hash from supplied parameters
-	my %file = %{shift @_};
+
+	#my %file = %{shift @_};
+	my $hashRef = shift; # reference to hash
+	my %file;            # actual hash
+	if ($hashRef) {
+		# if reference exists, set %file
+		%file = %{$hashRef};
+	} else {
+		WriteLog('GetItemTemplate: warning: argument missing, returning');
+		#todo output something anyway?
+		return '';
+	}
 
 	my $sourceFileHasGoneAway = 0;
 
