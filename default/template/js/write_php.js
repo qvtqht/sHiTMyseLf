@@ -16,18 +16,32 @@ function commentOnChange (t, formId) {
 //
 // this part requires getElementById()
 
+    //window.dbgoff = 0;
+
     //alert('DEBUG: commentOnChange() begin');
 
-	if (intCommentOnChangeLastValue <= 1024 && t.value.length <= 1024) {
+    //alert('DEBUG: commentOnChange: t = ' + t + '; formId = ' + formId + '; t.value = ' + t.value + '; t.value.length = ' + t.value.length);
+
+    if (!intCommentOnChangeLastValue) {
+    	intCommentOnChangeLastValue = 0;
+    }
+
+    if (!t.value || !t.value.length) {
 	    //alert('DEBUG: commentOnChange() intCommentOnChangeLastValue <= 1024 && t.value.length <= 1024, return');
 
-		return '';
+    	return true;
 	}
 
-	if (1024 < intCommentOnChangeLastValue && 1024 < t.value.length) {
+	if ((intCommentOnChangeLastValue <= 1024) && t.value && t.value.length && (t.value.length <= 1024)) {
+	    //alert('DEBUG: commentOnChange() intCommentOnChangeLastValue <= 1024 && t.value.length <= 1024, return');
+
+		return true;
+	}
+
+	if (1024 < intCommentOnChangeLastValue && t.value && t.value.length && (1024 < t.value.length)) {
 	    //alert('DEBUG: commentOnChange() 1024 < intCommentOnChangeLastValue && 1024 < t.value.length, return');
 
-		return '';
+		return true;
 	}
 
 	intCommentOnChangeLastValue = t.value.length;
@@ -64,8 +78,8 @@ function commentOnChange (t, formId) {
 //		}
 	}
 
-	return '';
-}
+	return true;
+} // commentOnChange()
 
 // end write_php.js
 
