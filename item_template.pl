@@ -224,7 +224,7 @@ sub GetItemTemplate { # \%file ; returns HTML for outputting one item WITH WINDO
 				$statusBar = GetTemplate('html/item/status_bar.template');
 
 				my $fileHashShort = substr($fileHash, 0, 8);
-				$statusBar = str_replace('<span class=fileHashShort></span>', "<span class=fileHashShort>" . $fileHashShort . "</span>", $statusBar);
+				$statusBar = str_replace('<span class=fileHashShort></span>;', "<span class=fileHashShort>" . $fileHashShort . "</span>;", $statusBar);
 				#$statusBar =~ s/\$fileHashShort/$fileHashShort/g;
 
 				if ($gpgKey) {
