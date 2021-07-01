@@ -345,10 +345,24 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		%itemRow
 	) {
 		# special field name which produces several things joined together
-		# value should be empty
-		# produced like this:
-		#    SELECT '' AS special_title_and_tags_list
+		# it's a bit of a hack, but it works
+		#
+		# the field value should be empty
+		#
+		# in the query, it looks like this:
+		#    SELECT
+		#		'' AS special_title_and_tags_list, <-- special field
+		#		file_hash, <-- used for populating special field
+		#		item_title, <-- used for populating special field
+		#		tags_list, <-- used for populating special field
+		#		author_id <-- used for populating special field
+		#	FROM
+		#		item_flat
+		#	WHERE ...
+
 		if (1) {
+			#todo add #sanity
+
 			my $specialName = substr($fieldName, 8);
 			if ($specialName eq 'title_and_tags_list') {
 				# title, tags list, and author avatar (if any)
