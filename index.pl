@@ -1331,15 +1331,24 @@ sub IndexImageFile { # $file ; indexes one image file into database
 #				my $convertCommandResult = `$convertCommand`;
 #				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
 #			}
-			if (!-e "$HTMLDIR/thumb/thumb_400_$fileHash.gif") {
-				my $convertCommand = "convert \"$fileShellEscaped\" -thumbnail 400x400 -strip $HTMLDIR/thumb/thumb_400_$fileHash.gif";
+			if (!-e "$HTMLDIR/thumb/thumb_512_g_$fileHash.gif") {
+				my $convertCommand = "convert \"$fileShellEscaped\" -thumbnail 512x512 -colorspace Gray -blur 0x16 -strip $HTMLDIR/thumb/thumb_512_g_$fileHash.gif";
+				#my $convertCommand = "convert \"$fileShellEscaped\" -scale 5% -blur 0x25 -resize 5000% -colorspace Gray -blur 0x8 -thumbnail 512x512 -strip $HTMLDIR/thumb/thumb_512_$fileHash.gif";
 				WriteLog('IndexImageFile: ' . $convertCommand);
 
 				my $convertCommandResult = `$convertCommand`;
 				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
 			}
-#			if (!-e "$HTMLDIR/thumb/squared_400_$fileHash.gif") {
-#				my $convertCommand = "convert \"$fileShellEscaped\" -crop 400x400 -strip $HTMLDIR/thumb/squared_400_$fileHash.gif";
+			if (!-e "$HTMLDIR/thumb/thumb_512_$fileHash.gif") {
+				my $convertCommand = "convert \"$fileShellEscaped\" -thumbnail 512x512 -strip $HTMLDIR/thumb/thumb_512_$fileHash.gif";
+				#my $convertCommand = "convert \"$fileShellEscaped\" -scale 5% -blur 0x25 -resize 5000% -colorspace Gray -blur 0x8 -thumbnail 512x512 -strip $HTMLDIR/thumb/thumb_512_$fileHash.gif";
+				WriteLog('IndexImageFile: ' . $convertCommand);
+
+				my $convertCommandResult = `$convertCommand`;
+				WriteLog('IndexImageFile: convert result: ' . $convertCommandResult);
+			}
+#			if (!-e "$HTMLDIR/thumb/squared_512_$fileHash.gif") {
+#				my $convertCommand = "convert \"$fileShellEscaped\" -crop 512x512 -strip $HTMLDIR/thumb/squared_512_$fileHash.gif";
 #				WriteLog('IndexImageFile: ' . $convertCommand);
 #
 #				my $convertCommandResult = `$convertCommand`;
