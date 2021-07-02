@@ -129,8 +129,10 @@ sub AddAttributeToTag { # $html, $tag, $attributeName, $attributeValue; adds att
 	my $attributeName = shift; # name of attribute
 	my $attributeValue = shift; # value of attribute
 
+	my $lengthBefore = length($html);
+
 	WriteLog("AddAttributeToTag(\$html, $tag, $attributeName, $attributeValue)");
-	WriteLog('AddAttributeToTag: length($html) before: ' . length($html));
+	WriteLog('AddAttributeToTag: length($html) $lengthBefore: ' . $lengthBefore);
 
 	my $tagAttribute = '';
 	if ($attributeValue =~ m/\w/) {
@@ -149,10 +151,14 @@ sub AddAttributeToTag { # $html, $tag, $attributeName, $attributeValue; adds att
 		$html = str_ireplace('<' . $tag . '>', '<' . $tag . ' ' . $tagAttribute . '>', $html);
 	}
 	if ($html eq $htmlBefore) {
-		WriteLog('AddAttributeToTag: warning: nothing was changed');
+		WriteLog('AddAttributeToTag: warning: nothing was changed; $tag = ' . $tag . '; $attributeName = ' . $attributeName . '; caller = ' . join (',', caller));
 	}
 
-	WriteLog('AddAttributeToTag: length($html) after: ' . length($html));
+	my $lengthAfter = length($html);
+
+	if ($lengthBefore == $lengthAfter) {
+		WriteLog('AddAttributeToTag: warning: $lengthBefore == $lengthAfter = ' . $lengthAfter);
+	}
 
 	return $html;
 } # AddAttributeToTag()
