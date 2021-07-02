@@ -3210,8 +3210,11 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 #note this can take a while to warm up first time, because lots of sql count() and group by such
 	my $templateName = shift;
 	if (!$templateName) {
-		$templateName = 'html/stats.template';
+		$templateName = 'html/stats.template'; # GetStatsTable()
 	}
+
+	my $timeBegin = time();
+	WriteLog('GetStatsTable() BEGIN');
 
 	state $itemsIndexed; $itemsIndexed = $itemsIndexed || DBGetItemCount();
 	my $authorCount = DBGetAuthorCount();
@@ -3383,10 +3386,10 @@ sub EnableJsDebug { # $scriptTemplate ; enables javascript debug mode
 	WriteLog('EnableJsDebug: $debugType = ' . $debugType);
 
 	if ($debugType eq 'console.log') {
-		$scriptTemplate =~ s/\/\/alert\('DEBUG:/console.log('DEBUG:/gi;
+		$scriptTemplate =~ s/\/\/alert\('DEBUG:/if(!window.dbgoff)console.log('DEBUG:/gi;
 	}
 	elsif ($debugType eq 'document.title') {
-		$scriptTemplate =~ s/\/\/alert\('DEBUG:/document.title=('DEBUG:/gi;
+		$scriptTemplate =~ s/\/\/alert\('DEBUG:/if(!window.dbgoff)document.title=('DEBUG:/gi;
 	}
 	else {
 		#$scriptTemplate =~ s/\/\/alert\('DEBUG:/if(!window.dbgoff)dbgoff=!confirm('DEBUG:/gi;
@@ -3632,7 +3635,8 @@ sub GetScriptTemplate { # $script ; returns script for name
 	#if ($script eq 'settings' || $script eq 'loading_begin') {
 	if (
 			$script eq 'settings' ||
-			$script eq 'timestamp'
+			$script eq 'timestamp' ||
+			$script eq 'loading_end'
 	) {
 		# for settings.js we also need to fill in some theme colors
 		my $colorHighlightAlert = GetThemeColor('highlight_alert');
@@ -4067,23 +4071,9 @@ sub GetReadPage { # generates page with item listing based on parameters
 		# author info box
 		$txtIndex .= GetAuthorInfoBox($authorKey);
 		$txtIndex .= GetQueryAsDialog(
-			"SELECT
-				item_title,
-				add_timestamp,
-				item_score,
-				file_hash
-			FROM
-				item_flat
-			WHERE
-				parent_count = 0 AND
-				author_key = '$authorKey'
-			ORDER BY
-				item_score DESC,
-				add_timestamp DESC
-			LIMIT 20
-			",
-			'Threads by Author'
-		); #todo use config/query/author_threads
+			$queryAuthorThreads,
+        	'Threads by Author'
+		);
 		$txtIndex .= '<hr 5>';
 	}
 	my $itemComma = '';
@@ -4326,6 +4316,8 @@ sub GetMenuItem { # $address, $caption; returns html snippet for a menu item (us
 	#todo more sanity
 
 	WriteLog('GetMenuItem: $address = ' . $address . '; $caption = ' . $caption);
+
+	my $menuName = lc($caption);
 
 	# if (!-e "$HTMLDIR/$address") {
 	#	#don't make a menu item if file doesn't exist
@@ -4760,6 +4752,10 @@ sub MakePhpPages {
 		my $PHPDIR = GetDir('php');
         $utilsPhpTemplate =~ s/\$scriptDirPlaceholderForTemplating/$SCRIPTDIR/g;
 		PutFile($PHPDIR . '/utils.php', $utilsPhpTemplate);
+
+		MakePostPage(); #post.html, needed by post.php
+
+		GetTemplate('html/item_processing.template'); #to cache it in config/
 	}
 } # MakePhpPages()
 
@@ -4824,32 +4820,6 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 	my $HTMLDIR = GetDir('html');
 	
 	MakeSystemPages();
-
-	PutHtmlFile("test.html", GetTemplate('html/test.template'));
-	PutHtmlFile("keyboard.html", GetTemplate('keyboard/keyboard.template'));
-	PutHtmlFile("keyboard_netscape.html", GetTemplate('keyboard/keyboard_netscape.template'));
-	PutHtmlFile("keyboard_android.html", GetTemplate('keyboard/keyboard_a.template'));
-
-	PutHtmlFile("frame.html", GetTemplate('keyboard/keyboard_frame.template'));
-	PutHtmlFile("frame2.html", GetTemplate('keyboard/keyboard_frame2.template'));
-	PutHtmlFile("frame3.html", GetTemplate('keyboard/keyboard_frame3.template'));
-
-	if (GetConfig('admin/offline/enable')) {
-		PutHtmlFile("cache.manifest", GetTemplate('js/cache.manifest.template') . "#" . time()); # config/admin/offline/enable
-	}
-
-	if (GetConfig('admin/dev/make_js_test_pages')) {
-		MakeJsTestPages();
-	}
-
-	my $jsTest1 = GetTemplate('test/jstest1/jstest1.template');
-	$jsTest1 = InjectJs($jsTest1, qw(jstest1));
-	PutHtmlFile("jstest1.html", $jsTest1);
-
-	# Add Event page
-	my $eventAddPage = GetEventAddPage();
-	PutHtmlFile("event.html", $eventAddPage);
-
 	# Add Event page
 	my $eventsPage = GetEventsPage();
 	PutHtmlFile("events.html", $eventsPage);
@@ -4901,20 +4871,6 @@ sub MakeSummaryPages { # generates and writes all "summary" and "static" pages S
 	# 	PutHtmlFile("clock.html", $clockTestPage);
 	# }
 
-	{
-		my $fourOhFourPage = GetDialogPage('404'); #GetTemplate('html/404.template');
-		if (GetConfig('html/clock')) {
-			$fourOhFourPage = InjectJs($fourOhFourPage, qw(clock fresh utils)); #todo this causes duplicate clock script
-		}
-		PutHtmlFile("404.html", $fourOhFourPage);
-		PutHtmlFile("error/error-404.html", $fourOhFourPage);
-	}
-
-	{
-		my $accessDeniedPage = GetDialogPage('401'); #GetTemplate('html/401.template');
-		PutHtmlFile("error/error-401.html", $accessDeniedPage);
-	}
-
 
 	WriteIndexPages();
 
@@ -4943,9 +4899,69 @@ sub MakeSystemPages {
 
 	my $HTMLDIR = GetDir('html');
 
+	#MakeSimplePage('calculator'); # calculator.html calculator.template
+	MakeSimplePage('welcome'); # welcome.html welcome.template index.html
+
+	if (GetConfig('admin/php/enable')) {
+		MakePhpPages();
+	}
+
+	{
+		my $fourOhFourPage = GetDialogPage('404'); #GetTemplate('html/404.template');
+		if (GetConfig('html/clock')) {
+			$fourOhFourPage = InjectJs($fourOhFourPage, qw(clock fresh utils)); #todo this causes duplicate clock script
+		}
+		PutHtmlFile("404.html", $fourOhFourPage);
+		PutHtmlFile("error/error-404.html", $fourOhFourPage);
+	}
+
+	PutStatsPages();
+	# Settings page
+	my $settingsPage = GetSettingsPage();
+	PutHtmlFile("settings.html", $settingsPage);
+
+
 	# Submit page
 	my $submitPage = GetWritePage();
 	PutHtmlFile("write.html", $submitPage);
+
+	MakeSimplePage('manual'); # manual.html manual.template
+	MakeSimplePage('help'); # 'help.html' 'help.template'
+	MakeSimplePage('bookmark'); # welcome.html welcome.template
+#	MakeSimplePage('desktop'); # welcome.html welcome.template
+	MakeSimplePage('manual_advanced'); # manual_advanced.html manual_advanced.template
+	MakeSimplePage('manual_tokens'); # manual_tokens.html manual_tokens.template
+
+	{
+		my $accessDeniedPage = GetDialogPage('401'); #GetTemplate('html/401.template');
+		PutHtmlFile("error/error-401.html", $accessDeniedPage);
+	}
+
+	PutHtmlFile("test.html", GetTemplate('html/test.template'));
+	PutHtmlFile("keyboard.html", GetTemplate('keyboard/keyboard.template'));
+	PutHtmlFile("keyboard_netscape.html", GetTemplate('keyboard/keyboard_netscape.template'));
+	PutHtmlFile("keyboard_android.html", GetTemplate('keyboard/keyboard_a.template'));
+
+	PutHtmlFile("frame.html", GetTemplate('keyboard/keyboard_frame.template'));
+	PutHtmlFile("frame2.html", GetTemplate('keyboard/keyboard_frame2.template'));
+	PutHtmlFile("frame3.html", GetTemplate('keyboard/keyboard_frame3.template'));
+
+	if (GetConfig('admin/offline/enable')) {
+		PutHtmlFile("cache.manifest", GetTemplate('js/cache.manifest.template') . "#" . time()); # config/admin/offline/enable
+	}
+
+	if (GetConfig('admin/dev/make_js_test_pages')) {
+		MakeJsTestPages();
+	}
+
+	my $jsTest1 = GetTemplate('test/jstest1/jstest1.template');
+	$jsTest1 = InjectJs($jsTest1, qw(jstest1));
+	PutHtmlFile("jstest1.html", $jsTest1);
+
+	# Add Event page
+	my $eventAddPage = GetEventAddPage();
+	PutHtmlFile("event.html", $eventAddPage);
+
 
 	if (GetConfig('admin/php/enable')) {
 		# create write_post.html for longer messages if admin/php/enable
@@ -4962,9 +4978,7 @@ sub MakeSystemPages {
 		PutHtmlFile("write_post.html", $submitPage);
 	}
 
-	# Upload page
-	my $uploadPage = GetUploadPage();
-	PutHtmlFile("upload.html", $uploadPage);
+	MakePage('upload');
 
 	# Upload page
 	my $uploadMultiPage = GetUploadPage('html/form/upload_multi.template');
@@ -4974,11 +4988,6 @@ sub MakeSystemPages {
 	my $searchPage = GetSearchPage();
 	PutHtmlFile("search.html", $searchPage);
 
-	PutStatsPages();
-	# Settings page
-	my $settingsPage = GetSettingsPage();
-	PutHtmlFile("settings.html", $settingsPage);
-
 	# Access page
 	my $accessPage = GetAccessPage();
 	PutHtmlFile("access.html", $accessPage);
@@ -4987,23 +4996,7 @@ sub MakeSystemPages {
 	my $etcPage = GetEtcPage();
 	PutHtmlFile("etc.html", $etcPage);
 
-	{
-		# Target page for the submit page
-		my $postPage = GetPageHeader("Thank You", "Thank You", 'post');
-		# $postPage =~ s/<\/head>/<meta http-equiv="refresh" content="10; url=\/"><\/head>/;
-		$postPage .= GetTemplate('html/maincontent.template');
-		my $postTemplate = GetTemplate('page/post.template');
-		$postPage .= $postTemplate;
-		$postPage .= GetPageFooter();
-		$postPage = InjectJs($postPage, qw(settings avatar post));
-		if (GetConfig('admin/js/enable')) {
-			$postPage =~ s/<body /<body onload="makeRefLink();" /;
-			$postPage =~ s/<body>/<body onload="makeRefLink();">/;
-		}
-		my $HTMLDIR = GetDir('html');
-		WriteLog('MakeSummaryPages: ' . "$HTMLDIR/post.html");
-		PutHtmlFile("post.html", $postPage);
-	}
+	MakePostPage();
 	
 	# Ok page
 	my $okPage;
@@ -5014,15 +5007,6 @@ sub MakeSystemPages {
 	$okPage =~ s/<\/head>/<meta http-equiv="refresh" content="10; url=\/"><\/head>/;
 	$okPage = InjectJs($okPage, qw(settings));
 	PutHtmlFile("action/event.html", $okPage);
-
-	#MakeSimplePage('calculator'); # calculator.html calculator.template
-	MakeSimplePage('manual'); # manual.html manual.template
-	MakeSimplePage('help'); # help.html help.template
-	MakeSimplePage('welcome'); # welcome.html welcome.template
-	MakeSimplePage('bookmark'); # welcome.html welcome.template
-#	MakeSimplePage('desktop'); # welcome.html welcome.template
-	MakeSimplePage('manual_advanced'); # manual_advanced.html manual_advanced.template
-	MakeSimplePage('manual_tokens'); # manual_tokens.html manual_tokens.template
 
 	PutHtmlFile('desktop.html', GetDesktopPage());
 
@@ -5456,7 +5440,8 @@ sub GetAccessPage { # returns html for compatible mode page, /access.html
 	return $html;
 }
 
-sub GetSettingsWindow {
+sub GetSettingsWindow { # returns settings dialog
+# aka GetSettingsDialog()
 	my $settingsTemplate = GetTemplate('form/settings.template');
 	my $settingsWindow = GetWindowTemplate($settingsTemplate, 'Settings');
 	$settingsWindow = '<form id=frmSettings name=frmSettings>' . $settingsWindow . '</form>';
@@ -6485,8 +6470,30 @@ sub GetSecondsHtml {# takes number of seconds as parameter, returns the most rea
 
 require './widget.pl';
 
+sub PrintBanner {
+	my $string = shift; #todo sanity checks
+	my $width = length($string);
+
+	my $edge = "=" x $width;
+
+	print "\n" ;
+	print "\n";
+	print $edge;
+	print "\n"  ;
+	print "\n"   ;
+	print $string;
+	print "\n"    ;
+	print "\n"     ;
+	print $edge;
+	print "\n"      ;
+	print "\n"       ;
+}
+
 while (my $arg1 = shift @foundArgs) {
-	print $arg1;
+	print("\n=========================\n");
+	print("\nFOUND ARGUMENT: $arg1;\n");
+	print("\n=========================\n");
+
 	# go through all the arguments one at a time
 	if ($arg1) {
 		if (-e $arg1 && -f $arg1) {
@@ -6527,7 +6534,7 @@ while (my $arg1 = shift @foundArgs) {
 			print ("recognized --summary\n");
 			MakeSummaryPages();
 		}
-		elsif ($arg1 eq '--system' || $arg1 eq '-S') {
+		elsif ($arg1 eq '--system' || $arg1 eq '-S') { #--system #system pages
 			print ("recognized --system\n");
 			MakeSystemPages();
 		}
@@ -6590,13 +6597,13 @@ while (my $arg1 = shift @foundArgs) {
 		}
 		elsif ($arg1 eq '--queue' || $arg1 eq '-Q') {
 			print ("recognized --queue\n");
-			BuildTouchedPages();
+			BuildTouchedPages(); # -queue or -Q
 		}
 		elsif ($arg1 eq '--all' || $arg1 eq '-a') {
 			print ("recognized --all\n");
 			print `query/page_touch_all.sh`;
 			MakeSummaryPages();
-			BuildTouchedPages();
+			BuildTouchedPages(); # --all
 		}
 		elsif ($arg1 eq '--export') {
 			GetConfig('config/admin/php/enable', 'override', 0);
@@ -6630,6 +6637,19 @@ while (my $arg1 = shift @foundArgs) {
 			print ("#tag for one tag's page\n");
 		}
 	}
+
+	print "-------";
+	print "\n";
+	my @filesWritten = PutHtmlFile('report_files_written');
+	for my $fileWritten (@filesWritten) {
+		print $fileWritten;
+		print "\n";
+	}
+	print "-------";
+	print "\n";
+	print "Total files written: ";
+	print scalar(@filesWritten);
+	print "\n";
 }
 
 ##buggy
