@@ -6,6 +6,37 @@ use utf8;
 
 require('./utils.pl');
 
+sub GetDefault { # $configName
+	my $configName = shift;
+	chomp $configName;
+
+	WriteLog('GetDefault: $configName = ' . $configName);
+	#todo sanity
+
+	state %defaultLookup;
+
+	if ((exists($defaultLookup{$configName}))) {
+		# found in memo
+		WriteLog('GetDefault: $defaultLookup already contains value, returning that...');
+		WriteLog('GetDefault: $defaultLookup{$configName} is ' . $defaultLookup{$configName});
+		return $defaultLookup{$configName};
+	}
+
+	if ((-e "default/$configName")) {
+		# found a match in default directory
+		WriteLog("GetDefault: -e default/$configName returned true, proceeding to GetFile()");
+		my $defaultValue = GetFile("default/$configName");
+		if (substr($configName, 0, 9) eq 'template/') {
+			# do not trim templates
+		} else {
+			# trim() resulting value (removes whitespace)
+			$defaultValue = trim($defaultValue);
+		}
+		$defaultLookup{$configName} = $defaultValue;
+		return $defaultValue;
+	} # found in default/
+} # GetDefault()
+
 sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configuration value based for $key
 	# $token eq 'unmemo'
 	#    removes it from %configLookup
@@ -102,7 +133,7 @@ sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configur
 	my $acceptableValues;
 	if ($configName eq 'html/clock_format') {
 		if (substr($configName, -5) ne '.list') {
-			my $configList = GetConfig("$configName.list");
+			my $configList = GetConfig("$configName.list"); # should this be GetDefault()? arguable
 			if ($configList) {
 				$acceptableValues = $configList;
 			}
