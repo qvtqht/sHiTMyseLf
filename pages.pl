@@ -4070,6 +4070,9 @@ sub GetReadPage { # generates page with item listing based on parameters
 	if ($pageType eq 'author') {
 		# author info box
 		$txtIndex .= GetAuthorInfoBox($authorKey);
+
+		my $queryAuthorThreads = GetConfig("query/author_threads");
+		$queryAuthorThreads =~ s/\?/'$authorKey'/;
 		$txtIndex .= GetQueryAsDialog(
 			$queryAuthorThreads,
         	'Threads by Author'
