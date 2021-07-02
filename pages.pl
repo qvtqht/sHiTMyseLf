@@ -3114,7 +3114,100 @@ sub GetItemPrefixPage { # $prefix ; returns page with items matching specified p
 	return $htmlOutput;
 } # GetItemPrefixPage()
 
-sub GetStatsTable {
+sub GetServerConfigDialog {
+	my $html = '';
+
+	# Server Configuration
+
+	my @settingsVisible = qw(
+		current_version
+		html/theme
+		html/clock
+		html/clock_format
+		admin/js/enable
+		admin/js/debug
+		admin/js/dragging
+		admin/js/translit
+		admin/js/fresh
+		admin/js/table_sort
+		admin/php/enable
+		admin/php/debug
+		admin/php/notify_printed_time
+		admin/php/post/use_return_to
+		admin/php/footer_stats
+	);
+
+	foreach my $setting (@settingsVisible) {
+		my $settingDisplay = str_replace('/', ' / ', $setting);
+		my $defaultValue = GetDefault($setting);
+
+		$html .= '<tr>';
+
+		$html .= '<td>';
+		$html .= '<label for="' . $setting . '">';
+		$html .= $settingDisplay;
+		$html .= '</td>';
+
+		$html .= '<td>';
+		#todo templatify
+		if (GetConfig($setting . '.list')) {
+			# list / select+option
+
+			$html .= '<select id="'. $setting . '" name="'. $setting . '">';
+			my @options = split("\n", GetConfig($setting . '.list'));
+			my $currentSelection = GetConfig($setting);
+			if (!in_array($currentSelection, @options)) {
+				push @options, $currentSelection;
+			}
+
+			for my $option (@options) {
+				#print $option . "\n";
+				my $optionToDisplay = $option;
+				if ($optionToDisplay =~ m/^([0-9a-f]{8})([0-9a-f]{32})$/) {
+					$optionToDisplay = $1 . '..';
+				}
+
+				if ($option eq $currentSelection) {
+					$html .= '<option value="' . $option . '" selected>' . $optionToDisplay . '</option>';
+				} else {
+					$html .= '<option value="' . $option . '">' . $optionToDisplay . '</option>';
+				}
+			}
+			$html .= '</select>';
+			#$html .= '<input name="' . $setting . '" type=text size=10 value="' . GetConfig($setting) . '">';
+		} else {
+			if (
+				$defaultValue eq '0' ||
+				$defaultValue eq '1'
+			) {
+				#checkbox
+				$html .= '<input id="'. $setting . '" name="' . $setting . '" type=checkbox' . (GetConfig($setting) ? ' checked' : '') . '>';
+			} else {
+				#textbox
+				$html .= '<input id="'. $setting . '" name="' . $setting . '" type=text size=10 value="' . GetConfig($setting) . '">';
+			}
+		}
+		$html .= '</td>';
+
+		#$html .= '<td>"';
+		#$html .= $defaultValue;
+		#$html .= '"</td>';
+
+		
+		$html .= '</tr>';
+	}
+
+	$html .= '<tr><td colspan=2 align=center>- <input type=submit value=Preview> -</td></tr>';
+
+	$html = GetWindowTemplate($html, 'Server Configuration', 'setting,value');
+	$html = '<span class=admin>' . '<form action="/post.html">' . $html . '</form>' . '</span>';
+	#todo move form here
+
+	return $html;
+} # GetServerConfigDialog()
+
+sub GetStatsTable { # returns Stats dialog (without window frame)
+#note this can take a while to warm up first time, because lots of sql count() and group by such
 	my $templateName = shift;
 	if (!$templateName) {
 		$templateName = 'html/stats.template';
