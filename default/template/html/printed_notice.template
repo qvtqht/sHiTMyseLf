@@ -1,20 +1,17 @@
 <!-- printed_notice.template -->
-<div class=dialog style="float: right;">
-	<p class=titlebar>
-		<b>Page Information</b>
-	</p>
-	<p>
-		When was this page printed?
-		<br>
-		<span class=timestamp epoch=$printedEpoch>$printedHuman</span>
-	</p>
-	<p>
-		How old was the file when served?
-		<br>
-		$printedAgeSeconds
-	</p>
-	<p>
-		<a href="$selfPath">[Reprint]</a>
-	</p>
-</div>
+<p class=titlebar>
+	<b>Information About Page</b>
+</p>
+<p>
+	Q: When was this page printed?<br>
+	A: <span class=timestamp epoch=$printedEpoch>$printedHuman</span>
+</p>
+<p>
+	Q: How old was the page when downloaded?<br>
+	A: $printedAgeSeconds
+</p>
+<p>
+	Q: How can I get a fresher copy?<br>
+	A: Ask the server for a <a href="$selfPath">[reprint]</a>
+</p>
 <!-- / printed_notice.template -->
