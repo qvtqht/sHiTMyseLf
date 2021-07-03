@@ -1,5 +1,7 @@
 <?php
 
+/* route.php BEGIN */
+
 // declare(strict_types = 1); #todo
 
 // this fixes a crash bug in mosaic. it should not cause a problem anywhere else
@@ -44,15 +46,20 @@ function TrimPath ($string) { // Trims the directories AND THE FILE EXTENSION fr
 function TranslateEmoji ($html) { // replaces emoji with respective text
 	WriteLog('TranslateEmoji()');
 
+	return $html; # needs improvement before it can be allowed to run
+
 	// this could be optimized a lot. A LOT.
 
 	$scriptDir = GetScriptDir();
-	if ($scriptDir) {
-		$emojiList = explode("\n", `find $scriptDir/config/string/emoji`);
-		foreach ($emojiList as $emojiFile) {
-			$emojiName = TrimPath($emojiFile);
-			$emojiEmoji = GetFile($emojiFile);
-			$html = str_replace($emojiEmoji, '[' . $emojiName . ']', $html);
+	if ($scriptDir && file_exists("$scriptDir/config/string/emoji")) {
+		$emojiList = `find $scriptDir/config/string/emoji`;
+		if ($emojiList) {
+			$emojiList = explode("\n", `find $scriptDir/config/string/emoji`);
+			foreach ($emojiList as $emojiFile) {
+				$emojiName = TrimPath($emojiFile);
+				$emojiEmoji = GetFile($emojiFile);
+				$html = str_replace($emojiEmoji, '[' . $emojiName . ']', $html);
+			}
 		}
 	}
 
@@ -65,8 +72,12 @@ function StripHeavyTags ($html) { // strips heavy tags from page replaces with b
 	WriteLog('StripHeavyTags()');
 
 	$tags = array(
-		'table', 'tr', 'td', 'th', 'span', 'fieldset', 'legend', 'font',
-		'script', 'style', 'big'
+		'table', 'tbody', 'tr', 'td', 'th',
+		'span',
+		'fieldset', 'legend',
+		'font',
+		'script', 'style',
+		'big'
 	);
 
 	{
@@ -78,8 +89,12 @@ function StripHeavyTags ($html) { // strips heavy tags from page replaces with b
 		// each replacement, for debugging purposes, has an extra attribute like id1 or id5
 		// these can be removed later once debugging is mostly finished
 
-		$html = preg_replace('/\<\/a\>\<b\>/', '</a>; <b id1>', $html);
-		$html = preg_replace('/\<\/b\>\<a\ /', '</b>; <a id2 ', $html);
+		{
+			// not sure what this does anymore,
+			// but the id1 and id2 bits are for identifying which replacement took place
+			$html = preg_replace('/\<\/a\>\<b\>/', '</a>; <b id1>', $html);
+			$html = preg_replace('/\<\/b\>\<a\ /', '</b>; <a id2 ', $html);
+		}
 
 		$html = preg_replace('/\<\/th\>/', '; ', $html);
 		$html = preg_replace('/\<br\>\<\/td\>/', '; ', $html);
@@ -94,6 +109,13 @@ function StripHeavyTags ($html) { // strips heavy tags from page replaces with b
 		$html = preg_replace('/\<\/legend\>/', '<br>', $html);
 		$html = preg_replace('/\<\/a\>\<a/', '</a>; <a', $html);
 		$html = preg_replace('/; ;/', '; ', $html);
+		$html = preg_replace('/\<br\>; \<br\>/', '<br>', $html);
+		$html = preg_replace('/\<\/form\>\<br\>\<\/tbody\>\<br\>/', '<br></form></tbody>', $html);
+
+		$html = str_ireplace('</p><br>', '</p>', $html);
+		$html = str_ireplace('<br><br><hr>', '<br><br><hr>', $html);
+		$html = str_ireplace('<br><br></p>', '</p>', $html);
+
 	}
 
 	foreach ($tags as $tag) {
@@ -251,14 +273,13 @@ function InjectJs ($html, $scriptNames, $injectMode = 'before', $htmlTag = '</bo
 			#and replace them with confirm()'s which stop on no/cancel
 			#
 			if ($debugType == 'console.log') {
-				$scriptTemplate = str_replace("//alert('DEBUG:", "console.log('", $scriptTemplate);
+				$scriptTemplate = str_replace("//alert('DEBUG:", "if(!window.dbgoff)console.log('", $scriptTemplate);
 			} elseif ($debugType == 'document.title') {
-				$scriptTemplate = str_replace("//alert('DEBUG:", "document.title = ('", $scriptTemplate);
+				$scriptTemplate = str_replace("//alert('DEBUG:", "if(!window.dbgoff)document.title = ('", $scriptTemplate);
 			} else {
 				$scriptTemplate = str_replace("//alert('DEBUG:", "if(!window.dbgoff)dbgoff=!confirm('DEBUG:", $scriptTemplate);
 			}
 		}
-
 		// add to the snowball of javascript
 		$scriptsText .= $scriptTemplate;
 	}
@@ -314,27 +335,23 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$hashTag = $hashTagMatch[1];
 			$pagesPlArgument = '\#' . $hashTag;
 		}
-#todo
-#		if (
-#			preg_match('/^\/goto\/([a-zA-Z0-9]+)/', $path, $hashTagMatch)
-#		) {
-#			WriteLog('HandleNotFound: found goto');
-#			$gotoArgument = $hashTagMatch[1];
-#			$pagesPlArgument = 'goto/' . $gotoArgument;
-#		}
+		#todo
+		#		if (
+		#			preg_match('/^\/goto\/([a-zA-Z0-9]+)/', $path, $hashTagMatch)
+		#		) {
+		#			WriteLog('HandleNotFound: found goto');
+		#			$gotoArgument = $hashTagMatch[1];
+		#			$pagesPlArgument = 'goto/' . $gotoArgument;
+		#		}
 		if (
 			$path == '/' ||
 			$path == '/index.html' ||
-			$path == '/upload.html' ||
 			$path == '/upload_multi.html' ||
 			$path == '/etc.html' ||
 			$path == '/events.html' ||
-			$path == '/settings.html' ||
-			$path == '/help.html' ||
 			$path == '/search.html' ||
 			$path == '/manual.html' ||
 			$path == '/manual_advanced.html' ||
-			$path == '/stats.html' ||
 			$path == '/frame.html' ||
 			$path == '/frame2.html' ||
 			$path == '/frame3.html' ||
@@ -349,9 +366,15 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$path == '/keyboard_netscape.html' ||
 			$path == '/keyboard_android.html'
 		) {
-			WriteLog('HandleNotFound: found a summary page');
+			WriteLog('HandleNotFound: warning: found a --system page, this may cause slowness');
 			$pagesPlArgument = '--system';
 		}
+
+		if ($path == '/stats.html') {
+			WriteLog('HandleNotFound: found stats page');
+			$pagesPlArgument = '-M stats';
+		}
+
 		if ($path == '/desktop.html') {
 			WriteLog('HandleNotFound: found desktop page');
 			$pagesPlArgument = '--desktop';
@@ -362,6 +385,33 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 		) {
 			WriteLog('HandleNotFound: found authors page');
 			$pagesPlArgument = '-M authors';
+		}
+
+		if (
+			$path == '/upload.html'
+		) {
+			WriteLog('HandleNotFound: found upload page');
+			$pagesPlArgument = '-M upload';
+		}
+
+		if (
+			$path == '/url.html'
+		) {
+			WriteLog('HandleNotFound: found url page');
+			$pagesPlArgument = '-M url';
+		}
+		if (
+			$path == '/chain.html'
+		) {
+			WriteLog('HandleNotFound: found chain page');
+			$pagesPlArgument = '-M chain';
+		}
+
+		if (
+			$path == '/help.html'
+		) {
+			WriteLog('HandleNotFound: found help page');
+			$pagesPlArgument = '-M help';
 		}
 
 		if (
@@ -397,6 +447,13 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 		) {
 			WriteLog('HandleNotFound: found read page');
 			$pagesPlArgument = '-M read';
+		}
+
+		if (
+			$path == '/raw.html'
+		) {
+			WriteLog('HandleNotFound: found raw page');
+			$pagesPlArgument = '-M raw';
 		}
 
 		if (
@@ -531,27 +588,58 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 	return $html;
 } # HandleNotFound()
 
+function ReadGetParams ($GET) { // does what's needed with $_GET, takes $_GET as parameter
+	#todo
+}
+
 if (GetConfig('admin/php/route_enable')) {
 // admin/php/route_enable is true
 	$redirectUrl = '';
+	$cacheOverrideFlag = 0;
+	$cacheTimeLimit = 100; // seconds page cache is good for
+	$cacheWasUsed = 0;
+	#$html = '';
+
+	if (GetConfig('admin/php/debug_do_not_use_cache')) {
+		$cacheOverrideFlag = 1;
+	}
+
 	if ($_GET) {
 		// there is a get request
 		WriteLog('route.php: $_GET = ' . print_r($_GET, 1));
 
 		if (isset($_GET['path'])) {
+			WriteLog('route.php: cool: $_GET[path] confirmed!');
+
 			$serverResponse = '';
 
 			// get request includes path argument
 			$path = $_GET['path'];
 
 			if (index($path, '?') != -1) {
-				WriteLog('route.php: found qm in $path');
+				# ATTENTION THIS IS A WORKAROUND SHIM
+				# DO NOT ADD CONDITIONS INSIDE THIS IF STATEMENT
+
+				# EXPLANATION
+				# sometimes we get one argument in $path
+				# i don't know why, but this sort of fixes it,
+				# by splitting off the extra parameter
+
+				WriteLog('route.php: warning: found qm in $path');
+
+				# ATTENTION THIS IS A WORKAROUND SHIM
+				# DO NOT ADD CONDITIONS INSIDE THIS IF STATEMENT
+				# SEE EXPLANATION ABOVE
 
 				# weird php bug, i think... or is it my lighttpd config?
 				$pathWithoutArg = substr($path, 0, index($path, '?'));
 				$pathFirstArg = substr($path, index($path, '?') + 1);
 
-				{
+				# ATTENTION THIS IS A WORKAROUND SHIM
+				# DO NOT ADD CONDITIONS INSIDE THIS IF STATEMENT
+				# SEE EXPLANATION ABOVE
+
+				if ($pathFirstArg) {
 					WriteLog('route.php: $pathFirstArg = ' . $pathFirstArg);
 					#todo sanity check
 					if (index($pathFirstArg, '=') != -1) {
@@ -563,8 +651,12 @@ if (GetConfig('admin/php/route_enable')) {
 					$path = $pathWithoutArg;
 					WriteLog('route.php: $_GET = ' . print_r($_GET, 1));
 				}
+
+				# ATTENTION THIS IS A WORKAROUND SHIM
+				# DO NOT ADD CONDITIONS INSIDE THIS IF STATEMENT
+				# SEE EXPLANATION ABOVE
 			} else {
-				WriteLog('route.php: did NOT find qm in $path');
+				WriteLog('route.php: cool: did NOT find question mark in $path');
 			}
 
 			WriteLog('$path = ' . $path);
@@ -604,24 +696,57 @@ if (GetConfig('admin/php/route_enable')) {
 			WriteLog('$pathFull = ' . $pathFull . ';');
 			WriteLog('substr($pathFull, 0, strlen($pathValidRoot)) = ' . substr($pathFull, 0, strlen($pathValidRoot)) . ';');
 
-			if ($path == '/404.html' || ($pathFull && substr($pathFull, 0, strlen($pathValidRoot)) == $pathValidRoot)) {
-				// mitigate directory traversal?
+			if (
+				$path == '/404.html' ||
+				(
+					// mitigate directory traversal? could be
+					$pathFull &&
+					substr($pathFull, 0, strlen($pathValidRoot)) == $pathValidRoot
+				)
+			) {
 
-				WriteLog('route.php: root sanity check passed for $path = "' . $path . '"');
+
+				WriteLog('route.php: cool: root sanity check passed for $path = "' . $path . '"');
 				if ($path) {
 					// there's a $path
 					$pathRel = '.' . $path; // relative path of $path (to current directory, which should be html/)
 
-					$cacheLimit = 3600; // seconds page cache is good for
+					if (isset($_GET['time']) && $_GET['time']) {
+						# client is requesting reprint via time= argument
+						if (intval($_GET['time'])) {
+							if ((intval($_GET['time']) + 3600) > time()) {
+								$cacheOverrideFlag = 1;
+							}
+						}
+					}
 
-					$fileRegrowInterval = GetConfig('admin/php/regrow_keep_fresh_interval');
+					$fileCacheTime = 0;
+					if (file_exists($pathRel)) {
+						$fileCacheTime = time() - filemtime($pathRel);
+					}
+
+					if ($cacheOverrideFlag) {
+						if ($path) {
+							$refStart = time();
+							$html = HandleNotFound($path, $pathRel);
+							$refFinish = time();
+							$messagePageReprinted = 'OK, I reprinted the page for you.';
+							RedirectWithResponse($path, $messagePageReprinted . ' ' . '<small class=advanced>in ' . ($refFinish - $refStart) . 's</small>');
+						}
+					}
 
 					if (
+						!$cacheOverrideFlag &&
 						$path != '/404.html' &&
-						file_exists($pathRel)
+						file_exists($pathRel) &&
+						($fileCacheTime < $cacheTimeLimit)
 					) {
+						WriteLog('route.php: $fileCacheTime = ' . $fileCacheTime . '; $cacheTimeLimit = ' . $cacheTimeLimit);
+						WriteLog('route.php: time() = ' . time() . '; time() - $fileCacheTime = ' . (time() - $fileCacheTime));
+
 						// file exists and is new enough
 						WriteLog("file_exists($pathRel) was true");
+						WriteLog("route.php: cool: conditions for cache use met");
 
 						if (isset($_GET['txtClock'])) {
 							# this is part of easter egg
@@ -634,6 +759,7 @@ if (GetConfig('admin/php/route_enable')) {
 							$messageId = $_GET['message'];
 
 							if ($messageId == 'test') {
+								# easter egg
 								$testMessage = '
 									Over the firewall,
 									out the antenna,
@@ -660,7 +786,12 @@ if (GetConfig('admin/php/route_enable')) {
 							}
 
 							if (!$serverResponse && !$redirectUrl) {
-								$redirectUrl = $path;
+								if (GetConfig('admin/php/route_redirect_when_missing_message')) {
+									# if there is a message ticket provided,
+									# but nothing under that ticket,
+									# remove it from the url
+									$redirectUrl = $path;
+								}
 							}
 						} # isset($_GET['message'])
 						else {
@@ -722,8 +853,9 @@ if (GetConfig('admin/php/route_enable')) {
 							isset($_GET['btnFlush'])
 						) {
 							WriteLog('Flush requested');
-							DoFlush();
-							DoUpdate();
+							# can't let this happen yet #todo #improve
+							//DoFlush();
+							//DoUpdate();
 							RedirectWithResponse('/settings.html', 'Previous content has been archived.');
 						}
 
@@ -804,23 +936,67 @@ if (GetConfig('admin/php/route_enable')) {
 								}
 							}
 						}
-					} # $path != '/404.html' && file_exists($pathRel)
+						$cacheWasUsed = 1;
+					} # #cache was used:
 					else {
-						WriteLog('$path not found, using HandleNotFound(' . $path . ',' . $pathRel . ')');
-						$html = HandleNotFound($path, $pathRel);
+
+						// no $path
+						WriteLog('route.php: cache was not used, mis-using HandleNotFound()');
+						$html = HandleNotFound($path, '');
+
+						WriteLog('route.php: cache was not used, setting $cacheWasUsed = 0');
+						$cacheWasUsed = 0;
 					}
+
+
+					if (GetConfig('admin/php/notify_printed_time')) {
+						if (1) {
+						#if ($cacheWasUsed) {
+							# this should be in a template,
+							# but it would be very awkward to make at this time
+							# why is it awkward?
+							#date("F d Y H:i:s.", filemtime($pathRel)) .
+							#($fileCacheTime == 1 ? 's' : 's') .
+							#(time() + 10) .
+							# Printed:
+
+							#my
+							$printedEpoch = filemtime($pathRel);
+							$printedHuman = date("F d Y H:i:s.", filemtime($pathRel));
+							$printedAgeSeconds = $fileCacheTime . ($fileCacheTime == 1 ? ' second' : ' seconds');
+							$selfPath = $path . '?time=' . (time() + 10);
+
+							$printedNotice = GetTemplate('html/printed_notice.template');
+
+							$printedNotice = str_replace('$selfPath', $selfPath, $printedNotice);
+							$printedNotice = str_replace('$printedAgeSeconds', $printedAgeSeconds, $printedNotice);
+							$printedNotice = str_replace('$printedHuman', $printedHuman, $printedNotice);
+							$printedNotice = str_replace('$printedEpoch', $printedEpoch, $printedNotice);
+							#$printedNotice
+
+							$printedNotice = GetWindowTemplate($printedNotice, 'Page Information', '', '', '');
+
+							if (GetConfig('admin/debug')) {
+								# for debug mode, print cached page notice at the top
+								$html = str_ireplace('</body>', $printedNotice . '</body>', $html);
+								#$html = $htmlCacheNotice . $html; #todo ...
+							} else {
+								$html = str_ireplace('</body>', $printedNotice . '</body>', $html);
+							}
+						}
+					} // if (notify_printed_time)
 				} # $path
 				else {
 					// no $path
-					WriteLog('$path not specified, using HandleNotFound()');
+					WriteLog('route.php: $path not specified, using HandleNotFound()');
 					$html = HandleNotFound($path, '');
 				}
 			// if ($path == '/404.html' || $pathFull && substr($pathFull, 0, strlen($pathValidRoot)) == $pathValidRoot)
 			} else {
 				// #todo when does this actually happen?
 				// smarter 404 handler
-				WriteLog('smarter 404 handler... activate!');
-				WriteLog('$path not found, using HandleNotFound()');
+				WriteLog('route.php: smarter 404 handler... activate!');
+				WriteLog('route.php: $path not found, using HandleNotFound()');
 				$html = HandleNotFound($path, '');
 			}
 		} else {
@@ -849,6 +1025,9 @@ if (GetConfig('admin/php/route_enable')) {
 		}
 
 		$lightMode = 0;
+		if ($_COOKIE['light']) {
+			$lightMode = 1;
+		}
 		if (isset($_GET['light'])) {
 			$lightMode = $_GET['light'] ? 1 : 0;
 		}
@@ -864,9 +1043,8 @@ if (GetConfig('admin/php/route_enable')) {
 
 			if ($_COOKIE['light'] != $lightMode) {
 				setcookie2('light', $lightMode);
-
-				//$lightModeSetMessage = StoreServerResponse('Light mode has been set to ' . $lightMode);
-				//$redirectUrl = '';
+				$messageLM = 'Light mode set.';
+				RedirectWithResponse($path, $messageLM);
 			}
 		} else {
 			// if there is no cookie set, set it
@@ -971,7 +1149,9 @@ if (GetConfig('admin/php/route_enable')) {
 				// the other option is to leave it as is, but the message will remain on
 				// the page instead of disappearing, which doesn't look nearly as cool
 				// perhaps to be conditional under html/cool_effects?
-				$serverResponseTemplate = str_replace('<a href=#maincontent', '<a href="' . $path . '"', $serverResponseTemplate);
+
+				$serverResponseTemplate = str_replace('<a href=#maincontent', '<a href="' . $path . '?"', $serverResponseTemplate);
+				// here we add a question mark to reduce caching problems
 
 				// inject server message right after the body tag
 				$replaceWhat = '(<body\s[^>]*>|<body>)'; // both with attributes or without
@@ -1006,7 +1186,9 @@ if (GetConfig('admin/php/route_enable')) {
 		if ($redirectUrl) {
 			// if we've come up with a place to redirect to, do it now
 
-			// header('Location: ' . $redirectUrl);
+			// todo this should be a feature flag, because some browsers do not like redirects
+
+			header('Location: ' . $redirectUrl);
 		}
 
 		if ($path == '/profile.html') {
@@ -1025,7 +1207,7 @@ if (GetConfig('admin/php/route_enable')) {
 				if (!$handle && GetConfig('admin/php/alias_lookup')) {
 					$handle = GetAlias($fingerprint);
 				} else {
-					$handle = 'Guest';
+					$handle = 'Guest'; #todo #guest...
 				}
 
 				// $html = str_replace('<span id=spanSignedInStatus></span>', '<span id=spanSignedInStatus class=beginner><p><b>Status: You are signed in</b></p></span>', $html);
@@ -1069,16 +1251,12 @@ if (GetConfig('admin/php/route_enable')) {
 			}
 		}
 
-		if (function_exists('WriteLog') && GetConfig('admin/php/debug')) {
-			$html = str_replace('</body>', '<p class=advanced>' . WriteLog(0) . '</p></body>', $html);
-		}
-
 		if (GetConfig('html/clock')) {
 			//$html = preg_replace('/id=txtClock value=\".+\"/', 'id=txtClock value="' . GetClockFormattedTime() . '"', $html);
 			$html = SetHtmlClock($html);
 		}
 
-		if (GetConfig('admin/php/footer_stats') && file_exists('stats-footer.html')) {
+		if (GetConfig('admin/php/footer_stats') && file_exists('stats-footer.html')) { # Site Statistics*
 			# footer stats
 			if ($path == '/keyboard.html' || $path == '/keyboard_netscape.html' || $path == '/keyboard_android.html') {
 				# no footer for the keyboard pages, because they are displayed in a thin frame at bottom of page
@@ -1147,28 +1325,63 @@ if (GetConfig('admin/php/route_enable')) {
 
 		if (GetConfig('admin/php/assist_show_advanced')) {
 			WriteLog('admin/php/assist_show_advanced is true');
-			if (isset($_COOKIE['show_advanced']) &&	$_COOKIE['show_advanced'] == '0') {
-				// insert additional style rule at </head>
-				// which sets class=advanced elements to display:none
-				// if user has respective cookie set
-				// to prevent jumpies when page loads
 
-				WriteLog('route.php: ShowAdvanced() assist activated');
-				WriteLog('route.php: $_COOKIE[show_advanced] = ' . $_COOKIE['show_advanced']);
+			#todo the defaults are hard-coded
 
+			#if ($GET['ui']) {
+			#	if ($GET['ui'] == 'Intermediate') {
+			#		setcookie2('show_advanced', 1);
+			#		setcookie2('beginner', 1);
+			#	}
+			#}
+
+			WriteLog('route.php: ShowAdvanced() assist activated');
+			$assistCss = ''; #my $assistCss = '';
+
+			if (!isset($_COOKIE['show_advanced']) || $_COOKIE['show_advanced'] == '0') {
+				# this defaults to true
+				# hides advanced elements
+				
+				WriteLog(
+					'route.php: $_COOKIE[show_advanced] = ' .
+					(
+						isset(
+							$_COOKIE['show_advanced']) ?
+							$_COOKIE['show_advanced'] :
+							'UNDEFINED'
+						)
+					)
+				;
+
+				$assistCss .= ".advanced, .admin{ display:none }\n";
+				// #todo templatify
+			}
+			if (isset($_COOKIE['beginner']) && $_COOKIE['beginner'] == '0') { # this defaults to false
+
+
+				WriteLog('route.php: $_COOKIE[beginner] = ' . $_COOKIE['beginner']);
+				$assistCss .= ".beginner { display:none }\n";
+				// #todo templatify
+			}
+
+			if ($assistCss) {
 				$html = str_replace(
-					'</head>',
-					"<!-- php/assist_show_advanced -->\n".
+						'</head>'
+					,
+						"<!-- php/assist_show_advanced -->\n".
 						"<style><!--" .
 						"\n" .
-						".advanced, .admin{ display:none }" .
+						$assistCss .
+						"\n" .
 						"/* assist ShowAdvanced() in pre-hiding elements with class=advanced */" .
 						"\n" .
 						"--></style>" .
-						"</head>",
-					$html
+						"</head>"
+					,
+						$html
 				);
-				// #todo templatify
+			} else {
+				// do nothing
 			}
 		}
 
@@ -1178,7 +1391,7 @@ if (GetConfig('admin/php/route_enable')) {
 				
 				// this allows clients to see the sequence counter
 				// and thus know how many posts they haven't seen yet
-				$html .= '<script><!-- window.sequenceServerValue = 0; // --></script>';
+				#$html .= '<script><!-- window.sequenceServerValue = 0; // --></script>';
 				#todo make neater
 			}
 		} #default/admin/php/assist_sequence_counter
