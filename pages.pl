@@ -5783,6 +5783,49 @@ sub PutStatsPages { # stores template for footer stats dialog
 	my $statsPage = GetStatsPage();
 	PutHtmlFile("stats.html", $statsPage);
 
+	if (GetConfig('admin/debug')) {
+		#my $statsPage = GetStatsPage();
+		if (-e 'log/log.log') {
+			my $warningsLog = `grep -i warning log/log.log > html/warning.txt`;
+			my $warningsSummary = `cat html/warning.txt | cut -d ' ' -f 3 | cut -d ':' -f 1 | cut -d '(' -f 1 | sort | uniq -c | sort -bnr > html/warnsumm.txt`;
+			$warningsSummary = "\n" . GetFile('html/warnsumm.txt') . "\n";
+
+			my $warningsSummaryHtml = '';
+			my @warningsSummaryArray = split("\n", $warningsSummary);
+			for my $warningSub ( @warningsSummaryArray ) {
+				if ($warningSub =~ m/^([a-zA-Z0-9_\-])$/) {
+					$warningSub = $1;
+					$warningsSummaryHtml .= '<a href="/warning_' . $warningSub . '.txt">' . $warningSub . '</a>';
+					$warningsSummaryHtml .= "\n";
+				} else {
+					$warningsSummaryHtml .= $warningSub;
+					$warningsSummaryHtml .= "\n";
+				}
+			}
+
+			# THIS IS HARD-CODED BECAUSE it is a system-debugging feature,
+			# and should have as few dependencies as possible
+			# and maybe a little bit to save time
+			my $warningsHtml =
+				'<html><head><title>warnings</title></head><body>' .
+				'<center><table height=95% width=98%>' .
+				'<tr><td align=center valign=middle>' .
+				'<p>technical users:<br><a href="/warning.txt">warning list</a> can help fix bugs<br>or just <a href="/help.html">confuse more</a></p>' .
+				'<p><tt>' .
+				"cat html/warning.txt | cut -d ' ' -f 3 | cut -d ':' -f 1 | cut -d '(' -f 1 | sort | uniq -c | sort -bnr > html/warnsumm.txt" .
+				'</tt></p>' .
+				'</td>' .
+				'<td><pre>' .
+				$warningsSummaryHtml .
+				'</pre></td>' .
+				'</tr></table></center></body></html>'
+			;
+			#$warningsHtml = InjectJs($warningsHtml, qw(utils fresh)); #shouldn't be any javascript on this page
+			#todo warning if there is javascript ni the html
+			PutHtmlFile("warning.html", $warningsHtml); # warnings.html
+		}
+	}
+
 	my $statsFooter = GetWindowTemplate(
 		GetStatsTable('stats-horizontal.template'),
 		'Site Statistics*'
