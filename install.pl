@@ -14,7 +14,7 @@ sub WriteLog {
 	print "\n";
 }
 
-sub GetTime {
+sub GetTime { # NOT THE MAIN ONE, LOOK IN utils.pl INSTEAD
 	return time();
 }
 
