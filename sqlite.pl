@@ -2342,7 +2342,7 @@ sub DBGetAddedTime { # return added time for item specified
 		FROM item_attribute
 		WHERE
 			file_hash = '$fileHash' AND
-			attribute IN ('chain_timestamp', 'gpg_timestamp', 'puzzle_timestamp')
+			attribute IN ('chain_timestamp', 'gpg_timestamp', 'puzzle_timestamp', 'self_timestamp')
 	";
 	# my $query = "SELECT add_timestamp FROM added_time WHERE file_hash = '$fileHash'";
 
