@@ -330,7 +330,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$authorFingerprint = $itemHashMatch[1];
 			$pagesPlArgument = $authorFingerprint;
 		}
-		if (preg_match('/^\/top\/([a-zA-Z0-9]+)\.html/', $path, $hashTagMatch)) {
+		if (preg_match('/^\/top\/([a-zA-Z0-9_]+)\.html/', $path, $hashTagMatch)) { #tagName
 			WriteLog('HandleNotFound: found hashtag');
 			$hashTag = $hashTagMatch[1];
 			$pagesPlArgument = '\#' . $hashTag;

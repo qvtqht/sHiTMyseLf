@@ -1740,7 +1740,7 @@ sub GetTagsListAsHtmlWithLinks {
 		$headings .= $comma;
 		$comma = '; ';
 		
-		if ($tag =~ m/^[0-9a-zA-Z_-]+$/) {
+		if ($tag =~ m/^[0-9a-zA-Z_-]+$/) { #tagName
 			#sanity check
 			#$tag = $1;
 		} else {
@@ -3977,7 +3977,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 			my $tagName = $pageParam;
 			chomp($tagName);
 
-			if ($tagName =~ m/[^a-zA-Z0-9]/) {
+			if ($tagName =~ m/[^a-zA-Z0-9_]/) { #tagName
 				WriteLog('GetReadPage: warning: sanity check failed on $tagName');
 				return '';
 			}
