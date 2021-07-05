@@ -135,10 +135,14 @@ sub AddAttributeToTag { # $html, $tag, $attributeName, $attributeValue; adds att
 	WriteLog('AddAttributeToTag: length($html) $lengthBefore: ' . $lengthBefore);
 
 	my $tagAttribute = '';
-	if ($attributeValue =~ m/\w/) {
+	if ($attributeValue eq '') {
+		$tagAttribute = $attributeName;
+	}
+	elsif ($attributeValue =~ m/\s/) {
 		# attribute value contains whitespace, must be enclosed in double quotes
 		$tagAttribute = $attributeName . '="' . $attributeValue . '"';
-	} else {
+	}
+	else {
 		$tagAttribute = $attributeName . '=' . $attributeValue . '';
 	}
 

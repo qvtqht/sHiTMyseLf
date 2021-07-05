@@ -796,12 +796,18 @@ function AddAttributeToTag ($html, $tag, $attributeName, $attributeValue) { // a
 	WriteLog('AddAttributeToTag() begin');
 
 	$tagAttribute = '';
-	if (preg_match('/\w/', $attributeValue)) {
-		WriteLog('AddAttributeToTag: whitespace match true');
+	if ($attributeValue == '') {
+		WriteLog('AddAttributeToTag: value is empty string');
+		// no value
+		$tagAttribute = $attributeName;
+	}
+	elseif (preg_match('/\s/', $attributeValue)) {
+		WriteLog('AddAttributeToTag: whitespace match TRUE');
 		// attribute value contains whitespace, must be enclosed in double quotes
 		$tagAttribute = $attributeName . '="' . $attributeValue . '"';
-	} else {
-		WriteLog('AddAttributeToTag: whitespace match false');
+	}
+	else {
+		WriteLog('AddAttributeToTag: whitespace match FALSE');
 		$tagAttribute = $attributeName . '=' . $attributeValue . '';
 	}
 
