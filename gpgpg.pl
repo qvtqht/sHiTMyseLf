@@ -83,10 +83,12 @@ sub GpgParse { # $filePath ; parses file and stores gpg response in cache
 		# gpg_prepare
 		# this is the base gpg command
 		# these flags help prevent stalling due to password prompts
-		my $gpgCommand = 'gpg --pinentry-mode=loopback --batch ';
+		my $gpgCommand = 'gpg --no-default-keyring --keyring shitmyself.gpg --pinentry-mode=loopback --batch ';
 
 		# basic message classification covering only three cases, exclusively
 		if (index($fileContents, $gpgPubkey) > -1) {
+			#gpg_pubkey
+			#gpg_pubkey
 			#gpg_pubkey
 			WriteLog('GpgParse: found $gpgPubkey');
 			$gpgCommand .= '--import --ignore-time-conflict --ignore-valid-from ';
@@ -94,11 +96,15 @@ sub GpgParse { # $filePath ; parses file and stores gpg response in cache
 		}
 		elsif (index($fileContents, $gpgSigned) > -1) {
 			#gpg_signed
+			#gpg_signed
+			#gpg_signed
 			WriteLog('GpgParse: found $gpgSigned');
 			$gpgCommand .= '--verify -o - ';
 			$signedFlag = 1;
 		}
 		elsif (index($fileContents, $gpgEncrypted) > -1) {
+			#gpg_encrypted
+			#gpg_encrypted
 			#gpg_encrypted
 			WriteLog('GpgParse: found $gpgEncrypted');
 			$gpgCommand .= '-o - --decrypt ';
@@ -163,7 +169,7 @@ sub GpgParse { # $filePath ; parses file and stores gpg response in cache
 
 						DBAddItemAttribute($fileHash, 'gpg_alias', $aliasReturned);
 						DBAddItemAttribute($fileHash, 'title', "$aliasReturned has registered"); #todo templatize
-						DBAddVoteRecord($fileHash, 0, 'pubkey');
+						#DBAddVoteRecord($fileHash, 0, 'pubkey');
 
 #
 #						DBAddKeyAlias($authorKey, $tokenFound{'param'}, $fileHash);
