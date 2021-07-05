@@ -126,7 +126,7 @@ function GetItemPlaceholderPage ($comment, $hash, $fileUrlPath, $filePath) { # g
 $fileUrlPath = '';     // path to new item's html page
 $replyTo = '';         // id of item replied to (parent)
 $replyToToken = '';    // token for specifying replied to item, item id with >> prefix
-$returnTo = '';        // page to return to, can be different from new item's page
+$returnTo = '';        // page to return to, can be different from new item's page, ambsfa $redirectTo
 
 $strSourceUrl = '';    // source document's url, specified as s= parameter in GET
 $strSourceTitle = '';  // source document's title, specified as t= parameter in GET
@@ -137,9 +137,9 @@ if ($_POST) { // if POST request, populate variables from $_POST
 	if (isset($_POST['comment'])) {
 		$comment = $_POST['comment'];
 	}
-	
+
 	if (isset($_POST['replyto']) && $_POST['replyto']) {
-		$replyTo = $_POST['replyto']; 
+		$replyTo = $_POST['replyto'];
 		$replyToToken = '>>' . $replyTo;
 	}
 
@@ -149,7 +149,7 @@ if ($_POST) { // if POST request, populate variables from $_POST
 	if (isset($_POST['t']) && $_POST['t']) { // t=
 		$strSourceTitle = $_POST['t'];
 	}
-	
+
 	if (isset($_POST['replyto']) && $_POST['replyto']) {
 		$replyTo = $_POST['replyto'];
 		$replyToToken = '>>' . $replyTo;
