@@ -25,6 +25,8 @@ use Digest::SHA qw(sha512_hex);
 use POSIX qw( mktime );
 use Cwd qw(cwd);
 use Date::Parse;
+use Time::Local;
+
 #use POSIX::strptime qw( strptime );
 
 ## CONFIG AND SANITY CHECKS ##
@@ -325,6 +327,8 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 
 		#my $dateIso = "$dateYear-$dateMonth-$dateDay";
 		my ($timeHour, $timeMinute, $timeSecond) = split(':', $time);
+
+        my $accessLogTimestamp = timelocal($timeSecond, $timeMinute, $timeHour, $dateDay, $dateMonth - 1, $dateYear);
 
 		$req = substr($req, 1); # remove the quote preceding the request field
 		chop($gmt);
@@ -663,7 +667,8 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 #								}
 							}
 
-							DBAddItemAttribute($fileHash, 'access_log_timestamp', $addedTime);
+							DBAddItemAttribute($fileHash, 'access_log_timestamp', $accessLogTimestamp);
+							#DBAddItemAttribute($fileHash, 'access_log_timestamp', $addedTime);
 						}
 
 						if (GetConfig('admin/access_log/call_index')) {
@@ -769,5 +774,7 @@ if ($arg1) {
 		print("Argument not understood.");
 	}
 }
+
+print "\n";
 
 1;
