@@ -40,6 +40,12 @@ function RunTest() {
 	//alert('DEBUG: Looking for window.unescape...');
 	document.frmTest.txtWindowUnescape.value = !!window.unescape;
 
+	//alert('DEBUG: Looking for window.document.body.innerHTML...');
+	document.frmTest.txtBodyInnerHtml.value = (!!window.document && !!window.document.body && !!window.document.body.innerHTML);
+
+	//alert('DEBUG: Looking for window.document.body.textContent...');
+	document.frmTest.txtBodyTextContent.value = (!!window.document && !!window.document.body && !!window.document.body.textContent);
+
 	//alert('DEBUG: Looking for window.XMLHttpRequest...');
 	document.frmTest.txtWindowXmlHttpRequest.value = !!window.XMLHttpRequest;
 
@@ -72,9 +78,13 @@ function RunTest() {
     window.setTimeout('setTimeoutReturn()', 500);
 
 	//#todo remove this probably
-	if (navigator.userAgent.indexOf('MSIE 6.') != -1 || navigator.userAgent.indexOf('MSIE 5.5') != -1) {
-	    //alert('DEBUG: Skipping navigator.javaEnabled, MSIE 6./5.5');
-	    document.frmTest.txtStringFromCharCode.value = 'skipped';
+	if (
+		navigator.userAgent.indexOf('MSIE 6.') != -1 ||
+		navigator.userAgent.indexOf('MSIE 5.5') != -1 ||
+		navigator.userAgent.indexOf('MSIE 4.0') != -1
+	) {
+	    //alert('DEBUG: Skipping navigator.javaEnabled, MSIE 6./5.5/4.0');
+	    document.frmTest.txtNavigatorJavaEnabled.value = 'skipped';
 	} else {
         //alert('DEBUG: Looking for navigator.javaEnabled...');
         document.frmTest.txtNavigatorJavaEnabled.value = !!navigator.javaEnabled ? (navigator.javaEnabled() ? 'true' : 'false') : 'undefined';

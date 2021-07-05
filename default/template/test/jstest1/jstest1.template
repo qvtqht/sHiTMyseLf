@@ -86,9 +86,21 @@
                 window.Promise
             </p>
 
+            <!-- strings -->
+
             <p>
                 <input type=text name=txtWindowUnescape size=11>
                 window.unescape
+            </p>
+
+            <p>
+                <input type=text name=txtBodyInnerHtml size=11>
+                window.document.body.innerHTML
+            </p>
+
+            <p>
+                <input type=text name=txtBodyTextContent size=11>
+                window.document.body.textContent
             </p>
 
             <p>
