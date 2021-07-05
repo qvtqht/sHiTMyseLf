@@ -17,6 +17,9 @@ url.rewrite = (
 	# this mode is useful if you require registration
 	
 	"^(.+\.html)\??(.+)?" => "/route.php?path=$1&$2",
-	"^(.+)\/$" => "/route.php?path=$1/index.html"
+	"^(.+)\/$" => "/route.php?path=$1/index.html",
+	"^([0-9a-f]{40})$" => "/route.php?path=$1",
+	"^([0-9a-f]{8})$" => "/route.php?path=$1",
+	#todo admin/php/url_alias_friendly
 )
 
