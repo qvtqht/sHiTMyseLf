@@ -4817,7 +4817,18 @@ sub GetWritePage { # returns html for write page
 			# push @js, 'puzzle', 'sha512';
 		}
 		if (GetConfig('admin/js/translit')) {
-			push @js, 'translit';
+			if (GetConfig('admin/html/ascii_only')) {
+				WriteLog('GetWritePage: warning: admin/js/translit conflicts with admin/html/ascii_only');
+			} else {
+				push @js, 'translit';
+			}
+		}
+		if (GetConfig('admin/js/zalgo')) {
+			if (GetConfig('admin/html/ascii_only')) {
+				WriteLog('GetWritePage: warning: admin/js/zalgo conflicts with admin/html/ascii_only');
+			} else {
+				push @js, 'lib/zalgo';
+			}
 		}
 
 		$writePageHtml = InjectJs($writePageHtml, @js);
