@@ -318,6 +318,16 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 		WriteLog('HandleNotFound: admin/php/regrow_404_pages was true');
 		$SCRIPTDIR = GetScriptDir();
 		WriteLog('HandleNotFound: $SCRIPTDIR = ' . $SCRIPTDIR);
+		WriteLog('HandleNotFound: about to do lookup and call pages.pl. $path = ' . $path);
+
+		### aliases begin
+		if (GetConfig('admin/php/url_alias_friendly')) {
+			if (IsItem(substr($path, 1))) {
+				$path = '/' . GetHtmlFilename(substr($path, 1));
+				WriteLog('HandleNotFound: found item hash in path. path is now $path = ' . $path);
+			}
+		}
+		### aliases end
 
 		if (preg_match('/^\/[a-f0-9]{2}\/[a-f0-9]{2}\/([a-f0-9]{8})/', $path, $itemHashMatch)) {
 			# Item URL in the form: /ab/01/ab01cd23.html
