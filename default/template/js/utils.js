@@ -36,6 +36,7 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 	if (window.ShowTimestamps) {
 		//alert('DEBUG: OnLoadEverything: ShowTimestamps()');
 		window.eventLoopShowTimestamps = 1;
+		ShowTimestamps();
 	}
 	if (window.SettingsOnload) {
 		//alert('DEBUG: OnLoadEverything: SettingsOnload()');
@@ -98,15 +99,16 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 		if (window.CheckIfFresh) {
 			window.eventLoopFresh = 1;
 		}
-		window.eventLoopEnabled = 1
+		window.eventLoopEnabled = 1;
 		EventLoop();
 	}
 	if (window.DraggingInit && GetPrefs('draggable')) {
 		//alert('DEBUG: OnLoadEverything: DraggingInit()');
-		if (window.location.href.indexOf('desktop') != -1) {
-			DraggingInit(1);
-		} else {
+		if (window.location.href.indexOf('settings') != -1) {
+			// exclude settings page to aid user in escaping a fucked up situation
 			DraggingInit(0);
+		} else {
+			DraggingInit(1);
 		}
 	}
 	if (window.HideLoadingIndicator) {
