@@ -1669,10 +1669,38 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 #		}
 #	}
 
+	my $fileHashFromFilename = '';
+	if ($file =~ m/([0-9a-f]{40})/) {
+		my $simpleHash = $1;
+		my $cachedFilename = GetCache('indexed/' . $1);
+
+		if ($cachedFilename) {
+			WriteLog('IndexFile: found hash in filename; $simpleHash = ' . $simpleHash);
+			WriteLog('IndexFile: found hash in filename; $cachedFilename = ' . $cachedFilename);
+			WriteLog('IndexFile: found hash in filename; $file = ' . $file);
+
+			if ( index( $cachedFilename , $file ) != -1 ) {
+				WriteLog('IndexFile: found hash in filename: already indexed, returning. $simpleHash = ' . $simpleHash);
+				return '';
+			} else {
+				WriteLog('IndexFile: found hash in filename: NOT indexed, continuing. $simpleHash = ' . $simpleHash);
+			}
+		}
+	}
+
 	my $fileHash = GetFileHash($file);
-	if (GetCache("indexed/$fileHash")) {
-		WriteLog('IndexFile: aleady indexed, returning. $fileHash = ' . $fileHash);
-		return $fileHash;
+	
+	if (GetCache('indexed/' . $fileHash)) {
+		if (trim(GetCache('indexed/' . $fileHash)) eq $file) {
+			WriteLog('IndexFile: already indexed, returning. $fileHash = ' . $fileHash);
+			return $fileHash;
+		} else {
+			#return $fileHash; #who does that?#todo
+			WriteLog('IndexFile: already indexed, but from different path. continuing. $fileHash = ' . $fileHash);
+			if (GetConfig('admin/organize_files')) {
+				$file = OrganizeFile($file);
+			}
+		}
 	}
 
 	my $indexSuccess = 0;
@@ -1684,7 +1712,17 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 		$indexSuccess = IndexTextFile($file);
 
 		if (!$indexSuccess) {
-			WriteLog('IndexFile: warning: $indexSuccess was FALSE');
+			WriteLog('IndexFile: warning: IndexTextFile: $indexSuccess was FALSE');
+			$indexSuccess = 0;
+		}
+	}
+
+	if (0 && $ext eq 'html') { #todo enable once IndexHtmlFile() is better
+		WriteLog('IndexFile: calling IndexHtmlFile()');
+		$indexSuccess = IndexHtmlFile($file);
+
+		if (!$indexSuccess) {
+			WriteLog('IndexFile: warning: IndexHtmlFile $indexSuccess was FALSE');
 			$indexSuccess = 0;
 		}
 	}
