@@ -540,7 +540,18 @@ sub GetRelatedListing {
 	if (my $fileHash = shift) {
 		my $query = GetConfig("query/related");
 		$query =~ s/\?/'$fileHash'/;
-		return GetQueryAsDialog($query, 'Related');
+		$query =~ s/\?/'$fileHash'/;
+		$query =~ s/\?/'$fileHash'/;
+		$query =~ s/\?/'$fileHash'/;
+
+		my @result = SqliteQueryHashRef($query);
+
+		if (scalar(@result) > 2) { # first row is column headers; related
+			my $listing = GetResultSetAsDialog(\@result, 'Related', 'item_title, add_timestamp, file_hash');
+			return $listing;
+		} else {
+			return '';
+		}
 	}
 
 	WriteLog('GetRelatedListing: warning: unreachable reached');
