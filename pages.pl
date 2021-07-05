@@ -4979,11 +4979,35 @@ sub GetAccessPage { # returns html for compatible mode page, /access.html
 
 sub GetSettingsWindow { # returns settings dialog
 # aka GetSettingsDialog()
+	WriteLog('GetSettingsWindow() BEGIN');
+
 	my $settingsTemplate = GetTemplate('form/settings.template');
-	my $settingsWindow = GetWindowTemplate($settingsTemplate, 'Settings');
-	$settingsWindow = '<form id=frmSettings name=frmSettings>' . $settingsWindow . '</form>';
+
+	if (GetConfig('admin/js/dragging')) {
+	} else {
+		# kind of a hack
+#		$settingsTemplate = str_replace(
+#			'<input type=checkbox id=chkDraggable name=chkDraggable onchange="if (window.SaveCheckbox) { SaveCheckbox(this, \'draggable\'); }">',
+#			'<input type=checkbox id=chkDraggable name=chkDraggable disabled>',
+#			$settingsTemplate
+#		);
+		$settingsTemplate = AddAttributeToTag($settingsTemplate, 'input id=chkDraggable', 'disabled', '');
+		$settingsTemplate = str_replace('Quirky enhancements', '<span disabled>Quirky enhancements (N/A)</span>', $settingsTemplate);
+		#$settingsTemplate = str_replace('Enable draggable interface<noscript><b>*</b></noscript>', '<span </span>', $settingsTemplate);
+	}
+
+	my $settingsWindow = '';#GetWindowTemplate($settingsTemplate, 'Settings');
+	$settingsWindow =
+		'<form action="/settings.html" id=frmSettings name=frmSettings>' .
+		GetWindowTemplate($settingsTemplate, 'Settings') .
+		'</form>'
+	;
+	#todo template this, and fill in the current page url
+
+	WriteLog('GetSettingsWindow: return $settingsWindow = ' . length($settingsWindow) . ' bytes');
+
 	return $settingsWindow;
-}
+} # GetSettingsWindow()
 
 sub GetOperatorWindow {
 	my $operatorTemplate = GetTemplate('form/operator.template');
