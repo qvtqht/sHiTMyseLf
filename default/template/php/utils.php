@@ -204,9 +204,9 @@ function GetFileHash ($fileName) { // returns hash of file contents
 	if ((strtolower(substr($fileName, length($fileName) - 4, 4)) == '.txt')) {
 		$fileContent = GetFile($fileName);
 
-		if (index($fileContent, "\n-- \n") > -1) {
+		while (index($fileContent, "\n-- \n") > -1) { #\n--
 			// exclude signature from hash content
-			$fileContent = substr($fileContent, 0, index($fileContent, "\n-- \n"));
+			$fileContent = substr($fileContent, 0, index($fileContent, "\n-- \n")); #\n--
 		}
 
 		$fileContent = trim($fileContent);

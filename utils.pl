@@ -413,9 +413,9 @@ sub GetFileHash { # $fileName ; returns hash of file contents
 	if (-e $fileName) {
 		if ((lc(substr($fileName, length($fileName) - 4, 4)) eq '.txt')) {
 			my $fileContent = GetFile($fileName);
-			if (index($fileContent, "\n-- \n") > -1) {
+			while (index($fileContent, "\n-- \n") > -1) { #\n--
 				# exclude footer content from hashing
-				$fileContent = substr($fileContent, 0, index($fileContent, "\n-- \n"));
+				$fileContent = substr($fileContent, 0, index($fileContent, "\n-- \n")); #\n--
 			}
 			$fileContent = trim($fileContent);
 			$memoFileHash{$fileName} = sha1_hex($fileContent);
