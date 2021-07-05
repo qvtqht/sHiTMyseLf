@@ -864,7 +864,7 @@ sub EpochToHuman2 { # not sure what this is supposed to do, and it's unused
 
 }
 
-sub GetFormattedTimestamp { # returns zero-padded formatted epoch time
+sub GetPaddedEpochTimestamp { # returns zero-padded formatted epoch time
 	# this is used to get log timestamps to line up nicely when float/millisecond is used
 	# if there is no period, it should return unchanged.
 
@@ -884,7 +884,7 @@ sub GetFormattedTimestamp { # returns zero-padded formatted epoch time
 	}
 
 	return $time;
-} # GetFormattedTimestamp()
+} # GetPaddedEpochTimestamp()
 
 #props http://www.bin-co.com/perl/scripts/str_replace.php
 sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_replace() from php
@@ -1064,7 +1064,7 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 	if ($file eq 'report_files_written') {
 		return @debugFilesWritten;
 	}
-	push @debugFilesWritten, GetFormattedTimestamp() . ' ' . $file;
+	push @debugFilesWritten, GetPaddedEpochTimestamp() . ' ' . $file;
 
 	WriteLog("PutHtmlFile($file)");
 

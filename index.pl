@@ -1234,7 +1234,8 @@ sub AddToChainLog { # $fileHash ; add line to log/chain.log
 	}
 
 	# get components of new line: hash, timestamp, and previous line
-	my $newAddedTime = GetTime();
+	my $newAddedTime = GetPaddedEpochTimestamp();
+
 	my $logLine = $fileHash . '|' . $newAddedTime;
 	my $lastLineAddedLog = `tail -n 1 $logFilePath`; #note the backticks
 	if (!$lastLineAddedLog) {
@@ -1263,7 +1264,7 @@ sub AddToChainLog { # $fileHash ; add line to log/chain.log
 
 		# add to index database
 		DBAddItemAttribute($fileHash, 'chain_timestamp', $newAddedTime);
-		DBAddItemAttribute($fileHash, 'chain_sequence', $chainSequenceNumber);
+		DBAddItemAttribute($fileHash, 'chain_sequence', $chainSequenceNumber, $newAddedTime); #
 	}
 
 	return $newAddedTime;
