@@ -1799,13 +1799,13 @@ sub SweepDeleted {
 		my $fileHash = $file->{'file_hash'};
 
 		if (IsFileDeleted($fileName, $fileHash)) {
-			WriteMesage('Found deleted item: $fileHash = ' . $fileHash);
+			WriteMessage('Found deleted item: $fileHash = ' . $fileHash);
 			DBDeleteItemReferences($fileHash);
 			$itemsDeletedCounter++;
 		}
 	}
 
-	WriteMesage('Total deleted items found: $itemsDeletedCounter = ' . $itemsDeletedCounter);
+	WriteMessage('Total deleted items found: $itemsDeletedCounter = ' . $itemsDeletedCounter);
 
 	#if ($itemsDeletedCounter) {
 		DeindexMissingFiles();
