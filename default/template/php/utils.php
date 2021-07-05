@@ -971,19 +971,19 @@ function IsItem ($string) { # returns 1 if parameter is in item hash format (40 
 		return 0;
 	}
 
-	if (preg_match('/^[0-9a-f]{40}$/', $string)) {
-		WriteLog("IsItem: matched 40 chars");
-		return 1;
+	if (preg_match('/^([0-9a-f]{40})$/', $string, $matches)) {
+		WriteLog("IsItem: matched 40 chars $1");
+		return $matches[0];
 	}
 
-	if (preg_match('/^[0-9a-f]{8}$/', $string)) {
-		WriteLog("IsItem: matched 8 chars");
-		return 1;
+	if (preg_match('/^([0-9a-f]{8})$/', $string, $matches)) {
+		WriteLog("IsItem: matched 8 chars $1");
+		return $matches[0];
 	}
 
 	WriteLog("IsItem: NO MATCH!");
 	return 0;
-}
+} # IsItem()
 
 function setcookie2 ($key, $value) { // sets cookie with ie3 compatibility
 	WriteLog('setcookie2(' . $key . ',' . $value . ')');
