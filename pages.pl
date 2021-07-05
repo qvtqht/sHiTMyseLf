@@ -263,6 +263,8 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 
 	elsif (
 		$fieldName eq 'item_url' ||
+		$fieldName eq 'https' ||
+		$fieldName eq 'http' ||
 		$fieldName eq 'url'
 	) { #url
 		if (length($fieldValue) < 64) {
