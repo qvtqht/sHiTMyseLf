@@ -3448,7 +3448,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 			$queryParams{'limit_clause'} = "LIMIT 25"; #todo fix hardcoded limit #todo pagination
 
 			@files = DBGetItemList(\%queryParams);
-		}
+		} # $pageType eq 'author'
 
 		if ($pageType eq 'tag') { #/top/tag.html #/tag/tag.html
 			# TAG PAGE ##############################################################
@@ -3485,7 +3485,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score >= $scoreThreshold";
 			}
 			$queryParams{'order_clause'} = "ORDER BY item_score DESC, item_flat.add_timestamp DESC";
-			$queryParams{'limit_clause'} = "LIMIT 25"; #todo fix hardcoded limit #todo pagination
+			$queryParams{'limit_clause'} = "LIMIT 50"; #todo fix hardcoded limit #todo pagination
 
 			@files = DBGetItemList(\%queryParams);
 		} # $pageType eq 'tag'
@@ -3561,6 +3561,8 @@ sub GetReadPage { # generates page with item listing based on parameters
 		$txtIndex .= '<hr 5>';
 	}
 	my $itemComma = '';
+
+	$txtIndex .= GetWindowTemplate('Items on page: ' . scalar(@files), 'Count');
 
 	# LISTING ITEMS BEGINS HERE
 
@@ -3667,6 +3669,8 @@ sub GetReadPage { # generates page with item listing based on parameters
 			$txtIndex = InjectJs($txtIndex, qw(settings voting timestamp utils profile));
 		}
 	}
+
+	$txtIndex .= '<!-- GetReadPage() -->';
 
 	return $txtIndex;
 } # GetReadPage()
@@ -3855,6 +3859,11 @@ sub GetMenuItem { # $address, $caption; returns html snippet for a menu item (us
 		if (GetConfig('html/emoji_menu')) {
 			my $menuItemEmoji = GetString(lc($caption), 'emoji', 1); #lc() is a hack, name should be passed instead of caption
 		}
+	}
+
+	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+		$menuItem = AddAttributeToTag($menuItem, 'a', 'onclick', "if (!document.getElementById('$menuName') && window.GetPrefs && GetPrefs('draggable')) { return FetchDialogFromUrl('/dialog" . $address . "'); }");
+		#todo this also needs relativize support
 	}
 
 	$menuItem =~ s/\$address/$address/g;
