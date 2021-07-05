@@ -120,9 +120,19 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 	//
 } // OnLoadEverything()
 
-function ShowPreNavigateNotification () {
+function ShowPreNavigateNotification () { // displays 'Meditate...' message
+	// OnUnload ()
 	//alert('DEBUG: ShowPreNavigateNotification() begin');
-	document.title = document.title + '...';
+
+	if (window.blockPreNavigateNotification) {
+		//alert('DEBUG: ShowPreNavigateNotification() blocked by window.blockPreNavigateNotification');
+		window.blockPreNavigateNotification = 0;
+		return '';
+	}
+
+	if (document.title.indexOf('...') == -1) {
+		document.title = document.title + '...';
+	}
 
 	//document.body.style.opacity="0.8";
 	if (event.target == location.href) {
