@@ -1426,6 +1426,9 @@ if (GetConfig('admin/php/route_enable')) {
 			WriteLog('route.php: ShowAdvanced() assist activated');
 			$assistCss = ''; #my $assistCss = '';
 
+			$colorHighlightBeginner = GetThemeColor('highlight_beginner'); #my
+			$colorHighlightAdvanced = GetThemeColor('highlight_advanced'); #my
+
 			if (!isset($_COOKIE['show_advanced']) || $_COOKIE['show_advanced'] == '0') {
 				# this defaults to true
 				# hides advanced elements
@@ -1442,6 +1445,7 @@ if (GetConfig('admin/php/route_enable')) {
 				;
 
 				$assistCss .= ".advanced, .admin{ display:none }\n";
+				#$assistCss .= ".advanced, .admin{ display: none; background-color: $colorHighlightAdvanced }\n";
 				// #todo templatify
 			}
 			if (isset($_COOKIE['beginner']) && $_COOKIE['beginner'] == '0') { # this defaults to false
@@ -1449,8 +1453,13 @@ if (GetConfig('admin/php/route_enable')) {
 
 				WriteLog('route.php: $_COOKIE[beginner] = ' . $_COOKIE['beginner']);
 				$assistCss .= ".beginner { display:none }\n";
+				#$assistCss .= ".beginner { display:none; background-color: $colorHighlightBeginner }\n";
 				// #todo templatify
 			}
+
+			#$assistCss .= ".advanced, .admin{ background-color: $colorHighlightAdvanced }\n";
+			#$assistCss .= ".beginner { background-color: $colorHighlightBeginner }\n";
+
 
 			if ($assistCss) {
 				$html = str_replace(
