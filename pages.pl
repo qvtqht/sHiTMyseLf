@@ -6250,6 +6250,52 @@ while (my $arg1 = shift @foundArgs) {
 				print("missing argument for -M\n");
 			}
 		}
+		elsif ($arg1 eq '-D') { # dialog
+			print ("recognized -D\n");
+			my $makeDialogArg = shift @foundArgs;
+			#todo sanity check of $makeDialogArg
+			if ($makeDialogArg) {
+				if ($makeDialogArg eq 'settings') {
+					my $dialog = GetSettingsWindow();
+					PutHtmlFile('dialog/settings.html', $dialog);
+					print ("-D $makeDialogArg\n");
+				}
+				if ($makeDialogArg eq 'stats') {
+					my $dialog = GetStatsTable();
+					PutHtmlFile('dialog/stats.html', $dialog);
+					print ("-D $makeDialogArg\n");
+				}
+				if ($makeDialogArg eq 'access') {
+					my $dialog = GetAccessDialog();
+					PutHtmlFile('dialog/access.html', $dialog);
+					print ("-D $makeDialogArg\n");
+				}
+				if ($makeDialogArg eq 'write') {
+					my $dialog = GetWriteForm();
+					PutHtmlFile('dialog/write.html', '<form action="/post.html" method=GET id=compose name=compose target=_top>' . $dialog . '</form>');
+					print ("-D $makeDialogArg\n");
+				}
+				if ($makeDialogArg eq 'read') {
+					my $dialog = GetQueryAsDialog('read', 'Top Threads');
+					PutHtmlFile('dialog/read.html', $dialog);
+					print ("-D $makeDialogArg\n");
+				}
+				if ($makeDialogArg eq 'profile') {
+					my $dialog = GetProfileWindow();
+					PutHtmlFile('dialog/profile.html', $dialog);
+					print ("-D $makeDialogArg\n");
+				}
+				if ($makeDialogArg eq 'help') {
+					my $dialog = GetSimpleWindow('help');
+					PutHtmlFile('dialog/help.html', $dialog);
+					print ("-D $makeDialogArg\n");
+				}
+				#print ("calling MakePage($makePageArg)\n");
+				#MakePage($makePageArg);
+			} else {
+				print("missing argument for -D\n");
+			}
+		}
 		else {
 			print ("Available arguments:\n");
 			print ("--summary or -s for all summary or system pages\n");
@@ -6258,6 +6304,7 @@ while (my $arg1 = shift @foundArgs) {
 			print ("--queue or -Q for all pages in queue\n");
 			print ("--index or -i for all index pages\n");
 			print ("-M [page] to call MakePage\n");
+			print ("-D [dialog] to make dialog page\n");
 			print ("item id for one item's page\n");
 			print ("author fingerprint for one item's page\n");
 			print ("#tag for one tag's page\n");
