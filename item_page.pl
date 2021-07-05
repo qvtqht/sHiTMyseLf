@@ -389,34 +389,76 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 			}
 			# do nothing
 		} else { # additional dialogs on items page
-			# VOTE  BUTTONS
-			# Vote buttons depend on reply functionality, so they are also in here
-			$voteButtons .= GetItemTagButtons($file{'file_hash'});
-
 			# REPLY FORM
 			$txtIndex .= GetReplyForm($file{'file_hash'});
 
+#
+#			# VOTE  BUTTONS
+#			# Vote buttons depend on reply functionality, so they are also in here
+#			$voteButtons .=
+#				GetItemTagButtons($file{'file_hash'}) .
+#				'<hr>' .
+#				GetTagsListAsHtmlWithLinks($file{'tags_list'}) .
+#				'<hr>' .
+#				GetString('item_attribute/item_score') . $file{'item_score'}
+#			;
+
+			my $classifyForm = GetTemplate('html/item/classify.template');
+			$classifyForm = str_replace(
+			 	'<span id=itemTagsList></span>',
+			 	'<span id=itemTagsList>' . GetTagsListAsHtmlWithLinks($file{'tags_list'}) . '</span>',
+			 	$classifyForm
+			);
+
+			$classifyForm = str_replace(
+			 	'<span id=itemAddTagButtons></span>',
+			 	'<span id=itemAddTagButtons>' . GetItemTagButtons($file{'file_hash'}) . '</span>',
+			 	$classifyForm
+			);
+
+			$classifyForm = str_replace(
+			 	'<span id=itemScore></span>',
+			 	'<span id=itemScore>' . $file{'item_score'} . '</span>',
+			 	$classifyForm
+			);
+
+
 
 			# CLASSIFY BOX
-			$txtIndex .= '<span class=advanced>'.GetWindowTemplate($voteButtons, 'Classify').'</span>';
+			$txtIndex .= '<span class=advanced>'.GetWindowTemplate($classifyForm, 'Classify').'</span>';
 		}
 
+		#my @itemReplies = DBGetItemReplies($fileHash);
 		my @itemReplies = DBGetItemReplies($fileHash);
+
+
+#
+#		my $query = '';
+#		if (ConfigKeyValid("query/related")) {
+#			$query = GetConfig("query/related");
+#			$query =~ s/\?/'$fileHash'/;
+#			$query =~ s/\?/'$fileHash'/;
+#			$query =~ s/\?/'$fileHash'/;
+#		}
+#
+#		my @itemReplies = SqliteQueryHashRef($query);
+
+
 		WriteLog('GetItemPage: scalar(@itemReplies) = ' . scalar(@itemReplies));
 		foreach my $itemReply (@itemReplies) {
 			WriteLog('GetItemPage: $itemReply = ' . $itemReply);
 			if ($itemReply->{'tags_list'} && index($itemReply->{'tags_list'}, 'hastext') != -1) {
-				my $itemReplyTemplate = GetItemTemplate($itemReply);
+				my $itemReplyTemplate = GetItemTemplate($itemReply); # GetItemPage reply #hastext
 				$txtIndex .= $itemReplyTemplate;
 			} else {
-				my $itemReplyTemplate = GetItemTemplate($itemReply);
+				my $itemReplyTemplate = GetItemTemplate($itemReply); # GetItemPage reply not #hastext
 				$itemReplyTemplate = '<span class=advanced>' . $itemReplyTemplate . '</span>';
 				$txtIndex .= $itemReplyTemplate;
 			}
 		}
 
 		# REPLIES LIST
-		$txtIndex .= GetReplyListing($file{'file_hash'});
+		#$txtIndex .= GetReplyListing($file{'file_hash'});
 
 		# RELATED LIST
 		$txtIndex .= GetRelatedListing($file{'file_hash'});
@@ -476,10 +518,12 @@ sub GetReplyListing {
 		if (@itemReplies) {
 			return GetItemListing($fileHash);
 		} else {
-			return GetReplyListingEmpty($fileHash);
+			#return GetReplyListingEmpty($fileHash);
+			return '';
 		}
 	} else {
-		return GetReplyListingEmpty($fileHash);
+		#return GetReplyListingEmpty($fileHash);
+		return '';
 	}
 
 	WriteLog('GetReplyListing: warning: unreachable reached');
