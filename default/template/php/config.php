@@ -63,6 +63,6 @@ function WriteConfigDump() {
 	file_put_contents($targetFileName, $text);
 
 	return $targetFileName;
-} # DoConfigDump()
+} # WriteConfigDump()
 
 /* / php/config.php */
