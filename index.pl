@@ -1811,13 +1811,34 @@ sub SweepDeleted {
 		DeindexMissingFiles();
 	#}
 
+} # SweepDeleted()
+
+my $flagNoCache = 0; # GetCache('indexed/' . $fileHash)
+
+my $didSomething = 0;
+
+sub PrintHelp {
+	print "index.pl: --clear-cache\n";
+	print "index.pl: --all\n";
+	print "index.pl: --sweep\n";
+	print "index.pl: --chain\n";
+	print "index.pl: --write-indexed-config (-C) calls WriteIndexedConfig\n";
 }
 
 while (my $arg1 = shift @argsFound) {
 	WriteLog('index.pl: $arg1 = ' . $arg1);
 	if ($arg1) {
-		if ($arg1 eq '--clear') {
-			print "index.pl: --clear\n";
+		$didSomething++;
+		if ($arg1 eq '--help') {
+			print "index.pl: --help\n";
+			PrintHelp();
+		}
+		if ($arg1 eq '--no-cache') {
+			print "index.pl: --no-cache\n";
+			$flagNoCache = 1;
+		}
+		if ($arg1 eq '--clear-cache') {
+			print "index.pl: --clear-cache\n";
 			print `rm -vrf cache/b/indexed/*`;
 		}
 		if ($arg1 eq '--all') {
@@ -1837,12 +1858,39 @@ while (my $arg1 = shift @argsFound) {
 			print "index.pl: --chain\n";
 			MakeChainIndex();
 		}
+		if ($arg1 eq '--write-indexed-config' || $arg1 eq '-C') {
+			# sweep deleted files
+			print "index.pl: --write-indexed-config (-C) calls WriteIndexedConfig()\n";
+			WriteIndexedConfig(); # index.pl '--write-indexed-config'
+		}
 		if (-e $arg1) {
-			IndexFile($arg1);
+			my $fileHash = GetFileHash($arg1);
+			if ($fileHash && $flagNoCache) {
+				if (GetCache('indexed/' . $fileHash)) {
+					print "Removing indexed marker\n";
+					#UnlinkCache("indexed/$fileHash");
+				}
+			}
+			WriteMessage("IndexFile($arg1) " . '(' . scalar(@argsFound) . ' left)');
+
+			my $indexFileResult = IndexFile($arg1);
+			my $htmlFilename = GetHtmlFilename($indexFileResult);
+
+			#WriteMessage("IndexFile($arg1) returned: http://localhost:2784/" . $htmlFilename);
 			IndexFile('flush');
+		}
+		else {
+			WriteMessage("index.pl: what is $arg1");
+			PrintHelp();
 		}
 	}
 }
+
+if (!$didSomething) {
+	PrintHelp();
+}
+
+print "\n";
 
 #MakeTagIndex();
 1;
