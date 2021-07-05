@@ -1566,8 +1566,9 @@ sub MakeIndex { # indexes all available text files, and outputs any config found
 		#$file =~ s/^./../;
 
 		$currentFile++;
-		my $percent = ($currentFile / $filesCount) * 100;
-		WriteMessage("*** MakeIndex: $currentFile/$filesCount ($percent %) $file");
+		my $percent = floor(($currentFile / $filesCount) * 100);
+		my $printedFilename = str_replace($TXTDIR . '/', '', $file);
+		WriteMessage("[$percent%] $currentFile/$filesCount  $printedFilename");
 		IndexFile($file); # aborts if cache/.../indexed/filehash exists
 	}
 	IndexFile('flush');
