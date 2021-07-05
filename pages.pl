@@ -4658,7 +4658,7 @@ sub GetWriteForm { # returns write form (for composing text message)
 	if (GetConfig('admin/php/enable')) {
 		my $writeLongMessage = GetTemplate('form/write/long_message.template');
 		if ($writeLongMessage) {
-			my $targetElement = '<span id=writeintro>';
+			my $targetElement = '<span id=writefooter>';
 			$writeForm = str_replace($targetElement, $targetElement . $writeLongMessage, $writeForm);
 		}
 
