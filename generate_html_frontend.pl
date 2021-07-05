@@ -6,7 +6,7 @@ use 5.010;
 use utf8;
 
 require './pages.pl';
-MakeSummaryPages();
-BuildTouchedPages();
+MakeSummaryPages(); # generate_html_frontend.pl
+BuildTouchedPages(); # generate_html_frontend.pl
 
 1;
