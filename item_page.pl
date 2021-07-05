@@ -558,8 +558,28 @@ sub GetRelatedListing {
 	return '';
 } # GetReplyListing()
 
-sub GetItemAttributesWindow {
+sub GetItemAttributesWindow { # %file
+	my $itemInfoTemplate = '';
+	WriteLog('GetItemAttributesWindow: my $itemInfoTemplate; ');
+
+	my $fileRef = shift;
+	my %file = %{$fileRef};
+#	my %file = %{shift @_};
+
+	my $fileHash = trim($file{'file_hash'});
+	if ($fileHash = IsItem($fileHash)) {
+		my $query = "SELECT DISTINCT attribute, value FROM item_attribute WHERE file_hash LIKE '$fileHash%'";
+		$itemInfoTemplate = GetQueryAsDialog($query, 'Item Attributes');
+		$itemInfoTemplate = '<span class=advanced>' . $itemInfoTemplate . '</span>';
+		return $itemInfoTemplate;
+		#for debug/compare
+		#return $itemInfoTemplate . GetItemAttributesWindow2($fileRef);
+	}
+} # GetItemAttributesWindow();
+
+sub GetItemAttributesWindow2 {
 # GetItemAttributesDialog {
+# GetItemAttributesTable {
 	#my $itemInfoTemplate = GetTemplate('html/item_info.template');
 	my $itemInfoTemplate;
 	WriteLog('GetItemAttributesWindow: my $itemInfoTemplate; ');
@@ -590,8 +610,8 @@ sub GetItemAttributesWindow {
 						# timestamps
 						$iaValue = $iaValue . ' (' . GetTimestampWidget($iaValue) . ')';
 					}
-					if ($iaName =~ m/file_size/) {
-						# timestamps
+					if ($iaName =~ m/file_size/) { # it was like this before, for some reason
+						# file size
 						$iaValue = $iaValue . ' (' . GetFileSizeWidget($iaValue) . ')';
 					}
 					if ($iaName eq 'author_key' || $iaName eq 'cookie_id' || $iaName eq 'gpg_id') {
@@ -630,9 +650,24 @@ sub GetItemAttributesWindow {
 					}
 					if ($iaName eq 'chain_previous') {
 						$iaValue = GetItemHtmlLink($iaValue, DBGetItemTitle($iaValue, 32));
-
+					}
+					if ($iaName eq 'url') {
+						my $displayValue = '';
+						if (length($iaValue) > 127) {
+							$displayValue = substr($iaValue, 0, 124) . '...';
+						} else {
+							$displayValue = $iaValue;
+						}
+						$iaValue = '<a href="' . $iaValue . '">' . $displayValue . '</a>';
+						#todo sanity
 					}
 				}
+
+				if ($iaValue eq '') {
+					$iaValue = '-';
+				}
+
+
 
 				$itemAttributesTable .= '<tr><td>';
 				$itemAttributesTable .= GetString("item_attribute/$iaName") . ':';
@@ -648,7 +683,7 @@ sub GetItemAttributesWindow {
 			$itemAttributesTable .= '<tr><td>';
 			$itemAttributesTable .= GetString('item_attribute/tags_list');
 			$itemAttributesTable .= '</td><td>';
-			$itemAttributesTable .= $file{'tags_list'};
+			$itemAttributesTable .= GetTagsListAsHtmlWithLinks($file{'tags_list'});
 			$itemAttributesTable .= '</td></tr>';
 		}
 
