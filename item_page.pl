@@ -22,6 +22,205 @@ use Cwd qw(cwd);
 #require './utils.pl';
 #require './makepage.pl';
 
+sub GetHtmlToolbox {
+# 'toolbox' >toolbox<
+	my $fileHashRef = shift;
+	my %file;
+	if ($fileHashRef) {
+		%file = %{$fileHashRef};
+	}
+
+	my $htmlToolbox = '';
+
+	my $urlParam = '';
+	if ($file{'item_title'}) {
+		$urlParam = $file{'item_title'};
+		#$urlParam = uri_encode($urlParam);
+		$urlParam = str_replace(' ', '+', $urlParam);
+	}
+
+	if ($urlParam && $urlParam ne 'Untitled') {
+		$htmlToolbox .= '<b>Search:</b><br>';
+
+		$htmlToolbox .=
+			'<a href="http://www.google.com/search?q=' .
+			$urlParam .
+			'"' .
+			'target=_blank' .
+			'>' .
+			'Google' .
+			'</a><br>'
+		;
+
+		$htmlToolbox .=
+			'<a href="http://html.duckduckgo.com/html?q=' .
+			$urlParam .
+			'">' .
+			'DuckDuckGo' .
+			'</a><br>'
+		;
+		$htmlToolbox .=
+			'<a href="https://search.brave.com/search?q=' .
+			$urlParam .
+			'">' .
+			'Brave' .
+			'</a><br>'
+		;
+#			$htmlToolbox .=
+#				'<a href="http://yandex.ru/yandsearch?text=' .
+#				$urlParam .
+#				'">' .
+#				'Yandex' .
+#				'</a><br>'
+		;
+		$htmlToolbox .=
+			'<a href="https://teddit.net/r/all/search?q=' .
+			$urlParam .
+			'&nsfw=on' .
+			'">' .
+			'Teddit' .
+			'</a><br>'
+		;
+		$htmlToolbox .=
+			'<a href="http://www.google.com/search?q=' .
+			$urlParam .
+			'+teddit"' .
+			'target=_blank' .
+			'>' .
+			'Google+Teddit' .
+			'</a><br>'
+		;
+		$htmlToolbox .=
+			'<a href="https://hn.algolia.com/?q=' .
+			$urlParam .
+			'">' .
+			'A1go1ia' .
+			'</a><noscript>*</noscript><br>'
+		;
+		$htmlToolbox .=
+			'<a href="https://en.wikipedia.org/w/index.php?search=' .
+			$urlParam .
+			'">' .
+			'Wikipedia EN' .
+			'</a><br>'
+		;
+		$htmlToolbox .=
+			'<a href="https://ru.wikipedia.org/w/index.php?search=' .
+			$urlParam .
+			'">' .
+			'Wikipedia RU' .
+			'</a><br>'
+		;
+		$htmlToolbox .=
+			'<a href="https://tildes.net/search?q=' .
+			$urlParam .
+			'">' .
+			'Tildes' .
+			'</a><br>'
+		;
+		$htmlToolbox .=
+			'<a href="https://lobste.rs/search?q=' .
+			$urlParam .
+			'&what=stories&order=relevance' .
+			'">' .
+			'Lobsters' .
+			'</a><br>'
+		;
+
+
+		$htmlToolbox .= "<p>";
+		$htmlToolbox .= "<b>Share:</b><br>";
+
+		$htmlToolbox .=
+			# http://twitter.com/share?text=text goes here&url=http://url goes here&hashtags=hashtag1,hashtag2,hashtag3
+			# https://stackoverflow.com/questions/6208363/sharing-a-url-with-a-query-string-on-twitter
+
+			'<a href="http://twitter.com/share?text=' .
+			$urlParam .
+			'">' .
+			'Twitter' .
+			'</a><br>'
+		;
+
+		$htmlToolbox .=
+			# https://www.facebook.com/sharer/sharer.php?u=http://example.com?share=1&cup=blue&bowl=red&spoon=green
+			# https://stackoverflow.com/questions/19100333/facebook-ignoring-part-of-my-query-string-in-share-url
+
+			'<a href="https://www.facebook.com/sharer/sharer.php?u=' . # what does deprecated mean?
+			$urlParam .
+			'">' .
+			'Facebook' .
+			'</a><br>'
+		;
+	} # if ($file{'item_title'})
+
+
+	my $urlParamFullText = '';
+	if ($file{'file_path'} && $file{'item_type'} eq 'txt') {
+		$urlParamFullText = $file{'file_path'};
+		$urlParamFullText = GetFile($urlParamFullText);
+		$urlParamFullText = uri_encode($urlParamFullText);
+		$urlParamFullText = str_replace('+', '%2b', $urlParamFullText);
+		$urlParamFullText = str_replace('#', '%23', $urlParamFullText);
+		#todo other chars like ? & =
+	}
+
+	if (
+		GetConfig('html/item_toolbox/show_publish_options') &&
+		$urlParamFullText &&
+		length($urlParamFullText) < 2048
+	) {
+
+		$htmlToolbox .= "<p>";
+		$htmlToolbox .= '<b>Publish:</b><br>';
+
+		#$htmlToolbox = GetPublishButton('localhost:2784', $file{'file_path'});
+
+		$htmlToolbox .=
+			'<a href="http://localhost:2784/post.html?comment=' .
+			$urlParamFullText .
+			'">' .
+			'localhost:2784' .
+			'</a><br>';
+
+		$htmlToolbox .=
+			'<a href="http://gitara.club/post.html?comment=' .
+			$urlParamFullText .
+			'">' .
+			'gitara' .
+			'</a><br>';
+
+		$htmlToolbox .=
+			'<a href="http://localhost:31337/post.html?comment=' .
+			$urlParamFullText .
+			'">' .
+			'diary' .
+			'</a><br>';
+
+		$htmlToolbox .=
+			'<a href="http://www.shitmyself.com/post.html?comment=' .
+			$urlParamFullText .
+			'">' .
+			'sHiTMyseLf' .
+			'</a><br>';
+
+		$htmlToolbox .=
+			'<a href="http://qdb.us/post.html?comment=' .
+			$urlParamFullText .
+			'">' .
+			'qdb.us' .
+			'</a><br>'
+		;
+	} else {
+		$htmlToolbox .= "";
+	}
+
+
+	if ($htmlToolbox) {
+		my $htmlToolboxWindow = '<span class=advanced>' . GetWindowTemplate($htmlToolbox, 'Tools') . '</span>';
+		return $htmlToolboxWindow;
+	}
+} # GetHtmlToolbox()
 
 sub GetItemPage { # %file ; returns html for individual item page. %file as parameter
 	# %file {
@@ -163,94 +362,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 
 	# TOOLBOX
 	if (GetConfig('html/item_toolbox/enable')) {
-		my $htmlToolbox = '';
-		if ($file{'item_title'}) {
-			my $urlParam = '';
-			$urlParam = $file{'item_title'};
-			$urlParam = str_replace(' ', '+', $urlParam);
-			$urlParam = uri_encode($urlParam);
-
-			my $urlParamFullText = '';
-			$urlParamFullText = $file{'file_path'};
-			$urlParamFullText = GetFile($urlParamFullText);
-			$urlParamFullText = uri_encode($urlParamFullText);
-			$urlParamFullText = str_replace('+', '%2b', $urlParamFullText);
-
-			$htmlToolbox .= '<b>Search:</b><br>';
-
-			$htmlToolbox .=
-				'<a href="http://www.google.com/search?q=' .
-				$urlParam .
-				'"' .
-				'target=_blank' .
-				'>' .
-				'Google' .
-				'</a><br>'
-				;
-			$htmlToolbox .=
-				'<a href="http://html.duckduckgo.com/html?q=' .
-				$urlParam .
-				'">' .
-				'DuckDuckGo' .
-				'</a><br>'
-				;
-			$htmlToolbox .=
-				'<a href="http://yandex.ru/yandsearch?text=' .
-				$urlParam .
-				'">' .
-				'Yandex' .
-				'</a><br>'
-				;
-			$htmlToolbox .=
-				'<a href="https://teddit.net/r/all/search?q=' .
-				$urlParam .
-				'&nsfw=on' .
-				'">' .
-				'Teddit' .
-				'</a><br>'
-				;
-			$htmlToolbox .=
-				'<a href="https://hn.algolia.com/?q=' .
-				$urlParam .
-				'">' .
-				'A1go1ia' .
-				'</a><br>'
-				;
-			$htmlToolbox .=
-				'<a href="https://en.wikipedia.org/w/index.php?search=' .
-				$urlParam .
-				'">' .
-				'Wikipedia EN' .
-				'</a><br>'
-				;
-			$htmlToolbox .=
-				'<a href="https://ru.wikipedia.org/w/index.php?search=' .
-				$urlParam .
-				'">' .
-				'Wikipedia RU' .
-				'</a><br>'
-				;
-			$htmlToolbox .=
-				'<a href="https://tildes.net/search?q=' .
-				$urlParam .
-				'">' .
-				'Tildes' .
-				'</a><br>'
-				;
-
-			$htmlToolbox .=
-				'<a href="https://lobste.rs/search?q=' .
-				$urlParam .
-				'&what=stories&order=relevance' .
-				'">' .
-				'Lobsters' .
-				'</a><br>'
-				;
-
-			#todo urlescape should also be used
-			#todo this should be token -> index -> template
-		}
-		$htmlToolbox = '<span class=advanced>' . GetWindowTemplate($htmlToolbox, 'Tools') . '</span>';
+		my $htmlToolbox = GetHtmlToolbox(\%file);
 		$txtIndex .= $htmlToolbox;
 	} # GetConfig('html/item_toolbox/enable')
 
