@@ -185,7 +185,7 @@ if (!empty($_FILES['uploaded_file'])) {
 } # if (!empty($_FILES['uploaded_file']))
 
 
-if (!$html || !trim($html)) {
+if (!isset($html) || !$html || !trim($html)) {
 	WriteLog('upload.php: warning: $html missing');
 	$html = 'Thank you for uploading, please choose one of these links: <a href="/help.html">Help</a>; <a href="/index.html">Home</a>';
 }
