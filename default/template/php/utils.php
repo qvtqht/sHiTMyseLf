@@ -985,7 +985,7 @@ function IsItem ($string) { # returns 1 if parameter is in item hash format (40 
 	return 0;
 } # IsItem()
 
-function setcookie2 ($key, $value) { // sets cookie with ie3 compatibility
+function setcookie2 ($key, $value, $updateCurrent = 0) { // sets cookie with ie3 compatibility
 	WriteLog('setcookie2(' . $key . ',' . $value . ')');
 
 	$cookieDateFormat = "D, d-M-Y H:i:s";
@@ -993,6 +993,10 @@ function setcookie2 ($key, $value) { // sets cookie with ie3 compatibility
 	// timezone hard-coding is not important here
 
 	Header('Set-Cookie: ' . $key . '=' . $value . '; expires=' . $cookieDate . '; path=/', false);
+
+	if ($updateCurrent) {
+		$_COOKIE[$key] = $value;
+	}
 }
 
 function unsetcookie2 ($key) { // remove cookie in most compatible way
