@@ -2900,6 +2900,10 @@ sub InjectJs { # $html, @scriptNames ; inject js template(s) before </body> ;
 		if (GetConfig('admin/js/dragging')) {
 			push @scriptNames, 'dragging'; # InjectJs()
 		}
+
+		if (GetConfig('admin/js/table_sort')) {
+			push @scriptNames, 'table_sort';
+		}
 	}
 	#
 
