@@ -374,7 +374,8 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$path == '/jstest1.html' ||
 			$path == '/keyboard.html' ||
 			$path == '/keyboard_netscape.html' ||
-			$path == '/keyboard_android.html'
+			$path == '/keyboard_android.html' ||
+			$path == '/bookmark.html'
 		) {
 			WriteLog('HandleNotFound: warning: found a --system page, this may cause slowness');
 			$pagesPlArgument = '--system';
