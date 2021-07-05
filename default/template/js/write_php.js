@@ -1,6 +1,6 @@
 // begin write_php.js
 
-var window.intCommentOnChangeLastValue = 0;
+window.intCommentOnChangeLastValue = 0;
 
 function CommentOnChange (t, formId) {
 // changes form's method from get to post
