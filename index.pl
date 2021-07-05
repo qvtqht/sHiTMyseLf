@@ -1278,10 +1278,15 @@ sub IndexImageFile { # $file ; indexes one image file into database
 	my $file = shift;
 	chomp($file);
 
-	if ($file =~ m/^([0-9a-zA-Z\/._\-])$/) {
-		$file = $1;
+	if ($file =~ m/^(.+)$/) { #todo bug here?
+		if ($1 eq $file) {
+			$file = $1;
+		} else {
+			WriteLog(' warning: sanity check 2 failed on $file: ' . $file);
+			return 0;
+		}
 	} else {
-		WriteLog(' warning: sanity check failed on $file');
+		WriteLog(' warning: sanity check 1 failed on $file: ' . $file);
 		return 0;
 	}
 
@@ -1384,9 +1389,35 @@ sub IndexImageFile { # $file ; indexes one image file into database
 
 			my $fileShellEscaped = EscapeShellChars($file); #todo this is still a hack, should rename file if it has shell chars?
 
+			if ($fileShellEscaped =~ m/(.+)/) { #todo #security
+				$fileShellEscaped = $1;
+			} else {
+				WriteLog('IndexImageFile: warning: sanity check failed on $fileShellEscaped!');
+				return '';
+			}
+
 			# make 800x800 thumbnail
 			my $HTMLDIR = GetDir('html');
 
+			if ($HTMLDIR =~ m/(.+)/) { #todo #security
+				$HTMLDIR = $1;
+			} else {
+				WriteLog('IndexImageFile: warning: sanity check failed on $HTMLDIR!');
+				return '';
+			}
+
+
+			if ($fileHash =~ m/(.+)/) { #todo #security
+				$fileHash = $1;
+			} else {
+				WriteLog('IndexImageFile: warning: sanity check failed on $fileHash!');
+				return '';
+			}
+
+
+			#imagemagick
+
+			#my @res = qw(800 512 42);
 			if (!-e "$HTMLDIR/thumb/thumb_800_$fileHash.gif") {
 				my $convertCommand = "convert \"$fileShellEscaped\" -thumbnail 800x800 -strip $HTMLDIR/thumb/thumb_800_$fileHash.gif";
 				WriteLog('IndexImageFile: ' . $convertCommand);
