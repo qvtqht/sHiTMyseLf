@@ -351,10 +351,21 @@ if (isset($comment) && $comment) {
 		$stopTime += 30;
 		PutConfig('admin/stop', $stopTime);
 		if ($stopTime > time()) {
-			print("Stop request received. Users without cookie won't be able to post for " . ($stopTime - time()) . ' seconds.');
+			print("<span class=dialog>Stop request received. Users without cookie won't be able to post for " . ($stopTime - time()) . ' seconds.</span>');
 		}
 	}
 	else {
+		// regular comment, not a command
+
+		if (!$comment && $strSourceTitle) {
+			// if there is no comment, but there's a source title, use that as the comment
+			$comment = $strSourceTitle;
+		}
+		if (!$comment && $strSourceUrl) {
+			// if there is no comment, but there's a source url, use that as the comment
+			$comment = $strSourceUrl;
+		}
+
 		if ($replyTo && !preg_match('/\>\>' . $replyTo . '/', $comment)) {
 			// add >> token to comment if $replyTo is provided, but comment does not have token
 			// note that the regex does have a / at the end, it's after $replyTo
@@ -388,7 +399,7 @@ if (isset($comment) && $comment) {
 			WriteLog('post.php: NOT found $strSourceUrl or $strSourceTitle');
 		}
 
-		$newFileHash = ProcessNewComment($comment, $replyTo); // process comment, get new file hash
+		$newFileHash = ProcessNewComment($comment, $replyTo); // post.php
 		$fileUrlPath = '/' . GetHtmlFilename($newFileHash); // path for client's (browser's) path to html file
 
 		if (isset($replyTo) && $replyTo) {
@@ -415,7 +426,7 @@ if (isset($comment) && $comment) {
 			if (file_exists($newFileHtmlPath)) {
 				WriteLog('post.php: file_exists($newFileHtmlPath)');
 
-                // naive user identifier finder
+				// naive user identifier finder
 				$profileId = preg_match(
 					'/[0-9A-F]{16}/',
 					file_get_contents(
@@ -439,7 +450,7 @@ if (isset($comment) && $comment) {
 					$redirectUrl = $fileUrlPath;
 				}
 				WriteLog('post.php: $redirectUrl = ' . $redirectUrl);
-				
+
 				if (file_exists('.' . $redirectUrl)) {
 					RedirectWithResponse(
 						$redirectUrl,
@@ -461,7 +472,7 @@ if (isset($comment) && $comment) {
 			$returnTo = $replyTo;
 		}
 
-		if ($returnTo) {
+		if ($returnTo && GetConfig('admin/php/post/use_return_to')) {
 			WriteLog('post.php: $returnTo = ' . $returnTo);
 			// $returnTo specifies page/item to return to instead of submitted item
 			$returnToHtmlPath = './' . GetHtmlFilename($returnTo); // path for parent html file
@@ -482,9 +493,10 @@ if (isset($comment) && $comment) {
 
 				RedirectWithResponse($returnToUrlPath, "Success! Reply posted. <small>in $finishTime"."s</small>");
 				// #todo add anchorto support ?
-
+				// #todo it would be nice if this differentiated between text reply and hashtag vote
 				// issue #2: ie does not like redirecting to a url with an anchor tag, because it tries to include that in the request
 				// issue #3: mosaic doesn't like relative redirects, need to include own domain in return url
+				// a few other browsers, like early ie versions, also don't like relative redirects
 			} # if (file_exists($returnToHtmlPath))
 		} # $returnTo
 	} # regular comment, not 'update' or 'stop'
@@ -503,6 +515,9 @@ $html = file_get_contents('post.html');
 if (!$html) {
 	$html = file_get_contents('./post.html');
 }
+if (!$html) {
+	$html = '<html><head><title>Received</title><body><table width=99% height=99%><tr><td align=center valign=middle><br><br><center>Your message has been received.<p><a href=/>Continue</a></center><br><br></td></tr></table></body></html>';
+}
 #######################################
 
 if ($html) {
@@ -518,6 +533,7 @@ if (isset($fileUrlPath) && $fileUrlPath) { #todo GetConfig() or GetTemplate()
 	}
 	elseif (file_exists('../default/template/php/just_posted.template')) {
 		copy ('../default/template/php/just_posted.template', '../config/template/php/just_posted.template');
+		// #todo this sometimes throws a warning, probably because subdir doesn't exist
 		$postedMessage = file_get_contents('../default/template/php/just_posted.template');
 	}
 	else {
@@ -533,7 +549,7 @@ if (!$redirectUrl && $fileUrlPath) {
 	$finishTime = time() - getvar('postPhpStartTime');
 
 	if (!isset($redirectMessage)) {
-		$redirectMessage = "Success! Item posted. <small class=advanced> in $finishTime"."s</small>";
+		$redirectMessage = "Success! Item posted. <small class=advanced> in $finishTime s</small>";
 	}
 
 	$itemPostedServerResponse = $redirectMessage;
@@ -547,3 +563,7 @@ if (GetConfig('admin/php/debug')) {
 }
 
 print($html);
+
+if (GetConfig('admin/php/debug_phpinfo')) {
+	phpinfo();
+}
