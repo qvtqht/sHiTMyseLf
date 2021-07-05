@@ -12,8 +12,10 @@ function WriteOnload () { // onload handler for write page
 				var comment = document.getElementById('comment');
 				if (comment) {
 					if (window.location.href.indexOf('write') != -1) {
+						// write page
 						CommentMakeWp(comment);
 					} else {
+						// not write page
 						comment.setAttribute('onfocus', 'CommentMakeWp(this)');
 					}
 				}
@@ -116,8 +118,9 @@ function WriteOnload () { // onload handler for write page
 function CommentMakeWp (comment) { // makes editor textarea larger and gives it wp color scheme
 // called when write_enhance is on
 	if (comment) {
-		comment.style.backgroundColor = '#000080';
+		comment.style.backgroundColor = '#102080';
 		comment.style.color = 'ffffff';
+		comment.style.fontWeight = 'bold';
 		comment.style.width = '95%';
 		comment.style.height = '50%';
 		comment.style.padding = '1em';
