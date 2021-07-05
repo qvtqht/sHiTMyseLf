@@ -1175,6 +1175,12 @@ if (GetConfig('admin/php/route_enable')) {
 					'onclick',
 					"if (window.serverResponseOk) { return serverResponseOk(this); }"
 				);
+				$serverResponseTemplate = AddAttributeToTag(
+					$serverResponseTemplate,
+					'a href=#maincontent',
+					'onclick',
+					"if (window.serverResponseOk) { return serverResponseOk(this); }"
+				);
 			}
 
 			// fill in the theme color for $colorHighlightAlert
