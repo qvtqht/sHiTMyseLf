@@ -515,6 +515,56 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$pagesPlArgument = '--settings';
 		}
 
+########### DIALOGS BEGIN
+		if (
+			$path == '/dialog/stats.html'
+		) {
+			WriteLog('HandleNotFound: found stats dialog');
+			$pagesPlArgument = '-D stats';
+		}
+
+		if (
+			$path == '/dialog/settings.html'
+		) {
+			WriteLog('HandleNotFound: found settings dialog');
+			$pagesPlArgument = '-D settings';
+		}
+
+		if (
+			$path == '/dialog/access.html'
+		) {
+			WriteLog('HandleNotFound: found access dialog');
+			$pagesPlArgument = '-D access';
+		}
+
+		if (
+			$path == '/dialog/write.html'
+		) {
+			WriteLog('HandleNotFound: found write dialog');
+			$pagesPlArgument = '-D write';
+		}
+
+		if (
+			$path == '/dialog/read.html'
+		) {
+			WriteLog('HandleNotFound: found read dialog');
+			$pagesPlArgument = '-D read';
+		}
+
+		if (
+			$path == '/dialog/profile.html'
+		) {
+			WriteLog('HandleNotFound: found profile dialog');
+			$pagesPlArgument = '-D profile';
+		}
+
+		if (
+			$path == '/dialog/help.html'
+		) {
+			WriteLog('HandleNotFound: found help dialog');
+			$pagesPlArgument = '-D help';
+		}
+############################ DIALOGS END
 		if (
 			$path == '/data.html' ||
 			$path == '/txt.zip' ||
