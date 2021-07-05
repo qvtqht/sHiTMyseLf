@@ -29,11 +29,11 @@ if (isset($_GET['btnSignOut']) && $_GET['btnSignOut']) {
 	// redirect with signed out message
 	RedirectWithResponse('/profile.html', 'Goodbye!');
 
-	WriteLog('all cookies unset');
+	WriteLog('cookie.php: all cookies unset');
 } # btnSignOut handler
 else {
 	if (isset($_COOKIE['test']) && $_COOKIE['test']) {
-		WriteLog('test cookie found');
+		WriteLog('cookie.php: test cookie found');
 
 		$validCookies = array('cookie', 'checksum', 'test', 'light', 'show_advanced', 'beginner', 'show_admin');
 		foreach ($_COOKIE as $cookieKey => $cookieValue) {
@@ -46,14 +46,14 @@ else {
 		}
 
 		if (preg_match('/^[0-9A-F]{16}$/', $_COOKIE['test'])) { // #todo actual auth #knownCookieAuth
-			WriteLog('test cookie override!');
+			WriteLog('cookie.php: test cookie override!');
 
 			$cookie = $_COOKIE['test'];
 			setcookie2('cookie', $cookie);
 
 			$secret = GetConfig('admin/secret');
 			if (!$secret) {
-				WriteLog('cookie.php: $secret was false, making a new one');
+				WriteLog('cookie.php: cookie.php: $secret was false, making a new one');
 				$secret = md5(time()); #todo #security
 				PutConfig('admin/secret', $secret);
 			}
@@ -77,12 +77,12 @@ else {
 			}
 		}
 
-		WriteLog('$cookie = ' . (isset($cookie) ? $cookie : '(unset)') . '; $checksum= ' . (isset($checksum) ? $checksum : '(unset)'));
+		WriteLog('cookie.php: $cookie = ' . (isset($cookie) ? $cookie : '(unset)') . '; $checksum= ' . (isset($checksum) ? $checksum : '(unset)'));
 
 		$secret = GetConfig('admin/secret');
 
 		if (!$cookie) {
-			WriteLog('$cookie not found, creating new one...');
+			WriteLog('cookie.php: $cookie not found, creating new one...');
 
 			$cookie = strtoupper(substr(md5(rand()), 16));
 			$checksum = md5($cookie . '/' . $secret);
@@ -94,7 +94,7 @@ else {
 		}
 
 		if (md5($cookie . '/' . $secret) != $checksum) {
-			WriteLog('Checksum mis-match! Expected ' . md5($cookie . '/' . $secret) . ', found ' . $checksum);
+			WriteLog('cookie.php: Checksum mis-match! Expected ' . md5($cookie . '/' . $secret) . ', found ' . $checksum);
 
 			unset($cookie);
 			unsetcookie2('cookie');
