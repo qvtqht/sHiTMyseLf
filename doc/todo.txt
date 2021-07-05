@@ -1,3 +1,14 @@
+header-footers
+	abandon idea of detached for now
+		because hash sometimes changes unpredictably for now
+	solidify merging of two files with merging all their header-footers
+	ensure there's only one "\n-- \n" (remove the others)
+
+
+
+hide loading indicator after dialog appears
+
+
 remove default/html (rename to html_settings or smth like that)
 	so that it's not confusing to where to put new html templates
 		because that's not where they go

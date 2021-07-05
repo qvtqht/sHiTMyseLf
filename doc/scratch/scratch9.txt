@@ -1523,7 +1523,7 @@ function SetElementVisible (element, displayValue, bgColor, borderStyle) { // se
 // also sets background color
 // used for hiding/showing and highlighting beginner, advanced element classes on page.
 
-    //alert ('DEBUG: \nelement:' + element + "\ndisplayValue:" + displayValue + "\nbgColor:" + bgColor + "\nborderStyle:" + borderStyle + "\n");
+    //alert('DEBUG: \nelement:' + element + "\ndisplayValue:" + displayValue + "\nbgColor:" + bgColor + "\nborderStyle:" + borderStyle + "\n");
 
         if (bgColor) {
                 // background color
@@ -2596,9 +2596,13 @@ function PubKeyPing () { // checks if user's public key is on server
 function ProfileOnLoad () { // onload event for profile page
         //alert('DEBUG: ProfileOnLoad() begin');
 
-        var lblSigningIndicator = document.getElementById('lblSigningIndicator');
         if (document.getElementById) {
                 //alert('DEBUG: ProfileOnLoad: document.getElementById check passed');
+
+	        	//var lblSigningIndicator = document.getElementById('lblSigningIndicator');
+	        	//if (lblSigningIndicator && lblSigningIndicator.innerHTML) {
+	        	//	lblSigningIndicator.innerHTML = 'Loading...';
+				//}
 
                 if (window.getPrivateKey) {
                         //alert('DEBUG: ProfileOnLoad: window.getPrivateKey check passed');
@@ -2607,16 +2611,18 @@ function ProfileOnLoad () { // onload event for profile page
                                 //alert('DEBUG: ProfileOnLoad: window.localStorage check passed, calling getPrivateKey()...');
 
                                 var pk = getPrivateKey();
-
                                 if (pk) {
                                         //alert('DEBUG: ProfileOnLoad: pk = GetPrivateKey() = ' + !!pk);
-                                        // span used to indicate whether openpgp signing is available
+
                                         if (lblSigningIndicator) {
+                                        		// span used to indicate whether openpgp signing is available
                                                 //alert('DEBUG: lblSigningIndicator TRUE');
+
                                                 // display value of "algorithm" which openpgp gives us
                                                 // in reality, this only give us rsa/not-rsa, and formatted poorly
                                                 // there's the bit count and the actual algo for non-rsa which needs
-                                                // to be displayed more nicely here
+                                                // to be displayed more nicely here #todo
+
                                                 var privKeyObj = openpgp.key.readArmored(pk);
                                                 var pubKeyObj = privKeyObj.keys[0].toPublic();
 
@@ -2633,7 +2639,6 @@ function ProfileOnLoad () { // onload event for profile page
 
 
                                         lblHandle = document.getElementById('lblHandle');
-
                                         if (lblHandle) {
                                                 var strHandle = localStorage.getItem('avatar');
                                                 if (strHandle) {
@@ -2642,7 +2647,6 @@ function ProfileOnLoad () { // onload event for profile page
                                         }
 
                                         lblFingerprint = document.getElementById('lblFingerprint');
-
                                         if (lblFingerprint) {
                                                 var strFingerprint = localStorage.getItem('fingerprint');
                                                 if (strFingerprint) {
