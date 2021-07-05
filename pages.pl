@@ -2781,7 +2781,11 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 	}
 
 	if (abs($itemsIndexed - $filesTotal) > 3) {
-		$statsTable = str_replace('<p id=diagnostics></p>', '<p id=diagnostics><a href="/warning.html"><b><font color=orange style="padding: 2pt; border-radius: 3pt; border: inset 1pt #606060; background-color: #404040;">Check engine!</font></b></a></p>', $statsTable);
+		$statsTable = str_replace(
+			'<p id=diagnostics></p>',
+			'<p id=diagnostics><a href="/warning.html"><b><font color=orange style="padding: 2pt; border-radius: 3pt; border: inset 1pt #606060; background-color: #404040;">Check engine!</font></b></a></p>',
+			$statsTable
+		);
 	}
 
 	my $tagsTotal = DBGetTagCount();
