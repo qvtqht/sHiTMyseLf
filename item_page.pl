@@ -351,12 +351,13 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	}
 
 	my @result = SqliteQueryHashRef(
-		"SELECT attribute, value FROM item_attribute WHERE attribute = 'url' AND file_hash = '$fileHash'" #todo move to defaults
+		"SELECT attribute, value FROM item_attribute WHERE attribute IN('http', 'https') AND file_hash = '$fileHash'"
 	);
+	#todo move to default/query
 	if (scalar(@result) > 1) { # urls
 		my %flags;
 		$flags{'no_headers'} = 1;
-		$txtIndex .= GetResultSetAsDialog(\@result, 'URLs', 'value', \%flags);
+		$txtIndex .= GetResultSetAsDialog(\@result, 'Links', 'value', \%flags);
 	}
 
 
