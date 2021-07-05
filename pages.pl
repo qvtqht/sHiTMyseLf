@@ -5057,7 +5057,7 @@ sub GetSettingsPage { # returns html for settings page (/settings.html)
 	$txtIndex .= GetPageFooter();
 
 	if (GetConfig('admin/js/enable')) {
-		$txtIndex = InjectJs($txtIndex, qw(settings avatar profile timestamp pingback utils));
+		$txtIndex = InjectJs($txtIndex, qw(settings avatar profile timestamp pingback utils clock));
 	}
 
 	return $txtIndex;
@@ -5303,7 +5303,7 @@ sub WriteDataPage { # writes /data.html (and zip files if needed) # MakeZip txt.
 
 	$dataPage .= $dataPageWindow;
 	$dataPage .= GetPageFooter();
-	$dataPage = InjectJs($dataPage, qw(settings avatar profile));
+	$dataPage = InjectJs($dataPage, qw(settings avatar profile utils));
 
 	PutHtmlFile("data.html", $dataPage);
 } # WriteDataPage()
@@ -5671,7 +5671,7 @@ sub GetAvatar { # $key, $noCache ; returns HTML avatar based on author key, usin
 			#todo huh?
 			$alias = GetAlias($authorKey, $noCache);
 			if (!$alias) {
-				$alias = 'Guest';
+				$alias = 'Guest'; #guest...
 			}
 			$alias = trim($alias);
 		}
@@ -6284,5 +6284,6 @@ while (my $arg1 = shift @foundArgs) {
 #if (%configLookupList) {
 #	print Dumper(keys(%configLookupList));
 #}
+print "\n";
 
 1;
