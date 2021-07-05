@@ -4581,14 +4581,14 @@ sub MakeSystemPages {
 		# p.gif
 		WriteLog('making p.gif');
 
-		if (!-e './config/template/p.gif.template') {
-			if (-e 'default/template/p.gif.template') {
-				copy('default/template/p.gif.template', 'config/template/p.gif.template');
+		if (!-e './config/template/html/p.gif.template') {
+			if (-e 'default/template/html/p.gif.template') {
+				copy('default/template/html/p.gif.template', 'config/template/html/p.gif.template');
 			}
 		}
 
-		if (-e 'config/template/p.gif.template') {
-			copy('config/template/p.gif.template', $HTMLDIR . '/p.gif');
+		if (-e 'config/template/html/p.gif.template') {
+			copy('config/template/html/p.gif.template', $HTMLDIR . '/p.gif');
 		}
 	}
 
