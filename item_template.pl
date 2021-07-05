@@ -53,6 +53,9 @@ sub GetItemTemplateBody {
 
 			$itemText = FormatForWeb($itemText);
 
+			$itemText =~ s/([a-f0-9]{40})/GetItemHtmlLink($1, DBGetItemTitle($1, 16))/eg;
+			#$itemText =~ s/([a-f0-9]{8})/GetItemHtmlLink($1, DBGetItemTitle($1, 16))/eg;
+
 			if (GetConfig('html/hide_dashdash_signatures')) { # -- \n
 				if (index($itemText, "<br>-- <br>") != -1) {
 					$itemText =~ s/(.+)<br>-- <br>(.+)/$1<span class=admin><br>\n-- <br>\n$2<\/span>/smi;
