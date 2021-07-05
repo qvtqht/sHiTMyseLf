@@ -919,6 +919,22 @@ if (GetConfig('admin/php/route_enable')) {
 							RedirectWithResponse('/settings.html', 'Previous content has been archived.');
 						}
 
+						if ( isset($_GET['ui']) ) {
+							$uiNew = strtolower($_GET['ui']);
+							if ($uiNew == 'beginner') {
+								setcookie2('show_advanced', 0, 1);
+								setcookie2('beginner', 1, 1);
+							}
+							if ($uiNew == 'intermediate') {
+								setcookie2('show_advanced', 1, 1);
+								setcookie2('beginner', 1, 1);
+							}
+							if ($uiNew == 'advanced') {
+								setcookie2('show_advanced', 1, 1);
+								setcookie2('beginner', 0, 1);
+							}
+						}
+
 						if (substr($pathRel, -1) == '/') {
 							# if it ends with /, add index.html
 							$pathRel .= 'index.html';
