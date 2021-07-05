@@ -3123,6 +3123,20 @@ sub GetScriptTemplate { # $script ; returns script for name
 		}
 	}
 
+	if ($script eq 'dragging') {
+		# for dragging.js we also need to fill in some theme colors
+
+		my $colorWindow = GetThemeColor('titlebar_inactive_text');
+		my $colorTitlebar = GetThemeColor('titlebar');
+		my $colorSecondary = GetThemeColor('titlebar_inactive');
+		my $colorTitlebarText = GetThemeColor('titlebar_text');
+
+		$scriptTemplate = str_replace("var colorWindow = '';", "var colorWindow = '$colorWindow';", $scriptTemplate);
+		$scriptTemplate = str_replace("var colorTitlebar = '';", "var colorTitlebar = '$colorTitlebar';", $scriptTemplate);
+		$scriptTemplate = str_replace("var colorSecondary = '';", "var colorSecondary = '$colorSecondary';", $scriptTemplate);
+		$scriptTemplate = str_replace("var colorTitlebarText = '';", "var colorTitlebarText = '$colorTitlebarText';", $scriptTemplate);
+	} #dragging
+
 	if (index($scriptTemplate, '>') > -1) {
 		# warning here if script content contains > character, which is incompatible with mosaic's html comment syntax
 		WriteLog('GetScriptTemplate: warning: Inject script "' . $script . '" contains > character');
