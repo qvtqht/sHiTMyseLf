@@ -186,6 +186,7 @@ function EventLoop () { // for calling things which need to happen on a regular 
 			m = 1;
 		}
 		if (window.performanceOptimization == 'none') {
+			// this is the 'None' setting in Settings
 			m = 0;
 			return '';
 		}
@@ -234,10 +235,13 @@ function EventLoop () { // for calling things which need to happen on a regular 
 			// this is commented because it may hammer the server. uncomment if using localhost
 
 				//window.eventLoopFresh = eventLoopBegin;
-				if (GetPrefs('notify_on_change')) {
+				if (
+					window.eventLoopFresh &&
+					(!window.GetPrefs || GetPrefs('notify_on_change'))
+				) {
 					CheckIfFresh();
+					window.eventLoopFresh = eventLoopBegin;
 				}
-				window.eventLoopFresh = eventLoopBegin;
 			}
 		}
 
@@ -263,6 +267,7 @@ function EventLoop () { // for calling things which need to happen on a regular 
 		if (30 < eventLoopDuration) {
 			// if loop went longer than 100ms, run every 3 seconds or more
 			//document.title = eventLoopDuration;
+			
 			if (GetPrefs('notify_event_loop')) {
 				displayNotification('EventLoop: ' + eventLoopDuration + 'ms');
 			}
@@ -274,7 +279,8 @@ function EventLoop () { // for calling things which need to happen on a regular 
 //			}
 
 			// set performance setting to 'faster'
-			// SetPrefs('performance_optimization', 'faster');
+
+			//SetPrefs('performance_optimization', 'faster');
 			eventLoopDuration = eventLoopDuration * 10;
 		} else {
 			// otherwise run again after 1 interval time
@@ -368,7 +374,7 @@ function displayNotification (strMessage, thisButton) { // adds notificatin to p
 	var spanNotification = document.createElement('span');
 	spanNotification.setAttribute('class', 'notification');
 	spanNotification.setAttribute('role', 'alert');
-	spanNotification.setAttribute('onclick', 'if (this.remove) { this.remove() } return false;');
+	spanNotification.setAttribute('onclick', 'this.remove(); return false;');
 	spanNotification.innerHTML = strMessage;
 
 	if (thisButton) {
@@ -610,8 +616,11 @@ function SortTable (t, sortOrder) {
 function SetCookie (cname, cvalue, exdays) { // set cookie
 	//alert('DEBUG: SetCookie(' + cname + ', ' + cvalue + ', ' + exdays + ')');
 	var d = new Date();
+	if (!exdays) {
+		exdays = 1;
+	}
 	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-	var expires = "expires="+d.toUTCString();
+	var expires = "expires=" + d.toUTCString();
 	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 	var testSetCookie = GetCookie(cname);
 	if (cvalue == testSetCookie) {
@@ -702,5 +711,11 @@ function GetCookie (cname) { // get cookie value
 //	}
 //	return ''
 //} // ConvertSubmitsToButtonsWithAccessKey()
+
+
+// developer
+// SetPrefs('notify_event_loop', 1);
+// SetPrefs('notify_event_loop', 0);
+
 
 // == end utils.js
