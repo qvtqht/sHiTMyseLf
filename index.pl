@@ -380,6 +380,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 # Also sets appropriate task entries
 	WriteLog('IndexTextFile() BEGINS');
 
+	my @indexMessageLog;
+
 	my $SCRIPTDIR = GetDir('script');
 	my $HTMLDIR = GetDir('html');
 	my $TXTDIR = GetDir('txt');
@@ -405,6 +407,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 		DBAddLocationRecord('flush');
 		return 1;
 	}
+
+	push @indexMessageLog, 'begin ' . $file;
 
 	if (GetConfig('admin/organize_files')) {
 		# renames files to their hashes
@@ -583,10 +587,13 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						$foundTokenParam = trim($foundTokenParam);
 
 						my $reconLine = $foundTokenName . $foundTokenSpacer . $foundTokenParam; #todo #bughere
-						WriteLog('IndexTextFile: token/' . $tokenName . ' : ' . $reconLine);
+						WriteLog('IndexTextFile: warning: my $reconLine = $foundTokenName . $foundTokenSpacer . $foundTokenParam; #todo #bughere');
+						WriteLog('IndexTextFile: warning: $reconLine = ' . $reconLine);
+						#WriteLog('IndexTextFile: token/' . $tokenName . ' : ' . $reconLine);
 
 						my %newTokenFound;
 						$newTokenFound{'token'} = $tokenName;
+						$newTokenFound{'spacer'} = $foundTokenSpacer;
 						$newTokenFound{'param'} = $foundTokenParam;
 						$newTokenFound{'recon'} = $reconLine;
 						$newTokenFound{'message'} = $tokenMessage;
@@ -629,14 +636,15 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						}
 					} # cookie
 
-					if ($tokenFound{'token'} eq 'parent') {
+					if ($tokenFound{'token'} eq 'parent') { # >>
 						if ($tokenFound{'recon'} && $tokenFound{'message'} && $tokenFound{'param'}) {
 							WriteLog('IndexTextFile: DBAddItemParent(' . $fileHash . ',' . $tokenFound{'param'} . ')');
 							DBAddItemParent($fileHash, $tokenFound{'param'});
 							push(@itemParents, $tokenFound{'param'});
 
-							# $message = str_replace($tokenFound{'recon'}, $tokenFound{'message'}, $message);
 							$message = str_replace($tokenFound{'recon'}, '>>' . $tokenFound{'param'}, $message); #hacky
+							# $message = str_replace($tokenFound{'recon'}, $tokenFound{'message'}, $message);
+
 							$detokenedMessage = str_replace($tokenFound{'recon'}, '', $detokenedMessage);
 						} else {
 							WriteLog('IndexTextFile: warning: parent: sanity check failed');
@@ -672,11 +680,13 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						$tokenFound{'token'} eq 'order' ||
 						$tokenFound{'token'} eq 'alt' ||
 						$tokenFound{'token'} eq 'access_log_hash' ||
+						$tokenFound{'token'} eq 'self_timestamp' ||
 						$tokenFound{'token'} eq 'begin' ||
 						$tokenFound{'token'} eq 'duration' ||
 						$tokenFound{'token'} eq 'track' ||
 						$tokenFound{'token'} eq 'host' ||
-						$tokenFound{'token'} eq 'url'
+						$tokenFound{'token'} eq 'https' ||
+						$tokenFound{'token'} eq 'http'
 					) {
 						# these tokens are applied to:
 						# 	if item has parent, then to the parent
@@ -687,8 +697,24 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 							WriteLog('IndexTextFile: warning: $itemTimestamp being set to time()');
 							$itemTimestamp = time(); #todo #fixme #stupid
 						}
-
 						if ($tokenFound{'recon'} && $tokenFound{'message'} && $tokenFound{'param'}) {
+							my $newMessage = $tokenFound{'message'};
+							if ($tokenFound{'token'} eq 'http' || $tokenFound{'token'} eq 'https') {
+								# this hack is so that i can stay with the 3-item regex
+								# eventually it will probably have to be changed
+
+								my $newTitle = $tokenFound{'recon'}; # set title to entire line
+								if (length($newTitle) > 63) {
+									$newTitle = substr($newTitle, 0, 60) . '...';
+								}
+								#todo sanity/escape
+								$newMessage = '<a href="' . $tokenFound{'recon'} . '">' . $newTitle . '</a>';
+							}
+
+
+							#$message = str_replace($tokenFound{'recon'}, $newMessage, $message);
+							$message = str_replace($tokenFound{'recon'}, $tokenFound{'message'}, $message);
+
 							WriteLog('IndexTextFile: %tokenFound: ' . Dumper(%tokenFound));
 							if ($tokenFound{'apply_to_parent'} && @itemParents) {
 								foreach my $itemParent (@itemParents) {
@@ -696,13 +722,28 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 								}
 							} else {
 								DBAddItemAttribute($fileHash, $tokenFound{'token'}, $tokenFound{'param'}, $itemTimestamp, $fileHash);
+
+								if (
+									$tokenFound{'token'} eq 'http'
+									||
+									$tokenFound{'token'} eq 'https'
+								) {
+									if (
+										$tokenFound{'param'} =~ m|http://([^/]+)|
+										||
+										$tokenFound{'param'} =~ m|https://([^/]+)|
+									) {
+										my $urlDomain = $1;
+										DBAddItemAttribute($fileHash, 'url_domain', $urlDomain, $itemTimestamp, $fileHash);
+									}
+								}
 							}
 						} else {
 							WriteLog('IndexTextFile: warning: ' . $tokenFound{'token'} . ' (generic): sanity check failed');
 						}
 
 						DBAddVoteRecord($fileHash, 0, $tokenFound{'token'});
-					} # title, access_log_hash, url, alt, name
+					} # title, access_log_hash, http, https, alt, name, self_timestamp
 
 					if ($tokenFound{'token'} eq 'config') { #config
 						if (
@@ -749,7 +790,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 									#because that's where WriteIndexedConfig() gets its new config
 									IndexTextFile('flush'); #todo optimize
 
-									WriteIndexedConfig(); # config token in index.pl
+									WriteIndexedConfig(); # #config/...= token in index.pl
 									$message = str_replace($tokenFound{'recon'}, "[Config: $configKeyActual = $configValue]", $message);
 									$detokenedMessage = str_replace($tokenFound{'recon'}, '', $detokenedMessage);
 
