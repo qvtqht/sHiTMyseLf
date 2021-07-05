@@ -819,6 +819,9 @@ sub GetWindowTemplate { # body title headings status menu ; returns html
 		$id eq 'profile'
 	) {
 		$param{'id'} = $id;
+	} else {
+		# default window's id to hash of title
+		$param{'id'} = substr(md5_hex($param{'title'}), 0, 8);
 	}
 
 	if (!$param{'title'}) {
