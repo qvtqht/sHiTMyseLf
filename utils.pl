@@ -437,10 +437,10 @@ sub GetRandomHash { # returns a random sha1-looking hash, lowercase
 	my @chars=('a'..'f','0'..'9');
 	my $randomString;
 	foreach (1..40) {
-		$randomString.=$chars[rand @chars];
+		$randomString .= $chars[rand @chars];
 	}
 	return $randomString;
-}
+} # GetRandomHash()
 
 sub GetTemplate { # $templateName ; returns specified template from template directory
 # returns empty string if template not found
