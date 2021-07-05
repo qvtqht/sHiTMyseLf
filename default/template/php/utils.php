@@ -85,7 +85,7 @@ function GetAlias($fingerprint, $noCache = 0) { # ; Returns alias for an identif
 
 		return $alias;
 	} else {
-		$alias = GetConfig('prefill_username');
+		$alias = GetConfig('prefill_username'); #guest...
 		return $alias;
 	}
 } # GetAlias()
@@ -521,8 +521,26 @@ function StoreServerResponse ($message) { // adds server response message and re
     	return;
     }
 
-    $messageId = md5($message . time() . rand());
-    $messageId = substr($messageId, 0, 8);
+	#my
+	$mesageId = '';
+
+	#my
+	$cookie = '0000000000000000';
+	if (isset($_GET['cookie'])) {
+		if (preg_match('/^([0-9A-F]{16})$/', $_GET['cookie'], $cookieMatch)) {
+			$cookie = $cookieMatch[0];
+		}
+	}
+
+	{
+		# previous version, with a random component
+    	#$messageId = md5($message . time() . rand());
+
+    	# create a verifiable message id, allowing the server to later verify receipt of message
+		$messageId = md5($message . time() . $cookie);
+
+	    $messageId = substr($messageId, 0, 8);
+	}
 
 	PutCache('response/' . $messageId, $message);
 	WriteLog("StoreServerResponse: $messageId, cache written");
@@ -540,7 +558,7 @@ function RetrieveServerResponse ($messageId) { // retrieves response message for
 			UnlinkCache('response/' . $messageId);
 		} else {
 			WriteLog("RetrieveServerResponse: Message found, not deleting because debug mode.");
-			$message .= '<font size="-2" title="This response message is sticky because admin/php/debug is true">*</font>';
+			// $message .= '<font size="-2" title="This response message is sticky because admin/php/debug is true">*</font>';
 		}
 	} else {
 		WriteLog('RetrieveServerResponse: warning: message not found!');
@@ -579,6 +597,11 @@ function RedirectWithResponse ($url, $message) { // redirects to page with serve
 		$redirected = 1;
 	} else {
 		$redirected++;
+	}
+
+	if (!$message) {
+		// an empty message creates problems
+		$message = ';';
 	}
 
 	if (headers_sent()) {
@@ -628,15 +651,42 @@ function RedirectWithResponse ($url, $message) { // redirects to page with serve
 		if (!headers_sent()) {
 			// #warning, this is not a good pattern, don't copy this code. the html will be printed unescaped.
 			// doing it in this case because we want to make a clickable link
-			WriteLog('<a href="' . $redirectUrl . '">' . $redirectUrl . '</a> <font color=red>(redirect paused because admin/php/debug or admin/php/debug_server_response is true)</font>', 1);
+			WriteLog(
+				'<a href="' . $redirectUrl . '">' .
+				$redirectUrl .
+				'</a>' .
+				'<font color=red>' .
+				'(redirect paused because admin/php/debug or admin/php/debug_server_response is true)' .
+				'</font>'
+				, 1
+			);
 
-			// #todo template the html
-			print '<div style="background-color: yellow"><a href="' . $redirectUrl . '"><b>Continue</b>: ' . $redirectUrl . '</a><br>Message: '.htmlspecialchars($message).'<br><font color=red size="+2">(DEBUG MODE: redirect paused because of admin/php/debug admin/php/debug_server_response)</font></div><hr>';
+			// not templated because it is a debugging thing
+			print '<div style="background-color: yellow; border: 3pt double red">';
+			print 	'<font color=red size="+2">';
+			print 		'DEBUG MODE: redirect paused; ';
+			print 	'</font><br>';
+			#print 	'<form action="' . $redirectUrl . '" method=GET><input type=submit value=Continue></form>';
+			#doesn't work right without splitting the param
+			print 	'<a href="' . $redirectUrl . '">Continue: ';
+			print 		$redirectUrl;
+			print 	'</a>';
+			print 	'<br>';
+			print 	'Message: <b>' . htmlspecialchars($message) . '</b>'; #todo remove dep
+			print 	'<br>';
+			print 	'Method: ' . ($_GET ? 'GET' : ($_POST ? 'POST' : 'OTHER??'));
+			print 	'<br><hr>';
+			print 	'<tt>';
+			print 	'admin/php/debug=' . GetConfig('admin/php/debug') . '; <br>'; #todo remove dep
+			print 	'admin/php/debug_server_response=' . GetConfig(' admin/php/debug_server_response') . '; '; #todo remove dep
+			print 	'</tt>';
+			print '</div><hr>';
 		}
 	} else {
 		// do the redirect
 		if (!headers_sent()) {
 			if (0 & $message == 'Goodbye!') {
+				# this de-authenticates http auth, but causes many problems
 				header('WWW-Authenticate: Basic realm="Goodbye!"');
 				header('HTTP/1.0 401 Unauthorized');
 			} else {
@@ -1149,4 +1199,4 @@ function ProcessNewComment ($comment, $replyTo) { // saves new comment to .txt f
 	WriteLog('ProcessNewComment: return $hash = ' . $hash);
 
 	return $hash;
-} // ProcessNewComment
+} // ProcessNewComment()
