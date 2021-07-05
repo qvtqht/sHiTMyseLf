@@ -641,8 +641,12 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 							if ($recordFingerprint) {
 								if (GetConfig('admin/logging/record_clients')) {
 									WriteLog('ProcessAccessLog: admin/logging/record_clients && $recordFingerprint');
+
 									my $clientFingerprint = uc(substr(md5_hex($clientHostname . $userAgent), 0, 16));
-									$addedMessage .= "Cookie: $clientFingerprint\n";
+									$addedMessage .= 'Client: ' . $clientFingerprint;
+									$addedMessage .= "\n";
+
+									WriteLog('ProcessAccessLog: $recordFingerprint: $clientFingerprint = ' . $clientFingerprint);
 								} else {
 									WriteLog('ProcessAccessLog: warning: $recordFingerprint was requested, but admin/logging/record_clients is off');
 								}
