@@ -2,7 +2,11 @@
 
 /* should be called inline-block.css ? */
 
-/*fieldset,*/
+fieldset {
+	display: inline-block;
+	vertical-align: top;
+}
+
 table.dialog { /* inline-table table-block */
 	display: inline-block;
 	vertical-align: top;
