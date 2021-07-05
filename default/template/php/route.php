@@ -1052,6 +1052,12 @@ if (GetConfig('admin/php/route_enable')) {
 
 							$printedNotice = GetWindowTemplate($printedNotice, 'Page Information', '', '', '');
 
+							if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+								#$windowTemplate = AddAttributeToTag($windowTemplate, 'table', 'onmousedown', 'this.style.zIndex = ++window.draggingZ;');
+								$printedNotice = AddAttributeToTag($printedNotice, 'table', 'onmouseenter', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #setactivedialog
+								$printedNotice = AddAttributeToTag($printedNotice, 'table', 'onmousedown', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #setactivedialog
+							}
+
 							if (GetConfig('admin/debug')) {
 								# for debug mode, print cached page notice at the top
 								$html = str_ireplace('</body>', $printedNotice . '</body>', $html);
