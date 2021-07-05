@@ -1,8 +1,8 @@
 // begin write_php.js
 
-var intCommentOnChangeLastValue = 0;
+var window.intCommentOnChangeLastValue = 0;
 
-function commentOnChange (t, formId) {
+function CommentOnChange (t, formId) {
 // changes form's method from get to post
 // if comment's length is more than 1024
 // and vice versa
@@ -18,35 +18,35 @@ function commentOnChange (t, formId) {
 
     //window.dbgoff = 0;
 
-    //alert('DEBUG: commentOnChange() begin');
+    //alert('DEBUG: CommentOnChange() begin');
 
-    //alert('DEBUG: commentOnChange: t = ' + t + '; formId = ' + formId + '; t.value = ' + t.value + '; t.value.length = ' + t.value.length);
+    ////alert('DEBUG: CommentOnChange: t = ' + t + '; formId = ' + formId + '; t.value = ' + t.value + '; t.value.length = ' + t.value.length);
 
-    if (!intCommentOnChangeLastValue) {
-    	intCommentOnChangeLastValue = 0;
+    if (!window.intCommentOnChangeLastValue) {
+    	window.intCommentOnChangeLastValue = 0;
     }
 
     if (!t.value || !t.value.length) {
-	    //alert('DEBUG: commentOnChange() intCommentOnChangeLastValue <= 1024 && t.value.length <= 1024, return');
+	    //alert('DEBUG: CommentOnChange: window.intCommentOnChangeLastValue <= 1024 && t.value.length <= 1024, return');
 
     	return true;
 	}
 
-	if ((intCommentOnChangeLastValue <= 1024) && t.value && t.value.length && (t.value.length <= 1024)) {
-	    //alert('DEBUG: commentOnChange() intCommentOnChangeLastValue <= 1024 && t.value.length <= 1024, return');
+	if ((window.intCommentOnChangeLastValue <= 1024) && t.value && t.value.length && (t.value.length <= 1024)) {
+	    //alert('DEBUG: CommentOnChange: window.intCommentOnChangeLastValue <= 1024 && t.value.length <= 1024, return');
 
 		return true;
 	}
 
-	if (1024 < intCommentOnChangeLastValue && t.value && t.value.length && (1024 < t.value.length)) {
-	    //alert('DEBUG: commentOnChange() 1024 < intCommentOnChangeLastValue && 1024 < t.value.length, return');
+	if (1024 < window.intCommentOnChangeLastValue && t.value && t.value.length && (1024 < t.value.length)) {
+	    //alert('DEBUG: CommentOnChange: 1024 < window.intCommentOnChangeLastValue && 1024 < t.value.length, return');
 
 		return true;
 	}
 
-	intCommentOnChangeLastValue = t.value.length;
+	window.intCommentOnChangeLastValue = t.value.length;
 
-	//alert('DEBUG: intCommentOnChangeLastValue = t.value.length = ' + t.value.length);
+	//alert('DEBUG: CommentOnChange: window.intCommentOnChangeLastValue = t.value.length = ' + t.value.length);
 
 	var strFormMode;
 	var strWarnDisplay;
@@ -56,15 +56,15 @@ function commentOnChange (t, formId) {
     //var gt = '';
     var gt = unescape('%3E');
 
-    //alert('DEBUG: gt: ' + gt);
+    //alert('DEBUG: CommentOnChange: gt = ' + gt);
 
 	if (t.value.length <= 1024) {
-	    //alert('DEBUG: setting form method to GET');
+	    //alert('DEBUG: CommentOnChange: setting form method to GET');
 		strFormMode = 'GET';
 		strWarnDisplay = 'none';
 		strInnerHtml = 'Long message mode.<br' + gt;
 	} else {
-	    //alert('DEBUG: setting form method to POST');
+	    //alert('DEBUG: CommentOnChange: setting form method to POST');
 		strFormMode = 'POST';
 		strWarnDisplay = 'block';
 		strInnerHtml = '';
@@ -79,7 +79,7 @@ function commentOnChange (t, formId) {
 	}
 
 	return true;
-} // commentOnChange()
+} // CommentOnChange()
 
 // end write_php.js
 

@@ -1519,8 +1519,8 @@ sub GetReplyForm { # $replyTo ; returns reply form for specified item
 
 
 		if (GetConfig('admin/php/enable')) {
-			$replyForm = AddAttributeToTag($replyForm, 'textarea', 'onchange', "if (window.commentOnChange) { return commentOnChange(this, 'compose'); } else { return true; }");
-			$replyForm = AddAttributeToTag($replyForm, 'textarea', 'onkeyup', "if (window.commentOnChange) { return commentOnChange(this, 'compose'); } else { return true; }");
+			$replyForm = AddAttributeToTag($replyForm, 'textarea', 'onchange', "if (window.CommentOnChange) { return CommentOnChange(this, 'compose'); } else { return true; }");
+			$replyForm = AddAttributeToTag($replyForm, 'textarea', 'onkeyup', "if (window.CommentOnChange) { return CommentOnChange(this, 'compose'); } else { return true; }");
 		}
 
 		if ($accessKey) {
@@ -4681,7 +4681,7 @@ sub GetWriteForm { # returns write form (for composing text message)
 
 	if (GetConfig('admin/js/enable')) {
 		# javascript is enabled, add event hooks
-		my $writeOnChange = "if (window.commentOnChange) { return commentOnChange(this, 'compose'); } else { return true; }";
+		my $writeOnChange = "if (window.CommentOnChange) { return CommentOnChange(this, 'compose'); } else { return true; }";
 		$writeForm = AddAttributeToTag($writeForm, 'textarea', 'onchange', $writeOnChange);
 		$writeForm = AddAttributeToTag($writeForm, 'textarea', 'onkeyup', $writeOnChange);
 		if (GetConfig('admin/js/translit')) {
