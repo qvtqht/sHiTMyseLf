@@ -5042,8 +5042,14 @@ sub GetSettingsPage { # returns html for settings page (/settings.html)
 	$txtIndex = GetPageHeader($title, $titleHtml, 'settings');
 	$txtIndex .= GetTemplate('html/maincontent.template');
 
+	$txtIndex .= GetAccessDialog();
+
 	$txtIndex .= GetSettingsWindow();
-	$txtIndex .= GetStatsTable();
+
+	$txtIndex .= GetStatsTable();  # GetSettingsPage()
+
+	$txtIndex .= GetServerConfigDialog();
+
 	$txtIndex .= GetOperatorWindow();
 
 	#$txtIndex .= GetMenuTemplate();
