@@ -2,14 +2,14 @@
 
 /* below this line (c) news.ycombinator.com */
 
-body  { font-family:Verdana, Geneva, sans-serif; font-size:10pt; color:#828282; }
-td    { font-family:Verdana, Geneva, sans-serif; font-size:10pt; color:#828282; }
+body  { font-family:Verdana, Geneva, sans-serif; font-size:10pt; color:#404040; }
+td    { font-family:Verdana, Geneva, sans-serif; font-size:10pt; color:#404040; }
 input    { font-family:monospace; font-size:10pt; }
 
 input[type=\"submit\"] { font-family:Verdana, Geneva, sans-serif; }
 textarea { font-family:monospace; font-size:10pt; }
-a:link    { color:#000000; text-decoration:none; }
-a:visited { color:$colorVlink; text-decoration:none; }
+a:link    { color:#000000; }
+a:visited { color:$colorVlink; }
 
 @media only screen and (min-width : 300px) and (max-width : 389px) {
   .txt { max-width: 270px; overflow: hidden }

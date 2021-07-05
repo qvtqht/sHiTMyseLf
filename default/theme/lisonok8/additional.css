@@ -2,7 +2,7 @@
 .tag-approve {
 	color: #008000 !important;
 }
-.dialog, .dialog * {
+.dialog {
     border-radius: 8pt;
 }
 body {
@@ -61,10 +61,6 @@ a:focus, a:active, input:focus, input:active {
 }
 input:focus {
     background-color: orange;
-}
-.content {
-    border-radius: 8pt;
-    border: 1pt double $colorBackground;
 }
 
 /* / theme/lisonok8/additional.css */

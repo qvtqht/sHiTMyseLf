@@ -25,7 +25,15 @@ button, input[type=button], input[type=submit], input[type=checkbox] {
 #txtClock {
 	border: 1pt inset $colorWindow;
 }
-
+@media only screen and (min-width : 30em) {
+	.item-textart {
+		max-width: 90%;
+		background-color: #808080;
+	}
+	.dialog .txt {
+		max-width: 30em;
+	}
+}
 #serverResponse {
 	/* messages from server */
     background-color: $colorHighlightAlert;
