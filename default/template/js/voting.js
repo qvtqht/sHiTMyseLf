@@ -96,6 +96,7 @@ function signCallback (signed) {
 }
 
 function IncrementTagLink (t) { // increments number of votes in tag button
+// IncrementVoteLink (
 // adds a number if there isn't one already
 // #todo adapt to accommodate buttons as well
 
