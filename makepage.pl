@@ -45,7 +45,15 @@ sub GetGalleryPage {
 		if (length($item->{'item_title'}) > 48) {
 			$item->{'item_title'} = substr($item->{'item_title'}, 0, 43) . '[...]';
 		}
-		my $itemImage = GetImageContainer($item->{'file_hash'}, $item->{'item_name'}, $boolLinkImage);
+		my $itemImage = '';
+		if ($item->{'item_score'} > 0) {
+			$itemImage = GetImageContainer($item->{'file_hash'}, $item->{'item_name'}, $boolLinkImage, '');
+		} else {
+			#todo check if file exists first
+			# the 'g' prefix is for greyscale , the greyed out/blurred thumbnail
+			# this is displayed in listings until item gets positive score
+			$itemImage = GetImageContainer($item->{'file_hash'}, $item->{'item_name'}, $boolLinkImage, 'g');
+		}
 		$itemImage = AddAttributeToTag($itemImage, 'img', 'height', '100');
 		$itemImage = GetWindowTemplate($itemImage, '');
 
@@ -60,7 +68,7 @@ sub GetGalleryPage {
 	$html = InjectJs($html, qw(settings utils));
 
 	return $html;
-}
+} # GetGalleryPage()
 
 sub MakeGalleryPage {
 	my $pageType = shift;
