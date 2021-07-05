@@ -1159,10 +1159,12 @@ sub DBGetItemTitle { # get title for item ($itemhash)
 		return;
 	}
 
-	my $query = 'SELECT title FROM item_title WHERE file_hash = ?';
+	#my $query = 'SELECT title FROM item_title WHERE file_hash = ?';
 	my @queryParams = ();
+	#push @queryParams, $itemHash;
 
-	push @queryParams, $itemHash;
+	#fuck parametrized queries
+	my $query = 'SELECT title FROM item_title WHERE file_hash LIKE \'' . $itemHash . '%\'';
 
 	my $itemTitle = SqliteGetValue($query, @queryParams);
 
