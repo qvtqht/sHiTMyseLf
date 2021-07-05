@@ -58,7 +58,7 @@ setvar('postPhpStartTime', time()); // remember begin time so that we know how l
 
 $redirectUrl = ''; // stores location to redirect to when done
 
-function GetItemPlaceholderPage ($comment) { # generate temporary placeholder page for comment
+function GetItemPlaceholderPage ($comment, $hash, $fileUrlPath, $filePath) { # generate temporary placeholder page for comment
 # this page is typically overwritten later by the proper page generator
 # but this gives us somewhere to go if the generator fails for any reason
 # and allows us to acknowledge message receipt to the user
@@ -105,7 +105,20 @@ function GetItemPlaceholderPage ($comment) { # generate temporary placeholder pa
 	}
 
 	// insert html-ized comment into template
-	$commentHtmlTemplate = str_replace('$commentHtml', $commentHtml, $commentHtmlTemplate);
+	$commentHtmlTemplate = str_replace('</body>', $commentHtml . '</body>', $commentHtmlTemplate);
+
+	if ($hash && $fileUrlPath) {
+		#my
+		$commentInfo = '';
+
+		#todo sanity checks
+
+		$commentInfo .= 'Hash: ' . $hash . '<br>';
+		$commentInfo .= 'URL: ' . '<a href="' . $fileUrlPath . '">' . $fileUrlPath . '</a>' . '<br>';
+
+		$commentHtmlTemplate = str_replace('Message received, and scheduled to be posted.', 'Message received, and scheduled to be posted.<br><br>' . $commentInfo, $commentHtmlTemplate);
+
+	}
 
 	return $commentHtmlTemplate;
 } # GetItemPlaceholderPage()
