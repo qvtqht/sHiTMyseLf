@@ -236,6 +236,102 @@ elseif ($_REQUEST) { // if HEAD request, populate variables from $_REQUEST
 	}
 } # $_REQUEST
 
+if (is_array($comment)) { # comment[]
+	########### BATCH ADD
+	########### BATCH ADD
+	########### BATCH ADD
+	########### BATCH ADD
+	########### BATCH ADD
+	########### BATCH ADD
+
+	########################################
+
+	$allAdded = '';
+
+	$batchTag = ''; #my
+	$batchTag = md5(time() . '-' . count($comment));
+	$batchTag = substr($batchTag, 0, 8);
+
+	#my
+	$hnMode = 0;
+	if (index($strSourceUrl, 'news.ycombinator.com') != -1) {
+		$hnMode = 1;
+	}
+	WriteLog('post.php: batch mode: $strSourceUrl = ' . $strSourceUrl);
+
+	#my
+	$askMode = 0;
+	if (index($strSourceUrl, 'askubuntu.com') != -1) {
+		$askMode = 1;
+	}
+
+
+	foreach ($comment as $c) {
+		if ($askMode) {
+			while (index($c, "\n\n") != -1) {
+				$c = str_replace("\n\n", "\n", $c);
+			}
+		}
+
+		if ($hnMode) { # news.ycombinator.com
+			WriteLog('post.php: batch mode: $hnMode activated. length($c) = ' . length($c));
+			$c = str_replace('</p><p>', "\n", $c);
+			$c = str_replace('<p>', "\n", $c);
+			$c = str_replace('</p>', "\n", $c);
+			$c = str_replace('<i>', "*", $c);
+			$c = str_replace('</i>', "*", $c);
+			$c = strip_tags($c);
+			$c = html_entity_decode($c);
+			WriteLog('post.php: batch mode: $hnMode finished stripping tags. length($c) = ' . length($c));
+
+			#convert to ascii
+			$c = iconv('UTF-8', 'ASCII//TRANSLIT', $c);
+
+			$c = trim($c);
+			$str= str_replace("\nreply\n", '', $c);
+			$c = trim($c);
+
+			WriteLog('post.php: batch mode: $hnMode all done. length($c) = ' . length($c));
+		}
+
+		$c = $c . "\n-- \n#$batchTag"; #\n--
+		$newFileHash = StoreNewComment($c, ''); // batch add
+		$allAdded .= ">>" . $newFileHash . "\n";
+	}
+
+	#my
+	$newComment = '';
+	$newComment .= "Comment(s) added in batch: " . count($comment) . "\n";
+	$newComment .= "#BatchTag #" . $batchTag . "\n";
+	$newComment .= "Server time: " . time();
+
+	print $batchTag;
+
+	if ($newComment) {
+		$comment = $newComment;
+	} else {
+		$comment = '';
+	}
+
+	########### BATCH ADD
+	########### BATCH ADD
+	########### BATCH ADD
+	########### BATCH ADD
+	########### BATCH ADD
+	########### BATCH ADD
+	########################################
+} # comment is array
+
+if (!$comment && $strSourceTitle) {
+	// if there is no comment, but there's a source title, use that as the comment
+	$comment = $strSourceTitle;
+	$strSourceTitle = '';
+}
+if (!$comment && $strSourceUrl) {
+	// if there is no comment, but there's a source url, use that as the comment
+	$comment = $strSourceUrl;
+}
+
 if (isset($comment) && $comment) {
 	if ($comment == 'Update') { #duplicated in route.php
 		$updateStartTime = time();
