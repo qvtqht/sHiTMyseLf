@@ -4177,15 +4177,21 @@ sub MakeSimplePage { # given page name, makes page
 		$title
 	);
 
+
 	my $itemListPlaceholder = '<span id=itemList></span>';
-	if ($pageName eq 'welcome') {
+	if (GetConfig('config/html/simple_page_list_items')) {
+		if (GetConfig('query/'.$pageName)) {
+			$contentWindow .= GetQueryAsDialog($pageName, 'Discussions About ' . $title);
+			# not sure the reason for $contentWindow
+		}
+
 #		if (GetConfig('admin/js/enable')) {
 #			$html = AddAttributeToTag($html, 'input name=comment', onpaste, "window.inputToChange=this; setTimeout('ChangeInputToTextarea(window.inputToChange); return true;', 100);");
 #		} #input_expand_into_textarea
 
 		if (index($html, $itemListPlaceholder) != -1) {
 			my %queryParams;
-			$queryParams{'where_clause'} = "WHERE item_flat.tags_list LIKE '%welcome%' AND item_flat.tags_list NOT LIKE '%flag%'"; #loose match
+			$queryParams{'where_clause'} = "WHERE item_flat.tags_list LIKE '%" . $pageName . "%' AND item_flat.item_score > 0"; #loose match
 			$queryParams{'order_clause'} = "ORDER BY item_flat.add_timestamp DESC"; #order by timestamp desc
 			$queryParams{'limit_clause'} = "LIMIT 100";
 			my @files = DBGetItemList(\%queryParams);
