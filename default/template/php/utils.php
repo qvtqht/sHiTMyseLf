@@ -794,8 +794,13 @@ function GetWindowTemplate ( # body, title, headings, status, menu
 		$windowTemplate = str_replace('$contentColumnCount', '', $windowTemplate);
 	}
 
+	$windowTemplate = str_replace('$colorWindow', GetThemeAttribute('color/window'), $windowTemplate);
+	$windowTemplate = str_replace('$colorTitlebarText', GetThemeAttribute('color/titlebar_text'), $windowTemplate);
+	$windowTemplate = str_replace('$colorTitlebar', GetThemeAttribute('color/titlebar'), $windowTemplate);
+	$windowTemplate = str_replace('$windowAnchor', '', $windowTemplate);
+
 	return $windowTemplate;
-}
+} # GetWindowTemplate()
 
 function GetThemeAttribute ($attributeName) { // returns theme color from config/theme/...
 // uses GetConfig(), which means look first in config/ and then in default/
