@@ -336,9 +336,15 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 	#
 	# topitems page
 	elsif ($pageType eq 'read') {
-		my $topItemsPage = GetQueryPage('read', 'Top Threads', 'item_title,author_key,add_timestamp');
+		my $topItemsPage = GetQueryPage('read', 'Top Threads');
+		#my $topItemsPage = GetQueryPage('read', 'Top Threads', 'item_title,author_key,add_timestamp,file_hash');
 #		my $topItemsPage = GetTopItemsPage();
 		PutHtmlFile("read.html", $topItemsPage);
+	}
+	elsif ($pageType eq 'raw') {
+		my $rawItemsPage = GetQueryPage('raw', 'Raw Items');
+		#my $rawItemsPage = GetQueryPage('raw', 'Raw Items', 'file_hash,author_key,author_score,child_count,parent_count,item_sequence,add_timestamp,tags_list');
+		PutHtmlFile("raw.html", $rawItemsPage);
 	}
 	elsif ($pageType eq 'compost') {
 		my $compostPage = GetQueryPage('compost');
@@ -368,6 +374,14 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		my $urlPage = GetQueryPage('url');
 		PutHtmlFile("url.html", $urlPage);
 	}
+	elsif ($pageType eq 'chain') {
+		my $chainPage = GetQueryPage(
+			'chain',
+			'Notarized Items',
+			'special_title_and_tags_list,chain_order,chain_timestamp,file_hash'
+		);
+		PutHtmlFile("chain.html", $chainPage);
+	}
 	elsif ($pageType eq 'child') {
 		my $agendaPage = GetQueryPage('child');
 		PutHtmlFile("child.html", $agendaPage);
@@ -376,11 +390,24 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		# Settings page
 		my $settingsPage = GetSettingsPage();
 		PutHtmlFile("settings.html", $settingsPage);
+		PutStatsPages();
 	}
 	#
 	# stats page
 	elsif ($pageType eq 'stats') {
 		PutStatsPages();
+	}
+	#
+	# help page
+	elsif ($pageType eq 'help') {
+		MakeSimplePage('help');
+	}
+	#
+	# upload page
+	elsif ($pageType eq 'upload') {
+		# Upload page
+		my $uploadPage = GetUploadPage();
+		PutHtmlFile("upload.html", $uploadPage);
 	}
 	#
 	# index pages (queue)
@@ -427,6 +454,20 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 	# summary pages
 	elsif ($pageType eq 'summary') {
 		MakeSummaryPages();
+	}
+	#
+	# summary pages
+	elsif ($pageType eq 'welcome') {
+		MakeSimplePage($pageType);
+	}
+	#
+	# fallthrough
+	else {
+		WriteMessage("\n");
+		WriteMessage('=========================================');
+		WriteMessage('Warning: did not recognize that page type');
+		WriteMessage('=========================================');
+		WriteMessage("\n");
 	}
 
 	WriteLog("MakePage: finished, calling DBDeletePageTouch($pageType, $pageParam)");
