@@ -4592,8 +4592,26 @@ sub MakeSystemPages {
 		}
 	}
 
-	if (GetConfig('admin/php/enable')) {
-		MakePhpPages();
+	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+		my $dialog;
+
+		$dialog = GetQueryAsDialog('read', 'Top Threads');
+		PutHtmlFile('dialog/read.html', $dialog);
+
+		$dialog = GetWriteForm();
+		PutHtmlFile('dialog/write.html', $dialog);
+
+		$dialog = GetSettingsWindow();
+		PutHtmlFile('dialog/settings.html', $dialog);
+
+		$dialog = GetStatsTable();
+		PutHtmlFile('dialog/stats.html', $dialog);
+
+		$dialog = GetProfileWindow();
+		PutHtmlFile('dialog/profile.html', $dialog);
+
+		$dialog = GetSimpleWindow('help');
+		PutHtmlFile('dialog/help.html', $dialog);
 	}
 
 } # MakeSystemPages()
