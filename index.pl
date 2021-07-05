@@ -1643,7 +1643,7 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 	}
 
 	if (!$file) {
-		WriteLog('IndexFile: warning: $file is false');
+		WriteLog('IndexFile: warning: $file is FALSE');
 		return '';
 	}
 
