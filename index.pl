@@ -112,6 +112,15 @@ sub MakeChainIndex { # $import = 1; reads from log/chain.log and puts it into it
 } # MakeChainIndex()
 
 sub GetTokenDefs {
+	WriteLog('GetTokenDefs()');
+#
+#	state @tokenDefs;
+#
+#	if (@tokenDefs) {
+#		return @tokenDefs;
+#	}
+
+	#todo memo
 	my @tokenDefs = (
 		{ # cookie of user who posted the message
 			'token'   => 'cookie',
@@ -202,6 +211,13 @@ sub GetTokenDefs {
 			'apply_to_parent' => 1,
 			'message' => '[AccessLogHash]'
 		},
+		{ # hash of line from access.log where item came from (for parent item)
+			'token'   => 'self_timestamp',
+			'mask'    => '^(timestamp)(\W+)([0-9]+)$',
+			'mask_params'    => 'mgi',
+			'apply_to_parent' => 0,
+			'message' => '[Timestamp]'
+		},
 		{ # solved puzzle (user id, timestamp, random number between 0 and 1
 			# together they must hash to the prefix specified in config/puzzle/accept
 			# the default prefix (also accepted) is specified in config/puzzle/prefix
@@ -211,12 +227,27 @@ sub GetTokenDefs {
 			'message' => '[Puzzle]'
 		},
 		{ # anything beginning with http and up to next space character (or eof)
-			'token' => 'url',
-			'mask' => '()()(http[\S]+)',
+			'token' => 'http',
+			'mask' => '()()(http:[\S]+)',
 			'mask_params' => 'mg',
-			'message' => '[URL]',
+			'message' => '[http]',
 			'apply_to_parent' => 0
 		},
+		{ # anything beginning with http and up to next space character (or eof)
+			'token' => 'https',
+			'mask' => '()()(https:[\S]+)',
+			'mask_params' => 'mg',
+			'message' => '[https]',
+			'apply_to_parent' => 0
+		},
+#todo
+#		{ # anything beginning with http and up to next space character (or eof)
+#			'token' => 'hn_user',
+#			'mask' => '^(.+)(.+\W)([–])$',
+#			'mask_params' => 'mg',
+#			'message' => '[hn_user]',
+#			'apply_to_parent' => 0
+#		},
 		{ # hashtags, currently restricted to latin alphanumeric and underscore
 			'token' => 'hashtag',
 			'mask'  => '(\#)()([a-zA-Z0-9_]{1,32})',
