@@ -1045,50 +1045,55 @@ function MakePage ($pageName) {
 // 	WriteLog(`cd $scriptDir ; ./pages.pl "$hash"`);
 } // IndexNewFile()
 
-function ProcessNewComment ($comment, $replyTo) { // saves new comment to .txt file and calls indexer
+function StoreNewComment ($comment, $replyTo) { // returns filename
 	$hash = ''; // hash of new comment's contents
-	$fileUrlPath = ''; // path file should be stored in based on $hash
 	$scriptDir = GetScriptDir();
 
-	WriteLog('ProcessNewComment(...)');
+	#todo more sanity
+
+	if (!file_exists($scriptDir) || !is_dir($scriptDir)) {
+		WriteLog('StoreNewComment: warning: $scriptDir is not a directory');
+		return '';
+	}
 
 	if (isset($comment) && $comment) {
-		WriteLog('ProcessNewComment: $comment exists');
+		WriteLog('StoreNewComment: $comment exists');
 
 		// remember current working directory, we'll need it later
-		$pwd = getcwd();
-		WriteLog('ProcessNewComment: $pwd = ' . $pwd);
+		$pwd = getcwd(); #my
+		WriteLog('StoreNewComment: $pwd = ' . $pwd);
 
 		// script directory is one level up from current directory,
 		// which we expect to be called "html"
-		$scriptDir = GetScriptDir();
-		WriteLog('ProcessNewComment: $scriptDir = ' . $scriptDir);
+		$scriptDir = GetScriptDir(); #my
+		WriteLog('StoreNewComment: $scriptDir = ' . $scriptDir);
 
 		// $txtDir is where the text files live, in html/txt
-		$txtDir = $pwd . '/txt/';
-		WriteLog('ProcessNewComment: $txtDir = ' . $txtDir);
+		$txtDir = $pwd . '/txt/'; #my
+		WriteLog('StoreNewComment: $txtDir = ' . $txtDir);
 
 		// $htmlDir is the same as current directory
-		$htmlDir = $pwd . '/';
-		WriteLog('ProcessNewComment: $htmlDir = ' . $htmlDir);
+		$htmlDir = $pwd . '/'; #my
+		WriteLog('StoreNewComment: $htmlDir = ' . $htmlDir);
+
 
 		// find hash of the comment text
 		// it will not be the same as sha1 of the file for some mysterious reason, #todo
 		// but we will use it for now.
 		$hash = sha1($comment);
-		WriteLog('ProcessNewComment: $comment = ' . $comment);
-		WriteLog('ProcessNewComment: $hash = ' . $hash);
+		WriteLog('StoreNewComment: $comment = ' . $comment);
+		WriteLog('StoreNewComment: $hash = ' . $hash);
 
 		// generate a temporary filename based on the temporary hash
 		$fileName = $txtDir . $hash . '.txt';
-		WriteLog('ProcessNewComment: $fileName = ' . $fileName);
+		WriteLog('StoreNewComment: $fileName = ' . $fileName);
 
 		// standard signature separator
-		$signatureSeparator = "\n-- \n";
+		$signatureSeparator = "\n-- \n"; #\n--
 
 		if (GetConfig('admin/logging/record_http_auth_username')) {
 			if (isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER']) {
-				WriteLog('ProcessNewComment: Recording http auth username... $_SERVER[PHP_AUTH_USER]: ' . $_SERVER['PHP_AUTH_USER']);
+				WriteLog('StoreNewComment: Recording http auth username... $_SERVER[PHP_AUTH_USER]: ' . $_SERVER['PHP_AUTH_USER']);
 				// record user's http-auth username if we're doing that and it exists
 				// #todo sanity check on $_SERVER['PHP_AUTH_USER']
 
@@ -1097,21 +1102,29 @@ function ProcessNewComment ($comment, $replyTo) { // saves new comment to .txt f
 				$comment .= 'Authorization: ' . $_SERVER['PHP_AUTH_USER'];
 			}
 		} else {
-			WriteLog('ProcessNewComment: NOT recording http auth username...');
+			WriteLog('StoreNewComment: NOT recording http auth username...');
 		}
 
 		if (GetConfig('admin/logging/record_cookie')) {
+			WriteLog('StoreNewComment: record_cookie is TRUE');
+			
 			if (isset($_COOKIE['cookie']) && $_COOKIE['cookie']) {
+				WriteLog('StoreNewComment: cookie: cookie was found! $_COOKIE[cookie] = ' . $_COOKIE['cookie']);
+
 				// if there's a cookie variable and cookie logging is enabled
 				if (index($comment, 'PGP SIGNED MESSAGE') == -1 || GetConfig('admin/logging/record_cookie_when_signed')) {
 					// don't add cookie if message appears signed. this is a temporary measure to mitigate duplicate messages
 					// because access.pl doesn't know how to save cookies yet. record_cookie_when_signed=0 by default
+
+					WriteLog('StoreNewComment: cookie: adding cookie to $comment!');
 
 					$comment .= $signatureSeparator;
 					$signatureSeparator = "\n";
 
 					$comment .= 'Cookie: ' . $_COOKIE['cookie'];
 				}
+			} else {
+				WriteLog('StoreNewComment: cookie: cookie was NOT found');
 			}
 		}
 
@@ -1125,12 +1138,57 @@ function ProcessNewComment ($comment, $replyTo) { // saves new comment to .txt f
 			}
 		}
 
+		WriteLog('StoreNewComment: file_put_contents(' . $fileName . '.tmp, ' . htmlspecialchars($comment) . ')');
+
 		// save the file as ".tmp" and then rename
 		file_put_contents($fileName . '.tmp', $comment);
+
+		WriteLog('StoreNewComment: rename(' . $fileName . '.tmp, ' . $fileName . ')');
+
 		rename($fileName . '.tmp', $fileName);
 
-		WriteLog('ProcessNewComment: file_get_contents(' . $fileName . '):');
-		WriteLog(file_get_contents($fileName));
+		//WriteLog('StoreNewComment: file_get_contents(' . $fileName . '):');
+		//WriteLog(file_get_contents($fileName));
+		// this can be  used for a test to verify that the content is there #todo
+		// #todo more sanity
+
+		return $fileName;
+	}
+
+	WriteLog('StoreNewComment(...)');
+} # StoreNewComment()
+
+//function IndexNewComment (
+
+function ProcessNewComment ($comment, $replyTo) { // saves new comment to .txt file and calls indexer
+	$hash = ''; // hash of new comment's contents
+	$fileUrlPath = ''; // path file should be stored in based on $hash
+	$scriptDir = GetScriptDir();
+
+	WriteLog('ProcessNewComment(...)');
+
+	if ($comment) {
+		$fileName = StoreNewComment($comment, $replyTo); // ProcessNewComment()
+	}
+
+	if ($fileName) {
+		// remember current working directory, we'll need it later
+		$pwd = getcwd(); #my
+		WriteLog('ProcessNewComment: $pwd = ' . $pwd);
+
+		// script directory is one level up from current directory,
+		// which we expect to be called "html"
+		$scriptDir = GetScriptDir(); #my
+		WriteLog('ProcessNewComment: $scriptDir = ' . $scriptDir);
+
+		// $txtDir is where the text files live, in html/txt
+		$txtDir = $pwd . '/txt/'; #my
+		WriteLog('ProcessNewComment: $txtDir = ' . $txtDir);
+
+		// $htmlDir is the same as current directory
+		$htmlDir = $pwd . '/'; #my
+		WriteLog('ProcessNewComment: $htmlDir = ' . $htmlDir);
+
 
 		// now we can get the "proper" hash,
 		// which is for some reason different from sha1($comment), as noted above
@@ -1175,7 +1233,7 @@ function ProcessNewComment ($comment, $replyTo) { // saves new comment to .txt f
 
 		// check if html file already exists. if it does, leave it alone
 		if (!file_exists($fileHtmlPath)) {
-			$commentHtmlTemplate = GetItemPlaceholderPage($comment);
+			$commentHtmlTemplate = GetItemPlaceholderPage($comment, $hash, $fileUrlPath, $filePath);
 
 			// store file
 			WriteLog("ProcessNewComment: file_put_contents($fileHtmlPath, $commentHtmlTemplate)");
