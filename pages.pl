@@ -4767,7 +4767,16 @@ sub GetWritePage { # returns html for write page
 
 	my $writeForm = GetWriteForm();
 	WriteLog('GetWriteForm: js is on, adding write_options.template');
-    my $writeOptions = '<span class=advanced>' . GetWindowTemplate(GetTemplate('form/write/write_options.template'), 'Options') . '</span>'; #todo this is a hack
+    my $writeOptions =
+    	'<span class=advanced>' .
+    	AddAttributeToTag(
+    		GetWindowTemplate(GetTemplate('form/write/write_options.template'), 'Options'),
+			'a href="/frame.html"',
+			'accesskey',
+			GetAccessKey('Keyboard')
+		).
+    	'</span>'
+	; #todo this is a hack
 
     $writePageHtml .= '<form action="/post.html" method=GET id=compose class=submit name=compose target=_top>'; #todo
 	$writePageHtml .= $writeForm;
