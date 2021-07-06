@@ -2,7 +2,7 @@
 <a href="$permalinkHtml">$addedTime</a>;
 $authorLink;
 <span class=advanced>
-	$fileHashShort;
+	<span class=fileHashShort></span>;
 	<a href="$permalinkHtml#reply">reply($replyCount)</a>;
 </span>
 $itemFlagButton
