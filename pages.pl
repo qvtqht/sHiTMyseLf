@@ -3436,7 +3436,13 @@ sub GetMenuItem { # $address, $caption; returns html snippet for a menu item (us
 	}
 
 	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
-		$menuItem = AddAttributeToTag($menuItem, 'a', 'onclick', "if (!document.getElementById('$menuName') && window.GetPrefs && GetPrefs('draggable')) { return FetchDialogFromUrl('/dialog" . $address . "'); }");
+		#todo remove unnecessary check for existing dialog
+		$menuItem = AddAttributeToTag(
+			$menuItem,
+			'a ',
+			'onclick',
+			"if (!document.getElementById('$menuName') && (!window.GetPrefs || GetPrefs('draggable'))) { return FetchDialogFromUrl('/dialog" . $address . "'); }"
+		);
 		#todo this also needs relativize support
 	}
 
