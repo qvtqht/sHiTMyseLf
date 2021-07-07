@@ -1759,8 +1759,8 @@ sub GetMenuTemplate { # returns menubar
 
 	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
 		#$windowTemplate = AddAttributeToTag($windowTemplate, 'table', 'onmousedown', 'this.style.zIndex = ++window.draggingZ;');
-		$topMenuTemplate = AddAttributeToTag($topMenuTemplate, 'table', 'onmouseenter', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #SetActiveDialog
-		$topMenuTemplate = AddAttributeToTag($topMenuTemplate, 'table', 'onmousedown', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #SetActiveDialog
+		$topMenuTemplate = AddAttributeToTag($topMenuTemplate, 'table', 'onmouseenter', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #SetActiveDialog GetMenuTemplate()
+		$topMenuTemplate = AddAttributeToTag($topMenuTemplate, 'table', 'onmousedown', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #SetActiveDialog GetMenuTemplate()
 	}
 
 	return $topMenuTemplate;
