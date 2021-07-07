@@ -1107,7 +1107,7 @@ sub GetItemHtmlLink { # $hash, [link caption], [#anchor] ; returns <a href=...
 # sub GetLink {
 	my $hash = shift;
 
-	if (IsItem($hash)) {
+	if ($hash = IsItem($hash)) {
 		#ok
 	} else {
 		WriteLog('GetItemHtmlLink: warning: sanity check failed on $hash');
@@ -1138,19 +1138,35 @@ sub GetItemHtmlLink { # $hash, [link caption], [#anchor] ; returns <a href=...
 			$linkPath = substr($hash, 0, 8);
 		}
 
+		my $itemLink = '';
+
 		if (
 			GetConfig('html/overline_links_with_missing_html_files') &&
 			-e GetDir('html').'/'.$htmlFilename
 		) {
 			# html file exists, nice
-			return '<a href="/' . $linkPath . $hashAnchor . '" style="text-decoration: overline">' . $linkCaption . '</a>';
+			$itemLink = '<a href="/' . $linkPath . $hashAnchor . '" style="text-decoration: overline">' . $linkCaption . '</a>';
 		} else {
 			# html file does't exist, annotate link to indicate this
 			# the html file may be generated as needed
 			#return '<a href="/' . $htmlFilename . $hashAnchor . '">' . $linkCaption . '</a>';
-			return '<a href="/' . $linkPath . $hashAnchor . '">' . $linkCaption . '</a>';
+			$itemLink = '<a href="/' . $linkPath . $hashAnchor . '">' . $linkCaption . '</a>';
 		}
+
+		if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+			#$itemLink = AddAttributeToTag($itemLink, 'a ', 'onclick', '');
+			$itemLink = AddAttributeToTag(
+				$itemLink,
+				'a ',
+				'onclick',
+				"if ((!window.GetPrefs || GetPrefs('draggable')) && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $htmlFilename . "'); }"
+			);
+		}
+
+		return $itemLink;
 	} else {
+		WriteLog('GetItemHtmlLink: warning: no $hash after first sanity check!');
+		return '';
 	}
 } # GetItemHtmlLink()
 
