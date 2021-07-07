@@ -546,7 +546,6 @@ function StoreServerResponse ($message) { // adds server response message and re
 
     	# create a verifiable message id, allowing the server to later verify receipt of message
 		$messageId = md5($message . time() . $cookie);
-
 	    $messageId = substr($messageId, 0, 8);
 	}
 
