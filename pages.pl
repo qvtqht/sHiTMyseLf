@@ -881,8 +881,9 @@ sub GetEventsPage { # returns html for events page
 
 }
 
-sub GetTagLinks { # $tagSelected ; returns html-formatted tags list
-# tag_wrapper.template, tag.template
+sub GetTagLinks { # $tagSelected ; returns html-formatted links to existing tags in system
+# used for the header at the top of tag listings pages
+# 'tag_wrapper.template', 'tag.template'
 
 	my $tagSelected = shift;
 
@@ -924,6 +925,8 @@ sub GetTagLinks { # $tagSelected ; returns html-formatted tags list
 				$voteItemTemplate =~ s/\$link/$voteItemLink/g;
 				$voteItemTemplate =~ s/\$tagName/$tagName/g;
 				$voteItemTemplate =~ s/\$tagCount/$tagCount/g;
+
+				$voteItemTemplate = AddAttributeToTag($voteItemTemplate, 'a ', 'onclick', "if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }");
 
 				$voteItems .= $voteItemTemplate;
 			}
