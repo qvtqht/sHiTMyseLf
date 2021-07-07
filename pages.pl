@@ -149,7 +149,15 @@ sub RenderLink {
 
 	#todo sanity, template, etc.
 
-	return '<a href="' . $url . '">' . $title . '</a>';
+	my $link = '<a href="' . $url . '">' . $title . '</a>';
+
+	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+		if ($url =~ m/\/top\//) {
+			$link = AddAttributeToTag($link, 'a ', 'onclick', "if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $url . "'); }");
+		}
+	}
+
+	return $link;
 } # RenderLink()
 
 require './render_field.pl';
