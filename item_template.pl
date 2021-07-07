@@ -79,6 +79,7 @@ sub GetItemTemplateBody {
 } # GetItemTemplateBody()
 
 sub GetItemTemplate { # \%file ; returns HTML for outputting one item WITH WINDOW FRAME
+#sub GetItemDialog {
 	WriteLog("GetItemTemplate() begin");
 
 	# %file(hash for each file)
