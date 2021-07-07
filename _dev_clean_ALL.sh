@@ -5,11 +5,12 @@ echo Script about to reset configuration!
 echo ====================================
 echo You have 3 seconds to press Ctrl + C
 echo ====================================
-echo 3
+
+echo "3..."
 sleep 1
-echo 2
+echo "2..."
 sleep 2
-echo 1
+echo "1..."
 sleep 3
 
 # MYDATE=`date +%s`
@@ -73,7 +74,10 @@ mkdir -p html/txt
 echo "================="
 echo "Cleanup complete!"
 echo "================="
-echo "Rebuilding with ./build.pl in 3..."
+
+echo "Rebuilding with ./build.pl..."
+
+echo "3... "
 sleep 1
 
 echo "2... "
@@ -90,8 +94,8 @@ echo "Build complete!"
 echo "==============="
 
 
-
-echo "Writing system pages with ./pages.pl --system in 3..."
+echo "Writing system pages with ./pages.pl --system ..."
+echo "3... "
 sleep 1
 
 echo "2... "
@@ -108,8 +112,9 @@ echo "System pages done!"
 echo "=================="
 
 
+echo "Verifying Chain with ./index.pl --chain ..."
 
-echo "Verifying Chain with ./index.pl --chain in 3..."
+echo "3... "
 sleep 1
 
 echo "2... "
@@ -127,7 +132,9 @@ echo "============================"
 
 
 
-echo "Reindexing all stored files with ./index.pl --all in 3..."
+echo "Reindexing all stored files with ./index.pl --all ..."
+
+echo "3... "
 sleep 1
 
 echo "2... "
@@ -145,7 +152,9 @@ echo "======================"
 
 
 
-echo "Relaunching local web server with ./server_local_lighttpd.pl in 3..."
+echo "Relaunching local web server with ./server_local_lighttpd.pl ..."
+
+echo "3... "
 sleep 1
 
 echo "2... "
