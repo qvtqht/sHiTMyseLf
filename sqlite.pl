@@ -215,14 +215,16 @@ sub SqliteMakeTables { # creates sqlite schema
 	;");
 
 	# added_time
+	#todo ideally, this should only use chain, but only if chain is enabled
 	SqliteQuery("
 		CREATE VIEW added_time
 		AS
 		SELECT
 			file_hash,
-			value AS add_timestamp
+			MIN(value) AS add_timestamp
 		FROM item_attribute_latest
-		WHERE attribute = 'chain_timestamp'
+		WHERE attribute LIKE '%_timestamp'
+		GROUP BY file_hash
 	");
 
 	# item_title
