@@ -35,8 +35,10 @@ sub GetHtmlToolbox {
 	my $urlParam = '';
 	if ($file{'item_title'}) {
 		$urlParam = $file{'item_title'};
-		#$urlParam = uri_encode($urlParam);
+		$urlParam = uri_escape($urlParam);
 		$urlParam = str_replace(' ', '+', $urlParam);
+		$urlParam = str_replace('+', '%2b', $urlParam);
+		$urlParam = str_replace('#', '%23', $urlParam);
 	}
 
 	if ($urlParam && $urlParam ne 'Untitled') {
@@ -127,7 +129,6 @@ sub GetHtmlToolbox {
 			'</a><br>'
 		;
 
-
 		$htmlToolbox .= "<p>";
 		$htmlToolbox .= "<b>Share:</b><br>";
 
@@ -159,7 +160,8 @@ sub GetHtmlToolbox {
 	if ($file{'file_path'} && $file{'item_type'} eq 'txt') {
 		$urlParamFullText = $file{'file_path'};
 		$urlParamFullText = GetFile($urlParamFullText);
-		$urlParamFullText = uri_encode($urlParamFullText);
+		$urlParamFullText = uri_escape($urlParamFullText);
+		#$urlParamFullText = uri_encode($urlParamFullText);
 		$urlParamFullText = str_replace('+', '%2b', $urlParamFullText);
 		$urlParamFullText = str_replace('#', '%23', $urlParamFullText);
 		#todo other chars like ? & =
