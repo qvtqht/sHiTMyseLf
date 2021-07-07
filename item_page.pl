@@ -346,7 +346,10 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	}
 
 	if (index($file{'tags_list'}, 'pubkey') != -1) {
-		$txtIndex .= GetWindowTemplate('This is a special item, a "public key".<br>A public key allows for reusing the profile and signing messages.', 'Information');
+		$txtIndex .= GetWindowTemplate(
+			'Public key allows verifiable signatures.',
+			'Information'
+		);
 		#todo templatify + use GetString()
 	}
 
@@ -421,8 +424,6 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 			 	'<span id=itemScore>' . $file{'item_score'} . '</span>',
 			 	$classifyForm
 			);
-
-
 
 			# CLASSIFY BOX
 			$txtIndex .= '<span class=advanced>'.GetWindowTemplate($classifyForm, 'Classify').'</span>';
