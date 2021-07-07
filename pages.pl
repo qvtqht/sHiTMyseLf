@@ -893,7 +893,7 @@ sub GetTagLinks { # $tagSelected ; returns html-formatted links to existing tags
 		chomp $tagSelected;
 	}
 
-	my $minimumTagCount = 5;
+	my $minimumTagCount = 5; # don't display if fewer than this, unless it is selected
 
 	WriteLog("GetTagLinks($tagSelected)");
 
@@ -926,7 +926,15 @@ sub GetTagLinks { # $tagSelected ; returns html-formatted links to existing tags
 				$voteItemTemplate =~ s/\$tagName/$tagName/g;
 				$voteItemTemplate =~ s/\$tagCount/$tagCount/g;
 
-				$voteItemTemplate = AddAttributeToTag($voteItemTemplate, 'a ', 'onclick', "if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }");
+				if (0 && GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
+					#todo improve this (e.g. don't hard-code the url)
+					$voteItemTemplate = AddAttributeToTag(
+						$voteItemTemplate,
+						'a ',
+						'onclick',
+						"if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
+					);
+				}
 
 				$voteItems .= $voteItemTemplate;
 			}
