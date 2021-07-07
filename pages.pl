@@ -289,8 +289,8 @@ sub GetAuthorLink { # $fingerprint, $showPlain ; returns avatar'ed link for an a
 
 	# verify $fingerprint is valid
 	if (!IsFingerprint($fingerprint)) {
-		WriteLog('GetAuthorLink: warning: sanity check failed on $fingerprint = ' . $fingerprint . '; caller: ' . join(',', caller));
-		return '';
+		WriteLog('GetAuthorLink: warning: sanity check failed on $fingerprint = ' . ($fingerprint ? $fingerprint : 'FALSE') . '; caller: ' . join(',', caller));
+		return 'Guest'; #guest...
 	}
 
 	my $authorUrl = "/author/$fingerprint/index.html";
