@@ -19,6 +19,11 @@ while (my $argFound = shift) {
 use Digest::SHA qw(sha512_hex);
 use POSIX qw(floor);
 
+#use threads ('yield',
+#             'stack_size' => 64*4096,
+#             'exit' => 'threads_only',
+#             'stringify');
+
 require('./gpgpg.pl');
 require('./utils.pl');
 
@@ -1709,9 +1714,22 @@ sub IndexFile { # $file ; calls IndexTextFile() or IndexImageFile() based on ext
 
 	my $ext = lc(GetFileExtension($file));
 
+	# THREADS MODE IS NOT FINISHED
+	# DO NOT CHANGE THIS UNLESS YKWYD
+	my $useThreads = 0;
+	# IF TURNING ON, UNCOMMENT 'use' STATEMENT
+	# AT THE TOP OF THIS FILE AS WELL
+
 	if ($ext eq 'txt') {
 		WriteLog('IndexFile: calling IndexTextFile()');
-		$indexSuccess = IndexTextFile($file);
+
+		if ($useThreads) {
+			my $thr = threads->create('IndexTextFile', $file);
+			$indexSuccess = $thr->join();
+			$indexSuccess = 1;
+		} else {
+			$indexSuccess = IndexTextFile($file); #IndexFile()
+		}
 
 		if (!$indexSuccess) {
 			WriteLog('IndexFile: warning: IndexTextFile: $indexSuccess was FALSE');
