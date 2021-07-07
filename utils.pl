@@ -1554,14 +1554,14 @@ sub IsItemPrefix { # $string ; returns sanitized value if parameter is in item p
 
 	WriteLog('IsItemPrefix: $string = ' . $string);
 
-	if ($string =~ m/^([0-9a-f]{4})$/) {
+	if ($string =~ m/^([0-9a-f]{8})$/) {
 		WriteLog('IsItemPrefix: returning $1 = ' . $1);
 
 		return $1; # returned sanitized value, in case it is needed
 	}
 
 	return 0;
-}
+} # IsItemPrefix()
 
 sub IsMd5 { # returns 1 if parameter is md5 hash, 0 otherwise
 	my $string = shift;
