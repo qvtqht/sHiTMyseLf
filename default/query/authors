@@ -3,6 +3,7 @@ SELECT
 	last_seen,
 	item_count,
 	'' AS tagset_author,
+	author_score,
 	file_hash
 FROM author_flat
 ORDER BY item_count DESC
