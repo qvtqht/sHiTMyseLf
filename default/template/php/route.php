@@ -621,10 +621,10 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			# the page being built for whatever reason
 
 			$mostRecentCacheName = 'pages/' . md5($pagesPlArgument);
-			$mostRecentCall = intval(GetConfig($mostRecentCacheName));
+			$mostRecentCall = intval(GetCache($mostRecentCacheName));
 
-			if (time() - $mostRecentCall > 60) {
-				WriteLog('HandleNotFound: pages.pl was called more than 60 seconds ago, trying to grow page');
+			if (time() - $mostRecentCall > 60) { #todo config for this
+				WriteLog('HandleNotFound: pages.pl was called more than 5 seconds ago, trying to grow page');
 				# call pages.pl to generate the page
 				$pwd = getcwd();
 				WriteLog('$pwd = ' . $pwd);
@@ -638,8 +638,13 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 				PutCache($mostRecentCacheName, time());
 			} else {
 				WriteLog('HandleNotFound: warning: pages.pl was called LESS THAN 60 seconds ago, NOT trying to grow page');
+				return 0;
 			}
 		} # $pagesPlArgument = true
+		else {
+			WriteLog('HandleNotFound: warning: $pagesPlArgument is FALSE');
+			return 0;
+		}
 
 		$pathRel = '.' . $path; // relative path of $path (to current directory, which should be html/)
 
