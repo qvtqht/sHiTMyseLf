@@ -565,6 +565,28 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			WriteLog('HandleNotFound: found help dialog');
 			$pagesPlArgument = '-D help';
 		}
+
+		if (
+			$path == '/dialog/help.html'
+		) {
+			WriteLog('HandleNotFound: found help dialog');
+			$pagesPlArgument = '-D help';
+		}
+
+		if (preg_match('/^\/dialog\/[a-f0-9]{2}\/[a-f0-9]{2}\/([a-f0-9]{8})/', $path, $itemHashMatch)) {
+			# Item URL in the form: /ab/01/ab01cd23.html
+			WriteLog('HandleNotFound: found dialog / item hash');
+			$itemHash = $itemHashMatch[1];
+			$pagesPlArgument = '-D ' . $itemHash;
+		}
+
+		if (preg_match('/^\/dialog\/top\/([a-zA-Z0-9_-]+)\.html/', $path, $itemTagMatch)) {
+			# Item URL in the form: /top/nice.html
+			WriteLog('HandleNotFound: found dialog / tag');
+			$tagName = $itemTagMatch[1];
+			$pagesPlArgument = '-D \#' . $tagName;
+		}
+
 ############################ DIALOGS END
 		if (
 			$path == '/data.html' ||
