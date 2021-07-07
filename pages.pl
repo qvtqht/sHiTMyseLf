@@ -5879,8 +5879,55 @@ while (my $arg1 = shift @foundArgs) {
 					my $dialog = GetSimpleWindow('help');
 					print ("-D $makeDialogArg\n");
 					PutHtmlFile('dialog/help.html', $dialog);
-					print ("-D $makeDialogArg\n");
 				}
+
+#				elsif (IsItem($arg1)) {
+#					print ("recognized item identifier\n");
+#					MakePage('item', $arg1, 1);
+#				}
+
+				if (0) {
+					# placeholder
+				}
+				elsif ($makeDialogArg =~ m/([0-9a-f]{8})/) {
+					print ("-D (item_prefix)\n");
+					my $dialog = GetItemTemplateFromHash($makeDialogArg);
+					my $dialogPath = GetHtmlFilename($makeDialogArg);
+
+					if ($dialog && $dialogPath) {
+						PutHtmlFile('dialog/' . $dialogPath, $dialog);
+					} else {
+						WriteLog('warning');
+					}
+				}
+#				elsif (IsFingerprint($arg1)) {
+#					print ("recognized author fingerprint\n");
+#					MakePage('author', $arg1, 1);
+#				}
+				elsif (substr($makeDialogArg, 0, 1) eq '#') {
+					#todo sanity checks here
+					print ("-D hash tag $makeDialogArg\n");
+
+					my $hashTag = substr($makeDialogArg, 1);
+
+					my $dialog = GetQueryAsDialog(
+						"select * from item_flat where ','||tags_list||',' like '%,$hashTag,%' order by item_score desc limit 50",
+						'#' . $hashTag,
+						'author_id,item_title,file_hash'
+					); #todo sanity
+					my $dialogPath = 'top/' . $hashTag . '.html';
+
+					if ($dialog && $dialogPath) {
+						PutHtmlFile('dialog/' . $dialogPath, $dialog);
+					} else {
+						WriteLog('warning');
+					}
+				}
+				else {
+					print 'huh... what kind of dialog is ' . $arg1 . '?';
+					print "\n";
+				}
+
 				#print ("calling MakePage($makePageArg)\n");
 				#MakePage($makePageArg);
 			} else {
