@@ -4921,17 +4921,23 @@ sub GetItemTemplateFromHash {
 
 	WriteLog("GetItemTemplateFromHash($fileHash)");
 
+	#todo sanity
+
 	# get item list using DBGetItemList()
 	# #todo clean this up a little, perhaps crete DBGetItem()
-	my @files = DBGetItemList({'where_clause' => "WHERE file_hash = '$fileHash'"});
+	my @files = DBGetItemList({'where_clause' => "WHERE file_hash LIKE '" . $fileHash . "%'"});
 
 	if (scalar(@files)) {
-		my $file = $files[0];
+		my %file = %{$files[0]};
 
-		WriteLog('GetItemTemplateFromHash: my $itemPage = GetItemTemplate($file = "' . $file . '")');
-		my $itemPage = GetItemTemplate($file);
+		WriteLog('GetItemTemplateFromHash: $file{file_hash} = ' . $file{'file_hash'});
+		my $itemPage = GetItemTemplate(\%file);
 
-		return $itemPage;
+		if ($itemPage) {
+			return $itemPage;
+		} else {
+			WriteLog('GetItemTemplateFromHash: warning: sanity check failed (2)');
+		}
 	} # scalar(@files)
 	else {
 		WriteLog('GetItemTemplateFromHash: warning: sanity check failed');
