@@ -4940,7 +4940,7 @@ sub GetItemTemplateFromHash {
 		}
 	} # scalar(@files)
 	else {
-		WriteLog('GetItemTemplateFromHash: warning: sanity check failed');
+		WriteLog('GetItemTemplateFromHash: warning: sanity check failed (1)');
 		return '';
 	} #
 } # DBGetItemTemplateFromHash()
