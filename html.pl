@@ -40,6 +40,7 @@ sub GetHtmlAvatar { # Returns HTML avatar from cache
 
 sub GetHtmlFilename { # get the HTML filename for specified item hash
 	# GetItemUrl GetItemHtmlLink { GetHtmlFilePath { #keywords
+	# GetItemHtmlFilePath {
 	# Returns 'ab/cd/abcdef01234567890[...].html'
 	# -or- Slug-From-Item-Name.html
 	#
