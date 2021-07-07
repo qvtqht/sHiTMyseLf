@@ -20,6 +20,14 @@ function GetScriptDir () { // returns base script directory.
 	return $scriptDir;
 }
 
+function uc ($string) { # uppercase, perl port
+	return strtoupper($string);
+} # uc()
+
+function lc ($string) { # lowercase, perl port
+	return strtolower($string);
+} # lc()
+
 function SqliteEscape ($text) { # Escapes supplied text for use in sqlite query
 # Just changes ' to ''
 	WriteLog("SqliteEscape($text)");
