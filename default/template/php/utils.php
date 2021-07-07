@@ -1052,7 +1052,8 @@ function MakePage ($pageName) {
 // 	WriteLog(`cd $scriptDir ; ./pages.pl "$hash"`);
 } // IndexNewFile()
 
-function StoreNewComment ($comment, $replyTo) { // returns filename
+function StoreNewComment ($comment, $replyTo, $recordFingerprint = 0) { // returns filename
+// # StoreComment ()
 	$hash = ''; // hash of new comment's contents
 	$scriptDir = GetScriptDir();
 
@@ -1134,6 +1135,24 @@ function StoreNewComment ($comment, $replyTo) { // returns filename
 				WriteLog('StoreNewComment: cookie: cookie was NOT found');
 			}
 		}
+
+		if ($recordFingerprint) {
+			if (GetConfig('admin/logging/record_client')) {
+				WriteLog('StoreNewComment: admin/logging/record_client && $recordFingerprint');
+
+				#my
+				$clientFingerprint = uc(substr(md5($clientHostname . $userAgent), 0, 16));
+				$comment .= 'Client: ' . $clientFingerprint;
+				$comment .= "\n";
+				#$addedMessage .= 'Client: ' . $clientFingerprint;
+				#$addedMessage .= "\n";
+
+				WriteLog('StoreNewComment: $recordFingerprint: $clientFingerprint = ' . $clientFingerprint);
+			} else {
+				WriteLog('StoreNewComment: warning: $recordFingerprint was requested, but admin/logging/record_client is off');
+			}
+		}
+
 
 		if (GetConfig('admin/logging/record_http_host')) {
 			if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST']) {
