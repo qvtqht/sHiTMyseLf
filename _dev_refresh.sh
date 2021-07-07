@@ -128,3 +128,8 @@ then
 	./access_log_read.pl --all
 	mv -v checksum/access_log_checksum_new checksum/access_log_checksum
 fi
+
+if [ $need_clean_html = 1 ]; then
+  # warm up initial page loads
+  ./pages.pl --system
+fi
