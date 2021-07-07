@@ -614,9 +614,9 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 							# GetServerKey() # there should be a server key, otherwise do not log
 							# 	&&
 							# (
-							GetConfig('admin/logging/record_timestamps')
+							GetConfig('admin/logging/record_timestamp')
 								||
-							GetConfig('admin/logging/record_clients')
+							GetConfig('admin/logging/record_client')
 								||
 							GetConfig('admin/logging/record_sha512')
 								||
@@ -634,13 +634,13 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 								$addedMessage .= "AccessLogHash: $accessLogHash\n";
 							}
 
-							if (GetConfig('admin/logging/record_timestamps') && $recordTimestamp) {
+							if (GetConfig('admin/logging/record_timestamp') && $recordTimestamp) {
 								$addedMessage .= "AddedTime: $addedTime\n";
 							}
 
 							if ($recordFingerprint) {
-								if (GetConfig('admin/logging/record_clients')) {
-									WriteLog('ProcessAccessLog: admin/logging/record_clients && $recordFingerprint');
+								if (GetConfig('admin/logging/record_client')) {
+									WriteLog('ProcessAccessLog: admin/logging/record_client && $recordFingerprint');
 
 									my $clientFingerprint = uc(substr(md5_hex($clientHostname . $userAgent), 0, 16));
 									$addedMessage .= 'Client: ' . $clientFingerprint;
@@ -648,7 +648,7 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 
 									WriteLog('ProcessAccessLog: $recordFingerprint: $clientFingerprint = ' . $clientFingerprint);
 								} else {
-									WriteLog('ProcessAccessLog: warning: $recordFingerprint was requested, but admin/logging/record_clients is off');
+									WriteLog('ProcessAccessLog: warning: $recordFingerprint was requested, but admin/logging/record_client is off');
 								}
 							}
 
