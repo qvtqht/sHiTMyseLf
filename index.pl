@@ -444,7 +444,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 
 	WriteLog('IndexTextFile: $fileHash = ' . $fileHash);
 	if (GetConfig('admin/logging/write_chain_log')) {
-		$addedTime = AddToChainLog($fileHash);
+		$addedTime = AddToChainLog($fileHash); # IndexTextFile();
 		#todo there is a bug here, should not depend on chain log
 	}
 
@@ -979,7 +979,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 											||
 											(
 												GetConfig('admin/allow_self_admin_whenever')
-												 #todo parent should be pubkey and item should be signed
+												#todo parent should be pubkey and item should be signed
 											)
 										)
 
@@ -1214,7 +1214,7 @@ sub AddToChainLog { # $fileHash ; add line to log/chain.log
 
 	$fileHash = IsItem($fileHash);
 
-	{
+	if ($fileHash && $logFilePath) {
 		#look for existin entry, exit if found
 		my $findExistingCommand = "grep ^$fileHash $logFilePath";
 		my $findExistingResult = `$findExistingCommand`;
@@ -1231,6 +1231,8 @@ sub AddToChainLog { # $fileHash ; add line to log/chain.log
 				return 0;
 			}
 		}
+	} else {
+		WriteLog('AddToChainLog: warning: sanity check failed');
 	}
 
 	# get components of new line: hash, timestamp, and previous line
@@ -1828,6 +1830,8 @@ sub PrintHelp {
 while (my $arg1 = shift @argsFound) {
 	WriteLog('index.pl: $arg1 = ' . $arg1);
 	if ($arg1) {
+		$arg1 = trim($arg1);
+
 		$didSomething++;
 		if ($arg1 eq '--help') {
 			print "index.pl: --help\n";
@@ -1856,7 +1860,13 @@ while (my $arg1 = shift @argsFound) {
 		if ($arg1 eq '--chain') {
 			# html/chain.log
 			print "index.pl: --chain\n";
-			MakeChainIndex();
+			if (GetConfig('admin/read_chain_log')) {
+				MakeChainIndex(); # index.pl --chain
+			} else {
+				print "index.pl: MakeChainIndex() SKIPPED because of config/admin/read_chain_log = FALSE\n";
+				print "index.pl: MakeChainIndex() SKIPPED because of config/admin/read_chain_log = FALSE\n";
+				print "index.pl: MakeChainIndex() SKIPPED because of config/admin/read_chain_log = FALSE\n";
+			}
 		}
 		if ($arg1 eq '--write-indexed-config' || $arg1 eq '-C') {
 			# sweep deleted files
