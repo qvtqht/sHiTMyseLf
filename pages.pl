@@ -5410,7 +5410,7 @@ sub GetTimestampWidget { # $time ; returns timestamp widget
 	}
 
 	if (!$time =~ m/^[0-9.]+$/) {
-		WriteLog('GetTimestampWidget: warning: sanity check failed! $time = ' . $time);
+		WriteLog('GetTimestampWidget: warning: sanity check failed! $time = ' . $time . '; caller = ' . join(',', caller));
 		return '';
 	}
 
@@ -5837,14 +5837,18 @@ while (my $arg1 = shift @foundArgs) {
 			}
 		}
 		elsif ($arg1 eq '-D') { # dialog
+			##### DIALOGS ######################
+			##### DIALOGS ######################
+			##### DIALOGS ######################
+			##### DIALOGS ######################
 			print ("recognized -D\n");
 			my $makeDialogArg = shift @foundArgs;
 			#todo sanity check of $makeDialogArg
 			if ($makeDialogArg) {
 				if ($makeDialogArg eq 'settings') {
 					my $dialog = GetSettingsWindow();
-					PutHtmlFile('dialog/settings.html', $dialog);
 					print ("-D $makeDialogArg\n");
+					PutHtmlFile('dialog/settings.html', $dialog);
 				}
 				if ($makeDialogArg eq 'stats') {
 					my $dialog = GetStatsTable();
@@ -5853,26 +5857,27 @@ while (my $arg1 = shift @foundArgs) {
 				}
 				if ($makeDialogArg eq 'access') {
 					my $dialog = GetAccessDialog();
-					PutHtmlFile('dialog/access.html', $dialog);
 					print ("-D $makeDialogArg\n");
+					PutHtmlFile('dialog/access.html', $dialog);
 				}
 				if ($makeDialogArg eq 'write') {
 					my $dialog = GetWriteForm();
-					PutHtmlFile('dialog/write.html', '<form action="/post.html" method=GET id=compose name=compose target=_top>' . $dialog . '</form>');
 					print ("-D $makeDialogArg\n");
+					PutHtmlFile('dialog/write.html', '<form action="/post.html" method=GET id=compose name=compose target=_top>' . $dialog . '</form>');
 				}
 				if ($makeDialogArg eq 'read') {
 					my $dialog = GetQueryAsDialog('read', 'Top Threads');
-					PutHtmlFile('dialog/read.html', $dialog);
 					print ("-D $makeDialogArg\n");
+					PutHtmlFile('dialog/read.html', $dialog);
 				}
 				if ($makeDialogArg eq 'profile') {
 					my $dialog = GetProfileWindow();
-					PutHtmlFile('dialog/profile.html', $dialog);
 					print ("-D $makeDialogArg\n");
+					PutHtmlFile('dialog/profile.html', $dialog);
 				}
 				if ($makeDialogArg eq 'help') {
 					my $dialog = GetSimpleWindow('help');
+					print ("-D $makeDialogArg\n");
 					PutHtmlFile('dialog/help.html', $dialog);
 					print ("-D $makeDialogArg\n");
 				}
@@ -5881,6 +5886,12 @@ while (my $arg1 = shift @foundArgs) {
 			} else {
 				print("missing argument for -D\n");
 			}
+			##### DIALOGS ######################
+			##### DIALOGS ######################
+			##### DIALOGS ######################
+			##### DIALOGS ######################
+			##### DIALOGS ######################
+
 		}
 		else {
 			print ("Available arguments:\n");
