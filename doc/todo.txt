@@ -1,3 +1,12 @@
+dev_refresh does a lot of unnecessary things
+	i think checksumming of html/txt is faulty
+
+make #puzzle like #admin and #approve,
+	where you have to have the tag already in order to apply it
+	note: puzzle tag does not apply to pubkey item itself
+
+verify that #approve permission chaining actually works
+
 header-footers
 	abandon idea of detached for now
 		because hash sometimes changes unpredictably for now
