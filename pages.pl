@@ -348,10 +348,10 @@ sub GetWindowTemplate { # body title headings status menu ; returns html
 	my %param = ();
 
 	$param{'body'} = shift;
-	$param{'title'} = shift;
-	$param{'headings'} = shift;
-	$param{'status'} =  shift;
-	$param{'menu'} = shift;
+	$param{'title'} = shift || 'Untitled';
+	$param{'headings'} = shift || '';
+	$param{'status'} =  shift || '';
+	$param{'menu'} = shift || '';
 
 	#hack
 	my $id = lc($param{'title'});
