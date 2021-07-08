@@ -95,20 +95,27 @@ sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configur
 	}
 
 	if ($token && $token eq 'unmemo') {
-		WriteLog('GetConfig: unmemo requested, complying');
+		WriteLog('GetConfig: unmemo requested, complying; ');
+
 		my $unmemoCount = 0;
 		if (exists($configLookup{'_unmemo_count'})) {
 			$unmemoCount = $configLookup{'_unmemo_count'}
 		}
 
-		# unmemo token to remove memoized value
-		if (exists($configLookup{$configName})) {
-			delete($configLookup{$configName});
-			$unmemoCount++;
-			$configLookup{'_unmemo_count'} = $unmemoCount;
+		# remove memoized value(s)
+		if ($configName) {
+			if (exists($configLookup{$configName})) {
+				delete($configLookup{$configName});
+				$unmemoCount++;
+				$configLookup{'_unmemo_count'} = $unmemoCount;
+			} else {
+				WriteLog('GetConfig: warning: unmemo requested for unused key. $configName = ' . $configName);
+			}
 		} else {
 			WriteLog('GetConfig: unmemo all!');
 			%configLookup = ();
+			$unmemoCount++;
+			$configLookup{'_unmemo_count'} = $unmemoCount;
 		}
 	}
 
