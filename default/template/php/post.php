@@ -57,6 +57,7 @@ setvar('postPhpStartTime', time()); // remember begin time so that we know how l
 } # emergency brake
 
 $redirectUrl = ''; // stores location to redirect to when done
+$recordFingerprint = 0;
 
 function GetItemPlaceholderPage ($comment, $hash, $fileUrlPath, $filePath) { # generate temporary placeholder page for comment
 # this page is typically overwritten later by the proper page generator
@@ -158,7 +159,12 @@ if ($_POST) { // if POST request, populate variables from $_POST
 	if (isset($_POST['returnto']) && $_POST['returnto']) {
 		$returnTo = $_POST['returnto'];
 	}
+
+	if (isset($_POST['recfing']) && $_POST['recfing']) {
+		$recordFingerprint = $_POST['recfing'];
+	}
 } // $_POST
+
 elseif ($_GET) { // if GET request, populate variables from $_GET
 	WriteLog('post.php: $_GET found');
 
@@ -197,6 +203,10 @@ elseif ($_GET) { // if GET request, populate variables from $_GET
 	if (isset($_GET['returnto']) && $_GET['returnto']) {
 		$returnTo = $_GET['returnto'];
 	}
+
+	if (isset($_GET['recfing']) && $_GET['recfing']) {
+		$recordFingerprint = $_GET['recfing'];
+	}
 } # $_GET
 elseif ($_REQUEST) { // if HEAD request, populate variables from $_REQUEST
 	WriteLog('post.php: $_REQUEST found: ' . print_r($_REQUEST, 1));
@@ -233,6 +243,10 @@ elseif ($_REQUEST) { // if HEAD request, populate variables from $_REQUEST
 
 	if (isset($_REQUEST['returnto']) && $_REQUEST['returnto']) {
 		$returnTo = $_REQUEST['returnto'];
+	}
+
+	if (isset($_REQUEST['recfing']) && $_REQUEST['recfing']) {
+		$recordFingerprint = $_REQUEST['recfing'];
 	}
 } # $_REQUEST
 
@@ -295,7 +309,7 @@ if (is_array($comment)) { # comment[]
 		}
 
 		$c = $c . "\n-- \n#$batchTag"; #\n--
-		$newFileHash = StoreNewComment($c, ''); // batch add
+		$newFileHash = StoreNewComment($c, '', $recordFingerprint); // batch add
 		$allAdded .= ">>" . $newFileHash . "\n";
 	}
 
