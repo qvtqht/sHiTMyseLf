@@ -1082,8 +1082,8 @@ if (GetConfig('admin/php/route_enable')) {
 
 							if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
 								#$windowTemplate = AddAttributeToTag($windowTemplate, 'table', 'onmousedown', 'this.style.zIndex = ++window.draggingZ;');
-								$printedNotice = AddAttributeToTag($printedNotice, 'table', 'onmouseenter', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #setactivedialog
-								$printedNotice = AddAttributeToTag($printedNotice, 'table', 'onmousedown', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #setactivedialog
+								$printedNotice = AddAttributeToTag($printedNotice, 'table', 'onmouseenter', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #SetActiveDialog route.php
+								$printedNotice = AddAttributeToTag($printedNotice, 'table', 'onmousedown', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #SetActiveDialog route.php
 							}
 
 							if (GetConfig('admin/debug')) {
@@ -1135,7 +1135,7 @@ if (GetConfig('admin/php/route_enable')) {
 		}
 
 		$lightMode = 0;
-		if ($_COOKIE['light']) {
+		if (isset($_COOKIE['light']) && $_COOKIE['light']) {
 			$lightMode = 1;
 		}
 		if (isset($_GET['light'])) {
