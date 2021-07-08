@@ -1515,47 +1515,77 @@ sub IndexImageFile { # $file ; indexes one image file into database
 } # IndexImageFile()
 
 sub WriteIndexedConfig { # writes config indexed in database into config/
+# this should ideally filter for the "latest" config value in database
+# but that's more challenging than i thought using sql
+# so instead of that, it filters here, and only prints the topmost value
+# for each key
+
 	WriteLog('WriteIndexedConfig() begin');
-	WriteLog('WriteIndexedConfig: warning: it is skipped, because needs fixing');
-	WriteMessage('WriteIndexedConfig() skipped');
-	print('WriteIndexedConfig() skipped');
-	return '';
 
-	my @indexedConfig = DBGetLatestConfig();
+	# author must be admin or must have completed puzzle
+	my @indexedConfig = SqliteQueryHashRef("select * from config left join item_flat on (config.file_hash = item_flat.file_hash) where (','||tags_list||',' like '%,admin,%') order by add_timestamp desc");
+	my %configDone;
 
-	WriteLog('WriteIndexedConfig: scalar(@indexedConfig) = ' . scalar(@indexedConfig));
+	shift @indexedConfig;
 
-	foreach my $configLine(@indexedConfig) {
-		my $configKey = $configLine->{'key'};
-		my $configValue = $configLine->{'value'};
+	foreach my $configLineReference (@indexedConfig) {
+		my %configLine = %{$configLineReference};
 
-		chomp $configValue;
-		$configValue = trim($configValue);
+		my $configLineKey = $configLine{'key'};
+		my $configLineValue = $configLine{'value'};
+		my $configLineResetFlag = $configLine{'reset_flag'};
 
-		if (IsSha1($configValue)) {
-			WriteLog('WriteIndexedConfig: Looking up hash: ' . $configValue);
-
-			if (-e 'cache/' . GetMyCacheVersion() . "/message/$configValue") { #todo make it cleaner
-				WriteLog('WriteIndexedConfig: success: lookup of $configValue = ' . $configValue);
-				$configValue = GetCache("message/$configValue");#todo should this be GetItemMessage?
+		if (!$configDone{$configLineKey}) {
+			if ($configLineResetFlag) {
+				ResetConfig($configLineKey);
 			} else {
-				WriteLog('WriteIndexedConfig: warning: no result for lookup of $configValue = ' . $configValue);
+				PutConfig($configLineKey, $configLineValue);
 			}
-		}
-
-		if ($configLine->{'reset_flag'}) {
-			ResetConfig($configKey);
-		} else {
-			PutConfig($configKey, $configValue);
+			$configDone{$configLineKey} = 1;
 		}
 	}
+
+
+#	WriteLog('WriteIndexedConfig: warning: it is skipped, because needs fixing');
+#	WriteMessage('WriteIndexedConfig() skipped');
+#	print('WriteIndexedConfig() skipped');
+#	return '';
+#
+#	my @indexedConfig = DBGetLatestConfig();
+#
+#	WriteLog('WriteIndexedConfig: scalar(@indexedConfig) = ' . scalar(@indexedConfig));
+#
+#	foreach my $configLine(@indexedConfig) {
+#		my $configKey = $configLine->{'key'};
+#		my $configValue = $configLine->{'value'};
+#
+#		chomp $configValue;
+#		$configValue = trim($configValue);
+#
+#		if (IsSha1($configValue)) {
+#			WriteLog('WriteIndexedConfig: Looking up hash: ' . $configValue);
+#
+#			if (-e 'cache/' . GetMyCacheVersion() . "/message/$configValue") { #todo make it cleaner
+#				WriteLog('WriteIndexedConfig: success: lookup of $configValue = ' . $configValue);
+#				$configValue = GetCache("message/$configValue");#todo should this be GetItemMessage?
+#			} else {
+#				WriteLog('WriteIndexedConfig: warning: no result for lookup of $configValue = ' . $configValue);
+#			}
+#		}
+#
+#		if ($configLine->{'reset_flag'}) {
+#			ResetConfig($configKey);
+#		} else {
+#			PutConfig($configKey, $configValue);
+#		}
+#	}
 
 	WriteLog('WriteIndexedConfig: finished, calling GetConfig(unmemo)');
 
 	GetConfig('unmemo');
 
 	return '';
-}
+} # WriteIndexedConfig()
 
 sub MakeIndex { # indexes all available text files, and outputs any config found
 	WriteLog( "MakeIndex()...\n");
