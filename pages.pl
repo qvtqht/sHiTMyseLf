@@ -1325,21 +1325,34 @@ sub GetTagsListAsHtmlWithLinks {
 		$headings .= $comma;
 		$comma = '; ';
 		
-		if ($tag =~ m/^[0-9a-zA-Z_-]+$/) { #tagName
+		if ($tag =~ m/^([0-9a-zA-Z_-]+)$/) { #tagName
 			#sanity check
-			#$tag = $1;
+			$tag = $1;
 		} else {
 			WriteLog('GetItemTemplate: warning: $tag sanity check failed, @tagsList $tag = ' . $tag);
 			$headings .= '[tag]';
 			next;
 		}
 		my $tagColor = GetStringHtmlColor($tag);
-		$headings .=
-			'<a href="/top/' . $tag . '.html">' .
+		my $voteItemLink = "/top/" . $tag . ".html";
+
+
+		#todo template this
+		my $tagLink =
+			'<a href="' . $voteItemLink . '">' .
 			'<font color="' . $tagColor . '">#</font>' .
 			$tag .
 			'</a>';
+
+		$tagLink = AddAttributeToTag(
+			$tagLink,
+			'a ',
+			'onclick',
+			"if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
+		);
+
 		#$headings .= 'tag='.$tag;
+		$headings .= $tagLink;
 	}
 
 	return $headings;
