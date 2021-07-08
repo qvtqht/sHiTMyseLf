@@ -200,8 +200,13 @@ sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configur
 				WriteLog('GetConfig: no default; $configName = ' . $configName);
 				return '';
 			} else {
-				WriteLog('GetConfig: warning: Tried to get undefined config with no default; $configName = ' . $configName);
-				return '';
+				if ($configName =~ m/\.list$/) {
+					# cool
+					return '';
+				} else {
+					WriteLog('GetConfig: warning: Tried to get undefined config with no default; $configName = ' . $configName . '; caller = ' . join (',', caller));
+					return '';
+				}
 			}
 		}
 	} # not found in config/
