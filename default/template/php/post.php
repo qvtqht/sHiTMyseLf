@@ -189,9 +189,11 @@ elseif ($_GET) { // if GET request, populate variables from $_GET
 	}
 
 	if (isset($_GET['s']) && $_GET['s']) { // s=
+		// used for origin url in bookmarklets
 		$strSourceUrl = $_GET['s'];
 	}
 	if (isset($_GET['t']) && $_GET['t']) { // t=
+		// used for origin url title in bookmarklets
 		$strSourceTitle = $_GET['t'];
 	}
 
