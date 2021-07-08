@@ -1,3 +1,61 @@
+TagCloud = {
+    //Color hues
+    ca: [51,102,102],
+    cz: [0,102,255],
+
+    min_font_size: 12,
+    max_font_size: 35,
+
+    generate: function(all_tags, all_words) {
+        var self = this, colors=[], font_size;
+
+        var ul = UL({c: 'plurk-cloud'});
+
+        map(all_words, function(t)  {
+            for (var i=0; i<3; i++)
+                colors[i] = self._score(self.ca[i], self.cz[i], all_tags[t]);
+
+            font_size = self._score(self.min_font_size, self.max_font_size, all_tags[t]);
+
+            var color_attr = 'color:rgb('+colors[0]+','+colors[1]+','+colors[2]+')';
+            var li = LI({s: 'font-size:'+ font_size + 'px'},
+                SPAN({s: color_attr}, t)
+            );
+
+            ACN(ul, li, ' ');
+        });
+
+        return DIV({c: 'plurk-tags'}, ul);
+    },
+
+    _score: function(a, b, counts) {
+        //reducer impacts color and font size, choosing a bigger will make the font smaller
+        var reducer = 11;
+        var m = Math.abs(a-b) / Math.log(reducer);
+
+        if(a > b)
+            return a - Math.floor(Math.log(counts) * m);
+        else
+            return Math.floor(Math.log(counts) * m + a);
+    }
+}
+
+var TAGS = ${ json(tags) };
+var WORDS = ${ json( sorted(tags.keys()) ) };
+RCN($('tags'), TagCloud.generate(TAGS, WORDS));
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* dragging.js */
 // props https://www.w3schools.com/howto/howto_js_draggable.asp
 
