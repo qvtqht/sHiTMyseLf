@@ -592,6 +592,25 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	SqliteQuery2("
+		CREATE VIEW item_score_weighed
+		AS
+			SELECT
+				item.file_hash AS file_hash,
+				IFNULL(SUM(vote_value.value), 0) AS item_score,
+				IFNULL(SUM(vote_value.value), 0) * IFNULL(SUM(author_score), 0) AS item_score_weighed
+			FROM
+				vote
+				LEFT JOIN item
+					ON (vote.file_hash = item.file_hash)
+				LEFT JOIN vote_value
+					ON (vote.vote_value = vote_value.vote)
+				LEFT JOIN author_score
+					ON (vote.author_key = author_score.author_key)
+			GROUP BY
+				item.file_hash
+	");
+
+	SqliteQuery2("
 		CREATE VIEW author_score
 		AS
 			SELECT
