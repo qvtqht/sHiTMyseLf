@@ -107,7 +107,8 @@ sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configur
 			$unmemoCount++;
 			$configLookup{'_unmemo_count'} = $unmemoCount;
 		} else {
-			WriteLog('GetConfig: warning: tried to unmemo non-existing value!');
+			WriteLog('GetConfig: unmemo all!');
+			%configLookup = ();
 		}
 	}
 
