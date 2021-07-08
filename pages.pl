@@ -1134,7 +1134,7 @@ sub GetItemHtmlLink { # $hash, [link caption], [#anchor] ; returns <a href=...
 
 		my $htmlFilename = GetHtmlFilename($hash);
 		my $linkPath = $htmlFilename;
-		if (GetConfig('config/admin/php/enable') && GetConfig('config/admin/php/url_alias_friendly')) {
+		if (GetConfig('admin/php/enable') && GetConfig('admin/php/url_alias_friendly')) {
 			$linkPath = substr($hash, 0, 8);
 		}
 
@@ -3746,7 +3746,7 @@ sub MakeSimplePage { # given page name, makes page
 	my $html = '';
 	my $title = ucfirst($pageName);
 
-	if (GetConfig('expo_site_mode')) {
+	if (GetConfig('admin/expo_site_mode')) {
 		if (lc($pageName) eq 'media') {
 			$title = 'Media Partners';
 		}
@@ -3772,7 +3772,7 @@ sub MakeSimplePage { # given page name, makes page
 
 
 	my $itemListPlaceholder = '<span id=itemList></span>';
-	if (GetConfig('config/html/simple_page_list_items')) {
+	if (GetConfig('html/simple_page_list_items')) {
 		if (GetConfig('query/'.$pageName)) {
 			$contentWindow .= GetQueryAsDialog($pageName, 'Discussions About ' . $title);
 			# not sure the reason for $contentWindow
