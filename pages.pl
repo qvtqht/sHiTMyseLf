@@ -2370,7 +2370,7 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 	if (abs($itemsIndexed - $filesTotal) > 3) {
 		$statsTable = str_replace(
 			'<p id=diagnostics></p>',
-			'<p id=diagnostics><a href="/warning.html"><b><font color=orange style="padding: 2pt; border-radius: 3pt; border: inset 1pt #606060; background-color: #404040;">Check engine!</font></b></a></p>',
+			'<p id=diagnostics><a href="/engine.html"><b><font color=orange style="padding: 2pt; border-radius: 3pt; border: inset 1pt #606060; background-color: #404040;">Check engine!</font></b></a></p>',
 			$statsTable
 		);
 	}
@@ -5001,7 +5001,7 @@ sub PutStatsPages { # stores template for footer stats dialog
 			;
 			#$warningsHtml = InjectJs($warningsHtml, qw(utils fresh)); #shouldn't be any javascript on this page
 			#todo warning if there is javascript ni the html
-			PutHtmlFile("warning.html", $warningsHtml); # warnings.html
+			PutHtmlFile("engine.html", $warningsHtml); # warnings.html
 		}
 	}
 
