@@ -3117,7 +3117,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 	my $needUploadJs = 0;
 	if ($pageType eq 'tag') {
 		# add tag buttons with selected tag emphasized
-		$txtIndex .= GetTagLinks($pageParam);
+		$txtIndex .= GetTagPageHeaderLinks($pageParam);
 
 		my $tagInfo = GetString('tag_info/' . $pageParam);
 		if ($tagInfo) {
@@ -3356,7 +3356,7 @@ sub GetIndexPage { # returns html for an index page, given an array of hash-refs
 	# }
 
 	# put tag selector at top of page
-	$html .= GetTagLinks();
+	$html .= GetTagPageHeaderLinks();
 
 	$html .= '<p>';
 	$html .= GetTemplate('html/maincontent.template');
