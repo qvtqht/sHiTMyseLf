@@ -881,7 +881,7 @@ sub GetEventsPage { # returns html for events page
 
 }
 
-sub GetTagLinks { # $tagSelected ; returns html-formatted links to existing tags in system
+sub GetTagPageHeaderLinks { # $tagSelected ; returns html-formatted links to existing tags in system
 # used for the header at the top of tag listings pages
 # 'tag_wrapper.template', 'tag.template'
 
@@ -895,7 +895,7 @@ sub GetTagLinks { # $tagSelected ; returns html-formatted links to existing tags
 
 	my $minimumTagCount = 5; # don't display if fewer than this, unless it is selected
 
-	WriteLog("GetTagLinks($tagSelected)");
+	WriteLog("GetTagPageHeaderLinks($tagSelected)");
 
 	my $voteCounts;
 	$voteCounts = DBGetVoteCounts();
@@ -948,7 +948,7 @@ sub GetTagLinks { # $tagSelected ; returns html-formatted links to existing tags
 	$voteItemsWrapper =~ s/\$tagLinks/$voteItems/g;
 
 	return $voteItemsWrapper;
-} # GetTagLinks()
+} # GetTagPageHeaderLinks()
 
 sub GetQueryPage { # $pageName, $title, $columns ;
 	my $pageName = shift;

@@ -317,7 +317,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		#my $votesPage = GetTagsPage('Votes', 'Votes', 'ORDER BY vote_value');
 		#PutHtmlFile("votes.html", $votesPage);
 
-		my $tagsHorizontal = GetTagLinks();
+		my $tagsHorizontal = GetTagPageHeaderLinks();
 		PutHtmlFile('tags-horizontal.html', $tagsHorizontal);
 	}
 #	#
