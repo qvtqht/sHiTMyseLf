@@ -150,13 +150,7 @@ sub GetResultSetAsDialog { # \@result, $title, $columns, \%flags
 
 				$checkColumnCount++;
 
-				WriteLog(
-					'GetResultSetAsDialog: calling RenderField($column = ' .
-					($column ? $column : 'N/A') .
-					', $row->{$column} = ' . ($row->{$column} ? $row->{$column} : 'N/A') .
-					', $row = ' . ($row ? $row : 'N/A') .
-					')'
-				);
+				WriteLog('GetResultSetAsDialog: calling RenderField($column = ' . ($column ? $column : 'N/A') . ', $row->{$column} = ' . ($row->{$column} ? $row->{$column} : 'N/A') . ', $row = ' . ($row ? $row : 'N/A') . ')');
 
 				my $renderedField = RenderField($column, $row->{$column}, $row);
 				if ($renderedField) {
