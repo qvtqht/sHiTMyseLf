@@ -1938,6 +1938,30 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 		@queryParams = ();
 	}
 
+	if (-e $filePath) {
+		#cool
+	} else {
+		WriteLog('DBAddItem: warning: -e $filePath returned FALSE; $filePath = ' . $filePath . '; caller = ' . join (',', caller));
+	}
+
+	my $fileAbsPath = GetAbsolutePath($filePath);
+	if ($fileAbsPath) {
+		if ($filePath eq $fileAbsPath) {
+			#cool
+		} else {
+			if (-e $fileAbsPath) {
+				WriteLog('DBAddItem: warning: $filePath ne $fileAbsPath, FIXING; caller = ' . join (',', caller));
+				$filePath = $fileAbsPath;
+			} else {
+				WriteLog('DBAddItem: warning: sanity check failed (1); caller = ' . join (',', caller));
+				return '';
+			}
+		}
+	} else {
+		WriteLog('DBAddItem: warning: sanity check failed (2); caller = ' . join (',', caller));
+		return '';
+	}
+
 	my $fileName = shift;
 	my $authorKey = shift;
 	my $fileHash = shift;
@@ -1994,7 +2018,7 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 	if ($verifyError) {
 		DBAddItemAttribute($fileHash, 'verify_error', '1');
 	}
-}
+} # DBAddItem()
 
 sub DBAddEventRecord { # add event record to database; $itemHash, $eventTime, $eventDuration, $signedBy
 	state $query;
