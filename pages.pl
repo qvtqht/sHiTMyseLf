@@ -5630,7 +5630,7 @@ while (my $arg1 = shift @foundArgs) {
 		}
 		elsif ($arg1 eq '--all' || $arg1 eq '-a') {
 			print ("recognized --all\n");
-			print `query/page_touch_all.sh`;
+			print `query/update_increment_all_page_touch.sh`;
 			MakeSummaryPages();
 			BuildTouchedPages(); # --all
 		}
