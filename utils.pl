@@ -1828,6 +1828,8 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
         return 1;
     } # $fileHash is in 'log/deleted.log'
 
+    WriteLog("IsFileDeleted($file, $fileHash) = FALSE");
+
     return 0;
 } # IsFileDeleted()
 
