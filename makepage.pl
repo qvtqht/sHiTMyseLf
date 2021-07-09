@@ -5,6 +5,11 @@ use warnings;
 use utf8;
 use 5.010;
 
+#use threads ('yield',
+#             'stack_size' => 64*4096,
+#             'exit' => 'threads_only',
+#             'stringify');
+
 my @argsFound;
 while (my $argFound = shift) {
 	push @argsFound, $argFound;
@@ -78,6 +83,22 @@ sub MakeGalleryPage {
 	WriteLog('MakeGalleryPage: $pageType = ' . $pageType . '; $pageFile = ' . $pageFile);
 
 	PutHtmlFile($pageType . '.html', GetGalleryPage($pageType));
+}
+
+sub MakePage2 {
+	my @arg = shift;
+	my $useThreads = 0;
+
+	WriteLog('MakePage: $useThreads = ' . $useThreads);
+
+	if ($useThreads) {
+		my $thr = threads->create('MakePage2', @arg);
+		my $result = $thr->join();
+		return $result;
+	} else {
+		my $result = MakePage2(@arg);
+		return $result;
+	}
 }
 
 sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it into $HTMLDIR directory; $pageType, $pageParam
