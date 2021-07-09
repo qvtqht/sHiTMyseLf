@@ -10,11 +10,11 @@ echo ==================================
 echo You have 3 seconds to press Ctrl+C
 echo ==================================
 echo 3
-#sleep 1
+sleep 1
 echo 2
-#sleep 1
+sleep 1
 echo 1
-#sleep 1
+sleep 1
 
 mkdir checksum
 
