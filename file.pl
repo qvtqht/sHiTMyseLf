@@ -58,6 +58,19 @@ sub GetFileMessageCachePath { # $fileHash/$filePath ;  returns path to file's me
 	return $fileMessageCachePath;
 } # GetFileMessageCachePath()
 
+sub GetAbsolutePath { # $file
+	use File::Spec;
+
+	my $filePath = shift;
+
+	#todo sanity
+
+	if (-e $filePath) {
+		$filePath = File::Spec->rel2abs( $filePath ) ;
+	} else {
+		return 0;
+	}
+} # GetAbsolutePath()
 
 sub OrganizeFile { # $file ; renames file based on hash of its contents
 	# returns new filename
