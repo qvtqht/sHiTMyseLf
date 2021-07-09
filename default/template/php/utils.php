@@ -646,7 +646,7 @@ function RedirectWithResponse ($url, $message) { // redirects to page with serve
 	} else {
 		// there's already a question mark, we need to use the & syntax
 		if (substr($url, strlen($url) - 1, 1) == '&' || substr($url, strlen($url) - 1, 1) == '?') {
-			// query ends with & already, we don't need to add one
+			// query ends with & or ? already, we don't need to add one
 			$redirectUrl = $url . 'message=' . $responseId;
 		} else {
 			// there's no & at the end, so append &message
@@ -658,15 +658,7 @@ function RedirectWithResponse ($url, $message) { // redirects to page with serve
 		if (!headers_sent()) {
 			// #warning, this is not a good pattern, don't copy this code. the html will be printed unescaped.
 			// doing it in this case because we want to make a clickable link
-			WriteLog(
-				'<a href="' . $redirectUrl . '">' .
-				$redirectUrl .
-				'</a>' .
-				'<font color=red>' .
-				'(redirect paused because admin/php/debug or admin/php/debug_server_response is true)' .
-				'</font>'
-				, 1
-			);
+			WriteLog( '<a href="' . $redirectUrl . '">' . $redirectUrl . '</a>' . '<font color=red>' . '(redirect paused because admin/php/debug or admin/php/debug_server_response is true)' . '</font>' , 1 );
 
 			// not templated because it is a debugging thing
 			print '<div style="background-color: yellow; border: 3pt double red">';

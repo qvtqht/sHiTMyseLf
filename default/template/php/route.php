@@ -312,6 +312,8 @@ function InjectJs ($html, $scriptNames, $injectMode = 'before', $htmlTag = '</bo
 
 function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing the missing page
 // Handle404 (  #todo #DRY
+// $pathRel?? relative path of $path (to current directory, which should be html/)
+
 	WriteLog("HandleNotFound($path, $pathRel)");
 
 	if (GetConfig('admin/php/regrow_404_pages')) {
@@ -623,7 +625,10 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$mostRecentCacheName = 'pages/' . md5($pagesPlArgument);
 			$mostRecentCall = intval(GetCache($mostRecentCacheName));
 
-			if (time() - $mostRecentCall > 60) { #todo config for this
+			#my
+			$refreshWindowInterval = 1;
+
+			if (time() - $mostRecentCall > $refreshWindowInterval) { #todo config for this
 				WriteLog('HandleNotFound: pages.pl was called more than 5 seconds ago, trying to grow page');
 				# call pages.pl to generate the page
 				$pwd = getcwd();
@@ -637,7 +642,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 
 				PutCache($mostRecentCacheName, time());
 			} else {
-				WriteLog('HandleNotFound: warning: pages.pl was called LESS THAN 60 seconds ago, NOT trying to grow page');
+				WriteLog('HandleNotFound: warning: pages.pl was called LESS THAN $refreshWindowInterval seconds ago, NOT trying to grow page');
 				return 0;
 			}
 		} # $pagesPlArgument = true
@@ -820,6 +825,7 @@ if (GetConfig('admin/php/route_enable')) {
 							$refFinish = time();
 							$messagePageReprinted = 'OK, I reprinted the page for you.';
 							RedirectWithResponse($path, $messagePageReprinted . ' ' . '<small class=advanced>in ' . ($refFinish - $refStart) . 's</small>');
+							#todo templatize
 						}
 					}
 
@@ -1294,7 +1300,7 @@ if (GetConfig('admin/php/route_enable')) {
 			}
 
 			if ($messageInjected) {
-				// ask browser to not cache page if it contains server response
+				// ask browser to not cache page if it contains server response message
 				header('Pragma: no-cache');
 			}
 		}
@@ -1461,16 +1467,7 @@ if (GetConfig('admin/php/route_enable')) {
 				# this defaults to true
 				# hides advanced elements
 				
-				WriteLog(
-					'route.php: $_COOKIE[show_advanced] = ' .
-					(
-						isset(
-							$_COOKIE['show_advanced']) ?
-							$_COOKIE['show_advanced'] :
-							'UNDEFINED'
-						)
-					)
-				;
+				WriteLog( 'route.php: $_COOKIE[show_advanced] = ' . ( isset( $_COOKIE['show_advanced']) ? $_COOKIE['show_advanced'] : 'UNDEFINED' ) ) ;
 
 				$assistCss .= ".advanced, .admin{ display:none }\n";
 				#$assistCss .= ".advanced, .admin{ display: none; background-color: $colorHighlightAdvanced }\n";
@@ -1485,11 +1482,13 @@ if (GetConfig('admin/php/route_enable')) {
 				// #todo templatify
 			}
 
+			#todo add something here
 			#$assistCss .= ".advanced, .admin{ background-color: $colorHighlightAdvanced }\n";
 			#$assistCss .= ".beginner { background-color: $colorHighlightBeginner }\n";
 
 
 			if ($assistCss) {
+				#todo templatize
 				$html = str_replace(
 						'</head>'
 					,
@@ -1529,7 +1528,7 @@ if (GetConfig('admin/php/route_enable')) {
 			$html = '<body bgcolor="#808080">';
 			$html .= '<center><table bgcolor="#c0e0e0" border=10 bordercolor="#ffe0c0" width=99%><tr><td align=center valign=middle>';
 			$html .= '<h1>Please remain calm.</h1>';
-			$html .= '<h2>System Message: Engine requires attention.</h2>';
+			$html .= '<h2>System Message: <br>Engine requires attention.</h2>';
 			$html .= '<hr>';
 			$html .= '<p>';
 			$html .= '<a href="/">Home</a> | ';
