@@ -2940,6 +2940,8 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 		DBAddPageTouch('events');
 		DBAddPageTouch('rss');
 		DBAddPageTouch('index');
+		DBAddPageTouch('compost');
+		DBAddPageTouch('chain');
 		DBAddPageTouch('flush'); #todo shouldn't be here
 	}
 	return $fileHash;
