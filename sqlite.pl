@@ -47,14 +47,16 @@ sub GetSqliteDbName {
 	return $SqliteDbName;
 }
 
-my $dbh; # handle for sqlite interface
-
-
-
-sub SqliteConnect { # Establishes connection to sqlite db
+sub SqliteConnect { # Establishes connection to sqlite db, RETURNS HANDLE
 # tries up to 5 times, because sometimes the first try fails
 # reason for occasional failure is unknown to me
 # retry count is done by recursion and counted with state $retries
+
+	state $dbh; # handle for sqlite interface
+	if ($dbh) {
+		# turn this off if $useThreads
+		return $dbh;
+	}
 
 	my $SqliteDbName = GetSqliteDbName();
 	EnsureSubdirs($SqliteDbName);
@@ -105,6 +107,10 @@ sub SqliteConnect { # Establishes connection to sqlite db
 		}
 	}
 
+	if ($dbh) {
+		return $dbh;
+	}
+
 	#SqliteMakeItemFlatTable();
 } # SqliteConnect()
 
@@ -119,14 +125,15 @@ sub DBMaxQueryParams { # Returns max number of parameters to allow in sqlite que
 	return 128;
 }
 
-sub SqliteUnlinkDb { # Removes sqlite database by renaming it to ".prev"
-	my $SqliteDbName = GetSqliteDbName();
-	if ($dbh) {
-		$dbh->disconnect();
-	}
-	rename($SqliteDbName, "$SqliteDbName.prev");
-	SqliteConnect();
-}
+#sub SqliteUnlinkDb { # Removes sqlite database by renaming it to ".prev"
+#unused
+#	my $SqliteDbName = GetSqliteDbName();
+#	if ($dbh) {
+#		$dbh->disconnect();
+#	}
+#	rename($SqliteDbName, "$SqliteDbName.prev");
+#	SqliteConnect();
+#}
 
 sub SqliteMakeTables { # creates sqlite schema
 	my $existingTables = SqliteQueryCachedShell('.tables');
@@ -608,6 +615,8 @@ sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns 
 		}
 		WriteLog('SqliteQuery2: @queryParams: ' . join(', ', @queryParams));
 
+		my $dbh = SqliteConnect();
+
 		if ($dbh) {
 			WriteLog('SqliteQuery2: $dbh was found, proceeding...');
 
@@ -694,6 +703,8 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 			}
 		}
 		WriteLog('SqliteQueryHashRef: @queryParams: ' . join(', ', @queryParams));
+
+		my $dbh = SqliteConnect();
 
 		if ($dbh) {
 			WriteLog('SqliteQueryHashRef: $dbh was found, proceeding...');
@@ -878,7 +889,11 @@ sub DBGetEvents { #gets events list
 	";
 
 	my @queryParams = ();
-#	push @queryParams, $time;
+	#	push @queryParams, $time;
+
+	#todo rewrite this sub better
+
+	my $dbh = SqliteConnect();
 
 	my $sth = $dbh->prepare($query);
 	$sth->execute(@queryParams);
@@ -919,6 +934,9 @@ sub DBGetAuthorFriends { # Returns list of authors which $authorKey has tagged a
 	my @queryParams = ();
 	push @queryParams, $authorKey;
 
+	my $dbh = SqliteConnect();
+	#todo rewrite better
+
 	my $sth = $dbh->prepare($query);
 	$sth->execute(@queryParams);
 
@@ -939,6 +957,8 @@ sub DBGetLatestConfig { # Returns everything from config_latest view
 
 	my $query = "SELECT * FROM config_latest";
 	#todo write out the fields
+
+	my $dbh = SqliteConnect();
 
 	if ($dbh) {
 		my $sth = $dbh->prepare($query);
@@ -990,6 +1010,9 @@ sub SqliteGetValue { # Returns the first column from the first row returned by s
 	#WriteLog('SqliteGetValue: caller: ' . $package . ',' . $filename . ', ' . $line);
 
 	#SqliteMakeItemFlatTable();
+	my $dbh = SqliteConnect();
+	#todo rewrite better
+
 	my $sth = $dbh->prepare("$query");
 	$sth->execute(@_);
 
@@ -1674,6 +1697,9 @@ sub DBGetVoteCounts { # Get total vote counts by tag value
 		$orderBy;
 	";
 
+	my $dbh = SqliteConnect();
+	#todo rewrite better
+
 	my $sth = $dbh->prepare($query);
 	$sth->execute();
 
@@ -1733,6 +1759,9 @@ sub DBGetItemLatestAction { # returns highest timestamp in all of item's childre
 	';
 
 	push @queryParams, $itemHash;
+
+	my $dbh = SqliteConnect();
+	#todo rewrite better
 
 	my $sth = $dbh->prepare($query);
 	$sth->execute(@queryParams);
@@ -2320,6 +2349,8 @@ sub DBGetAddedTime { # return added time for item specified
 
 	WriteLog($query);
 
+	my $dbh = SqliteConnect();
+
 	if ($dbh) {
 		my $sth = $dbh->prepare($query);
 		$sth->execute();
@@ -2421,6 +2452,9 @@ sub DBGetItemList { # get list of items from database. takes reference to hash o
 	my ($package, $filename, $line) = caller;
 	WriteLog('DBGetItemList: caller: ' . $package . ',' . $filename . ', ' . $line);
 
+	my $dbh = SqliteConnect();
+	#todo rewrite better
+
 	my $sth = $dbh->prepare($query);
 	$sth->execute();
 
@@ -2440,6 +2474,9 @@ sub DBGetAllAppliedTags { # return all tags that have been used at least once
 		SELECT DISTINCT vote_value FROM vote
 		JOIN item ON (vote.file_hash = item.file_hash)
 	";
+
+	my $dbh = SqliteConnect();
+	#todo rewrite better
 
 	my $sth = $dbh->prepare($query);
 
@@ -2475,6 +2512,9 @@ sub DBGetItemListForAuthor { # return all items attributed to author
 
 sub DBGetAuthorList { # returns list of all authors' gpg keys as array
 	my $query = "SELECT key FROM author";
+
+	my $dbh = SqliteConnect();
+    #todo rewrite better
 
 	my $sth = $dbh->prepare($query);
 
@@ -2708,6 +2748,9 @@ sub DBGetTopAuthors { # Returns top-scoring authors from the database
 
 	my @queryParams = ();
 
+	my $dbh = SqliteConnect();
+	#todo rewrite better
+
 	my $sth = $dbh->prepare($query);
 	$sth->execute(@queryParams);
 
@@ -2761,6 +2804,9 @@ sub DBGetItemsByPrefix { # $prefix ; get items whose hash begins with $prefix
 	WriteLog('DBGetItemsByPrefix: $query = ' . $query);
 	my @queryParams;
 
+	my $dbh = SqliteConnect();
+	#todo rewrite better
+
 	my $sth = $dbh->prepare($query);
 	$sth->execute(@queryParams);
 
@@ -2806,6 +2852,9 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 
 	my @queryParams;
 	push @queryParams, $fileHash;
+
+	my $dbh = SqliteConnect();
+	#todo rewrite better
 
 	my $sth = $dbh->prepare($query);
 	$sth->execute(@queryParams);
