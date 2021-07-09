@@ -392,7 +392,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		PutHtmlFile("deleted.html", $deletedPage);
 	}
 	elsif ($pageType eq 'url') {
-		my $urlPage = GetQueryPage('url');
+		my $urlPage = GetQueryPage('url', 'Links');
 		PutHtmlFile("url.html", $urlPage);
 	}
 	elsif ($pageType eq 'chain') {
