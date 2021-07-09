@@ -135,4 +135,201 @@ sub GetItemTagButtons { # $fileHash, [$tagSet], [$returnTo] ; get vote buttons f
 	return $tagButtons;
 } # GetItemTagButtons()
 
+
+sub GetFileSizeWidget { # takes file size as number, and returns html-formatted human-readable size
+	my $fileSize = shift;
+
+	#todo more sanity checks, and 0 should be a valid filesize
+	if (!$fileSize && $fileSize != 0) {
+		return '';
+	}
+
+	chomp ($fileSize);
+
+	my $fileSizeString = $fileSize;
+
+	if ($fileSizeString > 1024) {
+		$fileSizeString = $fileSizeString / 1024;
+
+		if ($fileSizeString > 1024) {
+			$fileSizeString = $fileSizeString / 1024;
+
+			if ($fileSizeString > 1024) {
+				$fileSizeString = $fileSizeString / 1024;
+
+				if ($fileSizeString > 1024) {
+					$fileSizeString = $fileSizeString / 1024;
+
+					$fileSizeString = ceil($fileSizeString) . ' <abbr title="terabytes">TB</abbr>';
+				} else {
+
+					$fileSizeString = ceil($fileSizeString) . ' <abbr title="gigabytes">GB</abbr>';
+				}
+			} else {
+				$fileSizeString = ceil($fileSizeString) . ' <abbr title="megabytes">MB</abbr>';
+			}
+		} else {
+			$fileSizeString = ceil($fileSizeString) . ' <abbr title="kilobytes">KB</abbr>';
+		}
+	} else {
+		$fileSizeString .= " bytes";
+	}
+
+	return $fileSizeString;
+} # GetFileSizeWidget()
+
+sub GetTimestampWidget { # $time ; returns timestamp widget
+	#todo format on server-side for no-js clients
+	my $time = shift;
+	if ($time) {
+		chomp $time;
+	} else {
+		$time = 0;
+	}
+	WriteLog('GetTimestampWidget("' . $time . '"), caller: ' . join(',', caller));
+
+	state $epoch; # state of config
+	if (!defined($epoch)) {
+		#what does this do?
+		# epoch-formatted timestamp, simpler template
+		$epoch = GetConfig('html/timestamp_epoch');
+	}
+
+	if (!$time =~ m/^[0-9.]+$/) {
+		WriteLog('GetTimestampWidget: warning: sanity check failed! $time = ' . $time . '; caller = ' . join(',', caller));
+		return '';
+	}
+
+	my $widget = '';
+	if ($epoch) {
+		# epoch-formatted timestamp, simpler template
+		$widget = GetTemplate('html/widget/timestamp_epoch.template');
+		$widget =~ s/\$timestamp/$time/;
+	} else {
+		WriteLog('GetTimestampWidget: $epoch = false');
+		$widget = GetTemplate('html/widget/timestamp.template');
+
+		$widget = str_replace("\n", '', $widget);
+		# if we don't do this, the link has an extra space
+
+		my $timeDate = $time;
+		$timeDate = FormatDate($time);
+		# Alternative formats tried
+		# my $timeDate = strftime '%c', localtime $time;
+		# my $timeDate = strftime '%Y/%m/%d %H:%M:%S', localtime $time;
+
+		# replace into template
+		$widget =~ s/\$timestamp/$time/g;
+		$widget =~ s/\$timeDate/$timeDate/g;
+	}
+
+	chomp $widget;
+
+	WriteLog('GetTimestampWidget: returning $widget = ' . $widget);
+
+	return $widget;
+} # GetTimestampWidget()
+
+sub GetClockWidget {
+	my $clock = '';
+	if (GetConfig('html/clock')) {
+		WriteLog('GetPageHeader: html/clock is enabled');
+		my $currentTime = GetClockFormattedTime();
+		if (GetConfig('admin/ssi/enable') && GetConfig('admin/ssi/clock_enhance')) {
+			# ssi-enhanced clock
+			# currently not compatible with javascript clock
+			#todo needs review
+			WriteLog('GetPageHeader: ssi is enabled');
+			$clock = GetTemplate('html/widget/clock_ssi.template');
+			$clock =~ s/\$currentTime/$currentTime/g;
+		}
+		else {
+			# default clock
+			$clock = GetTemplate('html/widget/clock.template');
+			$clock =~ s/\$currentTime/$currentTime/;
+
+			my $sizeConfig = GetConfig('html/clock_format');
+			if ($sizeConfig eq '24hour') {
+				$sizeConfig = 6;
+			} elsif ($sizeConfig eq 'epoch') {
+				$sizeConfig = 11;
+			} elsif ($sizeConfig eq 'union') {
+				$sizeConfig = 15;
+			} else {
+				$sizeConfig = 15;
+			}
+			if ($sizeConfig) {
+				$clock = str_replace('size=15', "size=$sizeConfig", $clock);
+			}
+		}
+		#
+#		$currentTime = trim($currentTime);
+	} else {
+		# the plus sign is to fill in the table cell
+		# othrwise netscape will not paint its background color
+		# and there will be a hole in the table
+		$clock = '+';
+	}
+
+	#WriteLog('GetClockWidget: $clock = ' . $clock);
+	WriteLog('GetClockWidget: length($clock) = ' . length($clock));
+
+	return $clock;
+}
+
+sub GetWidgetExpand { # $parentCount, $url ; gets "More" button widget GetExpandWidget #more
+	my $parentCount = shift; # how many levels of parents to go up
+	# for example, for <table><tr><td><a>here it would be 3 layers instead of 1
+	# accepts integers 1-10
+
+	my $url = shift;
+	# url to point the link to after the expand happens
+
+	if (!$parentCount || !$url) {
+		WriteLog('GetWidgetExpand: warning: sanity check failed');
+		return '(More)';
+	}
+
+	my $widgetTemplate = GetTemplate('html/widget/more_button.template');
+
+	if ($widgetTemplate) {
+		# <a href="/etc.html">More</a>
+		WriteLog('GetWidgetExpand: got template ok, going to fill it in');
+		$widgetTemplate = str_replace('/etc.html', $url, $widgetTemplate);
+
+		if (GetConfig('admin/js/enable')) {
+			my $jsTemplate = "if (window.ShowAll && this.removeAttribute) { if (this.style) { this.style.display = 'none'; } return ShowAll(this, this.parentElement); } else { return true; }";
+			if (
+				$parentCount > 10 ||
+				$parentCount < 1 ||
+				!($parentCount =~ /\\D/)
+			) {
+				WriteLog('GetWidgetExpand: warning: $parentCount sanity check failed');
+				if (GetConfig('admin/debug')) {
+					return '(More2)';
+				} else {
+					return '';
+				}
+			} else {
+				# adjust number of times it says ".parentElement"
+				$jsTemplate = str_replace('.parentElement', str_repeat('.parentElement', $parentCount), $jsTemplate);
+			}
+
+			$widgetTemplate = AddAttributeToTag(
+				$widgetTemplate,
+				'a href="/etc.html"', #todo this should link to item itself
+				'onclick',
+				$jsTemplate
+			);
+		}
+
+		#$widgetTemplate = str_replace('/etc.html', $url, $widgetTemplate);
+	} else {
+		WriteLog('GetWidgetExpand: warning: widget/more_button template not found');
+		return '(More3)';
+	}
+
+	return $widgetTemplate;
+} # GetWidgetExpand() @16019xxxxx
+
 1;
