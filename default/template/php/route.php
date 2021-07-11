@@ -1335,9 +1335,12 @@ if (GetConfig('admin/php/route_enable')) {
 				// $html = str_replace('<span id=spanSignedInStatus></span>', '<span id=spanSignedInStatus class=beginner><p><b>Status: You are signed in</b></p></span>', $html);
 				// #todo get this from template
 				// #todo add the same logic to javascript frontend
+				#$html = preg_replace('/pRegButton/', 'asdfadfd', $html);
+				$html = preg_replace('/<p id=pRegButton>.*?<\/p>/s', '', $html);
 			} else {
-				$fingerprint = '(not signed in)';
-				$handle = '(not signed in)';
+				$handle = '(Not Signed In)';
+				$fingerprint = 'Agree to Rules to Sign In';
+				// this is a mis-use of the spans... oh well
 			}
 
 			$html = str_replace('<span id=lblHandle></span>', "<span id=lblHandle>$handle</span>", $html);
