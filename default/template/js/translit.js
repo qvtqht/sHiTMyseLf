@@ -102,37 +102,57 @@ function UpdateOnscreenKeyboard () {
 //			var asdf = parent.frames;
 	//alert('DEBUG: UpdateOnscreenKeyboard()');
 
-	//#todo should be somewhere else
 	{
-		if (GetPrefs('translit_state') != window.translitKeyState) {
-			SetPrefs('translit_state', window.translitKeyState);
+		//#todo should be somewhere else
+		if (window.GetPrefs && GetPrefs('translit_state') != window.translitKeyState) {
+			if (window.SetPrefs) {
+				SetPrefs('translit_state', window.translitKeyState);
+			}
 		}
 	}
 
 	if (window.parent) {
+		//alert('DEBUG: UpdateOnscreenKeyboard: window.parent checkpoint passed');
 		if (window.parent.frames) {
+			//alert('DEBUG: UpdateOnscreenKeyboard: window.parent.frames checkpoint passed');
 			var framesRef = window.parent.frames;
 			if (framesRef.length) {
+				//alert('DEBUG: UpdateOnscreenKeyboard: window.parent.frames.length checkpoint passed');
 				if (framesRef['kbd']) {
+					//alert('DEBUG: UpdateOnscreenKeyboard: framesRef[kbd] checkpoint passed');
 					var kDoc = framesRef['kbd'].document;
 					if (kDoc.getElementsByTagName) {
-						var replaceMode;
-						var kbdKeys = kDoc.getElementsByTagName('a');
-						if (kbdKeys.length) {
-							replaceMode = 1;
-						}
+						//alert('DEBUG: UpdateOnscreenKeyboard: kDoc.getElementsByTagName checkpoint passed');
+						var replaceMode; // which elements and attributes will we replace text on?
+						// it depends on what kind of keyboard we're working with ...
+
+						var kbdKeys = 0;
+
 						if (!kbdKeys.length) {
-							kbdKeys = kDoc.getElementsByTagName('td');
-							if (kbdKeys) {
-								replaceMode = 1;
-							}
-						}
-						if (!kbdKeys.length) {
+							// ... form/input based
 							kbdKeys = kDoc.getElementsByTagName('input');
 							if (kbdKeys) {
 								replaceMode = 2;
 							}
 						}
+
+						if (!kbdKeys.length) {
+							// ... anchor based
+							kbdKeys = kDoc.getElementsByTagName('a');
+							if (kbdKeys) {
+								replaceMode = 1;
+							}
+						}
+
+						if (!kbdKeys.length) {
+							// ... table based
+							kbdKeys = kDoc.getElementsByTagName('td');
+							if (kbdKeys) {
+								replaceMode = 1;
+							}
+						}
+
+						//alert('DEBUG: UpdateOnscreenKeyboard: replaceMode = ' + replaceMode);
 
 						if (kbdKeys && kbdKeys.length) {
 							for (kbdKeysI = 0; kbdKeysI < kbdKeys.length; kbdKeysI++) {
@@ -187,9 +207,11 @@ function translitKey(e, t) { // replaces pressed qwerty key with russian letter
 		// this doesn't work yet becaue there's no way to
 		// switch into different modes using this method
 		key = String.fromCharCode((96 <= e.keyCode && e.keyCode <= 105)? (e.keyCode - 48) : (e.keyCode));
-	} else if (key.toString && key.toString.length == 1) {
+	} else if (key && key.toString && key.toString.length == 1) {
 		//should check that it's a string and only 1 char
 		key = key.toString;
+	} else {
+		return '';
 	}
 	//alert('DEBUG: key: ' + key);
 
