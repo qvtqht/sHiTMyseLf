@@ -40,26 +40,7 @@ function WriteOnload () { // onload handler for write page
 			if (document.getElementById('spanSignAs')) {
 				var gt = unescape('%3E');
 				if (window.getAvatar) {
-					var spanSignAs = document.getElementById('spanSignAs');
 
-					var lblSignAs = document.createElement('label');
-					lblSignAs.setAttribute('for', 'chkSignAs');
-
-					var chkSignAs = document.createElement('input');
-					chkSignAs.setAttribute('name', 'chkSignAs');
-					chkSignAs.setAttribute('id', 'chkSignAs');
-					chkSignAs.setAttribute('type', 'checkbox');
-
-					if (!window.GetPrefs || GetPrefs('sign_by_default')) {
-						chkSignAs.setAttribute('checked', 1);
-					}
-					// implied getElementById already been feature checked here
-					//chkSignAs.setAttribute('onclick', "if (document.getElementById('btnSolvePuzzle')) { document.getElementById('btnSolvePuzzle').setAttribute('disabled', !chkSignAs.checked); }");
-					// this checkbox being checked means signMessage() is called in writeSubmit()
-
-					lblSignAs.innerHTML = 'Sign as ' + getAvatar();
-					lblSignAs.appendChild(chkSignAs);
-					spanSignAs.appendChild(lblSignAs);
 
 					if (window.solvePuzzle) {
 						var spanWriteAdvanced = document.getElementById('spanWriteAdvanced');
@@ -81,6 +62,35 @@ function WriteOnload () { // onload handler for write page
 							spanWriteAdvanced.appendChild(lblSolvePuzzle);
 						}
 					} // window.solvePuzzle
+
+
+					var spanSignAs = document.getElementById('spanSignAs');
+
+					var lblSignAs = document.createElement('label');
+					lblSignAs.setAttribute('for', 'chkSignAs');
+
+					var chkSignAs = document.createElement('input');
+					chkSignAs.setAttribute('name', 'chkSignAs');
+					chkSignAs.setAttribute('id', 'chkSignAs');
+					chkSignAs.setAttribute('type', 'checkbox');
+
+					if (!window.GetPrefs || GetPrefs('sign_by_default')) {
+						chkSignAs.setAttribute('checked', 1);
+					}
+
+					if (window.solvePuzzle) { // assumes btnSolvePuzzle was created
+						chkSignAs.setAttribute('onchange', 'document.getElementById(\'btnSolvePuzzle\').disabled = !this.checked'); // #todo does this need sanity check first?
+						chkSignAs.onchange();
+					}
+
+
+					// implied getElementById already been feature checked here
+					//chkSignAs.setAttribute('onclick', "if (document.getElementById('btnSolvePuzzle')) { document.getElementById('btnSolvePuzzle').setAttribute('disabled', !chkSignAs.checked); }");
+					// this checkbox being checked means signMessage() is called in writeSubmit()
+
+					lblSignAs.innerHTML = 'Sign as ' + getAvatar();
+					lblSignAs.appendChild(chkSignAs);
+					spanSignAs.appendChild(lblSignAs);
 				} // window.getAvatar
 			} // document.getElementById('spanSignAs')
         }
