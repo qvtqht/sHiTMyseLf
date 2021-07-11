@@ -61,8 +61,9 @@ sub GetHtmlToolbox {
 			'DuckDuckGo' .
 			'</a><br>'
 		;
+
 		$htmlToolbox .=
-			'<a href="https://search.brave.com/search?q=' .
+			'<a href="https://www.brave.com/search?q=' .
 			$urlParam .
 			'">' .
 			'Brave' .
