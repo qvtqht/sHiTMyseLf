@@ -444,6 +444,67 @@ function GetCookie (cname) { // get cookie value
 	return "";
 }
 
+function UnmaskBlurredImages () {
+	var im = document.images;
+	if (im) {
+		var i = 0;
+		for (i = 0; i < im.length; i++) {
+			if (im[i].getAttribute('src')) {
+				var src = im[i].getAttribute('src');
+				var gPos = src.indexOf('_g_');
+				if (gPos != -1 && 0 < gPos) {
+					im[i].setAttribute('src', src.substr(0, gPos) + '' + src.substr(gPos + 2));
+				}
+			}
+		}
+	}
+	return '';
+} // UnmaskBlurredImages()
+
+
+//https://stackoverflow.com/questions/123999/how-can-i-tell-if-a-dom-element-is-visible-in-the-current-viewport
+
+function elementInViewport(el) {
+  var top = el.offsetTop;
+  var left=el.offsetLeft;
+  var width = el.offsetWidth;
+  var height = el.offsetHeight;
+
+  while(el.offsetParent) {
+    el = el.offsetParent;
+    top += el.offsetTop;
+    left+=el.offsetLeft;
+  }
+
+  return (
+    window.pageYOffset <= top &&
+    window.pageXOffset <= left &&
+    (top + height) <= (window.pageYOffset + window.innerHeight) &&
+    (left + width) <= (window.pageXOffset + window.innerWidth)
+  );
+}
+//You could modify this simply to determine if any part of the element is visible in the viewport:
+
+function elementInViewport2(el) {
+  var top = el.offsetTop;
+  var left=el.offsetLeft;
+  var width = el.offsetWidth;
+  var height = el.offsetHeight;
+
+  while(el.offsetParent) {
+    el = el.offsetParent;
+    top += el.offsetTop;
+    left+=el.offsetLeft;
+  }
+
+  return (
+    top < (window.pageYOffset + window.innerHeight) &&
+    left < (window.pageXOffset + window.innerWidth) &&
+    window.pageYOffset < (top + height) &&
+    window.pageXOffset < (left + width)
+  );
+}
+
 
 //function ChangeInputToTextarea (input) { // called by onpaste
 ////#input_expand_into_textarea
