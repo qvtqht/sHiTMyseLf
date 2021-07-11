@@ -1285,15 +1285,20 @@ sub IndexImageFile { # $file ; indexes one image file into database
 	my $file = shift;
 	chomp($file);
 
-	if ($file =~ m/^(.+)$/) { #todo bug here?
+	if ($file =~ m/\s/) {
+		WriteLog('IndexImageFile: warning: sanity check failed, $file contains space character, which is not allowed');
+		return 0;
+	}
+
+	if ($file =~ m/^([0-9a-zA-Z.\/_-]+)$/) { #todo bug here?
 		if ($1 eq $file) {
 			$file = $1;
 		} else {
-			WriteLog(' warning: sanity check 2 failed on $file: ' . $file);
+			WriteLog('IndexImageFile: warning: sanity check 2 failed on $file: ' . $file);
 			return 0;
 		}
 	} else {
-		WriteLog(' warning: sanity check 1 failed on $file: ' . $file);
+		WriteLog('IndexImageFile: warning: sanity check 1 failed on $file: ' . $file);
 		return 0;
 	}
 
