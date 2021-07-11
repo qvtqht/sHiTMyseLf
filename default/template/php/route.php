@@ -383,7 +383,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$pagesPlArgument = '--system';
 		}
 
-		if ($path == '/stats.html') {
+		if ($path == '/stats.html' || $path == '/engine.html') {
 			WriteLog('HandleNotFound: found stats page');
 			$pagesPlArgument = '-M stats';
 		}
