@@ -4345,9 +4345,11 @@ sub GetProfileWindow {
 # sub GetProfileDialog {
 	my $profileWindowContents = GetTemplate('form/profile.template');
 
-	if (GetConfig('admin/gpg/use_gpg2')) {
-		my $gpg2Choices = GetTemplate('html/gpg2.choices.template');
-		$profileWindowContents =~ s/\$gpg2Algochoices/$gpg2Choices/;
+	if (GetConfig('admin/js/enable') && GetConfig('admin/js/openpgp')) {
+		#my $gpg2Choices = GetTemplate('html/gpg2.choices.template');
+		#$profileWindowContents =~ s/\$gpg2Algochoices/$gpg2Choices/;
+
+		$profileWindowContents = AddAttributeToTag($profileWindowContents, 'input id=btnRegister', 'onclick', "if (window.btnRegister_Click) { return btnRegister_Click(this); }");
 	} else {
 		$profileWindowContents =~ s/\$gpg2Algochoices//;
 	}
@@ -4407,15 +4409,15 @@ sub GetProfilePage { # returns profile page (allows sign in/out)
 		$txtIndex = GetPageHeader($title, $titleHtml, 'identity');
 		$txtIndex .= GetTemplate('html/maincontent.template');
 
-		my $profileWindowContents = GetTemplate('form/profile.template');
-
-		if (GetConfig('admin/gpg/use_gpg2')) {
-			my $gpg2Choices = GetTemplate('html/gpg2.choices.template');
-			$profileWindowContents =~ s/\$gpg2Algochoices/$gpg2Choices/;
-		} else {
-			$profileWindowContents =~ s/\$gpg2Algochoices//;
-		}
-
+#		my $profileWindowContents = GetTemplate('form/profile.template');
+#
+#		if (GetConfig('admin/gpg/use_gpg2')) {
+#			my $gpg2Choices = GetTemplate('html/gpg2.choices.template');
+#			$profileWindowContents =~ s/\$gpg2Algochoices/$gpg2Choices/;
+#		} else {
+#			$profileWindowContents =~ s/\$gpg2Algochoices//;
+#		}
+#
 		my $profileWindow = GetProfileWindow();
 
 		my $tosWindow = GetTosDialog();
