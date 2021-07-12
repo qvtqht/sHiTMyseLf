@@ -127,6 +127,21 @@ function ShowAll (t, container) { // t = clicked link ; container = document by 
         for (var i = 0; i < elements.length; i++) {
             SetElementVisible(elements[i], display, '$colorHighlightAdvanced', 0);
         }
+
+        if (0) { // #todo
+			var elements = container.getElementsByClassName('heading');
+			for (var i = 0; i < elements.length; i++) {
+				SetElementVisible(elements[i], display, '$colorHighlightAdvanced', 0);
+			}
+			var elements = container.getElementsByClassName('menubar');
+			for (var i = 0; i < elements.length; i++) {
+				SetElementVisible(elements[i], display, '$colorHighlightAdvanced', 0);
+			}
+			//var elements = container.getElementsByClassName('statusbar');
+			//for (var i = 0; i < elements.length; i++) {
+			//    SetElementVisible(elements[i], display, '$colorHighlightAdvanced', 0);
+			//}
+		}
         elements = container.getElementsByClassName('beginner');
         for (var i = 0; i < elements.length; i++) {
             SetElementVisible(elements[i], display, '$colorHighlightBeginner', 0);
@@ -217,6 +232,24 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 			for (var i = 0; i < divsToHide.length; i++) {
 				//divsToHide[i].style.visibility = "hidden"; // or
 				SetElementVisible(divsToHide[i], displayValue, bgColor, 0);
+			}
+
+			if (0) { // #todo
+				var divsToHide = container.getElementsByClassName("heading"); //divsToHide is an array #todo nn3 compat
+				for (var i = 0; i < divsToHide.length; i++) {
+					//divsToHide[i].style.visibility = "hidden"; // or
+					SetElementVisible(divsToHide[i], displayValue, bgColor, 0);
+				}
+				var divsToHide = container.getElementsByClassName("menubar"); //divsToHide is an array #todo nn3 compat
+				for (var i = 0; i < divsToHide.length; i++) {
+					//divsToHide[i].style.visibility = "hidden"; // or
+					SetElementVisible(divsToHide[i], displayValue, bgColor, 0);
+				}
+	//			var divsToHide = container.getElementsByClassName("statusbar"); //divsToHide is an array #todo nn3 compat
+	//			for (var i = 0; i < divsToHide.length; i++) {
+	//				//divsToHide[i].style.visibility = "hidden"; // or
+	//				SetElementVisible(divsToHide[i], displayValue, bgColor, 0);
+	//			}
 			}
 //			var clock = document.getElementById('txtClock');
 //			if (clock) {
