@@ -6,7 +6,7 @@ function RoundNumber (num) {
 	//var ret = Math.floor(num * 10) / 10;
 	//leave one digit after the decimal point
 
-	//alert('DEBUG: RoundNumber: num = ' + num + '; ret = ' + ret + '');
+	////alert('DEBUG: RoundNumber: num = ' + num + '; ret = ' + ret + '');
 
 	return ret;
 }
@@ -14,6 +14,7 @@ function RoundNumber (num) {
 function LongAgo (seconds) { // returns string with time units
 // takes seconds as parameter
 // returns a string like "3 days ago" or "3 days from now"
+
 	var flip = 0;
 	if (seconds < 0) {
 		flip = 1;
