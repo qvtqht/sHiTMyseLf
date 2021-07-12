@@ -11058,7 +11058,7 @@ var onUnhandled = function (promise) {
         } else if (handler = global.onunhandledrejection) {
           handler({ promise: promise, reason: value });
         } else if ((console = global.console) && console.error) {
-          console.error('Unhandled promise rejection', value);
+          //console.error('Unhandled promise rejection', value);
           //value.message contains the useful info
         }
       });
@@ -28923,7 +28923,7 @@ var freeze, Stream, BitStream, Util, BWT, CRC32, HuffmanAllocator, Bzip2;freeze 
     }return this.buffer;
   }, r.coerceOutputStream = function (e, t) {
     var n = { stream: e, retval: e };if (e) {
-      if ("object" == (typeof e === "undefined" ? "undefined" : (0, _typeof3.default)(e)) && "writeByte" in e) return n;"number" == typeof t ? (console.assert(t >= 0), n.stream = new i(r.makeU8Buffer(t), !1)) : n.stream = new i(e, !1);
+      if ("object" == (typeof e === "undefined" ? "undefined" : (0, _typeof3.default)(e)) && "writeByte" in e) return n;"number" == typeof t ? (t >= 0, n.stream = new i(r.makeU8Buffer(t), !1)) : n.stream = new i(e, !1);
     } else n.stream = new i(r.makeU8Buffer(16384), !0);return Object.defineProperty(n, "retval", { get: n.stream.getBuffer.bind(n.stream) }), n;
   }, r.compressFileHelper = function (e, t, n) {
     return function (i, o, f) {
@@ -28953,7 +28953,7 @@ var freeze, Stream, BitStream, Util, BWT, CRC32, HuffmanAllocator, Bzip2;freeze 
       var i = r.decode();if (256 === i) break;e.writeByte(i), n++;
     }
   }, r.writeUnsignedNumber = function (e, t) {
-    console.assert(t >= 0);var r,
+    var r,
         n = [];do {
       n.push(127 & t), t = Math.floor(t / 128);
     } while (0 !== t);for (n[0] |= 128, r = n.length - 1; r >= 0; r--) {
@@ -28988,17 +28988,16 @@ var freeze, Stream, BitStream, Util, BWT, CRC32, HuffmanAllocator, Bzip2;freeze 
   } : f, r.makeS32Buffer = "undefined" != typeof Int32Array ? function (e) {
     return a(new Int32Array(e));
   } : f, r.arraycopy = function (e, t) {
-    console.assert(e.length >= t.length);for (var r = 0, n = t.length; r < n; r++) {
+    for (var r = 0, n = t.length; r < n; r++) {
       e[r] = t[r];
     }return e;
-  };var u = [0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8];console.assert(256 === u.length);var s = r.fls = function (e) {
-    return console.assert(e >= 0), e > 4294967295 ? 32 + s(Math.floor(e / 4294967296)) : 0 != (4294901760 & e) ? 0 != (4278190080 & e) ? 24 + u[e >>> 24 & 255] : 16 + u[e >>> 16] : 0 != (65280 & e) ? 8 + u[e >>> 8] : u[e];
+  };var u = [0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8];var s = r.fls = function (e) {
+    return (e >= 0), e > 4294967295 ? 32 + s(Math.floor(e / 4294967296)) : 0 != (4294901760 & e) ? 0 != (4278190080 & e) ? 24 + u[e >>> 24 & 255] : 16 + u[e >>> 16] : 0 != (65280 & e) ? 8 + u[e >>> 8] : u[e];
   };return r.log2c = function (e) {
     return 0 === e ? -1 : s(e - 1);
   }, e(r);
 }(freeze, Stream), BWT = function (e, t) {
-  var r = console.assert.bind(console),
-      n = function n(e, t, r, _n) {
+  var r = true, n = function n(e, t, r, _n) {
     var i;for (i = 0; i < _n; i++) {
       t[i] = 0;
     }for (i = 0; i < r; i++) {
@@ -29320,7 +29319,7 @@ var freeze, Stream, BitStream, Util, BWT, CRC32, HuffmanAllocator, Bzip2;freeze 
       if ("eof" in n && n.eof()) break;var s = a.reader.tellBit();if (a._init_block()) {
         var c = i.pos;a._read_bunzip(), t(s, i.pos - c);
       } else {
-        a.reader.readBits(32);if (!(r && "eof" in n) || n.eof()) break;a._start_bunzip(n, i), console.assert(a.dbufSize === u, "shouldn't change block size within multistream file");
+        a.reader.readBits(32);if (!(r && "eof" in n) || n.eof()) break;a._start_bunzip(n, i), true;
       }
     }
   };var d = function d(e, t) {
@@ -29344,7 +29343,7 @@ var freeze, Stream, BitStream, Util, BWT, CRC32, HuffmanAllocator, Bzip2;freeze 
     }), this.code = f.makeU32Buffer(t);var n = 0,
         i = 0;for (e = 0; e < t; e++) {
       var o = r[e] >>> 9,
-          a = 511 & r[e];console.assert(i <= o), n <<= o - i, this.code[a] = n++, i = o;
+          a = 511 & r[e];true, n <<= o - i, this.code[a] = n++, i = o;
     }
   }, d.prototype.cost = function (e, t, r) {
     var n,
@@ -29356,7 +29355,7 @@ var freeze, Stream, BitStream, Util, BWT, CRC32, HuffmanAllocator, Bzip2;freeze 
         r = this.codeLengths[0];for (e.writeBits(5, r), t = 0; t < this.codeLengths.length; t++) {
       var n,
           i,
-          o = this.codeLengths[t];for (console.assert(o > 0 && o <= 20), r < o ? (n = 2, i = o - r) : (n = 3, i = r - o); i-- > 0;) {
+          o = this.codeLengths[t];for (true, r < o ? (n = 2, i = o - r) : (n = 3, i = r - o); i-- > 0;) {
         e.writeBits(2, n);
       }e.writeBit(0), r = o;
     }
@@ -29443,14 +29442,14 @@ var freeze, Stream, BitStream, Util, BWT, CRC32, HuffmanAllocator, Bzip2;freeze 
         1 & y ? (R(0), y -= 1) : (R(1), y -= 2), y >>>= 1;
       }
     };for (o = 0; o < c.length; o++) {
-      for (i = c[o], a = 0; a < m && _[a] !== i; a++) {}console.assert(a !== m), u(_, a), 0 === a ? y++ : (C(), R(a + 1), y = 0);
+      for (i = c[o], a = 0; a < m && _[a] !== i; a++) {}true, u(_, a), 0 === a ? y++ : (C(), R(a + 1), y = 0);
     }C(), R(E), w = w.subarray(0, b);var k,
         T = [];for (k = b >= 2400 ? 6 : b >= 1200 ? 5 : b >= 600 ? 4 : b >= 200 ? 3 : 2, T.push(new d(g, E + 1)), o = 0; o <= E; o++) {
       g[o] = 1;
-    }T.push(new d(g, E + 1)), g = null;var O = f.makeU8Buffer(Math.ceil(b / 50));for (v(T, k, w, O, E + 1), p(O, T, w), console.assert(T.length >= 2 && T.length <= 6), n.writeBits(3, T.length), n.writeBits(15, O.length), o = 0; o < T.length; o++) {
+    }T.push(new d(g, E + 1)), g = null;var O = f.makeU8Buffer(Math.ceil(b / 50));for (v(T, k, w, O, E + 1), p(O, T, w), true, n.writeBits(3, T.length), n.writeBits(15, O.length), o = 0; o < T.length; o++) {
       _[o] = o;
     }for (o = 0; o < O.length; o++) {
-      var S = O[o];for (a = 0; a < T.length && _[a] !== S; a++) {}for (console.assert(a < T.length), u(_, a); a > 0; a--) {
+      var S = O[o];for (a = 0; a < T.length && _[a] !== S; a++) {}for (true, u(_, a); a > 0; a--) {
         n.writeBit(1);
       }n.writeBit(0);
     }for (o = 0; o < T.length; o++) {
@@ -51638,7 +51637,7 @@ exports.default = {
    */
   print_debug: function print_debug(str) {
     if (_config2.default.debug) {
-      console.log(str);
+
     }
   },
 
@@ -51652,7 +51651,7 @@ exports.default = {
   print_debug_hexarray_dump: function print_debug_hexarray_dump(str, arrToHex) {
     if (_config2.default.debug) {
       str += ': ' + _util2.default.Uint8Array_to_hex(arrToHex);
-      console.log(str);
+
     }
   },
 
@@ -51666,7 +51665,7 @@ exports.default = {
   print_debug_hexstr_dump: function print_debug_hexstr_dump(str, strToHex) {
     if (_config2.default.debug) {
       str += _util2.default.str_to_hex(strToHex);
-      console.log(str);
+
     }
   },
 
@@ -51678,7 +51677,7 @@ exports.default = {
    */
   print_debug_error: function print_debug_error(error) {
     if (_config2.default.debug) {
-      console.error(error);
+
     }
   },
 
