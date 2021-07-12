@@ -40,7 +40,7 @@ function btnSignOut_Click(t) { // event for 'Sign Out' button's click
 		ls.removeItem('settings');
 		ls.removeItem('voted');
 
-		SetPrefs('last_pubkey_ping', 0);
+		SetPrefs('latest_pubkey_ping', 0);
 	}
 
 	return true;
@@ -66,7 +66,7 @@ function btnRegister_Click (t) { // event for 'Register' button's click
 				//alert('DEBUG: chkEnablePGP is present and checked');
 				var intKeyGenResult = MakeKey(t);
 				//alert('DEBUG: btnRegister_Click: intKeyGenResult = ' + intKeyGenResult);
-				SetPrefs('last_pubkey_ping', 1);
+				SetPrefs('latest_pubkey_ping', 1);
 				//alert('DEBUG: returning intKeyGenResult = ' + intKeyGenResult);
 				return intKeyGenResult;
 			}
@@ -476,8 +476,7 @@ if (document.cookie) {
 	}
 }
 
-function PubkeyCheckProfileExists(fp) { // PLACEHOLDER checks if profile exists
-// PLACEHOLDER, ALWAYS RETURNS TRUE
+function PubkeyCheckProfileExists (fp) { // check if profile exists on server
 	//alert('DEBUG: PubkeyCheckProfileExists() begin');
 
 	//alert('DEBUG: PubkeyCheckProfileExists: fp = ' + fp);
@@ -498,16 +497,19 @@ function PubkeyCheckProfileExists(fp) { // PLACEHOLDER checks if profile exists
 }
 
 function PubKeyPing () { // checks if user's public key is on server
+// function PingProfile ()
+// function PingPubKey ()
+// function PingPubey ()
 // uploads it to server if it is missing
 //
 	//alert('DEBUG: PubKeyPing() begin');
 
-	var lastPing = GetPrefs('last_pubkey_ping');
+	var latestPing = GetPrefs('latest_pubkey_ping');
 
-	if (lastPing && (time() < (lastPing + 3600))) {
-		//alert('DEBUG: PubKeyPing: lastPing+10 = ' + (lastPing+10) + ' < time() = ' + time());
+	if (latestPing && (time() < (latestPing + 3600))) {
+		//alert('DEBUG: PubKeyPing: latestPing+10 = ' + (latestPing+10) + ' < time() = ' + time());
 	} else {
-		//alert('DEBUG: PubKeyPing: lastPing was false or stale, doing a check at ' + time());
+		//alert('DEBUG: PubKeyPing: latestPing was false or stale, doing a check at ' + time());
 
 		if (window.location.href.indexOf('profile') != -1 && window.getUserFp) {
 			//alert('DEBUG; PubKeyPing: window.getUserFp check passed');
@@ -521,20 +523,20 @@ function PubKeyPing () { // checks if user's public key is on server
 					//alert('DEBUG: PubKeyPing: profile already exists');
 				} else {
 					if (window.sharePubKey) {
-						//alert('DEBUG: PubKeyPing: lastPing: window.sharePubKey check passed, doing it...');
+						//alert('DEBUG: PubKeyPing: latestPing: window.sharePubKey check passed, doing it...');
 						sharePubKey();
 
-						lastPing = time();
-						SetPrefs('last_pubkey_ping', lastPing);
+						latestPing = time();
+						SetPrefs('latest_pubkey_ping', latestPing);
 					} else {
-						//alert('DEBUG: PubKeyPing: lastPing: window.sharePubKey check FAILED');
+						//alert('DEBUG: PubKeyPing: latestPing: window.sharePubKey check FAILED');
 					}
 				}
 			} else {
 				//alert('DEBUG: PubKeyPing: myFingerprint: false');
 			}
 
-			//alert('DEBUG: PubKeyPing: lastPing check complete, saving time');
+			//alert('DEBUG: PubKeyPing: latestPing check complete, saving time');
 		} else {
 			//alert('DEBUG: PubKeyPing: window.getUserFp check FAILED');
 		}
