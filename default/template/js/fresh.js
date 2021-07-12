@@ -38,7 +38,7 @@ var freshClient;
 //		}
 //        xmlhttp.onreadystatechange = window.StoreNewPageContent;
 //        xmlhttp.open("GET", url, true);
-//		xmlhttp.setRequestHeader('Cache-Control', 'no-cache');
+//		  xmlhttp.setRequestHeader('Cache-Control', 'no-cache');
 //        xmlhttp.send();
 //
 //        return false;
@@ -60,10 +60,11 @@ function freshCallback() { // callback for requesting HEAD for current page
 
 		var eTag = freshClient.getResponseHeader("ETag"); // etag header contains page 'fingerprint'
 
-		//alert('DEBUG: eTag = ' + eTag);
+		//alert('DEBUG: fresh.js: eTag = ' + eTag);
 
 		if (eTag) { // if ETag header has a value
 			if (window.myOwnETag) {
+				//alert('DEBUG: fresh.js:  eTag = ' + eTag + '; window.myOwnETag = ' + window.myOwnETag);
 				if (eTag != window.myOwnETag) {
 					if (eTag == window.lastEtag) { // if it's equal to the one we saved last time
 						// no new change change
@@ -165,18 +166,18 @@ function freshCallback() { // callback for requesting HEAD for current page
 
 function CheckIfFresh () {
 	var d = new Date();
-	//alert('debug: CheckIfFresh: ' + d.getTime());
+	//alert('DEBUG: CheckIfFresh: ' + d.getTime());
 
 	var freshCheckRecent = window.freshCheckRecent;
 	if (freshCheckRecent) {
-		//alert('debug: CheckIfFresh: freshCheckRecent = ' + freshCheckRecent);
+		//alert('DEBUG: CheckIfFresh: freshCheckRecent = ' + freshCheckRecent);
 		var d = new Date();
 		var curTime = d.getTime();
 		if (curTime < freshCheckRecent + 3000) {
 			return true;
 		}
 	}
-	//alert('debug: CheckIfFresh: checkpoint passed');
+	//alert('DEBUG: CheckIfFresh: checkpoint passed');
 
 	var d = new Date();
 	window.freshCheckRecent = d.getTime();
@@ -230,5 +231,18 @@ function CheckIfFresh () {
 //}
 
 //alert('DEBUG: fresh.js');
+
+
+if (window.EventLoop) {
+	if (!window.GetPrefs) {
+		// if no prefs, enable it
+		window.eventLoopEnabled = 1;
+		window.eventLoopFresh = 1;
+	}
+	
+	EventLoop();
+} else {
+	CheckIfFresh();
+}
 
 // == end fresh.js
