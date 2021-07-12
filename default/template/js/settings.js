@@ -13,8 +13,14 @@ function SetElementVisible (element, displayValue, bgColor, borderStyle) { // se
 // 	when 'initial', will try to substitute appropriate default for tag type
 // also sets background color
 // used for hiding/showing and highlighting beginner, advanced element classes on page.
+	if (element) {
+		//alert('DEBUG: SetElementVisible: before: ' + element.nodeName + ' : ' + element.style.display);
+	} else {
+		//alert('DEBUG: SetElementVisible: before: warning: no element');
+		return '';
+	}
 
-    //alert ('DEBUG: \nelement:' + element + "\ndisplayValue:" + displayValue + "\nbgColor:" + bgColor + "\nborderStyle:" + borderStyle + "\n");
+    //alert('DEBUG: \nelement:' + element + "\ndisplayValue:" + displayValue + "\nbgColor:" + bgColor + "\nborderStyle:" + borderStyle + "\n");
 
 	if (bgColor) {
 		// background color
@@ -52,18 +58,32 @@ function SetElementVisible (element, displayValue, bgColor, borderStyle) { // se
 		}
 	}
 
+	if (element) {
+		//alert('DEBUG: SetElementVisible: after: ' + element.nodeName + ' : ' + element.style.display);
+	} else {
+		//alert('DEBUG: SetElementVisible: after: warning: no element');
+		return '';
+	}
+
 	return 1;
 } // SetElementVisible()
 
 function ShowAll (t, container) { // t = clicked link ; container = document by default ; shows all elements, overriding settings
 // admin elements are excluded. only beginner, advanced class elements are shown
+	if (!document.getElementsByClassName) {
+		//alert('DEBUG: ShowAll: warning: getElementsByClassName feature check FAILED');
+		return false;
+	}
+
 	var gt = unescape('%3E');
 
 	if (!container) {
 		container = document;
 	}
 
-	var isMore = 1;
+	var isMore = 1; // if 0, it is 'Less' link
+
+	// change link caption, there are different variations
 	if (t.innerHTML == 'Less') {
 		// when without accesskey
 		t.innerHTML = 'More';
@@ -76,6 +96,7 @@ function ShowAll (t, container) { // t = clicked link ; container = document by 
 	}
 
     if (isMore && container.getElementsByClassName) {
+    	// change link caption, there are different variations
 		if (t.innerHTML == 'More') {
 			// without accesskey
 			t.innerHTML = 'Less';
