@@ -114,6 +114,16 @@ function ShowTimestamps () { // finds any class=timestamp, updates its displayed
 // currently requires getElementsByClassName()
 // in the future, ie4+, nn4+, and others compat can be improved
 	//alert('DEBUG: ShowTimestamps()');
+
+	var restAfter = 100; // stop after this many changes to avoid slowing things down
+	if (
+		window.GetPrefs &&
+		(GetPrefs('performance_optimization') == 'faster')
+	) {
+		restAfter = 30;
+	}
+	//alert('DEBUG: ');
+
 	if (document.getElementsByClassName) {
 		//alert('DEBUG: ShowTimestamps: document.getElementsByClassName feature check passed');
 		var d = new Date();
@@ -190,8 +200,11 @@ function ShowTimestamps () { // finds any class=timestamp, updates its displayed
 					changeLogged++; // count change logged
 				}
 			}
-			if (32 < changeLogged) {
+			if (restAfter < changeLogged) {
+				setTimeout('ShowTimestamps()', 500);
 				i = te.length;
+				
+				return changeLogged;
 			}
 		} // for (var i = 0; i < te.length; i++)
 
