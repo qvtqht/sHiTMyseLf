@@ -58,7 +58,15 @@ function MakeKey (t) { //makes key using default settings
 			var bits = 512;
 		}
 		if (algoSelectMode == 'random') { // randomize decent crypto
-			var bitsOptions = [2048, 'curve25519', 'ed25519', 'p256', 'p384', 'p521', 'secp256k1'];
+			var bitsOptions = new Array();
+			bitsOptions[0] = 2048;
+			bitsOptions[1] = 'curve25519';
+			bitsOptions[2] = 'ed25519';
+			bitsOptions[3] = 'p256';
+			bitsOptions[4] = 'p384';
+			bitsOptions[5] = 'p521';
+			bitsOptions[6] = 'secp256k1';
+
 			var bits = bitsOptions[Math.floor(Math.random() * bitsOptions.length)];
 		}
 		if (algoSelectMode == 'max') { // slow, more secure
