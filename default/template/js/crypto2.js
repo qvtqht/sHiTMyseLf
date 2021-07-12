@@ -78,7 +78,7 @@ function MakeKey (t) { //makes key using default settings
 		// 512 1024 2048 4096
 		// 'curve25519' 'ed25519' 'p256' 'p384' 'p521' 'secp256k1'
 
-		var username = 'Guest';
+		var username = 'Guest'; //#guest...
 		username = prompt('Choose your handle:', username);
 
 		//alert('DEBUG: username: ' + username);
@@ -89,7 +89,7 @@ function MakeKey (t) { //makes key using default settings
 			//alert('DEBUG: username == null is false');
 
 			if (!username || !username.trim()) {
-				username = 'Guest';
+				username = 'Guest'; //#guest...
 			}
 
 			//alert('DEBUG: username: ' + username);
