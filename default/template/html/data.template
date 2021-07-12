@@ -1,14 +1,19 @@
 <!-- data.template -->
 
-<p>Message board data:</p>
-
 <p>
-    <a href="/txt.zip">/txt.zip</a> ($sizeHikeZip)<br>
-    Contains all items as individual text files
+    Message board data <br>
+    allows you to clone to <br>
+    new location of your choosing.
 </p>
 
 <p>
-    <a href="/archive/index.sqlite3.zip">/index.sqlite3.zip</a> ($sizeSqliteZip)<br>
+    <a href="/txt.zip">/txt.zip</a> ($sizeHikeZip)<br>
+    Contains all items as individual text files<br>
+    <a href="/txt.zip.txt">List of files</a>
+</p>
+
+<p>
+<a href="/index.sqlite3.zip">/index.sqlite3.zip</a> ($sizeSqliteZip)<br>
     Contains index of items in SQLite database
 </p>
 
