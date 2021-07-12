@@ -1,23 +1,22 @@
 <!-- topmenu2.template -->
-<table cellspacing=0 cellpadding=3 border=0 bgcolor="$colorWindow" class=dialog>
+<table cellspacing=0 cellpadding=3 border=0 bgcolor="$colorWindow" class=dialog id=topmenu>
 	<tr bgcolor="$colorTopMenuTitlebar" class=titlebar>
 		<td colspan=2>
 			<small>
-				<a tabindex=2 href="#maincontent" name=top><font color="$colorTopMenuTitlebarText">Skip to main content</font></a>;
-				<a href="$selfLink?light=1" tabindex=3><font color="$colorTopMenuTitlebarText">Accessibility mode</font></a>;
+				<font color="$colorTopMenuTitlebarText"><b>$siteName</b></font>
 				<br>
 			</small>
 		</td>
 	</tr>
-	<tr bgcolor="$colorWindow" class=menubar>
+	<tr bgcolor="$colorWindow" class=topmenubar>
 		<td>
 			<big>
 				<big>$menuItems</big>
 				<span class=advanced>$menuItemsAdvanced</span>
 				<span class=admin> $menuItemsAdmin</span>
+				<span id=controls></span>
+				<span id=spnClock></span>
 			</big>
-			<a href="/etc.html" title="More" accesskey=o>M<u>o</u>re</a>
-			<span id=spnClock></span>
 		</td>
 	</tr>
 </table>
