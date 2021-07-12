@@ -37,9 +37,11 @@ function dragElement (elmnt, header) { // initialize draggable state for dialog
 	if (header) {
 		// if present, the header is where you move the DIV from:
 		header.onmousedown = dragMouseDown;
+		//header.ontouchstart = dragMouseDown; // #touchdrag
 	} else {
 		// otherwise, move the DIV from anywhere inside the DIV:
 		elmnt.onmousedown = dragMouseDown;
+		//elmnt.ontouchstart = dragMouseDown; // #touchdrag
 	}
 
 	// set element's position based on its initial box model position
@@ -65,8 +67,10 @@ function dragElement (elmnt, header) { // initialize draggable state for dialog
 		pos4 = e.clientY;
 
 		document.onmouseup = closeDragElement;
+		//document.ontouchend = closeDragElement; // #touchdrag
 		// call a function whenever the cursor moves:
 		document.onmousemove = elementDrag;
+		//document.ontouchmove = elementDrag; // #touchdrag
 	}
 
 	function elementDrag(e) {
@@ -94,6 +98,9 @@ function dragElement (elmnt, header) { // initialize draggable state for dialog
 		// stop moving when mouse button is released:
 		document.onmouseup = null;
 		document.onmousemove = null;
+
+		//document.ontouchend = null; // #touchdrag
+		//document.ontouchmove = null; // #touchdrag
 
 		SaveDialogPosition(elmnt);
 	}
