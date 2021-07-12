@@ -67,7 +67,11 @@ function SortTable (t, sortOrder) {
   	if (!table) {
   		//alert('DEBUG: SortTable: warning: table missing');
   		return '';
+	} else {
+		//alert('DEBUG: SortTable: table exists, proceeding');
 	}
+
+	//alert('DEBUG: SortTable: sortOrder = ' + sortOrder + '; sortMethod = ' + sortMethod);
 
 	// bubble sort below by some website...
 
@@ -192,6 +196,8 @@ function SortTable (t, sortOrder) {
 //  			}
 //  		}
   	}
+
+	//alert('DEBUG: SortTable() finished');
 
   	return '';
 } // SortTable()
