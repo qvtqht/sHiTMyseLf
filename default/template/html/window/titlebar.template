@@ -1,7 +1,7 @@
 <!-- titlebar.template -->
 <tr bgcolor="$colorTitlebar" class=titlebar>
 	<td colspan=$contentColumnCount>
-		<a href=#$windowAnchor><font color="$colorTitlebarText"><b>$windowTitle</b></font></a><br>
+		<font color="$colorTitlebarText"><b>$windowTitle</b></font> <a href=#$windowAnchor>#</a><br>
 		<!-- note! dragging.js looks for a "b" inside of a class=titlebar -->
 	</td>
 </tr>
