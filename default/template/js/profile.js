@@ -575,11 +575,18 @@ function ProfileOnLoad () { // onload event for profile page
 
 						var myAlgo = pubKeyObj.primaryKey.algorithm.toString();
 						if (myAlgo) {
-							lblSigningIndicator.innerHTML = myAlgo;
+							//lblSigningIndicator.innerHTML = myAlgo;
+							lblSigningIndicator.innerHTML = 'Signed in with private key.';
+
 						} else {
-							lblSigningIndicator.innerHTML = 'Yes';
+							lblSigningIndicator.innerHTML = 'Signed in.';
 						}
 						AddPrivateKeyLinks();
+
+						var pRegButton = document.getElementById('pRegButton');
+						if (pRegButton) {
+							pRegButton.style.display = 'none';
+						}
 					} else {
 						//alert('DEBUG: lblSigningIndicator FALSE');
 					}
