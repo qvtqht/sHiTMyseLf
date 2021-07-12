@@ -39,8 +39,9 @@ function WaitForOpenPgp () {
 	}
 } // WaitForOpenPgp()
 
-if (!window.OnLoadEverything && window.HideLoadingIndicator) {
-	HideLoadingIndicator();
-}
+// #todo see if this is still necessary
+//if (!window.OnLoadEverything && window.HideLoadingIndicator) {
+//	HideLoadingIndicator();
+//}
 
 // end loading_end.js
