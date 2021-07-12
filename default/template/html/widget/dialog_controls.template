@@ -1,14 +1,17 @@
-<!-- dialog_controls.template -->
+<!-- dialog_controls.template 'Interface Controls' -->
 <noscript>*</noscript>
 
 <fieldset>
 	<a href=#ExpandMore onclick="if (window.ShowAll) { return ShowAll(this); }" title=ExpandMore accesskey=o>M<u>o</u>re</a>
+	|
+	<a href=# onclick="if (window.DraggingSaveAllDialogPositions) { window.draggingRetileMode = 0; DraggingSaveAllDialogPositions(); }" title=Save>Save</a>;
+	<a href=# onclick="if (window.DraggingInit) { window.draggingRetileMode = 0; DraggingInit(1); return false; }" title=Restore>Restore</a>;
+	|
+	<a href=# onclick="if (window.DraggingRetile) { window.draggingRetileMode = 1; DraggingRetile(); DraggingInit(0); return false; }" title=Retile>Retile</a>;
+	<a href=# onclick="if (window.DraggingCascade) { window.draggingRetileMode = 0; DraggingInit(0); DraggingCascade(); return false; }" title=Cascade>Cascade</a>
+	|
+	<a href="/settings.html" onclick="if (document.getElementById && !document.getElementById('settings')) { return FetchDialog('settings'); }">Settings</a>;
+	<a href="/stats.html" onclick="if (document.getElementById && !document.getElementById('stats')) { return FetchDialog('stats'); }">Stats</a>
 </fieldset>
-
-<fieldset class=advanced>
-	<a href=# onclick="if (window.DraggingSaveAllDialogPositions) { DraggingSaveAllDialogPositions() }" title=Save>Save</a>;
-	<a href=# onclick="if (window.DraggingInit) { DraggingInit(1) }" title=Restore>Restore</a>;
-	<a href=# onclick="if (window.DraggingRetile) { DraggingRetile(); DraggingInit(0); }" title=Tile>Tile</a>;
-	<a href=# onclick="if (window.DraggingInit) { DraggingCascade() }" title=Cascade>Cascade</a>;
-</fieldset>
+<!-- #todo redo this whole template to not be stupid -->
 <!-- dialog_controls.template -->
