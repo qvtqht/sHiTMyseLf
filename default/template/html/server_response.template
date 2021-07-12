@@ -6,9 +6,9 @@
 	bgcolor="$colorHighlightAlert"
 	cellpadding=5
 	cellspacing=0
-><tr><td align=center><font size=5>
+><tr><td align=center><font size=3>
 	<b role=status>$serverResponse</b>
-	<!-- must begin with <a href=#maincontent for templating reasons -->
+	<!-- TEMPLATER'S NOTE: must begin with "a href=#maincontent" for templating reasons -->
 	<a href=#maincontent
 		tabindex=1
 		id=sro
