@@ -37,18 +37,23 @@ function SetElementVisible (element, displayValue, bgColor, borderStyle) { // se
 	// depending on element type, we set different display style
 	// block, table-row, table-cell, or default of 'initial'
 	if (displayValue == 'initial' && (element.nodeName == 'P' || element.nodeName == 'H3' || element.nodeName == 'FIELDSET' || element.nodeName == 'HR')) {
-		element.style.display = 'block';
+		element.style.display = '';
+		// element.style.display = 'block';
 	} else if (displayValue == 'initial' && element.nodeName == 'TR') {
-		element.style.display = 'table-row';
-	} else if (displayValue == 'initial' && (element.nodeName == 'TH' || element.nodeName == 'TD')) {
+
+		element.style.display = '';
+		// element.style.display = 'table-row';
+	} else if (displayValue == 'initial' && (element.nodeName == 'TH' || element.nodeName == 'TD' || element.nodeName == 'TBODY')) {
 		if (element.innerHTML != '') {
-			element.style.display = 'table-cell';
+			element.style.display = '';
+			// element.style.display = 'table-cell';
 		} else {
 			element.style.display = 'none'; // empty table cells display = none #why?
 		}
 	} else {
 		if (displayValue == 'initial') {
-			displayValue = 'inline';
+			displayValue = '';
+			// displayValue = 'inline';
 		}
 		element.style.display = displayValue;
 		if (borderStyle) {
