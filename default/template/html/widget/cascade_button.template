@@ -1,6 +1,0 @@
-<noscript>*</noscript>
-<a href=#ExpandMore onclick="if (window.ShowAll) { ShowAll(this); }" title=ExpandMore accesskey=o><u>o</u></a>
-<span class=advanced>
-	<a href=# onclick="if (window.DraggingRetile) { DraggingRetile() }" title=Tile>t</a>
-	<a href=# onclick="if (window.DraggingInit) { DraggingInit(1) }" title=Restore>r</a>
-</span>
