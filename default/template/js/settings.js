@@ -99,6 +99,11 @@ function ShowAll (t, container) { // t = clicked link ; container = document by 
 		t.innerHTML = 'M<u' + gt + 'o</u' + gt + 're';
 		isMore = 0;
 	}
+	if (t.innerHTML == '<u' + gt + 'O</u' + gt + '') {
+		// just the letter with accesskey
+		t.innerHTML = '<u' + gt + 'o</u' + gt + '';
+		isMore = 0;
+	}
 
     if (isMore && container.getElementsByClassName) {
     	// change link caption, there are different variations
@@ -109,6 +114,10 @@ function ShowAll (t, container) { // t = clicked link ; container = document by 
 		if (t.innerHTML == 'M<u' + gt + 'o</u' + gt + 're') {
 			// with accesskey
 			t.innerHTML = 'Less (<u' + gt + 'O</u' + gt + ')';
+		}
+		if (t.innerHTML == '<u' + gt + 'o</u' + gt + '') {
+			// just the letter with accesskey
+			t.innerHTML = '<u' + gt + 'O</u' + gt + '';
 		}
 
         var display;
