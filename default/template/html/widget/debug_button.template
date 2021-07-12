@@ -1,3 +1,10 @@
+<!-- debug_button.template -->
+<span
+	id=jsdebug
+	class=dialog
+	style="border: 3pt; padding: 3pt; float:right;"
+>
+
 <a
 	href=#
 	onclick="window.dbgoff=0; return false;"
