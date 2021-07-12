@@ -294,9 +294,10 @@ function EventLoop () { // for calling things which need to happen on a regular 
 
 } // EventLoop()
 
-function UrlExists(url) { // checks if url exists
-// todo use async
-// todo how to do pre-xhr browsers?
+function UrlExists (url) { // checks if url exists
+// #todo use async
+// #todo Q: how to do pre-xhr browsers? A: use img.src = and check the resulting image url
+
     //alert('DEBUG: UrlExists(' + url + ')');
 
 	if (window.XMLHttpRequest) {
