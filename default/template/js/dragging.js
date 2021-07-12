@@ -556,48 +556,13 @@ function InsertFetchedDialog () {
 		if (window.ShowTimestamps) {
 			ShowTimestamps();
 		}
+		if (window.LoadCheckboxValues) {
+			LoadCheckboxValues();
+		}
 
 		if (newDialog.length) {
 			SetActiveDialog(newDialog[0]);
 		}
-
-/*
-		var newDialog = inject.getElementsByClassName('dialog');
-		if (!newDialog) {
-			newDialog = inject.getElementsByTagName('form');
-		}
-		if (inject.firstChild) {
-			document.body.appendChild(inject.firstChild);
-		}
-		// todo there are bugs above
-		//inject.remove();
-
-		if (newDialog) {
-			//alert('DEBUG: InsertFetchedDialog: newDialog achieved');
-			//alert(newDialog.length);
-
-			newDialog = newDialog[0];
-
-			//alert(newDialog);
-
-			if (newDialog) {
-				SetActiveDialog(newDialog);
-				DraggingInit(0);
-				ShowTimestamps();
-
-			}
-		}
-		//window.location.replace(xmlhttp.responseURL);
-//		document.open();
-//		document.write(xmlhttp.responseText);
-//		document.close();
-
-
-
-
-*/
-
-
 	}
 } // InsertFetchedDialog()
 
@@ -608,7 +573,7 @@ function FetchDialog (dialogName) {
 		var dialogExists = document.getElementById(dialogName);
 		if (dialogExists) {
 			if (GetPrefs('draggable')) {
-				SetActiveDialog();
+				SetActiveDialog(dialogExists);
 			}
 			return false;
 		}
@@ -620,7 +585,7 @@ function FetchDialog (dialogName) {
 function FetchDialogFromUrl (url) {
 // InjectDialog () {
 	if (window.XMLHttpRequest) {
-		//alert('DEBUG: FetchDialog: window.XMLHttpRequest was true');
+		//alert('DEBUG: FetchDialogFromUrl: window.XMLHttpRequest feature check PASSED');
 
 		var xmlhttp;
 		if (window.xmlhttp2) {
@@ -639,11 +604,11 @@ function FetchDialogFromUrl (url) {
 
         //alert('DEBUG: FetchDialog: finished xmlhttp.send()');
 
-        return false;
+        return false; // cancel triggering event
+	} else {
+		//alert('DEBUG: FetchDialogFromUrl: window.XMLHttpRequest feature check FAILED');
+		return true; // if there was a click, let it happen
 	}
 } // FetchDialogFromUrl()
-
-
-//window.document.body.onfocus='document.title=this;';
 
 /* / dragging.js */
