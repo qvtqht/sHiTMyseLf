@@ -320,9 +320,15 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 } // ShowAdvanced()
 
 function GetPrefs (prefKey) { // get prefs value from localstorage
-	// GetConfig {
-	// GetSetting {
-	//alert('debug: GetPrefs(' + prefKey + ')');
+	// function GetConfig {
+	// function  GetSetting {
+
+	if (!prefKey) {
+		//alert('DEBUG: GetPrefs: warning: missing prefKey');
+		return '';
+	}
+
+	//alert('DEBUG: GetPrefs(' + prefKey + ')');
 	if (window.localStorage) {
 		var nameContainer = 'settings';
 		{ // settings beginning with gtgt go into separate container
@@ -341,19 +347,17 @@ function GetPrefs (prefKey) { // get prefs value from localstorage
 		}
 		var prefValue = prefsObj[prefKey];
 
-		if (!prefValue && prefValue != 0) {
+		if (!prefValue && prefValue != 0 && prefValue != '') {
 			if (
-				prefKey == 'beginner' ||
-				prefKey == 'beginner_highlight' ||
-				prefKey == 'notify_on_change'
+				prefKey == 'beginner' || prefKey == 'beginner_highlight' || prefKey == 'notify_on_change' // GetPrefs()
 			) {
 				// these settings default to 1/true:
 				prefValue = 1;
 			}
 			if (
-				prefKey == 'show_advanced' ||
-				prefKey == 'show_admin' ||
-				prefKey == 'draggable'
+				prefKey == 'show_advanced' || // default
+				prefKey == 'show_admin' || // default
+				prefKey == 'draggable' // default
 			) {
 				// these settings default to 0/false:
 				prefValue = 0;
@@ -375,14 +379,19 @@ function GetPrefs (prefKey) { // get prefs value from localstorage
 		return prefValue;
 	}
 
-	//alert('debug: GetPrefs: fallthrough, returning false');
-	return false;
+	//alert('debug: GetPrefs: fallthrough, returning ');
+	return '';
 } // GetPrefs()
 
 function SetPrefs (prefKey, prefValue) { // set prefs key prefKey to value prefValue
     //alert('DEBUG: SetPrefs(' + prefKey + ', ' + prefValue + ')');
 
-	if (prefKey == 'show_advanced' || prefKey == 'beginner' || prefKey == 'show_admin') {
+	if (!prefKey) {
+		//alert('DEBUG: GetPrefs: warning: missing prefKey');
+		return '';
+	}
+
+	if (prefKey == 'show_advanced' || prefKey == 'beginner' || prefKey == 'show_admin') { // SetPrefs()
 		//alert('DEBUG: SetPrefs: setting cookie to match LocalStorage');
 		if (window.SetCookie) {
 			SetCookie(prefKey, (prefValue ? 1 : 0));
@@ -395,10 +404,12 @@ function SetPrefs (prefKey, prefValue) { // set prefs key prefKey to value prefV
 		window.performanceOptimization = prefValue;
 		//alert('DEBUG: SetPrefs: setting cookie to match LocalStorage');
 		if (prefValue != 'none') {
-			if (window.EventLoop) {
+			//if (window.EventLoop) {
 				// todo enable/disable eventloop?
-				EventLoop();
-			}
+				// this is disabled because it can cause race condition
+				// the race condition manifests itself as checkbox changing state
+				//EventLoop();
+			//}
 		}
 	}
 
@@ -420,11 +431,19 @@ function SetPrefs (prefKey, prefValue) { // set prefs key prefKey to value prefV
 
 		var newPrefsString = JSON.stringify(prefsObj);
 		localStorage.setItem(nameContainer, newPrefsString);
+
+		if (prefKey != 'prefs_timestamp') {
+			// remember time preferences were last changed
+			var d = new Date();
+			var t = d.getTime();
+			SetPrefs('prefs_timestamp', t);
+		}
+
 		return 0;
 	}
 
 	return 1;
-}
+} // SetPrefs()
 
 function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affected elements
 // id = id of pane to hide or show; not required
@@ -435,7 +454,7 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 
 	//alert('DEBUG: SaveCheckbox(' + ths + ',' + prefKey);
 
-	if (prefKey == 'timestamps_format' || prefKey == 'performance_optimization') { //#todo
+	if (prefKey == 'timestamps_format' || prefKey == 'performance_optimization' && window.ShowTimestamps) { //#todo
 		SetPrefs(prefKey, ths.value);
 		ShowTimestamps();
 	} else {
@@ -446,13 +465,16 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 		SetPrefs(prefKey, checkboxState);
 	}
 
-
-	if (prefKey == 'draggable') {
+	if (prefKey == 'draggable' && window.DraggingInit) { // enable dragging
 		if (ths.checked) {
 			DraggingInit(0);
 		} else {
-			//#todo
+			//DraggingRetile(); // #todo
 		}
+	}
+
+	if (prefKey == 'show_advanced' || prefKey == 'beginner' || prefKey == 'show_admin' && window.ShowAdvanced) { // SaveCheckbox()
+		ShowAdvanced(1);
 	}
 
 	//alert('DEBUG: after SetPrefs, GetPrefs(' + prefKey + ') returns: ' + GetPrefs(prefKey));
@@ -461,13 +483,14 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 	// ShowAdvanced(1);
 
 	return 1;
-}
+} // SaveCheckbox()
 
 function SetInterfaceMode (ab, thisButton) { // updates several settings to change to "ui mode" (beginner, advanced, etc.)
     //alert('DEBUG: SetInterfaceMode(' + ab + ')');
 
 	if (window.localStorage && window.SetPrefs) {
 		if (ab == 'beginner') {
+			// switching to beginner mode resets most preferences to their beginner-friendly defaults
 			SetPrefs('show_advanced', 0);
 			SetPrefs('advanced_highlight', 0);
 			SetPrefs('beginner', 1);
@@ -522,8 +545,7 @@ function SetInterfaceMode (ab, thisButton) { // updates several settings to chan
 	//alert('DEBUG: returning true');
 
 	return true;
-}
-
+} // SetInterfaceMode()
 
 function LoadCheckbox (c, prefKey) { // updates checkbox state to reflect settings
 // c = checkbox
