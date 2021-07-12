@@ -4,7 +4,6 @@
 </head>
 <body>
 <!-- keyboard.template -->
-<form>
 <style type="text/css">
     <!--
         td, input {
@@ -123,6 +122,5 @@
         <td colspan=3>!</td>
     </tr>
 </table>
-</form>
 <!-- / keyboard.template -->
 </body></html>

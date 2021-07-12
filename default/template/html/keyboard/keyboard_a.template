@@ -1,5 +1,6 @@
 <html xmlns="http://www.w3.org/1999/html">
 <!-- keyboard_a.template -->
+<!-- keyboard implemented with a elements -->
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>keyboard</title>
@@ -88,7 +89,13 @@
 // -->
 </script>
 
-<form action="/post.html" name="compose">
+<span style="float: right">
+	<noscript>*</noscript>
+	Transliterated Keyboard Layouts:<br>
+	Russian: Ctrl+R, Alt+R, Meta+R<br>
+	Dvorak: Ctrl+D, Alt+D, Meta+D<br><br>
+	(Press again to go back to default.)
+</span>
 
 <table bgcolor="$colorWindow" cellpadding=4 cellspacing=0 border=0>
 
@@ -158,8 +165,6 @@
     <br>
 </td></tr>
 </table>
-
-</form>
 
 <!-- / keyboard_a.template -->
 </body></html>
