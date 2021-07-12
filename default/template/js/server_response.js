@@ -37,11 +37,18 @@ function serverResponseOk (t) { // function which hides server response message
 		document.body.setAttribute('onkeydown', 'return true;');
 	}
 
+	window.blockPreNavigateNotification = 1; // this blocks the Meditate... notification from showing ONCE
+
 	if (window.history) {
 		//alert('DEBUG: serverResponseOk: window.history found');
 		if (window.history.replaceState) {
 			//alert('DEBUG: serverResponseOk: window.history.replaceState found');
 			window.history.replaceState(null, null, window.location.pathname);
+
+			if (window.displayNotification) {
+				//displayNotification('You are welcome!');
+			}
+
 			// don't follow the link, we already changed the location
 			return false;
 		} else {
