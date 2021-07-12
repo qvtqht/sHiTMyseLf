@@ -295,6 +295,42 @@ function DraggingCascade () {
 	}
 } // DraggingCascade()
 
+function DraggingInitDialog (el, doPosition) {
+// DraggingInitElement () {
+	// #todo sanity
+		var elId = GetDialogId(el);
+
+		//alert('DEBUG: DraggingInit: elId = ' + elId);
+
+		// find all titlebars and remember the first one
+		var allTitlebar = el.getElementsByClassName('titlebar');
+		var firstTitlebar = allTitlebar[0];
+
+		if (firstTitlebar) {
+			dragElement(el, firstTitlebar);
+		} else {
+			//alert('DEBUG: DraggingInit: warning: titlebar missing!');
+			dragElement(el, el);
+		}
+
+		if (elId && elId.length < 31) { // RestoreWindowPosition {
+			if (doPosition) {
+				RestoreDialogPosition(el, elId);
+
+				if (GetPrefs(elId + '.collapse') == 'none') {
+					CollapseWindow(el, 'none'); //#meh
+				} else {
+					//ok
+				}
+			} else {
+				// cool
+			}
+		} else {
+			//alert('DEBUG: DraggingInit: warning: elId is false 2' + elements[i].innerHTML);
+		}
+		//elements[i].style.display = 'table !important';
+} // DraggingInitDialog()
+
 function DraggingInit (doPosition) { // initialize all class=dialog elements on the page to be draggable
 // InitDrag {
 // DragInit {
@@ -313,11 +349,7 @@ function DraggingInit (doPosition) { // initialize all class=dialog elements on 
 	//	return '';
 	//}
 
-	if (doPosition) {
-		doPosition = 1;
-	} else {
-		doPosition = 0;
-	}
+	var doPosition = 1; // ATTENTION THIS IS TEMPLATED!
 
 	// find all class=dialog elements and walk through them
 	var elements = document.getElementsByClassName('dialog');
@@ -327,37 +359,7 @@ function DraggingInit (doPosition) { // initialize all class=dialog elements on 
 		// if we walk forwards here, all the elements will end up in the top left corner
 		window.draggingZ++;
 
-		var elId = GetDialogId(elements[i]);
-		
-		//alert('DEBUG: DraggingInit: elId = ' + elId);
-
-		// find all titlebars and remember the first one
-		var allTitlebar = elements[i].getElementsByClassName('titlebar');
-		var firstTitlebar = allTitlebar[0];
-
-		if (firstTitlebar) {
-			dragElement(elements[i], firstTitlebar);
-		} else {
-			//alert('DEBUG: DraggingInit: warning: titlebar missing!');
-		}
-
-		if (elId && elId.length < 31) { // RestoreWindowPosition {
-			if (doPosition) {
-				RestoreDialogPosition(elements[i], elId);
-
-				if (GetPrefs(elId + '.collapse') == 'none') {
-					CollapseWindow(elements[i], 'none'); //#meh
-				} else {
-					//ok
-				}
-			} else {
-				// cool
-			}
-			
-		} else {
-			//alert('DEBUG: DraggingInit: warning: elId is false 2' + elements[i].innerHTML);
-		}
-		//elements[i].style.display = 'table !important';
+		DraggingInitDialog(elements[i], doPosition);
 
 	} // for i in elements
 } // DraggingInit()
