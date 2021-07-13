@@ -8,7 +8,7 @@
 	</p>
 
 	<p>
-		On-Screen Keyboards: <noscript>(JavaScript enhanced)</noscript><br>
+		On-Screen Keyboards: <noscript>*</noscript><br>
 		<a href="/frame.html" target=_top>Keyboard</a><br>
 		<a href="/frame2.html" target=_top>Android</a><br>
 		<a href="/frame2.html" target=_top>iPhone</a><br>
@@ -17,7 +17,7 @@
 	</p>
 
 	<p>
-		Transliterated Keyboard Layouts: <noscript>(requires JavaScript)</noscript><br>
+		Transliterated Keyboard Layouts: <noscript>*</noscript><br>
 		<a href=#>Russian</a>: Ctrl+R, Alt+R, Meta+R<br>
 		<a href=#>Dvorak</a>: Ctrl+D, Alt+D, Meta+D<br>
 		(Press again to switch back to default.)

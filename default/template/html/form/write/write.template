@@ -19,7 +19,7 @@
 		<span class=advanced>
 			<label for=recfing>
 				<input name=recfing id=recfing type=checkbox>
-				Sign with anonymous device identifier</span>
+				Record device fingerprint</span>
 			</label>
 		</span>
 	</p>
