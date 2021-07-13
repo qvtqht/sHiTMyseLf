@@ -1,26 +1,10 @@
 <!-- welcome.template -->
-<form action=/post.html>
-	<p>
-		If you're new here, please <br>
-		introduce yourself using <br>
-		using field and button:<br>
-		<input type=text size=24 name=comment><br>
-		<input type=submit value=Send>
-	</p>
-</form>
-<form action=/profile.html>
-	<p>
-		To make a name for <br>
-		yourself to honor please use <br>
-		this handy button:
-		<input type=submit name=btnRegister value="Register" onclick="if (window.MakeKey) { MakeKey() }">
-	</p>
-	<p>
-		Use the Guest button <br>
-		to announce your arrival <br>
-		and fleeting presence:
-		<input type=submit name=btnRegister value="Guest">
-	</p>
-</form>
+
+<p>
+	Welcome to resource.<br>
+	If new here, request training.<br>
+	Please read the manual.
+</p>
+
 <!-- / welcome.template -->
 
