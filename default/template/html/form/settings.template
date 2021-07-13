@@ -28,7 +28,7 @@
 
 	<p>
 		<label for=chkDraggable class=advanced>
-			<input type=checkbox id=chkDraggable name=chkDraggable onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable'); }">
+			<input id=chkDraggable name=chkDraggable type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable'); }">
 			Quirky enhancements<noscript><b>*</b></noscript>
 		</label>
 	</p>
@@ -81,7 +81,7 @@
 	<p>
 		<label for=chkWriteEnhance class=advanced>
 			<input type=checkbox id=chkWriteEnhance name=chkWriteEnhance onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_enhance'); }">
-			Make write box bigger<noscript><b>*</b></noscript>
+			Make write box 80x24 fixed <noscript><b>*</b></noscript>
 		</label>
 	</p>
 
@@ -102,7 +102,7 @@
 	<p>
 		<label for=chkWriteAutoSave>
 			<input type=checkbox id=chkWriteAutoSave name=chkWriteAutoSave onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_autosave'); }">
-			Auto-save drafts on device<noscript><b>*</b></noscript>
+			Save drafts on device<noscript><b>*</b></noscript>
 		</label>
 	</p>
 </fieldset>
