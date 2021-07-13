@@ -2185,7 +2185,7 @@ sub DBAddVoteRecord { # $fileHash, $ballotTime, $voteValue, $signedBy, $ballotHa
 	my $ballotHash = shift;
 
 	if (!$ballotTime) {
-		WriteLog('DBAddVoteRecord: warning: missing $ballotTime');
+		WriteLog('DBAddVoteRecord: warning: missing $ballotTime; caller: ' . join(',', caller));
 		$ballotTime = 0;
 		#$ballotTime = time();
 		#return '';
