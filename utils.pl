@@ -364,8 +364,7 @@ sub EnsureSubdirs { # $fullPath ; ensures that subdirectories for a file exist
 	#todo remove requirement of external module
 	my ( $file, $dirs ) = fileparse $fullPath;
 	if ( !$file ) {
-		WriteLog('EnsureSubdirs: warning: $file was not set, returning');
-		WriteLog('EnsureSubdirs: $file = ' . $file);
+		WriteLog('EnsureSubdirs: warning: $file was not set, returning; $file = ' . $file . '; caller = ' . join(',', caller));
 		return 0;
 		#$fullPath = File::Spec->catfile($fullPath, $file);
 	}
