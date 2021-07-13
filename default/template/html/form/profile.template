@@ -1,10 +1,18 @@
 <!-- form/profile.template -->
 <form action="/profile.html" name=frmProfile>
 	<fieldset id=fldRegistration>
-		<span id=spanSignedInStatus></span>
-		<p>
-			Handle: <b><span id=lblHandle></span></b><br>
-			<span id=lblFingerprint></span><br>
+		<p id=pRegButton>
+			<input id=btnRegister
+				type=submit
+				name=btnRegister
+				value="Register"
+			>
+			<span class=beginner>
+				<br>Register; Sign In; Create Profile.<br>
+			</span>
+		</p>
+
+		<p id=pSigningIndicator>
 			<span id=lblSigningIndicator>
 				<noscript>*</noscript>
 				<script>
@@ -14,18 +22,17 @@
                 </script>
 			</span>
 		</p>
+
+		<hr>
+
 		<p>
-			<input
-				type=submit
-				name=btnRegister
-				onclick="if (window.btnRegister_Click) { return btnRegister_Click(this); }"
-				id=btnRegister
-				value="Enter"
-			>
-			<span class=beginner>
-				<br>Use Enter button to create profile.<br>
-			</span>
+			<b><span id=lblHandle></span></b><br>
+			<span id=lblFingerprint></span><br>
+			<span id=spanProfileLink></span>
 		</p>
+
+		<hr>
+
 		<p>
 			<input
 				type=submit
@@ -35,10 +42,9 @@
 				value="Exit"
 			>
 			<span class=beginner>
-				<br>Use Exit button to sign out.<br>
+				<br>Log out and reset all settings.<br>
 			</span>
 		</p>
-		<span id=spanProfileLink></span>
 	</fieldset>
 </form>
 <!-- / form/profile.template -->
