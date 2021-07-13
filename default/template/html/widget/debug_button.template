@@ -7,6 +7,34 @@
 
 <a
 	href=#
-	onclick="window.dbgoff=0; return false;"
-	style="float: right"
->jsdebug</a>
+	onclick="
+		window.dbgoff = !window.dbgoff;
+		this.innerHTML = 'js-debug: ' + (!window.dbgoff);
+		return false;
+	"
+	title="toggle javascript debug output and breakpoints"
+>js-debug: true</a>
+
+<br>
+
+<a
+	href=#
+	onclick="
+		window.eventLoopEnabled = !window.eventLoopEnabled;
+		if (window.EventLoop && window.eventLoopEnabled) {
+			EventLoop();
+		} else {
+			if (window.timeoutEventLoop) {
+				clearTimeout(window.timeoutEventLoop);
+			}
+		}
+		this.innerHTML = 'event-loop: ' + (!!window.eventLoopEnabled);
+		return false;
+	"
+	title="toggle event loop"
+>event-loop: true</a>
+
+<noscript>*</noscript>
+
+</span>
+<!-- / debug_button.template -->
