@@ -1,7 +1,4 @@
 <!-- printed_notice.template -->
-<p class=titlebar>
-	<b>Information About Page</b>
-</p>
 <p>
 	Q: When was this page printed?<br>
 	A: <span class=timestamp epoch=$printedEpoch>$printedHuman</span>
