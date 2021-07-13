@@ -343,10 +343,18 @@ sub EnsureSubdirs { # $fullPath ; ensures that subdirectories for a file exist
 	my $fullPath = shift;
 	chomp $fullPath;
 
-	if (substr($fullPath, 0, 1) eq '/') {
-		WriteLog('EnsureSubdirs: warning: $fullPath begins with / ' . $fullPath);
-		#todo not sure if this should be a warning? what else would fullpath contain?
+	state $scriptDir;
+	if (!$scriptDir) {
+		$scriptDir = GetDir('script');
 	}
+
+	if (
+		substr($fullPath, 0, 1) eq '/' &&
+		substr($fullPath, 0, length($scriptDir)) ne $scriptDir
+	) {
+		WriteLog('EnsureSubdirs: warning: $fullPath begins with / AND does not begin with $scriptDir = ' . $scriptDir);
+	}
+
 	if (index($fullPath, '..') != -1 ) {
 		WriteLog('EnsureSubdirs: warning: $fullPath contains .. ' . $fullPath);
 	}
