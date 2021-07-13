@@ -1362,6 +1362,7 @@ sub GetPageFooter { # returns html for page footer
 	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
 		my $dialogControls = GetTemplate('html/widget/dialog_controls.template');
 		$dialogControls = GetWindowTemplate($dialogControls, 'Interface Controls');
+		$dialogControls = '<span class=advanced>' . $dialogControls . '</span>';
 		$txtFooter = str_replace(
 			'</body>',
 			'<br>' . $dialogControls . '</body>',
