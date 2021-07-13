@@ -3041,7 +3041,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 		$queryAuthorThreads =~ s/\?/'$authorKey'/;
 		$txtIndex .= GetQueryAsDialog(
 			$queryAuthorThreads,
-        	'Threads by Author'
+        	'Topics by Author'
 		);
 		$txtIndex .= '<hr 5>';
 	}
