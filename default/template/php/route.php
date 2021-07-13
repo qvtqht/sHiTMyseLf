@@ -1472,7 +1472,7 @@ if (GetConfig('admin/php/route_enable')) {
 				
 				WriteLog( 'route.php: $_COOKIE[show_advanced] = ' . ( isset( $_COOKIE['show_advanced']) ? $_COOKIE['show_advanced'] : 'UNDEFINED' ) ) ;
 
-				$assistCss .= ".advanced, .admin{ display:none }\n";
+				$assistCss .= ".advanced, .admin, .heading, .menubar { display:none }\n";
 				#$assistCss .= ".advanced, .admin{ display: none; background-color: $colorHighlightAdvanced }\n";
 				// #todo templatify
 			}
