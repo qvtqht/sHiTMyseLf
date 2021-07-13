@@ -1615,15 +1615,15 @@ sub GetMenuFromList { # $listName, $templateName = 'html/menuitem.template'; ret
 
 sub GetMenuTemplate { # returns menubar
 	my $topMenuTemplate = GetTemplate('html/topmenu2.template');
-
-	if (GetConfig('admin/js/enable')) {
-		$topMenuTemplate = AddAttributeToTag(
-			$topMenuTemplate,
-			'a href="/etc.html"',
-			'onclick',
-			"if (window.ShowAll) { ShowAll(this); } return false;"
-		); # &pi;
-	}
+#
+#	if (GetConfig('admin/js/enable')) {
+#		$topMenuTemplate = AddAttributeToTag(
+#			$topMenuTemplate,
+#			'a href="/etc.html"',
+#			'onclick',
+#			"if (window.ShowAll) { ShowAll(this); } return false;"
+#		); # &pi;
+#	}
 
 	my $selfLink = '/access.html';
 	my $menuItems = GetMenuFromList('menu');
