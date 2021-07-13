@@ -13,6 +13,8 @@
         padding: 5pt;
         border-radius: 5pt;
         text-decoration: none;
+        font-size: large;
+        font-family: monospace;
     "
->^^</a>
+>^</a>
 <!-- / back_to_top_button.template -->
