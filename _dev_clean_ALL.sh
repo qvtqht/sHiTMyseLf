@@ -152,18 +152,8 @@ echo "======================"
 
 
 
-echo "Relaunching local web server with ./server_local_lighttpd.pl ..."
-
-echo "3... "
-sleep 1
-
-echo "2... "
-sleep 2
-
-echo "1... "
-sleep 3
-
-echo "Running ./server_local_lighttpd.pl"
-time perl -T ./server_local_lighttpd.pl
+echo "================================================================="
+echo "To run local webserver using lighttpd: ./server_local_lighttpd.pl"
+echo "================================================================="
 
 
