@@ -106,7 +106,7 @@ find html/image -type f | sort | xargs sha1sum | sha1sum | cut -d ' ' -f 1 > che
 if ! diff checksum/html_image_checksum_new checksum/html_image_checksum
 then
 	echo html_image_checksum
-	time find html/image -cmin -100 | grep \\.txt$ | xargs ./index.pl
+	find html/image -cmin -100 | grep \\.txt$ | xargs ./index.pl
 	mv -v checksum/html_image_checksum_new checksum/html_image_checksum
 fi
 
@@ -116,7 +116,7 @@ find html/txt -type f | sort | xargs sha1sum | sha1sum | cut -d ' ' -f 1 > check
 if ! diff checksum/html_txt_checksum_new checksum/html_txt_checksum
 then
 	echo html_txt_checksum
-	time find html/txt -cmin -100 | grep \\.txt$ | head -n 35 | xargs ./index.pl
+	find html/txt -cmin -100 | grep \\.txt$ | head -n 35 | xargs ./index.pl
 	mv -v checksum/html_txt_checksum_new checksum/html_txt_checksum
 fi
 

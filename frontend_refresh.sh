@@ -21,4 +21,4 @@ else
     #todo add os type and version
 fi
 
-time ./pages.pl --queue
+./pages.pl --queue

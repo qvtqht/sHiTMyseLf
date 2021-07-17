@@ -87,7 +87,7 @@ echo "1... "
 # sleep 3
 
 echo "Running ./build.pl"
-time perl -T ./build.pl
+perl -T ./build.pl
 
 echo "==============="
 echo "Build complete!"
@@ -105,7 +105,7 @@ echo "1... "
 # sleep 3
 
 echo "Running ./pages.pl --system"
-time perl -T ./pages.pl --system
+perl -T ./pages.pl --system
 
 echo "=================="
 echo "System pages done!"
@@ -124,7 +124,7 @@ echo "1... "
 # sleep 3
 
 echo "Running ./index.pl --chain"
-time perl -T ./index.pl --chain
+perl -T ./index.pl --chain
 
 echo "============================"
 echo "Chain verification complete!"
@@ -144,7 +144,7 @@ echo "1... "
 # sleep 3
 
 echo "Running ./index.pl --all"
-time perl -T ./index.pl --all
+perl -T ./index.pl --all
 
 echo "======================"
 echo "Reindex of files done!"
@@ -164,6 +164,6 @@ echo "1... "
 # sleep 3
 
 echo "Running ./server_local_lighttpd.pl"
-time perl -T ./server_local_lighttpd.pl
+perl -T ./server_local_lighttpd.pl
 
 

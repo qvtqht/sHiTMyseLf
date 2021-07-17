@@ -36,5 +36,5 @@ echo "================="
 
 #echo "Running ./generate_html_frontend.pl"
 #./generate_html_frontend.pl
-time ./pages.pl --php
-time ./pages.pl -M welcome
+./pages.pl --php
+./pages.pl -M welcome
