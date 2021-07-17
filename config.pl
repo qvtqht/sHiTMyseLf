@@ -204,7 +204,7 @@ sub GetConfig { # $configName || 'unmemo', $token, [$parameter] ;  gets configur
 		} # return default/
 		else {
 			if (substr($configName, 0, 6) eq 'theme/' || substr($configName, 0, 7) eq 'string/') {
-				WriteLog('GetConfig: no default; $configName = ' . $configName);
+				WriteLog('GetConfig: warning: no default; $configName = ' . $configName);
 				return '';
 			} else {
 				if ($configName =~ m/\.list$/) {
