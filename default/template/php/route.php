@@ -626,7 +626,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$mostRecentCall = intval(GetCache($mostRecentCacheName));
 
 			#my
-			$refreshWindowInterval = 1;
+			$refreshWindowInterval = GetConfig('admin/php/route_refresh_interval');
 
 			if (time() - $mostRecentCall > $refreshWindowInterval) { #todo config for this
 				WriteLog('HandleNotFound: pages.pl was called more than 5 seconds ago, trying to grow page');
