@@ -626,7 +626,8 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 			$mostRecentCall = intval(GetCache($mostRecentCacheName));
 
 			#my
-			$refreshWindowInterval = GetConfig('admin/php/route_refresh_interval');
+			$refreshWindowInterval = GetConfig('admin/php/route_pages_pl_sane_limit');
+				#todo still a bug here; cache should be used if pages.pl sanity check fails
 
 			if (time() - $mostRecentCall > $refreshWindowInterval) { #todo config for this
 				WriteLog('HandleNotFound: pages.pl was called more than 5 seconds ago, trying to grow page');
@@ -689,7 +690,8 @@ if (GetConfig('admin/php/route_enable')) {
 // admin/php/route_enable is true
 	$redirectUrl = '';
 	$cacheOverrideFlag = 0;
-	$cacheTimeLimit = 100; // seconds page cache is good for
+	$cacheTimeLimit = GetConfig('admin/php/route_cache_time_limit'); // seconds page cache is good for
+
 	$cacheWasUsed = 0;
 	#$html = '';
 
