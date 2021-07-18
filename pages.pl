@@ -2176,7 +2176,8 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 	state $itemsDeleted;
 	if (!$itemsDeleted) {
 		my @result = SqliteQueryHashRef('deleted');
-		$itemsDeleted = scalar(@result);
+		$itemsDeleted = (scalar(@result) - 1); #minus 1 because first row is headers
+		#todo optimize
 	}
 
 #	my $adminId = GetRootAdminKey();
