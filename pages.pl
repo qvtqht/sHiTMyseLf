@@ -4897,7 +4897,7 @@ sub PutStatsPages { # stores template for footer stats dialog
 			# and should have as few dependencies as possible
 			# and maybe a little bit to save time
 			my $warningsHtml =
-				'<html><head><title>warnings</title></head><body>' .
+				'<html><head><title>engine</title></head><body>' .
 				'<center><table height=95% width=98%>' .
 				'<tr><td align=center valign=middle>' .
 				'<p>technical users:<br><a href="/warning.txt">warning list</a> can help fix bugs<br>or just <a href="/help.html">confuse more</a></p>' .
@@ -4908,7 +4908,12 @@ sub PutStatsPages { # stores template for footer stats dialog
 				'<td><pre>' .
 				$warningsSummaryHtml .
 				'</pre></td>' .
-				'</tr></table></center></body></html>'
+				'</tr></table></center>' .
+				'<hr>' .
+				'<pre>' .
+				`find html | cut -d '/' -f 2-` .
+				'</pre>' .
+				'</body></html>'
 			;
 			#$warningsHtml = InjectJs($warningsHtml, qw(utils fresh)); #shouldn't be any javascript on this page
 			#todo warning if there is javascript ni the html
