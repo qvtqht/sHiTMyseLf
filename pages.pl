@@ -304,6 +304,15 @@ sub GetAuthorLink { # $fingerprint, $showPlain ; returns avatar'ed link for an a
 
 	my $authorLink = GetTemplate('html/authorlink.template');
 
+    { # trim whitespace from avatar template
+        #this trims extra whitespace from avatar template
+        #otherwise there may be extra spaces in layout
+        #WriteLog('avdesp before:'.$avatar);
+        $authorLink =~ s/\>\s+/>/g;
+        $authorLink =~ s/\s+\</</g;
+        #WriteLog('avdesp after:'.$avatar);
+    }
+
 	$authorAvatar = trim($authorAvatar);
 
 	$authorLink =~ s/\$authorUrl/$authorUrl/g;
