@@ -8,8 +8,7 @@
         onclick="if (window.SetInterfaceMode) { SetInterfaceMode('beginner', this); }"
         href="#"
     >
-        Please note, that your interface is set to advanced mode.<br>
-        If you want to <b>reset to beginner mode, click here.</b>
+        Click here for <b>beginner mode</b>.
     </a>
 </p>
 
