@@ -350,7 +350,8 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 
 	if (index($file{'tags_list'}, 'pubkey') != -1) {
 		$txtIndex .= GetWindowTemplate(
-			'Public key allows verifiable signatures.',
+			#'Public key allows verifiable signatures.',
+			'This is a special item which represents the author profile.',
 			'Information'
 		);
 		#todo templatify + use GetString()
