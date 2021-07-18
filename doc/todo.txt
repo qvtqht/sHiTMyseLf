@@ -2295,3 +2295,9 @@ in this situation (for now)
 config/list/menu_bytag
 
 
+make list of common lighttpd bin paths
+try each one until it works
+have an alternative (which takes longer) for when it is missing
+	possible fallbacks:
+		apache
+		file:// url instructions
