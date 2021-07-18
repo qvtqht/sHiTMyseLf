@@ -620,26 +620,34 @@ function ProfileOnLoad () { // onload event for profile page
 					if (lblSigningIndicator) {
 						//alert('DEBUG: lblSigningIndicator check passed');
 						if (window.openpgp) {
-							// #todo why is window.openpgp false here??
-							//alert('DEBUG: window.openpgp check passed, setting no (available)');
+						    var lblFingerprint = document.getElementById('lblFingerprint');
+						    //alert('DEBUG: lblFingerprint = ' + lblFingerprint.innerHTML);
+						    if (lblFingerprint && (lblFingerprint.innerHTML != '')) { //#todo ...
+						        //pgp is available, but we're already logged in via cookies
 
-							lblSigningIndicator.innerHTML = '';
+						        lblSigningIndicator.innerHTML = 'Simple account, no private key.';
+                            } else {
+                                // #todo why is window.openpgp false here??
+                                //alert('DEBUG: window.openpgp check passed, setting no (available)');
 
-							var lblEnablePGP = document.createElement('label');
-							var chkEnablePGP = document.createElement('input');
-							var txtEnablePGP = document.createTextNode('Create private key (PGP)');
+                                lblSigningIndicator.innerHTML = '';
 
-							chkEnablePGP.setAttribute('type', 'checkbox');
-							chkEnablePGP.setAttribute('name', 'chkEnablePGP');
-							chkEnablePGP.setAttribute('id', 'chkEnablePGP');
+                                var lblEnablePGP = document.createElement('label');
+                                var chkEnablePGP = document.createElement('input');
+                                var txtEnablePGP = document.createTextNode('Create private key (PGP)');
 
-							lblEnablePGP.setAttribute('for', 'chkEnablePGP');
+                                chkEnablePGP.setAttribute('type', 'checkbox');
+                                chkEnablePGP.setAttribute('name', 'chkEnablePGP');
+                                chkEnablePGP.setAttribute('id', 'chkEnablePGP');
 
-							lblEnablePGP.appendChild(chkEnablePGP);
-							lblEnablePGP.appendChild(txtEnablePGP);
-							lblSigningIndicator.appendChild(lblEnablePGP);
+                                lblEnablePGP.setAttribute('for', 'chkEnablePGP');
 
-							AddPrivateKeyLinks();
+                                lblEnablePGP.appendChild(chkEnablePGP);
+                                lblEnablePGP.appendChild(txtEnablePGP);
+                                lblSigningIndicator.appendChild(lblEnablePGP);
+
+                                AddPrivateKeyLinks();
+                            }
 						} else {
 							//alert('DEBUG: warning: window.openpgp check FAILED');
 							lblSigningIndicator.innerHTML = 'Unavailable';
@@ -647,7 +655,7 @@ function ProfileOnLoad () { // onload event for profile page
 					} else {
 						//alert('DEBUG: lblSigningIndicator check FAILED');
 					}
-					AddPrivateKeyLinks();
+					//AddPrivateKeyLinks();
 				}
 			} else {
 				//alert('DEBUG: ProfileOnLoad: window.localStorage check FAILED');

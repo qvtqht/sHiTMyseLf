@@ -1341,7 +1341,7 @@ if (GetConfig('admin/php/route_enable')) {
 				$html = preg_replace('/<p id=pRegButton>.*?<\/p>/s', '', $html);
 			} else {
 				$handle = '(Not Signed In)';
-				$fingerprint = 'Agree to Rules to Sign In';
+				$fingerprint = '';
 				// this is a mis-use of the spans... oh well
 			}
 
