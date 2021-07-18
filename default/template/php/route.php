@@ -1498,7 +1498,7 @@ if (GetConfig('admin/php/route_enable')) {
 						'</head>'
 					,
 						"<!-- php/assist_show_advanced -->\n".
-						"<style><!--" .
+						"<style id=styleAssistShowAdvanced><!--" .
 						"\n" .
 						$assistCss .
 						"\n" .

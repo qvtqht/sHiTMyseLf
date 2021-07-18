@@ -192,6 +192,11 @@ function ShowAdvanced (force, container) { // show or hide controls based on pre
 		//alert('DEBUG: ShowAdvanced: feature check passed!');
 		///////////
 
+		var styleAssistShowAdvanced = document.getElementById('styleAssistShowAdvanced');
+		if (styleAssistShowAdvanced) {
+		    styleAssistShowAdvanced.remove();
+		}
+
 		var displayTimestamps = '0';
 		if (GetPrefs('timestamps_format')) {
 			displayTimestamps = 1;
