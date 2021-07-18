@@ -1,3 +1,7 @@
+<body onmousemove ="document.title = this.tagName; if (this.tagName == 'BODY') {SetActiveDialog(this)}">
+
+
+
 
 
 
