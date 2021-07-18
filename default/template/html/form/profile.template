@@ -33,7 +33,7 @@
 
 		<hr>
 
-		<p>
+		<p id=pExitButton>
 			<input
 				type=submit
 				name=btnSignOut

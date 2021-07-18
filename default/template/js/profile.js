@@ -630,7 +630,12 @@ function ProfileOnLoad () { // onload event for profile page
                                 // #todo why is window.openpgp false here??
                                 //alert('DEBUG: window.openpgp check passed, setting no (available)');
 
-                                lblSigningIndicator.innerHTML = '';
+								var pExitButton = document.getElementById('pExitButton');
+								if (pExitButton) {
+									pExitButton.style.display = 'none';
+								}
+
+								lblSigningIndicator.innerHTML = '';
 
                                 var lblEnablePGP = document.createElement('label');
                                 var chkEnablePGP = document.createElement('input');
