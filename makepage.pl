@@ -161,9 +161,9 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		$speakersPage = GetPageHeader('Speakers', 'Speakers', 'speakers');
 
 		my %queryParams;
-		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%speaker%'";
+		$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,speaker,%'";
 		$queryParams{'order_clause'} = "ORDER BY file_name";
-#		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%speaker%'";
+#		$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,speaker,%'";
 
 		my @itemSpeakers = DBGetItemList(\%queryParams);
 		foreach my $itemSpeaker (@itemSpeakers) {
@@ -195,7 +195,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 ##			my $itemLinkTemplate = GetItemTemplate($itemLink);
 ##			$linksPage .= $itemLinkTemplate;
 ##		}
-#		$linksPage .= GetQueryAsDialog("Select item_title from item_flat where tags_list like '%url%'");
+#		$linksPage .= GetQueryAsDialog("Select item_title from item_flat where ','||tags_list||',' LIKE '%,url,%'");
 #
 #		$linksPage .= GetPageFooter();
 #		$linksPage = InjectJs($linksPage, qw(settings utils));
@@ -206,7 +206,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		$committeePage = GetPageHeader('Committee', 'Committee', 'committee');
 
 		my %queryParams;
-		$queryParams{'where_clause'} = "WHERE tags_list LIKE '%committee%'";
+		$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,committee,%'";
 		$queryParams{'order_clause'} = "ORDER BY item_order";
 
 		my @itemCommittee = DBGetItemList(\%queryParams);
@@ -237,7 +237,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 
 		foreach my $sponsorLevel (qw(gold silver)) {
 			my %queryParams;
-			$queryParams{'where_clause'} = "WHERE tags_list LIKE '%sponsor%' AND tags_list like '%$sponsorLevel%'";
+			$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,sponsor,%' AND ','||tags_list||',' LIKE '%,$sponsorLevel,%'";
 			$queryParams{'order_clause'} = "ORDER BY file_name";
 
 			my $sponsorsImages = '';
