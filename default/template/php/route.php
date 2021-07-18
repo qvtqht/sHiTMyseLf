@@ -1530,10 +1530,16 @@ if (GetConfig('admin/php/route_enable')) {
 			#todo other sanity checks, like "no html tags" or "nothing but html tags"
 			WriteLog('route.php: warning: $html is empty');
 
+			$html = '<html>';
+			$html = '<head>';
+			$html = '<title>System Message: Engine requires attention. Please remain calm.</title>';
+			$html = '<meta http-equiv=refresh content=5>';
+			$html = '</head>';
 			$html = '<body bgcolor="#808080">';
 			$html .= '<center><table bgcolor="#c0e0e0" border=10 bordercolor="#ffe0c0" width=99%><tr><td align=center valign=middle>';
-			$html .= '<h1>Please remain calm.</h1>';
 			$html .= '<h2>System Message: <br>Engine requires attention.</h2>';
+			$html .= '<h1>We apologize inconvenience. <br>Please remain calm.</h1>';
+			$html .= '<h3>Retry after counting to ten.</h3>';
 			$html .= '<hr>';
 			$html .= '<p>';
 			$html .= '<a href="/">Home</a> | ';
@@ -1544,6 +1550,7 @@ if (GetConfig('admin/php/route_enable')) {
 			$html .= '<form action=/post.html><label>Message Operator:</label><br><input type=text size=30 name=comment value="test"><input type=submit value=Send></form>';
 			$html .= '</td></tr></table></center>';
 			$html .= '</body>';
+			$html .= '</html>';
 		}
 
 		if (function_exists('WriteLog') && GetConfig('admin/php/debug')) {
