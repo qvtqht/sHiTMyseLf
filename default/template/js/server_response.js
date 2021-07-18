@@ -38,6 +38,9 @@ function serverResponseOk (t) { // function which hides server response message
 	}
 
 	window.blockPreNavigateNotification = 1; // this blocks the Meditate... notification from showing ONCE
+	// CancelLoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator
+	// CancelLoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator
+	// CancelLoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator LoadingIndicator
 
 	if (window.history) {
 		//alert('DEBUG: serverResponseOk: window.history found');
