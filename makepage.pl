@@ -388,7 +388,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 #		PutHtmlFile("agenda-sunday.html", GetQueryPage('agenda_sunday'));
 	}
 	elsif ($pageType eq 'deleted') {
-		my $deletedPage = GetQueryPage('deleted');
+		my $deletedPage = GetQueryPage('deleted', 'Archived');
 		PutHtmlFile("deleted.html", $deletedPage);
 	}
 	elsif ($pageType eq 'url') {
