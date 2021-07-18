@@ -451,12 +451,14 @@ function getUsername2 () { // returns pgp username
 	return '';
 } // getUsername2()
 
-function SavePrivateKeyAsTxt() { // initiates "download" of private key as text file
+function SavePrivateKeyAsTxt () { // initiates "download" of private key as text file
 	var myFp = getUserFp();
 	var myUsername = getUsername2();
 	var text = getPrivateKey();
 
 	myUsername = StripToFilename(myUsername);
+
+    window.blockPreNavigateNotification = 1;
 
 	return DownloadAsTxt(myUsername + '_' + myFp + '.txt', text);
 }
