@@ -9,7 +9,7 @@ Content is stored in ./html/txt/ and ./html/image/
 Cache is stored in ./cache/
     Including the SQLite index-database index.sqlite3
 
-HTML root is ./html
+HTML root is ./html/
     Can be symlinked TO, but shouldn't be a symlink itself
 
 Basic flow diagram:
@@ -22,9 +22,14 @@ Basic flow diagram:
    * * *
 DEPENDENCIES
 ============
-# sudo apt-get install liburi-encode-perl libany-uri-escape-perl libhtml-parser-perl libdbd-sqlite3-perl libdigest-sha-perl sqlite3 lighttpd gnupg gnupg2 imagemagick zip php-cgi
+# apt install liburi-encode-perl libany-uri-escape-perl libhtml-parser-perl libdbd-sqlite3-perl libdigest-sha-perl sqlite3 gnupg gnupg2 imagemagick zip php-cgi
 
-# sudo yum install perl-Digest-MD5 perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite perl-URI-Encode perl-Digest-SHA1 sqlite lighttpd gnupg gnupg2 perl-Devel-StackTrace perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite lighttpd-fastcgi ImageMagick php-cgi zip
+# sudo yum install perl-Digest-MD5 perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite perl-URI-Encode perl-Digest-SHA1 sqlite gnupg gnupg2 perl-Devel-StackTrace perl-Digest-SHA perl-HTML-Parser perl-DBD-SQLite lighttpd-fastcgi ImageMagick php-cgi zip
+
+# helpful for dev
+# IntelliJ IDEA Community 2019.3
+# apt install sqlitebrowser time lighttpd
+# yum install sqlitebrowser time lighttpd
 
 # WORKS ON FREEBSD with lighttpd and without php (./config/admin/php/enable=0)
 # 	I don't know how to install php on freebsd yet
@@ -77,8 +82,15 @@ COMMON TASKS
 ============
 Scripts:
 ./_dev_clean_ALL.sh
+./_dev_clean_ALL_no_delay.sh
 #Rebuild entire site and reimport data
 #Useful during dev
+
+./_dev_clean_html.sh
+#Remove all html files ... use with lazy mode
+
+./_dev_clean_template.sh
+#Use after modifying anything under default/template
 
 ./_dev_refresh.sh
 #Checksums various parts of the code and refreshes queues which are affected
@@ -86,7 +98,7 @@ Scripts:
 #Also useful during dev
 
 ./generate_frontend.pl
-#Regenerate entire frontend from index database
+#Regenerate entire frontend including listing pages
 
 ./index.pl --all
 #Index all unindexed files in ./html/txt and ./html/image
