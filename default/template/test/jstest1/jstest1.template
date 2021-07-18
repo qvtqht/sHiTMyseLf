@@ -64,6 +64,11 @@
                 <input type=text name=txtNavigatorLanguage size=11>
             </p>
 
+            <p>
+                window.location.href:<br>
+                <input type=text name=txtWindowLocationHref size=80>
+            </p>
+
             <hr>
 
             <p>

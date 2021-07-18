@@ -6,11 +6,15 @@ function RunTest() {
 	//alert('DEBUG: Looking for document.getElementById...');
 
 
-	if (window.navigator) {
+	if (window.navigator) { // #todo this should come after the timestamp for begin
 		//alert('DEBUG: window.navigator was true, looking for navigator.language and navigator.userAgent');
 
 		document.frmTest.txtNavigatorUserAgent.value = navigator.userAgent;
 		document.frmTest.txtNavigatorLanguage.value = navigator.language;
+	}
+
+	if (window.location && window.location.href) {
+	    document.frmTest.txtWindowLocationHref.value = window.location.href;
 	}
 
 	var d = new Date();
