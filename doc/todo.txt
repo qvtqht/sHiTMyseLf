@@ -1,3 +1,6 @@
+if zip is missing, data page doesn't generate correctly
+	very little operator feedback on cause
+
 puzzle solving requires modern js, which locks out older browsers
 	workaround: existing puzzle-solved user can vouch for them
 

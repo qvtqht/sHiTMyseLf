@@ -140,3 +140,5 @@ The value of the #puzzle token is hard-coded in the sql schema definitions
 			if php is enabled
 
 require profile mode is janky and locks out links and any non-cookie users
+
+quirks mode and php debug are in conflict
