@@ -435,7 +435,7 @@ sub SqliteMakeTables { # creates sqlite schema
 		");
 
 		SqliteQuery2("
-			insert into vote_value(vote, value) values('flag', -5);
+			insert into vote_value(vote, value) values('flag', -50000);
 		");
 
 		SqliteQuery2("
