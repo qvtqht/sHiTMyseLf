@@ -27,7 +27,7 @@ if (isset($_GET['btnSignOut']) && $_GET['btnSignOut']) {
 	unsetcookie2('checksum');
 
 	// redirect with signed out message
-	RedirectWithResponse('/profile.html', 'Goodbye!');
+	RedirectWithResponse('/profile.html', 'Goodbye! You have signed out!');
 
 	WriteLog('cookie.php: all cookies unset');
 } # btnSignOut handler
