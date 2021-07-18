@@ -94,6 +94,17 @@ function OnLoadEverything () { // checks for each onLoad function and calls it
 		//alert('DEBUG: OnLoadEverything: document.search.q.focus()');
 		document.search.q.focus();
 	}
+
+	if (0 && window.localStorage) { // #todo improve crumbs
+	    var crumbs1 = localStorage.getItem('crumbs');
+	    if (crumbs1) {
+            crumbs1 = crumbs1 + '\n' + window.location.href;
+            localStorage.setItem('crumbs', crumbs1);
+        } else {
+            localStorage.setItem('crumbs', window.location.href);
+        }
+    }
+
 	if (window.EventLoop) {
 		//alert('DEBUG: OnLoadEverything: EventLoop()');
 		if (window.CheckIfFresh) {
