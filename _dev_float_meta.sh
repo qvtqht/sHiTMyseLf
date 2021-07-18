@@ -1,5 +1,8 @@
 #!/bin/sh
 
+#note, this script has needle ('meta') in several other places
+#i could not figure out how to do variable substitution in this case
+
 needle=meta
 echo $needle
 
@@ -13,7 +16,7 @@ for f in ./archive/*.gz; do
   echo Found: `wc -l _temp_import_needle_items_from_archives.sh`
 done
 
-chmod +x ./_temp_import_meta_items_from_archives.sh
+chmod +x ./_temp_import_needle_items_from_archives.sh
 
-echo run ./_temp_import_meta_items_from_archives.sh to import
+echo run ./_temp_import_needle_items_from_archives.sh to import
 
