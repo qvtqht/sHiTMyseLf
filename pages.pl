@@ -1264,7 +1264,7 @@ sub GetImageContainer { # $fileHash, $imageAlt, $boolLinkToItemPage = 1
 	return $imageContainer;
 } # GetImageContainer()
 
-sub GetTagsListAsHtmlWithLinks {
+sub GetTagsListAsHtmlWithLinks { # $tagsListParam ; prints up to 7 tags
 	my $tagsListParam = shift;
 
 	if (!$tagsListParam) {
@@ -1275,7 +1275,16 @@ sub GetTagsListAsHtmlWithLinks {
 
 	my $headings;
 	my $comma = '';
+
+	my $safeLimit = 7; # don't print more than this many tags #hardcoded #todo
+
 	foreach my $tag (@tagsList) {
+	    if (!--$safeLimit) {
+	        # check if we've printed more than $safeLimit tags
+	        $headings .= '[...]';
+	        last;
+	    }
+
 		$headings .= $comma;
 		$comma = '; ';
 		
