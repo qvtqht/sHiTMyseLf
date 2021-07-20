@@ -2,12 +2,11 @@
 
 /* should be called inline-block.css ? */
 
-/* #bug makes some dialogs horizontal
+/* makes some dialogs horizontal */
 fieldset {
 	display: inline-block;
 	vertical-align: top;
 }
- */
 
 table.dialog { /* inline-table table-block */
 	display: inline-block;
