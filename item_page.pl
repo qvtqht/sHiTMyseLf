@@ -1,5 +1,15 @@
 #!/usr/bin/perl -T
 
+# GetItemPage()
+# GetHtmlToolbox()
+# GetPublishForm()
+# GetReplyListingEmpty()
+# GetReplyListing()
+# GetRelatedListing()
+# GetItemAttributesWindow()
+# GetItemAttributesWindow2()
+# GetPublishForm()
+
 use strict;
 use warnings;
 use utf8;
@@ -205,6 +215,13 @@ sub GetHtmlToolbox {
 			$urlParamFullText .
 			'">' .
 			'sHiTMyseLf' .
+			'</a><br>';
+
+		$htmlToolbox .=
+			'<a href="https://chg.pw/post.html?comment=' .
+			$urlParamFullText .
+			'">' .
+			'chg.pw' .
 			'</a><br>';
 
 		$htmlToolbox .=

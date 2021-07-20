@@ -10,7 +10,7 @@ function PingUrlCallback () {
 		if (xmlhttpElement) {
 			var elemOK = document.createElement('span');
 			//elemOK.setAttribute('disabled', true);
-			elemOK.innerHTML = '&check;';
+			elemOK.innerHTML = '&check;'; // checkmark
 			xmlhttpElement.setAttribute('disabled', true);
 			xmlhttpElement.appendChild(elemOK);
 		}
@@ -48,7 +48,11 @@ function PingUrl (url, ele) { // loads arbitrary url via image or xhr
 			xmlhttp = window.xmlhttp;
 		}
 
-        xmlhttp.onreadystatechange = window.PingUrlCallback;
+		if (window.GetPrefs && GetPrefs('show_admin')) {
+			// skip callback to save resources
+		} else {
+        	xmlhttp.onreadystatechange = window.PingUrlCallback;
+		}
 
         xmlhttp.open("HEAD", url, true);
 		//xmlhttp.timeout = 5000; //#xhr.timeout

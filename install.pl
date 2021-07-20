@@ -149,9 +149,10 @@ if ($aptPath) {
 
 
 	if ($installApt) {
-		my $aptResult = `$aptCommand`;
+		my $aptResult = system($aptCommand);
+		#my $aptResult = `$aptCommand`;
 
-		WriteConfigureMessage($aptResult);
+		#WriteConfigureMessage($aptResult);
 
 		$bedMade = 1;
 	}
