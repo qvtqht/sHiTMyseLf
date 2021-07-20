@@ -80,10 +80,6 @@ if [ $need_clean_template = 1 ]; then
   ./_dev_clean_template.sh;
 fi
 
-if [ $need_make_php = 1 ]; then
-  ./pages.pl --php
-fi
-
 if [ $need_clean_query = 1 ]; then
   ./_dev_clean_query.sh;
 fi
@@ -93,10 +89,17 @@ if [ $need_clean_theme = 1 ]; then
 fi
 if [ $need_clean_html = 1 ]; then
   ./_dev_clean_html.sh;
+  need_make_php = 1;
+  need_make_js = 1;
 fi
 
+if [ $need_make_php = 1 ]; then
+  ./pages.pl --php
+fi
 
-
+if [ $need_make_js = 1 ]; then
+  ./pages.pl --js
+fi
 
 
 

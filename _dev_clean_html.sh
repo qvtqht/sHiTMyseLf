@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#./_dev_clean_html
+
 # this script will clean html to make room for new html
 
 # mkdir trash
@@ -15,6 +17,9 @@ touch -d @0 html/*.js html/*/*.js html/*/*/*.js
 
 echo find html -iname '*.html' -type f -exec rm {} \;
 find html -iname '*.html' -type f -exec rm {} \;
+
+echo rm -f cache/b/pages/*
+rm -f cache/b/pages/*
 
 #echo find html -iname '*.html' -type f -mtime +5 -exec rm {} \;
 #find html -iname '*.html' -type f -mtime +5 -exec rm {} \;
