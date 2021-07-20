@@ -25,11 +25,22 @@
 			Show operator controls<noscript><b>*</b></noscript>
 		</label>
 	</p>
+</fieldset>
+
+<fieldset class=advanced>
+	<legend><b>Desktop</b><br></legend>
 
 	<p>
-		<label for=chkDraggable class=advanced>
+		<label for=chkDraggable>
 			<input id=chkDraggable name=chkDraggable type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable'); }">
-			Quirky enhancements<noscript><b>*</b></noscript>
+			Allow dialog reposition<noscript><b>*</b></noscript>
+		</label>
+	</p>
+
+	<p>
+		<label for=chkDraggableScale>
+			<input id=chkDraggableScale name=chkDraggableScale type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_scale'); }">
+			Rescale active dialog<noscript><b>*</b></noscript>
 		</label>
 	</p>
 </fieldset>

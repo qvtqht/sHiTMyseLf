@@ -459,6 +459,19 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 
 	//alert('DEBUG: SaveCheckbox(' + ths + ',' + prefKey);
 
+	///////////////////////////////
+	// BEFORE SAVE ACTIONS BEGIN //
+	if (prefKey == 'draggable_scale') {
+		if (window.SetActiveDialog) {
+			SetActiveDialog(0);
+		}
+	}
+	// BEFORE SAVE ACTIONS FINISH //
+	////////////////////////////////
+
+
+	///////////////////////
+	// ACTUAL SAVE BEGIN //
 	if (prefKey == 'timestamps_format' || prefKey == 'performance_optimization' && window.ShowTimestamps) { //#todo
 		SetPrefs(prefKey, ths.value);
 		ShowTimestamps();
@@ -469,18 +482,23 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 		//alert('DEBUG: checkboxState = ' + checkboxState);
 		SetPrefs(prefKey, checkboxState);
 	}
+	// ACTUAL SAVE FINISH //
+	////////////////////////
 
-	if (prefKey == 'draggable' && window.DraggingInit) { // enable dragging
-		if (ths.checked) {
-			DraggingInit(0);
-		} else {
-			//DraggingRetile(); // #todo
+	//////////////////////////////
+	// AFTER SAVE ACTIONS BEGIN //
+	if (prefKey == 'draggable_scale') {
+		if (window.SetActiveDialog) {
+			SetActiveDialog(0);
 		}
 	}
 
 	if (prefKey == 'show_advanced' || prefKey == 'beginner' || prefKey == 'show_admin' && window.ShowAdvanced) { // SaveCheckbox()
 		ShowAdvanced(1);
 	}
+	// AFTER SAVE ACTIONS FINISH //
+	///////////////////////////////
+
 
 	//alert('DEBUG: after SetPrefs, GetPrefs(' + prefKey + ') returns: ' + GetPrefs(prefKey));
 
@@ -589,6 +607,7 @@ function LoadCheckbox (c, prefKey) { // updates checkbox state to reflect settin
 function LoadCheckboxValues () {
 	//alert('DEBUG: LoadCheckboxValues()');
 	LoadCheckbox(document.getElementById('chkDraggable'), 'draggable');
+	LoadCheckbox(document.getElementById('chkDraggableScale'), 'draggable_scale');
 	LoadCheckbox(document.getElementById('chkShowAdmin'), 'show_admin');
 	LoadCheckbox(document.getElementById('chkShowAdvanced'), 'show_advanced');
 	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');

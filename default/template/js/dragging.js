@@ -163,7 +163,7 @@ function SetActiveDialog (ths) {
 		return '';
 	}
 
-	if (ths.getAttribute('imactive') == '1' || window.dialogDragInProgress) {
+	if (ths && ths.getAttribute('imactive') == '1' || window.dialogDragInProgress) {
 		//alert('DEBUG: SetActiveDialog: imactive found');
 		return true;
 	} else {
@@ -174,15 +174,17 @@ function SetActiveDialog (ths) {
 		// #thoughts should this be dependent on GetPrefs?
 		// or should it unintentionally come on if GetPrefs is not available?
 
-	ths.style.zIndex = ++window.draggingZ;
+	if (ths) {
+		ths.style.zIndex = ++window.draggingZ;
+	}
 
 	var colorWindow = ''; // for templating
 	var colorTitlebar = ''; // for templating
 	var colorSecondary = ''; // for templating
 	var colorTitlebarText = ''; // for templating
 
-	var doScale = 1; // config/admin/js/dragging_do_scale
-	var scaleLarge = '2.0';
+	var doScale = GetPrefs('draggable_scale') ? 1 : 0;
+	var scaleLarge = '1.9';
 	var scaleSmall = '1.0';
 	// this doesn't work right  yet, but loks promising
 
@@ -192,7 +194,7 @@ function SetActiveDialog (ths) {
 		// walking backwards is necessary to preserve the element positioning on the page
 		// once we remove the element from the page flow, all the other elements reflow to account it
 		// if we walk forwards here, all the elements will end up in the top left corner
-		if (elements[i] == ths) {
+		if (ths && elements[i] == ths) {
 			elements[i].setAttribute('imactive', '1');
 			elements[i].style.borderColor = colorTitlebar;
 
@@ -203,9 +205,15 @@ function SetActiveDialog (ths) {
 			////alert('DEBUG: SetActiveDialog: document.documentElement.clientWidth and .clientHeight: ' + document.documentElement.clientWidth + ',' + document.documentElement.clientHeight);
 			////alert('DEBUG: SetActiveDialog: myScale = ' + myScale);
 
+		} else {
+			elements[i].setAttribute('imactive', '0');
+			elements[i].style.borderColor = colorWindow;
+		}
+
+		if (elements[i].getAttribute('imactive') == 1) {
 			if (doScale) {
-                //var myScale = 1 + (document.documentElement.clientWidth / (iwidth * 3));
-                var myScale = scaleLarge;
+				//var myScale = 1 + (document.documentElement.clientWidth / (iwidth * 3));
+				var myScale = scaleLarge;
 
 				elements[i].style.transition = 'transform 0.15s';
 				//elements[i].style.transform = 'scale(' + myScale + ')';
@@ -225,9 +233,7 @@ function SetActiveDialog (ths) {
 //				;
 			}
 		} else {
-			elements[i].setAttribute('imactive', '0');
-			elements[i].style.borderColor = colorWindow;
-			if (doScale) {
+			if (doScale) { // always de-scale window, because it may have been scaled up before user turned off scaling
 				//var myScale =(document.documentElement.clientWidth / (iwidth * 5));
 				var myScale = scaleSmall;
 				elements[i].style.transform = 'scale(' + myScale + ')';
@@ -235,7 +241,6 @@ function SetActiveDialog (ths) {
 
 				//elements[i].style.transform = 'scale(0.5)';
 				//elements[i].style.transformOrigin = 'top center';
-
 			}
 		}
 
@@ -243,7 +248,7 @@ function SetActiveDialog (ths) {
 		var firstTitlebar = allTitlebar[0];
 
 		if (firstTitlebar && firstTitlebar.getElementsByTagName) {
-			if (elements[i] == ths) {
+			if ((ths && elements[i] == ths) || elements[i].getAttribute('imactive') == 1) {
 				// active
 				firstTitlebar.style.backgroundColor = colorTitlebar;
 				firstTitlebar.style.color = colorTitlebarText;
