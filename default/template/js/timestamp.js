@@ -141,17 +141,23 @@ function ShowTimestamps () { // finds any class=timestamp, updates its displayed
 		}
 
 		// find elements with class=timestamp
-		var te = document.getElementsByClassName("timestamp");
+		var te = document.getElementsByClassName("timestamp"); //#timestampTagFormat
+		//var te = document.getElementsByTagName("time"); //#timestampTagFormat
 
 		//alert('DEBUG: ShowTimestamps: class=timestamp elements found: ' + te.length);
 		for (var i = 0; i < te.length; i++) {
 			// loop through all the timestamp elements on the page
-			if (!isNaN(te[i].getAttribute('epoch'))) {
+
+			//var timeValue = te[i].getAttribute('datetime');  //#timestampTagFormat
+			var timeValue = te[i].getAttribute('epoch');  //#timestampTagFormat
+
+			if (!isNaN(timeValue)) {
+			//if (!isNaN(te[i].getAttribute('epoch'))) { //#timestampTagFormat
 				// element also has an attribute called 'epoch', and it is
 				// a number, which would represent epoch seconds
-				var secs = 0 - (curTime - te[i].getAttribute('epoch')); // number of seconds since epoch begin
+				var secs = 0 - (curTime - timeValue); // number of seconds since epoch begin
 				var longAgo = '';
-				if (te[i].getAttribute('epoch') % 1 == 0) {
+				if (timeValue % 1 == 0) {
 					secs = RoundNumber(secs);
 				}
 

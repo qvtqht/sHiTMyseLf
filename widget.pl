@@ -200,14 +200,17 @@ sub GetTimestampWidget { # $time ; returns timestamp widget
 		return '';
 	}
 
+	#my $timeTagFlag = 1; #timestampTagFormat
+
 	my $widget = '';
 	if ($epoch) {
 		# epoch-formatted timestamp, simpler template
-		$widget = GetTemplate('html/widget/timestamp_epoch.template');
+		$widget = GetTemplate('html/widget/timestamp_epoch.template'); # timestampTagFormat
 		$widget =~ s/\$timestamp/$time/;
 	} else {
 		WriteLog('GetTimestampWidget: $epoch = false');
-		$widget = GetTemplate('html/widget/timestamp.template');
+		$widget = GetTemplate('html/widget/timestamp_time.template'); #timestampTagFormat
+		#$widget = GetTemplate('html/widget/timestamp.template'); #timestampTagFormat
 
 		$widget = str_replace("\n", '', $widget);
 		# if we don't do this, the link has an extra space
