@@ -1352,6 +1352,8 @@ if (GetConfig('admin/php/route_enable')) {
 				$handle = '(Not Signed In)';
 				$fingerprint = '';
 				// this is a mis-use of the spans... oh well
+
+				$html = preg_replace('/<p id=pExitButton>.*?<\/p>/s', '', $html);
 			}
 
 			$html = str_replace('<span id=lblHandle></span>', "<span id=lblHandle>$handle</span>", $html);
