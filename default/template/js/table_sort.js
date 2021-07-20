@@ -15,7 +15,6 @@ function SortTable (t, sortOrder) {
 	sortColumn = 0;
 	sortMethod = 0;
 
-
 	// sortMethod = 0 innerHTML
 	// sortMethod = 1 textContent
 	// sortMethod = 2 parseInt(innerHTML)
@@ -40,20 +39,26 @@ function SortTable (t, sortOrder) {
 
 	if (t.cellIndex || t.cellIndex == 0) {
 		sortColumn = t.cellIndex;
+		// default sortMethod is 0, defined above
+		// innerHTML
+
 		if (
 			t.textContent &&
 			t.textContent.indexOf('_title') != -1 ||
 			t.textContent.indexOf('author_key') != -1
 		) {
-			sortMethod = 1; //textContent
+			sortMethod = 1; // textContent
 		}
 
 		if (
 			t.textContent &&
-			(t.textContent.indexOf('_count') != -1 ||
-			t.textContent.indexOf('_order') != -1)
+			(
+				t.textContent.indexOf('_count') != -1 ||
+				t.textContent.indexOf('_order') != -1 ||
+				t.textContent.indexOf('_score') != -1
+			)
 		) {
-			sortMethod = 2; // // innerHTML
+			sortMethod = 2; // parseInt(innerHTML)
 		}
 	}
 
