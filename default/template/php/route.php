@@ -1062,7 +1062,9 @@ if (GetConfig('admin/php/route_enable')) {
 
 
 					if (GetConfig('admin/php/notify_printed_time')) {
-						if (1) {
+                        if ($path == '/keyboard.html' || $path == '/keyboard_netscape.html' || $path == '/keyboard_android.html') {
+                            # no footer for the keyboard pages, because they are displayed in a thin frame at bottom of page
+                        } else {
 						#if ($cacheWasUsed) {
 							# this should be in a template,
 							# but it would be very awkward to make at this time
