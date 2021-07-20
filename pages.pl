@@ -1276,7 +1276,7 @@ sub GetTagsListAsHtmlWithLinks { # $tagsListParam ; prints up to 7 tags
 	my $headings;
 	my $comma = '';
 
-	my $safeLimit = 7; # don't print more than this many tags #hardcoded #todo
+	my $safeLimit = 15; # don't print more than this many tags #hardcoded #todo
 
 	foreach my $tag (@tagsList) {
 	    if (!--$safeLimit) {
