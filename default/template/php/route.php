@@ -314,7 +314,7 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 // Handle404 (  #todo #DRY
 // $pathRel?? relative path of $path (to current directory, which should be html/)
 
-	WriteLog("HandleNotFound($path, $pathRel)");
+	WriteLog("HandleNotFound($path, $pathRel) BEGIN");
 
 	if (GetConfig('admin/php/regrow_404_pages')) {
 		WriteLog('HandleNotFound: admin/php/regrow_404_pages was true');
@@ -754,7 +754,7 @@ if (GetConfig('admin/php/route_enable')) {
 				WriteLog('route.php: cool: did NOT find question mark in $path');
 			}
 
-			WriteLog('$path = ' . $path);
+			WriteLog('route.php: $path = ' . $path);
 			$pathFull = realpath('.'.$path);
 
 			WriteLog('route.php: $pathFull = ' . $pathFull);
@@ -777,7 +777,7 @@ if (GetConfig('admin/php/route_enable')) {
 					if (!$clientHasCookie) {
 						RedirectWithResponse('/profile.html', 'Please create profile to continue.');
 						if (! GetConfig('admin/force_profile_fallthrough')) {
-							exit;
+							exit; // #todo this is bad to have here
 						}
 					}
 				}
@@ -823,10 +823,15 @@ if (GetConfig('admin/php/route_enable')) {
 					if ($cacheOverrideFlag) {
 						if ($path) {
 							$refStart = time();
-							$html = HandleNotFound($path, $pathRel);
-							$refFinish = time();
-							$messagePageReprinted = 'OK, I reprinted the page for you.';
-							RedirectWithResponse($path, $messagePageReprinted . ' ' . '<small class=advanced>in ' . ($refFinish - $refStart) . 's</small>');
+							$html = HandleNotFound($path, $pathRel); # cacheOverrideFlag
+
+							if ($html) {
+                                $refFinish = time();
+                                $messagePageReprinted = 'OK, I reprinted the page for you.';
+                                RedirectWithResponse($path, $messagePageReprinted . ' ' . '<small class=advanced>in ' . ($refFinish - $refStart) . 's</small>');
+                            } else {
+                                WriteLog('route.php: cacheOverrideFlag: warning: $html was FALSE');
+                            }
 							#todo templatize
 						}
 					}
@@ -991,7 +996,8 @@ if (GetConfig('admin/php/route_enable')) {
 						// the file is removed first... this is sub-optimal, but works for now
 							WriteLog('route.php: found placeholder page, trying to replace it. $path = .' . $path);
 							#unlink('.' . $path);
-							$newHtml = HandleNotFound($path, $pathRel); // could be better done by rebuilding the page directly?
+							$newHtml = HandleNotFound($path, $pathRel); # 'formatter is catching up' page
+							    // could be better done by rebuilding the page directly?
 							if ($newHtml) {
 								$html = $newHtml;
 							}
@@ -1049,15 +1055,25 @@ if (GetConfig('admin/php/route_enable')) {
 							}
 						}
 						$cacheWasUsed = 1;
-					} # #cache was used:
+					} # it's reasonable to use cache (file exists, is not too old)
 					else {
-
-						// no $path
 						WriteLog('route.php: cache was not used, mis-using HandleNotFound()');
-						$html = HandleNotFound($path, '');
+						$html = HandleNotFound($path, ''); # fallback if cache not available
 
-						WriteLog('route.php: cache was not used, setting $cacheWasUsed = 0');
-						$cacheWasUsed = 0;
+						if ($html) {
+                            WriteLog('route.php: cache was not used, setting $cacheWasUsed = 0');
+                            $cacheWasUsed = 0;
+                        } else {
+
+                            if (file_exists($pathRel) && is_file($pathRel)) {
+                                // cache is stale, but we have nothing better, so use stale cache
+                                WriteLog('$html = file_get_contents($pathRel)');
+                                $html = file_get_contents($pathRel);
+                            } else {
+                                WriteLog('sorry, something went wrong!');
+                                $html = '';
+                            }
+                        }
 					}
 
 
@@ -1529,7 +1545,7 @@ if (GetConfig('admin/php/route_enable')) {
 			} else {
 				// do nothing
 			}
-		}
+		} # assist_show_advanced
 
 		{ #default/admin/php/assist_sequence_counter
 
