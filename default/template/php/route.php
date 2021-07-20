@@ -1096,6 +1096,9 @@ if (GetConfig('admin/php/route_enable')) {
 								$printedNotice = AddAttributeToTag($printedNotice, 'table', 'onmousedown', 'if (window.SetActiveDialog) { return SetActiveDialog(this); }'); #SetActiveDialog() route.php
 							}
 
+                            #todo this dialog needs to be added to advanced layer
+							#$printedNotice = '<span class=advanced>' . $printedNotice . '</span>';
+
 							if (GetConfig('admin/debug')) {
 								# for debug mode, print cached page notice at the top
 								$html = str_ireplace('</body>', $printedNotice . '</body>', $html);
@@ -1391,9 +1394,15 @@ if (GetConfig('admin/php/route_enable')) {
 				# no footer for the keyboard pages, because they are displayed in a thin frame at bottom of page
 			} else {
 				// footer stats
+				#my
+				$footerStats = file_get_contents('stats-footer.html');
+
+				#todo this dialog needs to be added to advanced layer
+				#$footerStats = '<span class=advanced>' . $footerStats . '</span>';
+
 				$html = str_replace(
 					'</body>',
-					'<br>' . file_get_contents('stats-footer.html') . '</body>',
+					'<br>' . $footerStats . '</body>',
 					$html
 				);
 			}
