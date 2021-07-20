@@ -2,33 +2,37 @@
 
 <p>Welcome to the help pages!</p>
 
-<p class=advanced><!-- todo #todo this relies on js-->
+<p class=advanced>
     <a
         title="Reset interface to beginner mode"
         onclick="if (window.SetInterfaceMode) { SetInterfaceMode('beginner', this); }"
-        href="#"
+        href="/settings.html?ui=beginner"
     >
         Click here for <b>beginner mode</b>.
     </a>
 </p>
 
-
-
 <h7>Overview of what this site can do.</h7>
 
 <p>
-    <a href="/read.html">Read</a>: Read what is approved for consumption.
+    <a href="/read.html">Read</a>: <br>
+	Read what is approved for consumption.
 </p>
 
-<p><a href="/write.html">Write</a>: Share something with the resource.</p>
+<p><a href="/write.html">Write</a>: <br>
+	Share something with the resource.</p>
 
-<p><a href="/settings.html">Settings</a>: To adjust how it works.</p>
+<p><a href="/settings.html">Settings</a>: <br>
+	To adjust how it works.</p>
 
-<p><a href="/profile.html">Profile</a>: Register, sign in, sign out.</p>
+<p><a href="/profile.html">Profile</a>: <br>
+	Register, sign in, sign out.</p>
 
-<p><a href="/help.html">Help</a>: You are here.</p>
+<p><a href="/help.html">Help</a>: <br>
+	You are here.</p>
 
-<p><a href="/welcome.html">Welcome</a>: Page which welcomes.</p>
+<p><a href="/welcome.html">Welcome</a>: <br>
+	Page which welcomes.</p>
 
 <p>
     <a href="/jstest1.html">Browser Test</a>:
@@ -48,11 +52,14 @@
 
 <p><a href="/bookmark.html">Bookmarklets</a></p>
 
-<p><a href="/upload.html">Upload</a>: Upload a picture, if allowed.</p>
+<p><a href="/upload.html">Upload</a>: <br>
+	Upload a picture, if allowed.</p>
 
-<p><a href="/desktop.html">Desktop</a>: All the things on one page.</p>
+<p><a href="/desktop.html">Desktop</a>: <br>
+	All the things on one page.</p>
 
-<p><a href="/search.html">Search</a>: Find something specific.</p>
+<p><a href="/search.html">Search</a>: <br>
+	Find something specific.</p>
 
 <p>Thanks for reading the help page!</p>
 
