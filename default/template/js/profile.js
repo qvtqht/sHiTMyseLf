@@ -265,10 +265,6 @@ function AddPrivateKeyLinks () { // adds save/load links to profile page if feat
 			else {
 				//alert('DEBUG: AddPrivateKeyLinks: privateKey: false');
 
-				// add horizontal rule
-				var hrDivider = document.createElement('hr');
-				fieldset.appendChild(hrDivider);
-
 				var pLoadKeyFromTxt = document.createElement('p');
 
 				//alert('DEBUG: AddPrivateKeyLinks: creating file input...');
@@ -278,7 +274,7 @@ function AddPrivateKeyLinks () { // adds save/load links to profile page if feat
 					// label for "load from file" button
 					var labelLoadFromFile = document.createElement('label');
 					labelLoadFromFile.setAttribute('for', 'fileLoadKeyFromText');
-					labelLoadFromFile.innerHTML = 'Load from file:';
+					labelLoadFromFile.innerHTML = 'Load profile key from saved file:';
 
 					// br after label
 					var brLoadFromFile = document.createElement('br');
@@ -297,18 +293,11 @@ function AddPrivateKeyLinks () { // adds save/load links to profile page if feat
 					// i tried hiding file selector and using a button instead.
 					// it looked nicer, but sometimes didn't work as expected
 
-					// hint for [load from file]
-					var hintLoadFromFile = document.createElement('span');
-					hintLoadFromFile.setAttribute('class', 'beginner');
-					hintLoadFromFile.innerHTML = 'Use this if you have a saved key';
-
-
 					// pLoadKeyFromTxt.appendChild(aLoadKeyFromText);
 					labelLoadFromFile.appendChild(fileLoadKeyFromText);
 					var brLoadFromFile2 = document.createElement('br');
 					pLoadKeyFromTxt.appendChild(labelLoadFromFile);
 					pLoadKeyFromTxt.appendChild(brLoadFromFile2);
-					pLoadKeyFromTxt.appendChild(hintLoadFromFile);
 
 
 					fieldset.appendChild(pLoadKeyFromTxt);
@@ -625,7 +614,7 @@ function ProfileOnLoad () { // onload event for profile page
 						    if (lblFingerprint && (lblFingerprint.innerHTML != '')) { //#todo ...
 						        //pgp is available, but we're already logged in via cookies
 
-						        lblSigningIndicator.innerHTML = 'Simple account, no private key.';
+						        lblSigningIndicator.innerHTML = 'Signed in with cookie.';
                             } else {
                                 // #todo why is window.openpgp false here??
                                 //alert('DEBUG: window.openpgp check passed, setting no (available)');

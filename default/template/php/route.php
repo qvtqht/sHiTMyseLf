@@ -1365,11 +1365,13 @@ if (GetConfig('admin/php/route_enable')) {
 				#$html = preg_replace('/pRegButton/', 'asdfadfd', $html);
 				$html = preg_replace('/<p id=pRegButton>.*?<\/p>/s', '', $html);
 			} else {
-				$handle = '(Not Signed In)';
+				$handle = '';
 				$fingerprint = '';
 				// this is a mis-use of the spans... oh well
 
 				$html = preg_replace('/<p id=pExitButton>.*?<\/p>/s', '', $html);
+				$html = preg_replace('/<p id=pCurrentProfileIndicator>.*?<\/p>/s', '', $html);
+				$html = str_replace('<hr id=pCurrentProfileIndicatorSeparator>', '', $html);
 			}
 
 			$html = str_replace('<span id=lblHandle></span>', "<span id=lblHandle>$handle</span>", $html);
