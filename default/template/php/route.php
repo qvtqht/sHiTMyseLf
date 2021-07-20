@@ -1166,7 +1166,11 @@ if (GetConfig('admin/php/route_enable')) {
 
 			if ($_COOKIE['light'] != $lightMode) {
 				setcookie2('light', $lightMode);
-				$messageLM = 'Light mode set.';
+				if ($lightMode) {
+				    $messageLM = 'Light mode set.';
+                } else {
+                    $messageLM = 'Modern mode set.';
+                }
 				RedirectWithResponse($path, $messageLM);
 			}
 		} else {
