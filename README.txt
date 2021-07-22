@@ -83,7 +83,14 @@ Hopefully this is reasonably easy to acquire.
 
 Client
 ======
-Web browser or HTML viewer
+Web browser 
+- or -
+HTML viewer
+
+Editor
+======
+Web browser 
+- or - 
 Text editor
 
 Server
@@ -106,6 +113,7 @@ DBD::SQLite
 
 Optional Components
 ===================
+* JavaScript
 * Web Server
 * access.log
 * tar
