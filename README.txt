@@ -65,6 +65,8 @@ DreamHost
 Mac OS X
 macOS
 FreeBSD
+Mint
+Devuan
 
 Installation Testers Wanted:
 ============================
