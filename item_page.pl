@@ -1,5 +1,15 @@
 #!/usr/bin/perl -T
 
+# GetItemPage()
+# GetHtmlToolbox()
+# GetPublishForm()
+# GetReplyListingEmpty()
+# GetReplyListing()
+# GetRelatedListing()
+# GetItemAttributesWindow()
+# GetItemAttributesWindow2()
+# GetPublishForm()
+
 use strict;
 use warnings;
 use utf8;

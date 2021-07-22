@@ -8,11 +8,11 @@ At least 30 times slower than Hugo.
 Frontend Tested With:
 =====================
 Mozilla Firefox
-Chrome
+Chrome 83
 Chromium
 Bromite (Android)
 Samsung Browser (Android)
-qutebrowser
+qutebrowser 1, 2
 Links
 Lynx
 w3m
@@ -46,7 +46,7 @@ IE3, Netscape 2-3 need config/admin/dragging=0 otherwise js error
 
    * * *
 
-Frontend Testers Wanted:
+Frontend Testing Wanted:
 ========================
 WorldWideWeb
 Amaya
@@ -65,6 +65,8 @@ DreamHost
 Mac OS X
 macOS
 FreeBSD
+Mint
+Devuan
 
 Installation Testers Wanted:
 ============================
@@ -81,7 +83,14 @@ Hopefully this is reasonably easy to acquire.
 
 Client
 ======
-Web browser or HTML viewer
+Web browser 
+- or -
+HTML viewer
+
+Editor
+======
+Web browser 
+- or - 
 Text editor
 
 Server
@@ -104,6 +113,7 @@ DBD::SQLite
 
 Optional Components
 ===================
+* JavaScript
 * Web Server
 * access.log
 * tar
