@@ -4893,6 +4893,14 @@ sub PutStatsPages { # stores template for footer stats dialog
 				}
 			}
 
+			my $warningsSummaryCommandResult = `find html | cut -d '/' -f 2-`;
+			if ($warningsSummaryCommandResult =~ m/^([\x00-\x7F]+)$/) {
+				$warningsSummaryCommandResult = $1;
+			} else {
+				WriteLog('PutStatsPage: warning: sanity check failed on $warningsSummaryCommandResult');
+				$warningsSummaryCommandResult = '';
+			}
+
 			# THIS IS HARD-CODED BECAUSE it is a system-debugging feature,
 			# and should have as few dependencies as possible
 			# and maybe a little bit to save time
@@ -4911,7 +4919,7 @@ sub PutStatsPages { # stores template for footer stats dialog
 				'</tr></table></center>' .
 				'<hr>' .
 				'<pre>' .
-				`find html | cut -d '/' -f 2-` .
+				$warningsSummaryCommandResult .
 				'</pre>' .
 				'</body></html>'
 			;
