@@ -8,11 +8,11 @@ At least 30 times slower than Hugo.
 Frontend Tested With:
 =====================
 Mozilla Firefox
-Chrome
+Chrome 83
 Chromium
 Bromite (Android)
 Samsung Browser (Android)
-qutebrowser
+qutebrowser 1, 2
 Links
 Lynx
 w3m
