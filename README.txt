@@ -46,7 +46,7 @@ IE3, Netscape 2-3 need config/admin/dragging=0 otherwise js error
 
    * * *
 
-Frontend Testers Wanted:
+Frontend Testing Wanted:
 ========================
 WorldWideWeb
 Amaya
