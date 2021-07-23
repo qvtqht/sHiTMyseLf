@@ -148,8 +148,10 @@ function ShowTimestamps () { // finds any class=timestamp, updates its displayed
 		for (var i = 0; i < te.length; i++) {
 			// loop through all the timestamp elements on the page
 
-			//var timeValue = te[i].getAttribute('datetime');  //#timestampTagFormat
-			var timeValue = te[i].getAttribute('epoch');  //#timestampTagFormat
+			var timeValue = te[i].getAttribute('datetime');  //#timestampTagFormat
+			if (!timeValue) {
+				var timeValue = te[i].getAttribute('epoch');  //#timestampTagFormat
+			}
 
 			if (!isNaN(timeValue)) {
 			//if (!isNaN(te[i].getAttribute('epoch'))) { //#timestampTagFormat
