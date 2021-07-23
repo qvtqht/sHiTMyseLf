@@ -5764,17 +5764,25 @@ while (my $arg1 = shift @foundArgs) {
 
 					my $hashTag = substr($makeDialogArg, 1);
 
+					#todo sanity checks here
+
+					my $query = GetConfig('query/tag');
+					my $queryLikeString = "'%,$hashTag,%'";
+					$query =~ s/\?/$queryLikeString/;
+
+					WriteLog('MakePage: $query = ' . $query); #todo removeme
+
+
 					my $dialog = GetQueryAsDialog(
-						"select * from item_flat where ','||tags_list||',' like '%,$hashTag,%' order by item_score desc limit 50",
-						'#' . $hashTag,
-						'author_id,item_title,file_hash'
+						$query,
+						'#' . $hashTag
 					); #todo sanity
 					my $dialogPath = 'top/' . $hashTag . '.html';
 
 					if ($dialog && $dialogPath) {
 						PutHtmlFile('dialog/' . $dialogPath, $dialog);
 					} else {
-						WriteLog('warning');
+						WriteLog('MakePage: warning: dialog: nothing returned for #' . $makeDialogArg);
 					}
 				}
 				else {
