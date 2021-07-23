@@ -218,6 +218,13 @@ sub GetHtmlToolbox {
 			'</a><br>';
 
 		$htmlToolbox .=
+			'<a href="https://chg.pw/post.html?comment=' .
+			$urlParamFullText .
+			'">' .
+			'chg.pw' .
+			'</a><br>';
+
+		$htmlToolbox .=
 			'<a href="http://qdb.us/post.html?comment=' .
 			$urlParamFullText .
 			'">' .
