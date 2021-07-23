@@ -610,8 +610,8 @@ function ProfileOnLoad () { // onload event for profile page
 						//alert('DEBUG: lblSigningIndicator check passed');
 						if (window.openpgp) {
 						    var lblFingerprint = document.getElementById('lblFingerprint');
-						    //alert('DEBUG: lblFingerprint = ' + lblFingerprint.innerHTML);
-						    if (lblFingerprint && (lblFingerprint.innerHTML != '')) { //#todo ...
+						    ////alert('DEBUG: lblFingerprint = ' + lblFingerprint.innerHTML);
+						    if (lblFingerprint && lblFingerprint.innerHTML && (lblFingerprint.innerHTML != '')) { //#todo ...
 						        //pgp is available, but we're already logged in via cookies
 
 						        lblSigningIndicator.innerHTML = 'Signed in with cookie.';

@@ -525,6 +525,8 @@ function SetInterfaceMode (ab, thisButton) { // updates several settings to chan
 			SetPrefs('timestamps_format', 'adjusted');
 			SetPrefs('performance_optimization', 'faster');
 			SetPrefs('draggable', 0);
+			SetPrefs('draggable_scale', 0);
+			SetPrefs('draggable_spawn', 0);
 			SetPrefs('focus_reply', 0);
 			SetPrefs('sign_by_default', 1);
 
@@ -608,6 +610,7 @@ function LoadCheckboxValues () {
 	//alert('DEBUG: LoadCheckboxValues()');
 	LoadCheckbox(document.getElementById('chkDraggable'), 'draggable');
 	LoadCheckbox(document.getElementById('chkDraggableScale'), 'draggable_scale');
+	LoadCheckbox(document.getElementById('chkDraggableSpawn'), 'draggable_spawn');
 	LoadCheckbox(document.getElementById('chkShowAdmin'), 'show_admin');
 	LoadCheckbox(document.getElementById('chkShowAdvanced'), 'show_advanced');
 	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');

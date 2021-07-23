@@ -21,7 +21,7 @@
     	  	position: absolute;
      		z-index: 9;
     	}
-    	
+
     	#mydivheader {
     		this is just the titlebar
     	}
@@ -555,7 +555,7 @@ function InsertFetchedDialog () {
 
 		//var actualDialog = newDialog.firstElement;
 		////alert('DEBUG: InsertFetchedDialog: actualDialog = ' + actualDialog);
-		if (window.DraggingInit) {
+		if (window.DraggingInit && window.GetPrefs && GetPrefs('draggable')) {
 			DraggingInit(0);
 		}
 		if (window.ShowTimestamps) {
@@ -572,12 +572,17 @@ function InsertFetchedDialog () {
 } // InsertFetchedDialog()
 
 function FetchDialog (dialogName) {
+	if (window.GetPrefs && !GetPrefs('draggable_spawn')) {
+		//alert('DEBUG: FetchDialog: warning: draggable_spawn is FALSE');
+		return true; // #todo..
+	}
 	var url = '/dialog/' + dialogName + '.html';
 
 	if (document.getElementById) {
 		var dialogExists = document.getElementById(dialogName);
 		if (dialogExists) {
-			if (GetPrefs('draggable')) {
+			//alert('DEBUG: dialogExists');
+			if (GetPrefs('draggable_spawn')) {
 				SetActiveDialog(dialogExists);
 			}
 			return false;
@@ -589,6 +594,14 @@ function FetchDialog (dialogName) {
 
 function FetchDialogFromUrl (url) {
 // InjectDialog () {
+// SpawnDialog () {
+	if (window.GetPrefs && !window.GetPrefs('draggable_spawn')) {
+		// #should be one layer above #todo
+		// not cool
+		//alert('DEBUG: warning: FetchDialogFromUrl called, but draggable_spawn is FALSE');
+		return true; // return true so that click can happen
+	}
+
 	if (window.XMLHttpRequest) {
 		//alert('DEBUG: FetchDialogFromUrl: window.XMLHttpRequest feature check PASSED');
 
@@ -602,14 +615,14 @@ function FetchDialogFromUrl (url) {
 
 		displayNotification('Meditate...');
 
-        xmlhttp.onreadystatechange = window.InsertFetchedDialog;
-        xmlhttp.open("GET", url, true);
+		xmlhttp.onreadystatechange = window.InsertFetchedDialog;
+		xmlhttp.open("GET", url, true);
 		xmlhttp.setRequestHeader('Cache-Control', 'no-cache');
-        xmlhttp.send();
+		xmlhttp.send();
 
-        //alert('DEBUG: FetchDialog: finished xmlhttp.send()');
+		//alert('DEBUG: FetchDialog: finished xmlhttp.send()');
 
-        return false; // cancel triggering event
+		return false; // cancel triggering event
 	} else {
 		//alert('DEBUG: FetchDialogFromUrl: window.XMLHttpRequest feature check FAILED');
 		return true; // if there was a click, let it happen

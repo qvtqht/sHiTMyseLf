@@ -153,7 +153,7 @@ sub RenderLink {
 
 	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
 		if ($url =~ m/\/top\//) {
-			$link = AddAttributeToTag($link, 'a ', 'onclick', "if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $url . "'); }");
+			$link = AddAttributeToTag($link, 'a ', 'onclick', "if (window.GetPrefs && GetPrefs('draggable_spawn') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $url . "'); }");
 		}
 	}
 
@@ -941,7 +941,7 @@ sub GetTagPageHeaderLinks { # $tagSelected ; returns html-formatted links to exi
 						$voteItemTemplate,
 						'a ',
 						'onclick',
-						"if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
+						"if (window.GetPrefs && GetPrefs('draggable_spawn') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
 					);
 				}
 
@@ -1168,7 +1168,7 @@ sub GetItemHtmlLink { # $hash, [link caption], [#anchor] ; returns <a href=...
 				$itemLink,
 				'a ',
 				'onclick',
-				"if ((!window.GetPrefs || GetPrefs('draggable')) && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $htmlFilename . "'); }"
+				"if ((!window.GetPrefs || GetPrefs('draggable_spawn')) && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $htmlFilename . "'); }"
 			);
 		}
 
@@ -1311,7 +1311,7 @@ sub GetTagsListAsHtmlWithLinks { # $tagsListParam ; prints up to 7 tags
 			$tagLink,
 			'a ',
 			'onclick',
-			"if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
+			"if (window.GetPrefs && GetPrefs('draggable_spawn') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
 		);
 
 		#$headings .= 'tag='.$tag;
@@ -3372,7 +3372,7 @@ sub GetMenuItem { # $address, $caption; returns html snippet for a menu item (us
 			$menuItem,
 			'a ',
 			'onclick',
-			"if (!document.getElementById('$menuName') && (!window.GetPrefs || GetPrefs('draggable'))) { return FetchDialogFromUrl('/dialog" . $address . "'); }"
+			"if (!document.getElementById('$menuName') && (!window.GetPrefs || GetPrefs('draggable_spawn'))) { return FetchDialogFromUrl('/dialog" . $address . "'); }"
 		);
 		#todo this also needs relativize support
 	}
