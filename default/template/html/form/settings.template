@@ -30,7 +30,7 @@
 <fieldset class=advanced>
 	<legend><b>Annoyances</b><br></legend>
 
-	<p><font color=orange>Caution: Known to cause <br> temporary insanity <br> in sensitive individuals.</font></p>
+	<p class=beginner>Caution: Known to cause <br> temporary insanity <br> in sensitive individuals.</p>
 
 	<p>
 		<label for=chkDraggableSpawn>
