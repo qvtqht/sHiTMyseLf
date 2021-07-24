@@ -34,6 +34,13 @@ if (
 } else {
 	# regenerate all pages (may take a while)
 	#system('./pages.pl --all');
+	#system('./pages.pl --system');
+	system('./pages.pl -M read');
+	system('./pages.pl -M write');
+	system('./pages.pl -M settings');
+	system('./pages.pl --settings');
+	system('./pages.pl -M profile');
+	system('./pages.pl -M help');
 	system('./pages.pl --system');
 	WriteLog('update.pl: warning: not calling --all because it takes too long');
 }
