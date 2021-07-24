@@ -365,6 +365,8 @@ function GetPrefs (prefKey) { // get prefs value from localstorage
 				prefKey == 'draggable' // default
 			) {
 				// these settings default to 0/false:
+				// #todo does this need to be pre-set, if it is 0?
+				// seems to work ok if it is not
 				prefValue = 0;
 			}
 
