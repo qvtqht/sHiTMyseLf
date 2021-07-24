@@ -363,6 +363,10 @@ function DraggingInit (doPosition) { // initialize all class=dialog elements on 
 
 	var doPosition = 1; // ATTENTION THIS IS TEMPLATED!
 
+	if (window.GetPrefs && !GetPrefs('dragging_position')) {
+		doPosition = 0;
+	}
+
 	// find all class=dialog elements and walk through them
 	var elements = document.getElementsByClassName('dialog');
 	for (var i = elements.length - 1; 0 <= i; i--) { // walk backwards for positioning reasons

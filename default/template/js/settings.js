@@ -526,6 +526,7 @@ function SetInterfaceMode (ab, thisButton) { // updates several settings to chan
 			SetPrefs('performance_optimization', 'faster');
 			SetPrefs('draggable', 0);
 			SetPrefs('draggable_scale', 0);
+			SetPrefs('draggable_restore', 0);
 			SetPrefs('draggable_spawn', 0);
 			SetPrefs('focus_reply', 0);
 			SetPrefs('sign_by_default', 1);
@@ -609,6 +610,7 @@ function LoadCheckbox (c, prefKey) { // updates checkbox state to reflect settin
 function LoadCheckboxValues () {
 	//alert('DEBUG: LoadCheckboxValues()');
 	LoadCheckbox(document.getElementById('chkDraggable'), 'draggable');
+	LoadCheckbox(document.getElementById('chkDraggableRestore'), 'draggable_restore');
 	LoadCheckbox(document.getElementById('chkDraggableScale'), 'draggable_scale');
 	LoadCheckbox(document.getElementById('chkDraggableSpawn'), 'draggable_spawn');
 	LoadCheckbox(document.getElementById('chkShowAdmin'), 'show_admin');

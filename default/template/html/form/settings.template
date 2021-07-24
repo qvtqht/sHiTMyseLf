@@ -47,6 +47,13 @@
 	</p>
 
 	<p>
+		<label for=chkDraggableRestore>
+			<input id=chkDraggableRestore name=chkDraggableRestore type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_restore'); }">
+			Restore dialog placement<noscript><b>*</b></noscript>
+		</label>
+	</p>
+
+	<p>
 		<label for=chkDraggableScale>
 			<input id=chkDraggableScale name=chkDraggableScale type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_scale'); }">
 			Rescale active dialog<noscript><b>*</b></noscript>
