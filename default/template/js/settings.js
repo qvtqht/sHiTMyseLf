@@ -466,6 +466,16 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 			SetActiveDialog(0);
 		}
 	}
+	if (prefKey == 'draggable') {
+		if (ths.checked && window.DraggingInit) {
+			DraggingInit(0);
+		} else {
+			if (window.displayNotification) {
+				displayNotification('Please reload page');
+				// #todo mkae this nicer
+			}
+		}
+	}
 	// BEFORE SAVE ACTIONS FINISH //
 	////////////////////////////////
 
