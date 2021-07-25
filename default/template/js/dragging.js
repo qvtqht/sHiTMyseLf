@@ -158,7 +158,7 @@ function SetActiveDialog (ths) {
 // ActivateDialog {
 // FocusMe ShowMe ActivateMe {
 
-	if (!window.GetPrefs || !GetPrefs('draggable')) {
+	if (!window.GetPrefs || !GetPrefs('draggable') || !GetPrefs('draggable_activate')) {
 		// #todo optimize
 		return '';
 	}
