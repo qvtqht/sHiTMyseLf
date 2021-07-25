@@ -463,7 +463,8 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 
 	///////////////////////////////
 	// BEFORE SAVE ACTIONS BEGIN //
-	if (prefKey == 'draggable_scale') {
+	//if (prefKey == '' +	'draggable_scale') {
+	if (prefKey == '' +	'draggable_scale') {
 		if (window.SetActiveDialog) {
 			SetActiveDialog(0);
 		}
@@ -489,7 +490,7 @@ function SaveCheckbox (ths, prefKey) { // saves value of checkbox, toggles affec
 
 	//////////////////////////////
 	// AFTER SAVE ACTIONS BEGIN //
-	if (prefKey == 'draggable_scale') {
+	if (prefKey == 'draggable_scale' || prefKey == 'draggable_activate') {
 		if (window.SetActiveDialog) {
 			SetActiveDialog(0);
 		}
@@ -527,6 +528,10 @@ function SetInterfaceMode (ab, thisButton) { // updates several settings to chan
 			SetPrefs('timestamps_format', 'adjusted');
 			SetPrefs('performance_optimization', 'faster');
 			SetPrefs('draggable', 0);
+			SetPrefs('draggable_scale', 0);
+			SetPrefs('draggable_activate', 0);
+			SetPrefs('draggable_restore', 0);
+			SetPrefs('draggable_spawn', 0);
 			SetPrefs('focus_reply', 0);
 			SetPrefs('sign_by_default', 1);
 
@@ -609,7 +614,10 @@ function LoadCheckbox (c, prefKey) { // updates checkbox state to reflect settin
 function LoadCheckboxValues () {
 	//alert('DEBUG: LoadCheckboxValues()');
 	LoadCheckbox(document.getElementById('chkDraggable'), 'draggable');
+	LoadCheckbox(document.getElementById('chkDraggableRestore'), 'draggable_restore');
 	LoadCheckbox(document.getElementById('chkDraggableScale'), 'draggable_scale');
+	LoadCheckbox(document.getElementById('chkDraggableScale'), 'draggable_activate');
+	LoadCheckbox(document.getElementById('chkDraggableSpawn'), 'draggable_spawn');
 	LoadCheckbox(document.getElementById('chkShowAdmin'), 'show_admin');
 	LoadCheckbox(document.getElementById('chkShowAdvanced'), 'show_advanced');
 	LoadCheckbox(document.getElementById('chkWriteEnhance'), 'write_enhance');

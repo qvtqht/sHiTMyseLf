@@ -28,7 +28,16 @@
 </fieldset>
 
 <fieldset class=advanced>
-	<legend><b>Desktop</b><br></legend>
+	<legend><b>Annoyances</b><br></legend>
+
+	<p class=beginner>Caution: Known to cause <br> temporary insanity <br> in sensitive individuals.</p>
+
+	<p>
+		<label for=chkDraggableSpawn>
+			<input id=chkDraggableSpawn name=chkDraggableSpawn type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_spawn'); }">
+			Spawn dialogs in-page<noscript><b>*</b></noscript>
+		</label>
+	</p>
 
 	<p>
 		<label for=chkDraggable>
@@ -38,9 +47,23 @@
 	</p>
 
 	<p>
+		<label for=chkDraggableRestore>
+			<input id=chkDraggableRestore name=chkDraggableRestore type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_restore'); }">
+			Restore placement automatically<noscript><b>*</b></noscript>
+		</label>
+	</p>
+
+	<p>
 		<label for=chkDraggableScale>
 			<input id=chkDraggableScale name=chkDraggableScale type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_scale'); }">
 			Rescale active dialog<noscript><b>*</b></noscript>
+		</label>
+	</p>
+
+	<p>
+		<label for=chkDraggableActivate>
+			<input id=chkDraggableActivate name=chkDraggableActivate type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_activate'); }">
+			Activate with pointer<noscript><b>*</b></noscript>
 		</label>
 	</p>
 </fieldset>

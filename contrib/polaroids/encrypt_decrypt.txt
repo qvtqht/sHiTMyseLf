@@ -1,0 +1,3 @@
+tar cz polaroids | openssl enc -aes-256-cbc -e > polaroids.tar.gz.enc
+
+openssl aes-256-cbc -d polaroids.tar.gz.enc -out polaroids.tar.gz 

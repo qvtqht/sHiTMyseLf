@@ -153,7 +153,7 @@ sub RenderLink {
 
 	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
 		if ($url =~ m/\/top\//) {
-			$link = AddAttributeToTag($link, 'a ', 'onclick', "if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $url . "'); }");
+			$link = AddAttributeToTag($link, 'a ', 'onclick', "if (window.GetPrefs && GetPrefs('draggable_spawn') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $url . "'); }");
 		}
 	}
 
@@ -941,7 +941,7 @@ sub GetTagPageHeaderLinks { # $tagSelected ; returns html-formatted links to exi
 						$voteItemTemplate,
 						'a ',
 						'onclick',
-						"if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
+						"if (window.GetPrefs && GetPrefs('draggable_spawn') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
 					);
 				}
 
@@ -1168,7 +1168,7 @@ sub GetItemHtmlLink { # $hash, [link caption], [#anchor] ; returns <a href=...
 				$itemLink,
 				'a ',
 				'onclick',
-				"if ((!window.GetPrefs || GetPrefs('draggable')) && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $htmlFilename . "'); }"
+				"if ((!window.GetPrefs || GetPrefs('draggable_spawn')) && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog/" . $htmlFilename . "'); }"
 			);
 		}
 
@@ -1311,7 +1311,7 @@ sub GetTagsListAsHtmlWithLinks { # $tagsListParam ; prints up to 7 tags
 			$tagLink,
 			'a ',
 			'onclick',
-			"if (window.GetPrefs && GetPrefs('draggable') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
+			"if (window.GetPrefs && GetPrefs('draggable_spawn') && window.FetchDialogFromUrl ) { return FetchDialogFromUrl('/dialog" . $voteItemLink . "'); }"
 		);
 
 		#$headings .= 'tag='.$tag;
@@ -3372,7 +3372,7 @@ sub GetMenuItem { # $address, $caption; returns html snippet for a menu item (us
 			$menuItem,
 			'a ',
 			'onclick',
-			"if (!document.getElementById('$menuName') && (!window.GetPrefs || GetPrefs('draggable'))) { return FetchDialogFromUrl('/dialog" . $address . "'); }"
+			"if (!document.getElementById('$menuName') && (!window.GetPrefs || GetPrefs('draggable_spawn'))) { return FetchDialogFromUrl('/dialog" . $address . "'); }"
 		);
 		#todo this also needs relativize support
 	}
@@ -5764,17 +5764,25 @@ while (my $arg1 = shift @foundArgs) {
 
 					my $hashTag = substr($makeDialogArg, 1);
 
+					#todo sanity checks here
+
+					my $query = GetConfig('query/tag');
+					my $queryLikeString = "'%,$hashTag,%'";
+					$query =~ s/\?/$queryLikeString/;
+
+					WriteLog('MakePage: $query = ' . $query); #todo removeme
+
+
 					my $dialog = GetQueryAsDialog(
-						"select * from item_flat where ','||tags_list||',' like '%,$hashTag,%' order by item_score desc limit 50",
-						'#' . $hashTag,
-						'author_id,item_title,file_hash'
+						$query,
+						'#' . $hashTag
 					); #todo sanity
 					my $dialogPath = 'top/' . $hashTag . '.html';
 
 					if ($dialog && $dialogPath) {
 						PutHtmlFile('dialog/' . $dialogPath, $dialog);
 					} else {
-						WriteLog('warning');
+						WriteLog('MakePage: warning: dialog: nothing returned for #' . $makeDialogArg);
 					}
 				}
 				else {
