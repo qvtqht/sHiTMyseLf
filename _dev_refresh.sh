@@ -89,8 +89,8 @@ if [ $need_clean_theme = 1 ]; then
 fi
 if [ $need_clean_html = 1 ]; then
   ./_dev_clean_html.sh;
-  need_make_php = 1;
-  need_make_js = 1;
+  need_make_php=1;
+  need_make_js=1;
 fi
 
 if [ $need_make_php = 1 ]; then
