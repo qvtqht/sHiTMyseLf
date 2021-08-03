@@ -8,6 +8,7 @@ FROM
 	LEFT JOIN author_score ON (item_flat.author_key = author_score.author_key)
 WHERE
 	(item_score * author_score) > 0 AND
+	(item_score + author_score) > 0 AND
 	','||tags_list||',' like '%,hastitle,%'
 ORDER BY 
 	(add_timestamp * item_score) DESC
