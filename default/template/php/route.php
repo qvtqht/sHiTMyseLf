@@ -807,13 +807,16 @@ if (GetConfig('admin/php/route_enable')) {
 					$pathRel = '.' . $path; // relative path of $path (to current directory, which should be html/)
 
 					if (isset($_GET['time']) && $_GET['time']) {
+					    WriteLog('route.php: $_GET[time] = ' . $_GET['time']);
 						# client is requesting reprint via time= argument
 						if (intval($_GET['time'])) {
 							if ((intval($_GET['time']) + 3600) > time()) {
 								$cacheOverrideFlag = 1;
 							}
 						}
-					}
+					} else {
+					    WriteLog('route.php: $_GET[time] = FALSE');
+                    }
 
 					$fileCacheTime = 0;
 					if (file_exists($pathRel)) {
