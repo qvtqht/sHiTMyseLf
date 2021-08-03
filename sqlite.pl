@@ -19,9 +19,10 @@ use 5.010;
 # $sth->execute + fetchrow_hashref
 # SqliteQueryHashRef (fetchrow_hashref)
 # $sth->execute + bind_columns
-# SqliteQuery2 (fetchall_arrayref)
-# SqliteQuery (calls to shell, doesn't return results)
-# SqliteQueryCachedShell (calls to shell, also uses cache)
+
+# SqliteQuery2() (fetchall_arrayref)
+# SqliteQuery() (calls to shell, doesn't return results)
+# SqliteQueryCachedShell() (calls to shell, also uses cache)
 
 # other mentionables
 # ==================
@@ -1021,7 +1022,7 @@ sub SqliteGetValue { # Returns the first column from the first row returned by s
 	$sth->finish();
 
 	return $aref[0];
-}
+} # SqliteGetValue()
 
 sub DBGetAuthorCount { # Returns author count.
 # By default, all authors, unless $whereClause is specified
@@ -1771,7 +1772,7 @@ sub DBGetItemLatestAction { # returns highest timestamp in all of item's childre
 	$sth->finish();
 
 	return $aref[0];
-}
+} # DBGetItemLatestAction()
 
 #sub GetTopItemsForTag {
 #	my $tag = shift;
