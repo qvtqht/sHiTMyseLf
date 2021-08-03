@@ -1,3 +1,10 @@
+sqlite3 vs dbd::sqlite plan
+	ensure no multi-line data is stored in db
+	convert all db calls to use SqliteQuery2()
+	do the rewrite
+
+
+
 if zip is missing, data page doesn't generate correctly
 	very little operator feedback on cause
 
