@@ -1682,7 +1682,8 @@ sub CheckForInstalledVersionChange {
 			$changeLogList = trim($changeLogList);
 			$changeLogMessage .= "$changeLogList";
 		} else {
-			$changeLogMessage .= 'No changelog will be generated because $lastVersion is false';
+			$changeLogMessage .= 'This is the initial install of the software, so no changelog is generated.';
+			#$changeLogMessage .= 'No changelog will be generated because $lastVersion is false';
 		}
 
 		$changeLogMessage .= "\n\n#changelog";
