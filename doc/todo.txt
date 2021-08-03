@@ -2311,3 +2311,4 @@ have an alternative (which takes longer) for when it is missing
 	possible fallbacks:
 		apache
 		file:// url instructions
+make sure everything under default/ has a trailing \n
