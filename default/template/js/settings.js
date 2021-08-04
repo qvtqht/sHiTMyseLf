@@ -386,7 +386,7 @@ function GetPrefs (prefKey) { // get prefs value from localstorage
 		return prefValue;
 	}
 
-	//alert('debug: GetPrefs: fallthrough, returning ');
+	//alert('DEBUG: GetPrefs: fallthrough, returning ');
 	return '';
 } // GetPrefs()
 

@@ -122,7 +122,7 @@ function ShowTimestamps () { // finds any class=timestamp, updates its displayed
 	) {
 		restAfter = 30;
 	}
-	//alert('DEBUG: ');
+	//alert('DEBUG: ShowTimestamps() BEGIN');
 
 	if (document.getElementsByClassName) {
 		//alert('DEBUG: ShowTimestamps: document.getElementsByClassName feature check passed');

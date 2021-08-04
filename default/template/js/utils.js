@@ -171,7 +171,7 @@ function ShowPreNavigateNotification () { // displays 'Meditate...' message
 } // ShowPreNavigateNotification()
 
 if (!window.performanceOptimization && window.GetPrefs) {
-	window.performanceOptimization = GetPrefs('performance_optimization');
+	window.performanceOptimization = GetPrefs('performance_optimization'); // utils.js
 }
 
 function EventLoop () { // for calling things which need to happen on a regular basis
@@ -257,7 +257,7 @@ function EventLoop () { // for calling things which need to happen on a regular 
 		}
 
 		if (window.GetPrefs) {
-			window.performanceOptimization = GetPrefs('performance_optimization');
+			window.performanceOptimization = GetPrefs('performance_optimization'); // EventLoop()
 		}
 	} // 10000 < (eventLoopBegin - window.eventLoopPrevious)
 
