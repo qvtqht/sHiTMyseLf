@@ -1685,6 +1685,10 @@ sub GetMenuTemplate { # returns menubar
 		my $clockTemplate = GetClockWidget();
 		$topMenuTemplate = '<form action="/stats.html" name=frmTopMenu>' . $topMenuTemplate . '</form>';
 		$topMenuTemplate =~ s/<span id=spnClock><\/span>/$clockTemplate/g;
+	} else {
+	    # code below not approved for public consumoption #todo
+	    # removes colspan and fixes the hanging cell bug in some browsers
+		#$topMenuTemplate =~ s/<td colspan=2>/<td>/g;
 	}
 
 	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
@@ -1799,6 +1803,7 @@ sub GetItemListing { # returns listing of items based on topic
 		$fileHash = 'top'; #what
 	}
 
+    #refactor
 	if ($fileHash eq 'top') {
 		@topItems = DBGetTopItems(); # get top items from db
 	} else {
