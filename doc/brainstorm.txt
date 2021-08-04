@@ -1,3 +1,6 @@
+if config changes, it should be detected by php shim and appropriate de-caching  place #brainstorm
+
+
 fun ideas
 ==========
 you have used x letters out of the alphabet, here are the ones missing:
