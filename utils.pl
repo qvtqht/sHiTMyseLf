@@ -266,7 +266,10 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 		} else {
 			$snowPrinted .= $text;
 		}
+
 		if (length($snowPrinted) >= 60) {
+		    ## this starts a new line in the snow
+		    ## this is NOT the part that prints a text message
 			print "\n$timestamp ";
 			WriteLog('WriteMessage: ' . $snowPrinted);
 			$snowPrinted = '';
@@ -296,7 +299,10 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 		$output = substr($output, 0, 60) . '...';
 	}
 
-	print "\n$timestamp $output\n$timestamp ";
+    # THIS is the part that prints the message
+    # this code is not approved for public viewing
+    #todo print "\n================================================================================\n";
+	print "\n$timestamp $output\n$timestamp =======================================================\n$timestamp";
 
 	$previousText = $text;
 } # WriteMessage()
