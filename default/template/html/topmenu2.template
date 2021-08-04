@@ -1,7 +1,7 @@
 <!-- topmenu2.template -->
 <table cellspacing=0 cellpadding=3 border=0 bgcolor="$colorWindow" class=dialog id=topmenu>
 	<tr bgcolor="$colorTopMenuTitlebar" class=titlebar>
-		<td colspan=2>
+		<td>
 			<small>
 				<font color="$colorTopMenuTitlebarText"><b>$siteName</b></font>
 				<br>
