@@ -26,6 +26,7 @@ use POSIX qw(floor);
 
 require('./gpgpg.pl');
 require('./utils.pl');
+require('./sqlite.pl');
 
 sub MakeChainIndex { # $import = 1; reads from log/chain.log and puts it into item_attribute table
 	# note: this is kind of a hack, and non-importing validation should just be separate own sub

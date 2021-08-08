@@ -42,6 +42,7 @@ use File::Copy;
 use Cwd qw(cwd);
 
 require './utils.pl';
+require './sqlite.pl';
 require './makepage.pl';
 #
 #my $SCRIPTDIR = cwd();
@@ -2285,9 +2286,10 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 	my $chainLogLength = 0;
 	if (GetConfig('admin/logging/write_chain_log')) {
 		#$chainLogLength = `wc -l html/chain.log`;
-		$chainLogLength = SqliteGetValue("SELECT COUNT(file_hash) FROM item_attribute WHERE attribute = 'chain_sequence'");
+		$chainLogLength = SqliteQueryCachedShell("SELECT COUNT(file_hash) file_count FROM item_attribute WHERE attribute = 'chain_sequence' LIMIT 1");
 		#todo make sqlite optional
 		#todo templatize query
+		#todo move to sqlite.pl
 	}
 
 	if (abs($itemsIndexed - $filesTotal) > 3) {
@@ -5561,9 +5563,9 @@ sub PrintBanner {
 }
 
 while (my $arg1 = shift @foundArgs) {
-	print("\n=========================\n");
-	print("\nFOUND ARGUMENT: $arg1;\n");
-	print("\n=========================\n");
+	#print("\n=========================\n");
+	PrintBanner("\nFOUND ARGUMENT: $arg1;\n");
+	#print("\n=========================\n");
 
 	# go through all the arguments one at a time
 	if ($arg1) {
@@ -5824,7 +5826,12 @@ while (my $arg1 = shift @foundArgs) {
 
 	print "-------";
 	print "\n";
-	my @filesWritten = PutHtmlFile('report_files_written');
+	my @filesWrittenHtml = PutHtmlFile('report_files_written');
+	for my $fileWritten (@filesWrittenHtml) {
+		print $fileWritten;
+		print "\n";
+	}
+	my @filesWritten = PutFile('report_files_written');
 	for my $fileWritten (@filesWritten) {
 		print $fileWritten;
 		print "\n";
@@ -5832,7 +5839,7 @@ while (my $arg1 = shift @foundArgs) {
 	print "-------";
 	print "\n";
 	print "Total files written: ";
-	print scalar(@filesWritten);
+	print scalar(@filesWritten) + scalar(@filesWrittenHtml);
 	print "\n";
 }
 

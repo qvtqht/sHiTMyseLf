@@ -17,6 +17,7 @@ sub BuildMessage { # prints timestamped message to output
 BuildMessage "Require ./utils.pl...";
 require './gpgpg.pl';
 require './utils.pl';
+require './sqlite.pl';
 
 #EnsureDirsThatShouldExist();
 
@@ -27,20 +28,22 @@ require './utils.pl';
 require './index.pl';
 
 
-{ # build the sqlite db if not available
+#{ # build the sqlite db if not available
 	# BuildMessage "SqliteUnlinkDB()...";
 	# SqliteUnlinkDb();
 	#
-	BuildMessage "SqliteConnect()...";
-	SqliteConnect();
+	#BuildMessage "SqliteConnect()...";
+	#SqliteConnect();
 
-	BuildMessage "SqliteMakeTables()...";
-	SqliteMakeTables();
+	#BuildMessage "SqliteMakeTables()...";
+	#SqliteMakeTables();
 #
 #	BuildMessage "Remove cache/indexed/*";
 #	system('rm cache/*/indexed/*');
-}
+#}
 
+BuildMessage "SqliteMakeTables()...";
+SqliteMakeTables();
 
 my $SCRIPTDIR = cwd();
 my $HTMLDIR = $SCRIPTDIR . '/html';

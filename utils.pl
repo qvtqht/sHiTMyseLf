@@ -835,6 +835,14 @@ sub PutFile { # Writes content to a file; $file, $content, $binMode
 		WriteLog('PutFile: $binMode: 1');
 	}
 
+	# keep track of files written so we can report them to user
+	state @debugFilesWritten;
+	# my $timeBegin = GetTime(); #todo
+	if ($file eq 'report_files_written') {
+		return @debugFilesWritten;
+	}
+	push @debugFilesWritten, GetPaddedEpochTimestamp() . ' ' . $file;
+
 	WriteLog('PutFile: $file = ' . $file . ', $content = (' . length($content) . 'b), $binMode = ' . $binMode);
 	#WriteLog("==== \$content ====");
 	#WriteLog($content);
@@ -1070,6 +1078,8 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 	if (!$file) {
 		return;
 	}
+
+	#todo more sanity
 
 	# keep track of files written so we can report them to user
 	state @debugFilesWritten;
@@ -2332,7 +2342,7 @@ EnsureDirsThatShouldExist();
 CheckForInstalledVersionChange();
 
 my $utilsPl = 1;
-
-require './sqlite.pl';
+#
+#require './sqlite.pl';
 
 1;

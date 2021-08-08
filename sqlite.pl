@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -T
 #freebsd: #!/usr/local/bin/perl
 
 use strict;
@@ -8,6 +8,16 @@ use DBD::SQLite;
 use DBI;
 use Data::Dumper;
 use 5.010;
+
+require './utils.pl';
+
+my @foundArgs;
+while (my $argFound = shift) {
+	push @foundArgs, $argFound;
+}
+
+
+my $noDBI = 1;
 
 
 # different ways db is accessed in here
@@ -52,6 +62,7 @@ sub SqliteConnect { # Establishes connection to sqlite db, RETURNS HANDLE
 # tries up to 5 times, because sometimes the first try fails
 # reason for occasional failure is unknown to me
 # retry count is done by recursion and counted with state $retries
+    return;
 
 	state $dbh; # handle for sqlite interface
 	if ($dbh) {
@@ -94,7 +105,7 @@ sub SqliteConnect { # Establishes connection to sqlite db, RETURNS HANDLE
 			)
 		) # ! (not)
 	) { # if
-		WriteLog('SqliteConnect: warning: problem connecting to database: ' . $DBI::errstr);
+		#WriteLog('SqliteConnect: warning: problem connecting to database: ' . $DBI::errstr);
 
 		state $retries;
 		if (!$retries) {
@@ -116,7 +127,7 @@ sub SqliteConnect { # Establishes connection to sqlite db, RETURNS HANDLE
 } # SqliteConnect()
 
 
-SqliteConnect();
+#SqliteConnect();
 
 sub DBMaxQueryLength { # Returns max number of characters to allow in sqlite query
 	return 10240;
@@ -137,6 +148,9 @@ sub DBMaxQueryParams { # Returns max number of parameters to allow in sqlite que
 #}
 
 sub SqliteMakeTables { # creates sqlite schema
+# sub SqliteCreateTables {
+# sub SqliteMakeTables {
+# sub DBMakeTables {
 	my $existingTables = SqliteQueryCachedShell('.tables');
 	if ($existingTables) {
 		WriteLog('SqliteMakeTables: warning: tables already exist');
@@ -215,7 +229,7 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	# added_time
 	#todo ideally, this should only use chain, but only if chain is enabled
-	SqliteQuery("
+	SqliteQuery2("
 		CREATE VIEW added_time
 		AS
 		SELECT
@@ -227,7 +241,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	# item_title
-	SqliteQuery("
+	SqliteQuery2("
 		CREATE VIEW item_title
 		AS
 		SELECT
@@ -238,7 +252,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	# item_name
-	SqliteQuery("
+	SqliteQuery2("
 		CREATE VIEW item_name
 		AS
 		SELECT
@@ -249,7 +263,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	# item_order
-	SqliteQuery("
+	SqliteQuery2("
 		CREATE VIEW item_order
 		AS
 		SELECT
@@ -260,7 +274,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	# item_sequence
-	SqliteQuery("
+	SqliteQuery2("
 		CREATE VIEW item_sequence
 		AS
 		SELECT
@@ -272,7 +286,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	"); #todo rename columns
 
 	# item_author
-	SqliteQuery("
+	SqliteQuery2("
 		CREATE VIEW item_author
 		AS
 		SELECT
@@ -598,6 +612,17 @@ sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns 
 	my $query = shift;
 	chomp $query;
 
+	$query = trim($query);
+
+	if ($query =~ m/^select/i) {
+	    WriteLog('SqliteQuery2: query begins with select, continuing');
+	    # cool
+	} else {
+	    WriteLog('SqliteQuery2: no select, using SqliteQuery');
+	    my $return = SqliteQuery($query);
+	    return $return;
+	}
+
 	my @queryParams = @_;
 
 	if ($query) {
@@ -680,15 +705,16 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 	my $query = shift;
 	chomp $query;
 
+	my @queryParams = @_;
+
 	if ($query =~ m/^([0-9a-zA-Z_-]+)$/i) {
 		$query = $1;
 		if (GetConfig('query/' . $query)) {
 			#todo sanity
 			$query = GetConfig('query/' . $query);
 		}
+	} else {
 	}
-
-	my @queryParams = @_;
 
 	if ($query) {
 		my $queryOneLine = $query;
@@ -735,7 +761,36 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 			}
 		} else {
 			WriteLog('SqliteQueryHashRef: warning: $dbh is missing');
-			return '';
+
+			my $resultString = SqliteQueryCachedShell($query, @queryParams);
+
+			my @resultStringLines = split("\n", $resultString);
+
+			my @resultsArray = ();
+
+			my @columns = ();
+
+			while (@resultStringLines) {
+			    my $line = shift @resultStringLines;
+			    if (!@columns) {
+			        @columns = split ('|', $line);
+			        push @resultsArray, \@columns;
+			        # store column names, next
+			    } else {
+			        my @fields = split('|', $line);
+			        my %newHash;
+			        foreach my $field (@columns) {
+			            $newHash{$field} = shift @fields;
+			        }
+                    push @resultsArray, \%newHash;
+			    }
+			}
+
+            #while (my $row = $sth->fetchrow_hashref()) {
+            #    push @resultsArray, $row;
+            #}
+
+            return @resultsArray;
 		}
 	}
 	else {
@@ -762,12 +817,20 @@ sub SqliteQuery { # performs sqlite query via sqlite3 command
 		WriteLog('SqliteQuery: warning: called without $query');
 		return;
 	}
+	chomp $query;
+	my @queryParams = shift;
+
+	if (@queryParams) {
+	    while (@queryParams) {
+	        my $arg = shift @queryParams;
+	        $query = str_replace('?', "'" . ($arg ? $arg : '0') . "'");
+	    }
+    }
+
 	my $queryOneLine = $query;
 	$queryOneLine =~ s/\s+/ /g;
-
-	chomp $query;
-	$query = EscapeShellChars($query);
-	WriteLog('SqliteQuery: $query = ' . $queryOneLine);
+	#$queryOneLine = EscapeShellChars($query);
+	WriteLog('SqliteQuery: $queryOneLine = ' . $queryOneLine);
 
 	my $SqliteDbName = GetSqliteDbName();
 
@@ -788,8 +851,16 @@ sub SqliteQueryCachedShell { # $query ; performs sqlite query via sqlite3 comman
 		return;
 	}
 	chomp $query;
-	$query = EscapeShellChars($query);
 	WriteLog('SqliteQueryCachedShell: $query = ' . $query);
+
+	my @queryParams = shift;
+	if (@queryParams) {
+        while (@queryParams) {
+            my $queryParam = shift @queryParams;
+            #todo sanity
+            $query =~ s/\?/'queryParam'/;
+        }
+	}
 
 	my $cachePath = md5_hex($query);
 	if ($cachePath =~ m/^([0-9a-f]{32})$/) {
@@ -810,7 +881,27 @@ sub SqliteQueryCachedShell { # $query ; performs sqlite query via sqlite3 comman
 		return $results;
 	} else {
 		my $SqliteDbName = GetSqliteDbName();
-		$results = `sqlite3 "$SqliteDbName" "$query"`;
+
+		my $queryEscapedForSh = str_replace('"', '\"', $query);
+		$queryEscapedForSh =~ s/\s/ /g;
+
+		#my $queryEscapedForSh = EscapeShellChars($query);
+		my $resultsCommand = 'sqlite3 "' . $SqliteDbName . '" "' . $queryEscapedForSh . '";';
+
+		WriteLog('SqliteQueryCachedShell: $resultsCommand = ' . $resultsCommand);
+
+		#todo actual sanity
+		if ($resultsCommand =~ m/^(.+)$/s) {
+		    $resultsCommand = $1;
+        } else {
+            WriteLog('SqliteQueryCachedShell: warning: $resultsCommand sanity check failed');;
+            return '';
+        }
+
+		$results = `$resultsCommand`;
+
+		WriteLog('SqliteQueryCachedShell: length($results) ' . length($results));
+
 		PutCache('sqcs/'.$cachePath, $results);
 		return $results;
 	}
@@ -994,36 +1085,6 @@ sub DBGetLatestConfig { # Returns everything from config_latest view
 #	return %hash;
 #}
 
-sub SqliteGetValue { # Returns the first column from the first row returned by sqlite $query
-	#todo perhaps use SqliteQuery2() ?
-	#todo perhaps add params array?
-
-	my $query = shift;
-	chomp $query;
-
-	my $queryOneLine = $query;
-	$queryOneLine =~ s/\s+/ /g;
-	WriteLog('SqliteGetValue: $query = ' . $queryOneLine);
-
-
-	WriteLog('SqliteGetValue: caller: ' . join (',', caller));
-	#my ($package, $filename, $line) = caller;
-	#WriteLog('SqliteGetValue: caller: ' . $package . ',' . $filename . ', ' . $line);
-
-	#SqliteMakeItemFlatTable();
-	my $dbh = SqliteConnect();
-	#todo rewrite better
-
-	my $sth = $dbh->prepare("$query");
-	$sth->execute(@_);
-
-	my @aref = $sth->fetchrow_array();
-
-	$sth->finish();
-
-	return $aref[0];
-} # SqliteGetValue()
-
 sub DBGetAuthorCount { # Returns author count.
 # By default, all authors, unless $whereClause is specified
 
@@ -1031,9 +1092,9 @@ sub DBGetAuthorCount { # Returns author count.
 
 	my $authorCount;
 	if ($whereClause) {
-		$authorCount = SqliteGetValue("SELECT COUNT(*) FROM author_flat WHERE $whereClause");
+		$authorCount = SqliteGetValue("SELECT COUNT(*) AS author_count FROM author_flat WHERE $whereClause LIMIT 1");
 	} else {
-		$authorCount = SqliteGetValue("SELECT COUNT(*) FROM author_flat");
+		$authorCount = SqliteQueryCachedShell("SELECT COUNT(*) AS author_count FROM author_flat LIMIT 1");
 	}
 	if ($authorCount) {
 		chomp($authorCount);
@@ -1055,9 +1116,9 @@ sub DBGetItemCount { # Returns item count.
 		if (substr(lc($whereClause), 0, 7) eq 'where ') {
 			$whereClause = substr($whereClause, 7);
 		}
-		$itemCount = SqliteGetValue("SELECT COUNT(*) FROM item_flat WHERE $whereClause");
+		$itemCount = SqliteQueryCachedShell("SELECT COUNT(*) AS item_count FROM item_flat WHERE $whereClause LIMIT 1");
 	} else {
-		$itemCount = SqliteGetValue("SELECT COUNT(*) FROM item_flat");
+		$itemCount = SqliteQueryCachedShell("SELECT COUNT(*) AS item_count FROM item_flat LIMIT 1");
 	}
 	if ($itemCount) {
 		chomp($itemCount);
@@ -1714,7 +1775,7 @@ sub DBGetVoteCounts { # Get total vote counts by tag value
 sub DBGetTagCount { # Gets number of distinct tag/vote values
 	my $query = "
 		SELECT
-			COUNT(vote_value)
+			COUNT(vote_value) AS vote_count
 		FROM (
 			SELECT
 				DISTINCT vote_value
@@ -1723,9 +1784,10 @@ sub DBGetTagCount { # Gets number of distinct tag/vote values
 			GROUP BY
 				vote_value
 		)
+		LIMIT 1
 	";
 
-	my $result = SqliteGetValue($query);
+	my $result = SqliteQueryCachedShell($query);
 
 	if ($result) {
 		WriteLog('DBGetTagCount: $result = ' . $result);
@@ -2477,17 +2539,7 @@ sub DBGetItemList { # get list of items from database. takes reference to hash o
 	my ($package, $filename, $line) = caller;
 	WriteLog('DBGetItemList: caller: ' . $package . ',' . $filename . ', ' . $line);
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
-
-	my $sth = $dbh->prepare($query);
-	$sth->execute();
-
-	my @resultsArray = ();
-
-	while (my $row = $sth->fetchrow_hashref()) {
-		push @resultsArray, $row;
-	}
+	my @resultsArray = SqliteQueryHashRef($query);
 
 	WriteLog('DBGetItemList: scalar(@resultsArray) = ' . scalar(@resultsArray));
 
@@ -2715,10 +2767,10 @@ sub DBGetAdminKey { # Returns the pubkey id of the top-scoring admin (or nothing
 	my $key = 1;
 
 	if ($key) { #todo fix non-param sql
-		my $query = "SELECT MAX(author_flat.author_key) AS author_key FROM author_flat WHERE file_hash in (SELECT file_hash FROM item_flat WHERE ',' || tags_list || ',' LIKE '%,admin,%')";
-		my $valueReturned = SqliteGetValue($query);
+		my $query = "SELECT MAX(author_flat.author_key) AS author_key FROM author_flat WHERE file_hash in (SELECT file_hash FROM item_flat WHERE ',' || tags_list || ',' LIKE '%,admin,%') LIMIT 1";
+		my $valueReturned = SqliteQueryCachedShell($query);
 		if ($valueReturned) {
-			$memoHash{$memoKey} = SqliteGetValue($query);
+			$memoHash{$memoKey} = SqliteQueryCachedShell($query);
 			WriteLog('DBGetAdminKey: returning ' . $memoHash{$memoKey});
 			return $memoHash{$memoKey};
 		} else {
@@ -2895,5 +2947,38 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 
 	return %voteTotals;
 } # DBGetItemVoteTotals()
+
+
+sub PrintBanner {
+	my $string = shift; #todo sanity checks
+	my $width = length($string);
+
+	my $edge = "=" x $width;
+
+	print "\n" ;
+	print "\n";
+	print $edge;
+	print "\n"  ;
+	print "\n"   ;
+	print $string;
+	print "\n"    ;
+	print "\n"     ;
+	print $edge;
+	print "\n"      ;
+	print "\n"       ;
+}
+
+while (my $arg1 = shift @foundArgs) {
+	#print("\n=========================\n");
+	PrintBanner("\nFOUND ARGUMENT: $arg1;\n");
+	#print("\n=========================\n");
+
+	# go through all the arguments one at a time
+	if ($arg1) {
+	    if ($arg1 eq '--test') {
+	        SqliteMakeTables();
+	    }
+    }
+}
 
 1;
