@@ -1236,9 +1236,9 @@ sub DBGetAuthorCount { # Returns author count.
 
 	my $authorCount;
 	if ($whereClause) {
-		$authorCount = SqliteGetValue("SELECT COUNT(*) FROM author_flat WHERE $whereClause");
+		$authorCount = SqliteQueryCachedShell("SELECT COUNT(*) AS author_count FROM author_flat WHERE $whereClause LIMIT 1");
 	} else {
-		$authorCount = SqliteGetValue("SELECT COUNT(*) FROM author_flat");
+		$authorCount = SqliteQueryCachedShell("SELECT COUNT(*) AS author_count FROM author_flat LIMIT 1");
 	}
 	chomp($authorCount);
 
