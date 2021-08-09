@@ -131,6 +131,8 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 	}
 
 	#todo sanity checks
+	#todo sanity checks
+	#todo sanity checks
 
 	if (!defined($pageParam)) {
 		$pageParam = 0;
