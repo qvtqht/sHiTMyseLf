@@ -7,6 +7,7 @@ use utf8;
 use DBD::SQLite;
 use DBI;
 use Data::Dumper;
+use Carp;
 use 5.010;
 
 require './utils.pl';
@@ -16,9 +17,7 @@ while (my $argFound = shift) {
 	push @foundArgs, $argFound;
 }
 
-
 my $noDBI = 1;
-
 
 # different ways db is accessed in here
 # =====================================
@@ -189,8 +188,7 @@ sub SqliteMakeTables { # creates sqlite schema
 		file_path UNIQUE,
 		file_name,
 		file_hash UNIQUE,
-		item_type,
-		verify_error
+		item_type
 	)");
 
 	# item_attribute
@@ -614,16 +612,18 @@ sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns 
 
 	$query = trim($query);
 
+	my @queryParams = @_;
+
+	WriteLog('SqliteQuery2: $query = ' . $query);
+
 	if ($query =~ m/^select/i) {
 	    WriteLog('SqliteQuery2: query begins with select, continuing');
 	    # cool
 	} else {
-	    WriteLog('SqliteQuery2: no select, using SqliteQuery');
-	    my $return = SqliteQuery($query);
+	    WriteLog('SqliteQuery2: no select, using SqliteQuery()');
+	    my $return = SqliteQuery($query, @queryParams);
 	    return $return;
 	}
-
-	my @queryParams = @_;
 
 	if ($query) {
 		my $queryOneLine = $query;
@@ -760,31 +760,37 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 				return '';
 			}
 		} else {
+
 			WriteLog('SqliteQueryHashRef: warning: $dbh is missing');
 
 			my $resultString = SqliteQueryCachedShell($query, @queryParams);
 
-			my @resultStringLines = split("\n", $resultString);
+			my @resultsArray;
 
-			my @resultsArray = ();
+			if ($resultString) {
 
-			my @columns = ();
+                my @resultStringLines = split("\n", $resultString);
 
-			while (@resultStringLines) {
-			    my $line = shift @resultStringLines;
-			    if (!@columns) {
-			        @columns = split ('|', $line);
-			        push @resultsArray, \@columns;
-			        # store column names, next
-			    } else {
-			        my @fields = split('|', $line);
-			        my %newHash;
-			        foreach my $field (@columns) {
-			            $newHash{$field} = shift @fields;
-			        }
-                    push @resultsArray, \%newHash;
-			    }
-			}
+                my @columns = ();
+
+                while (@resultStringLines) {
+                    my $line = shift @resultStringLines;
+                    if (!@columns) {
+                        @columns = split ('|', $line);
+                        push @resultsArray, \@columns;
+                        # store column names, next
+                    } else {
+                        my @fields = split('|', $line);
+                        my %newHash;
+                        foreach my $field (@columns) {
+                            $newHash{$field} = shift @fields;
+                        }
+                        push @resultsArray, \%newHash;
+                    }
+                }
+            } else {
+                @resultsArray = ();
+            }
 
             #while (my $row = $sth->fetchrow_hashref()) {
             #    push @resultsArray, $row;
@@ -823,9 +829,11 @@ sub SqliteQuery { # performs sqlite query via sqlite3 command
 	if (@queryParams) {
 	    while (@queryParams) {
 	        my $arg = shift @queryParams;
-	        $query = str_replace('?', "'" . ($arg ? $arg : '0') . "'");
+	        $query = str_replace('?', "'" . ($arg ? $arg : '0') . "'", $query);
 	    }
     }
+
+    WriteLog('SqliteQuery: $query = ' . $query);
 
 	my $queryOneLine = $query;
 	$queryOneLine =~ s/\s+/ /g;
@@ -833,6 +841,20 @@ sub SqliteQuery { # performs sqlite query via sqlite3 command
 	WriteLog('SqliteQuery: $queryOneLine = ' . $queryOneLine);
 
 	my $SqliteDbName = GetSqliteDbName();
+
+	if ($SqliteDbName =~ m/^(.+)$/) {
+	    #todo real sanity check
+	    $SqliteDbName = $1;
+    } else {
+        #todo failed sanity check
+    }
+
+	if ($query =~ m/^(.+)$/) {
+	    #todo real sanity check
+	    $query = $1;
+    } else {
+        #todo failed sanity check
+    }
 
 	my $results = `sqlite3 "$SqliteDbName" "$query"`;
 	return $results;
@@ -1759,17 +1781,9 @@ sub DBGetVoteCounts { # Get total vote counts by tag value
 		$orderBy;
 	";
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
+	my $result = SqliteQueryHashRef($query);
 
-	my $sth = $dbh->prepare($query);
-	$sth->execute();
-
-	my $ref = $sth->fetchall_arrayref();
-
-	$sth->finish();
-
-	return $ref;
+	return $result;
 }
 
 sub DBGetTagCount { # Gets number of distinct tag/vote values
@@ -2029,7 +2043,7 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 	my $authorKey = shift;
 	my $fileHash = shift;
 	my $itemType = shift;
-	my $verifyError = shift;
+	my $verifyError = shift; #todo remove this and move it somewhere else
 
 	if (!$verifyError) {
 		$verifyError = '';
@@ -2055,11 +2069,11 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 	WriteLog("DBAddItem($filePath, $fileName, $authorKey, $fileHash, $itemType, $verifyError);");
 
 	if (!$query) {
-		$query = "INSERT OR REPLACE INTO item(file_path, file_name, file_hash, item_type, verify_error) VALUES ";
+		$query = "INSERT OR REPLACE INTO item(file_path, file_name, file_hash, item_type) VALUES ";
 	} else {
 		$query .= ",";
 	}
-	push @queryParams, $filePath, $fileName, $fileHash, $itemType, $verifyError;
+	push @queryParams, $filePath, $fileName, $fileHash, $itemType;
 
 	$query .= "(?, ?, ?, ?, ?)";
 
@@ -2803,8 +2817,11 @@ sub DBGetItemFields { # Returns fields we typically need to request from item_fl
 		item_flat.item_sequence item_sequence
 	";
 
+    #fix spaces
 	$itemFields = trim($itemFields);
 	$itemFields = str_replace("\t", '', $itemFields);
+	#$itemFields =~ s/\s/ /g;
+	#$itemFields =~ s/  / /g;
 
 	return $itemFields;
 }
