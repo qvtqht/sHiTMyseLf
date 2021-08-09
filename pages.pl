@@ -965,6 +965,12 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	my $title = shift;
 	my $columns = shift;
 
+	if (!$columns) {
+	    $columns = '';
+    }
+
+	WriteLog('GetQueryPage: $pageName = ' . $pageName . '; $title = ' . $title . '; $columns = ' . $columns);
+
 	if (!$title) {
 		$title = ucfirst($pageName);
 	}
