@@ -2005,12 +2005,11 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 			DBAddItemAttribute('flush');
 		}
 
-		return;
+		return '';
 	}
 
 	if ($query && (length($query) > DBMaxQueryLength() || scalar(@queryParams) > DBMaxQueryParams())) {
 		DBAddItem('flush');
-
 		$query = '';
 		@queryParams = ();
 	}
@@ -2075,7 +2074,7 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 	}
 	push @queryParams, $filePath, $fileName, $fileHash, $itemType;
 
-	$query .= "(?, ?, ?, ?, ?)";
+	$query .= "(?, ?, ?, ?)";
 
 	my $filePathRelative = $filePath;
 	my $htmlDir = GetDir('html');
@@ -2994,6 +2993,9 @@ while (my $arg1 = shift @foundArgs) {
 	if ($arg1) {
 	    if ($arg1 eq '--test') {
 	        SqliteMakeTables();
+	        PutFile('./html/txt/test.txt', 'test');
+	        DBAddItem('./html/txt/test.txt', 'b', 'c', 'd', 'txt');
+	        DBAddItem('flush');
 	    }
     }
 }
