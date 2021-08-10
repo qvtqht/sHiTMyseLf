@@ -4,8 +4,8 @@
 use strict;
 use warnings;
 use utf8;
-use DBD::SQLite;
-use DBI;
+#use DBD::SQLite;
+#use DBI;
 use Data::Dumper;
 use Carp;
 use 5.010;
@@ -26,7 +26,7 @@ my $noDBI = 1;
 # $sth->execute + fetchall_arrayref
 # $sth->execute + fetchrow_arrayref
 # $sth->execute + fetchrow_hashref
-# SqliteQueryHashRef (fetchrow_hashref)
+# SqliteQueryGetArrayOfHashRef (fetchrow_hashref)
 # $sth->execute + bind_columns
 
 # SqliteQuery2() (fetchall_arrayref)
@@ -697,10 +697,10 @@ sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns 
 	return '';
 } # SqliteQuery2()
 
-sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
+sub SqliteQueryGetArrayOfHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
 # ATTENTION: first array element returned is an array of column names!
 
-	WriteLog('SqliteQueryHashRef: begin');
+	WriteLog('SqliteQueryGetArrayOfHashRef: begin');
 
 	my $query = shift;
 	chomp $query;
@@ -720,21 +720,21 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 		my $queryOneLine = $query;
 		$queryOneLine =~ s/\s+/ /g;
 
-		WriteLog('SqliteQueryHashRef: $query = ' . $queryOneLine);
-		WriteLog('SqliteQueryHashRef: caller: ' . join(', ', caller));
+		WriteLog('SqliteQueryGetArrayOfHashRef: $query = ' . $queryOneLine);
+		WriteLog('SqliteQueryGetArrayOfHashRef: caller: ' . join(', ', caller));
 
 		foreach my $qpTest (@queryParams) {
 			if (!defined($qpTest)) {
-				WriteLog('SqliteQueryHashRef: warning: uninitialized array item in @queryParams, returning');
+				WriteLog('SqliteQueryGetArrayOfHashRef: warning: uninitialized array item in @queryParams, returning');
 				return '';
 			}
 		}
-		WriteLog('SqliteQueryHashRef: @queryParams: ' . join(', ', @queryParams));
+		WriteLog('SqliteQueryGetArrayOfHashRef: @queryParams: ' . join(', ', @queryParams));
 
 		my $dbh = SqliteConnect();
 
 		if ($dbh) {
-			WriteLog('SqliteQueryHashRef: $dbh was found, proceeding...');
+			WriteLog('SqliteQueryGetArrayOfHashRef: $dbh was found, proceeding...');
 
 			my $aref;
 			my $sth;
@@ -745,7 +745,7 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 			if ($sth) {
 				my $execResult = $sth->execute(@queryParams);
 
-				WriteLog('SqliteQueryHashRef: $execResult = ' . $execResult);
+				WriteLog('SqliteQueryGetArrayOfHashRef: $execResult = ' . $execResult);
 
 				my @resultsArray = ();
 				push @resultsArray, $sth->{'NAME'};
@@ -756,12 +756,12 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 
 				return @resultsArray;
 			} else {
-				WriteLog('SqliteQueryHashRef: warning: prepare failed on $query = ' . $query);
+				WriteLog('SqliteQueryGetArrayOfHashRef: warning: prepare failed on $query = ' . $query);
 				return '';
 			}
 		} else {
 
-			WriteLog('SqliteQueryHashRef: warning: $dbh is missing');
+			WriteLog('SqliteQueryGetArrayOfHashRef: warning: $dbh is missing');
 
 			my $resultString = SqliteQueryCachedShell($query, @queryParams);
 
@@ -800,10 +800,10 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 		}
 	}
 	else {
-		WriteLog('SqliteQueryHashRef: warning: $query is missing!');
+		WriteLog('SqliteQueryGetArrayOfHashRef: warning: $query is missing!');
 		return '';
 	}
-} # SqliteQueryHashRef()
+} # SqliteQueryGetArrayOfHashRef()
 
 sub EscapeShellChars { # $string ; escapes string for including as parameter in shell command
 	#todo this is still probably not safe and should be improved upon #security
@@ -977,9 +977,9 @@ sub DBGetVotesForItem { # Returns all votes (weighed) for item
 	";
 	@queryParams = ($fileHash);
 
-	my $result = SqliteQuery2($query, @queryParams);
+	my @result = SqliteQueryGetArrayOfHashRef($query, @queryParams);
 
-	return $result;
+	return @result;
 }
 #
 sub DBGetEvents { #gets events list
@@ -1007,18 +1007,8 @@ sub DBGetEvents { #gets events list
 
 	#todo rewrite this sub better
 
-	my $dbh = SqliteConnect();
-
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@queryParams);
-
-	my @resultsArray = ();
-
-	while (my $row = $sth->fetchrow_hashref()) {
-		push @resultsArray, $row;
-	}
-
-	return @resultsArray;
+	my @queryResult = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	return @queryResult;
 }
 
 sub DBGetAuthorFriends { # Returns list of authors which $authorKey has tagged as friend
@@ -1048,19 +1038,9 @@ sub DBGetAuthorFriends { # Returns list of authors which $authorKey has tagged a
 	my @queryParams = ();
 	push @queryParams, $authorKey;
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
+	my @queryResult = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	return @queryResult;
 
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@queryParams);
-
-	my @resultsArray = ();
-
-	while (my $row = $sth->fetchrow_hashref()) {
-		push @resultsArray, $row;
-	}
-
-	return @resultsArray;
 } # DBGetAuthorFriends()
 
 sub DBGetLatestConfig { # Returns everything from config_latest view
@@ -1072,20 +1052,10 @@ sub DBGetLatestConfig { # Returns everything from config_latest view
 	my $query = "SELECT * FROM config_latest";
 	#todo write out the fields
 
-	my $dbh = SqliteConnect();
+	
+	my @queryResult = SqliteQueryGetArrayOfHashRef($query);
+	return @queryResult;
 
-	if ($dbh) {
-		my $sth = $dbh->prepare($query);
-		$sth->execute();
-		my @resultsArray = ();
-		while (my $row = $sth->fetchrow_hashref()) {
-			push @resultsArray, $row;
-		}
-		return @resultsArray;
-	} else {
-		WriteLog('DBGetLatestConfig: warning: $dbh was false');
-		return 0;
-	}
 } # DBGetLatestConfig()
 
 #sub SqliteGetHash {
@@ -1110,23 +1080,15 @@ sub DBGetLatestConfig { # Returns everything from config_latest view
 sub DBGetAuthorCount { # Returns author count.
 # By default, all authors, unless $whereClause is specified
 
-	my $whereClause = shift;
-
 	my $authorCount;
-	if ($whereClause) {
-		$authorCount = SqliteGetValue("SELECT COUNT(*) AS author_count FROM author_flat WHERE $whereClause LIMIT 1");
-	} else {
-		$authorCount = SqliteQueryCachedShell("SELECT COUNT(*) AS author_count FROM author_flat LIMIT 1");
-	}
-	if ($authorCount) {
-		chomp($authorCount);
-	} else {
-		#todo warning
-		$authorCount = 0;
-	}
+
+	my $query = "SELECT COUNT(*) AS author_count FROM author_flat LIMIT 1";
+
+	my @queryResult = SqliteQueryGetArrayOfHashRef($query);
+	
+	$authorCount = $queryResult[0]->{'author_count'};
 
 	return $authorCount;
-
 }
 
 sub DBGetItemCount { # Returns item count.
@@ -1146,7 +1108,7 @@ sub DBGetItemCount { # Returns item count.
 		chomp($itemCount);
 	} else {
 		#todo warning
-		$itemCount = 0;
+		$itemCount = -1;
 	}
 
 	return $itemCount;
@@ -1229,6 +1191,19 @@ sub SqliteEscape { # Escapes supplied text for use in sqlite query
 #
 # 	return $authorInfo;
 # }
+
+sub SqliteGetValue {
+	my $query = shift;
+	my @queryParams = shift;
+	#todo sanity
+
+	my @result = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+
+	if (@result) {
+		return $result[1]->{$result[0][0]}; 
+		#first row, first column
+	}
+}
 
 sub DBGetItemTitle { # get title for item ($itemhash)
 	my $itemHash = shift;
@@ -1389,10 +1364,10 @@ sub DBGetTouchedPages { # Returns items from task table, used for prioritizing w
 	my @params;
 	push @params, $touchedPageLimit;
 
-	my $results = SqliteQuery2($query, @params);
+	my @results = SqliteQueryGetArrayOfHashRef($query, @params);
 
-	return $results;
-}
+	return @results;
+} # DBGetTouchedPages()
 
 sub DBGetAllPages { # Returns items from task table, used for prioritizing which pages need rebuild
 # index, rss, authors, stats, tags, and top are returned first
@@ -1416,9 +1391,9 @@ sub DBGetAllPages { # Returns items from task table, used for prioritizing which
 
 	my @params;
 
-	my $results = SqliteQuery2($query, @params);
+	my @results = SqliteQueryGetArrayOfHashRef($query, @params);
 
-	return $results;
+	return @results;
 } # DBGetAllPages()
 
 sub DBAddItemPage { # $itemHash, $pageType, $pageParam ; adds an entry to item_page table
@@ -1781,9 +1756,9 @@ sub DBGetVoteCounts { # Get total vote counts by tag value
 		$orderBy;
 	";
 
-	my $result = SqliteQueryHashRef($query);
+	my @result = SqliteQueryGetArrayOfHashRef($query);
 
-	return $result;
+	return @result;
 }
 
 sub DBGetTagCount { # Gets number of distinct tag/vote values
@@ -1801,14 +1776,7 @@ sub DBGetTagCount { # Gets number of distinct tag/vote values
 		LIMIT 1
 	";
 
-	my $result = SqliteQueryCachedShell($query);
-
-	if ($result) {
-		WriteLog('DBGetTagCount: $result = ' . $result);
-	} else {
-		WriteLog('DBGetTagCount: warning: no $result, returning 0');
-		$result = 0;
-	}
+	my $result = SqliteGetValue($query);
 
 	return $result;
 } # DBGetTagCount()
@@ -1837,17 +1805,7 @@ sub DBGetItemLatestAction { # returns highest timestamp in all of item's childre
 
 	push @queryParams, $itemHash;
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
-
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@queryParams);
-
-	my @aref = $sth->fetchrow_array();
-
-	$sth->finish();
-
-	return $aref[0];
+	return SqliteGetValue($query, @queryParams);
 } # DBGetItemLatestAction()
 
 #sub GetTopItemsForTag {
@@ -2552,7 +2510,7 @@ sub DBGetItemList { # get list of items from database. takes reference to hash o
 	my ($package, $filename, $line) = caller;
 	WriteLog('DBGetItemList: caller: ' . $package . ',' . $filename . ', ' . $line);
 
-	my @resultsArray = SqliteQueryHashRef($query);
+	my @resultsArray = SqliteQueryGetArrayOfHashRef($query);
 
 	WriteLog('DBGetItemList: scalar(@resultsArray) = ' . scalar(@resultsArray));
 
@@ -2996,6 +2954,7 @@ while (my $arg1 = shift @foundArgs) {
 	        PutFile('./html/txt/test.txt', 'test');
 	        DBAddItem('./html/txt/test.txt', 'b', 'c', 'd', 'txt');
 	        DBAddItem('flush');
+			print 'DBGetItemCount() = ' . DBGetItemCount();
 	    }
     }
 }

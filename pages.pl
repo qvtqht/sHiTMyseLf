@@ -969,7 +969,7 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	    $columns = '';
     }
 
-	WriteLog('GetQueryPage: $pageName = ' . $pageName . '; $title = ' . $title . '; $columns = ' . $columns);
+	WriteLog('GetQueryPage: $pageName = ' . $pageName . '; $title = ' . ($title ? $title : 'FALSE') . '; $columns = ' . $columns);
 
 	if (!$title) {
 		$title = ucfirst($pageName);
