@@ -986,7 +986,7 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	if (ConfigKeyValid('query/' . $pageName)) {
 		$query = GetConfig('query/' . $pageName);
 	}
-	my @result = SqliteQueryHashRef($query);
+	my @result = SqliteQueryGetArrayOfHashRef($query);
 
 	if (@result) {
 		$html .= GetPageHeader($title, $title, $pageName);
@@ -2196,7 +2196,7 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 
 	state $itemsDeleted;
 	if (!$itemsDeleted) {
-		my @result = SqliteQueryHashRef('deleted');
+		my @result = SqliteQueryGetArrayOfHashRef('deleted');
 		$itemsDeleted = (scalar(@result) - 1); #minus 1 because first row is headers
 		#todo optimize
 	}
@@ -2292,7 +2292,7 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 	my $chainLogLength = 0;
 	if (GetConfig('admin/logging/write_chain_log')) {
 		#$chainLogLength = `wc -l html/chain.log`;
-		$chainLogLength = SqliteQueryCachedShell("SELECT COUNT(file_hash) file_count FROM item_attribute WHERE attribute = 'chain_sequence' LIMIT 1");
+		$chainLogLength = SqliteGetValue('chain_length');
 		#todo make sqlite optional
 		#todo templatize query
 		#todo move to sqlite.pl
