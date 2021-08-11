@@ -1,3 +1,13 @@
+	# action      param           touch_time     priority
+	# make_page   author/abc
+	# index_file  path/abc.txt
+	# read_log    log/access.log
+	# find_new_files
+	# make_thumb  path/abc.jpg
+	# annotate_votes   (vote starts with valid=0, must be annotated)
+	#
+
+
 sqlite3 vs dbd::sqlite plan
 	ensure no multi-line data is stored in db
 	convert all db calls to use SqliteQuery2()
