@@ -28,47 +28,6 @@
 </fieldset>
 
 <fieldset class=advanced>
-	<legend><b>Annoyances</b><br></legend>
-
-	<p>
-		<label for=chkDraggableSpawn>
-			<input id=chkDraggableSpawn name=chkDraggableSpawn type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_spawn'); }">
-			Spawn dialogs in-page<noscript><b>*</b></noscript>
-		</label>
-	</p>
-
-	<p>
-		<label for=chkDraggable>
-			<input id=chkDraggable name=chkDraggable type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable'); }">
-			Allow dialog reposition<noscript><b>*</b></noscript>
-		</label>
-	</p>
-
-	<p>
-		<label for=chkDraggableRestore>
-			<input id=chkDraggableRestore name=chkDraggableRestore type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_restore'); }">
-			Restore placement automatically<noscript><b>*</b></noscript>
-		</label>
-	</p>
-
-	<p>
-		<label for=chkDraggableScale>
-			<input id=chkDraggableScale name=chkDraggableScale type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_scale'); }">
-			Rescale active dialog<noscript><b>*</b></noscript>
-		</label>
-	</p>
-
-	<p>
-		<label for=chkDraggableActivate>
-			<input id=chkDraggableActivate name=chkDraggableActivate type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_activate'); }">
-			Activate with pointer<noscript><b>*</b></noscript>
-		</label>
-	</p>
-	
-	<p>Caution: These features require a mouse<br> and may trigger temporary insanity.</p>
-</fieldset>
-
-<fieldset class=advanced>
 	<legend><b>Timestamp Format <noscript>*</noscript></b></legend>
 	<p>
 		<label for=optTimestampsSeconds>
@@ -107,37 +66,4 @@
 	</p>
 </fieldset>
 
-
-
-<fieldset>
-	<legend><b>Writing</b><br></legend>
-
-	<p>
-		<label for=chkWriteEnhance class=advanced>
-			<input type=checkbox id=chkWriteEnhance name=chkWriteEnhance onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_enhance'); }">
-			Make write box 80x24 fixed <noscript><b>*</b></noscript>
-		</label>
-	</p>
-
-	<p>
-		<label for=chkFocusReply class=advanced>
-			<input type=checkbox id=chkFocusReply name=chkFocusReply onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'focus_reply'); }">
-			Automatically focus reply field<noscript><b>*</b></noscript>
-		</label>
-	</p>
-
-	<p>
-		<label for=chkSignByDefault class=advanced>
-			<input type=checkbox id=chkSignByDefault name=chkSignByDefault onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'sign_by_default'); }">
-			Sign messages by default<noscript><b>*</b></noscript>
-		</label>
-	</p>
-
-	<p>
-		<label for=chkWriteAutoSave>
-			<input type=checkbox id=chkWriteAutoSave name=chkWriteAutoSave onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_autosave'); }">
-			Save drafts on device<noscript><b>*</b></noscript>
-		</label>
-	</p>
-</fieldset>
 <!-- / settings.template -->

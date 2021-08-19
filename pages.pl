@@ -4568,14 +4568,17 @@ sub GetSettingsPage { # returns html for settings page (/settings.html)
 
 	$txtIndex .= GetAccessDialog();
 
-	$txtIndex .= GetSettingsWindow();
-
 	$txtIndex .= GetStatsTable();  # GetSettingsPage()
 
+	$txtIndex .= GetSettingsWindow();
+
 	$txtIndex .= GetServerConfigDialog();
+	
+	$txtIndex .= GetWindowTemplate(GetTemplate('form/writing.template'), 'Writing');
 
 	$txtIndex .= GetOperatorWindow();
 
+	$txtIndex .= GetWindowTemplate(GetTemplate('form/annoyances.template'), 'Annoyances');
 	#$txtIndex .= GetMenuTemplate();
 
 	$txtIndex .= GetPageFooter();
