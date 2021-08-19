@@ -30,8 +30,6 @@
 <fieldset class=advanced>
 	<legend><b>Annoyances</b><br></legend>
 
-	<p>Caution: These options require mouse.<br> Known to cause <br> temporary insanity <br> in sensitive individuals.</p>
-
 	<p>
 		<label for=chkDraggableSpawn>
 			<input id=chkDraggableSpawn name=chkDraggableSpawn type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_spawn'); }">
@@ -66,6 +64,8 @@
 			Activate with pointer<noscript><b>*</b></noscript>
 		</label>
 	</p>
+	
+	<p>Caution: These features require a mouse<br> and may trigger temporary insanity.</p>
 </fieldset>
 
 <fieldset class=advanced>
