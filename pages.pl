@@ -4578,7 +4578,7 @@ sub GetSettingsPage { # returns html for settings page (/settings.html)
 
 	$txtIndex .= GetOperatorWindow();
 
-	$txtIndex .= GetWindowTemplate(GetTemplate('form/annoyances.template'), 'Annoyances');
+	$txtIndex .= '<span class=advanced>' . GetWindowTemplate(GetTemplate('form/annoyances.template'), 'Annoyances') . '</span>';
 	#$txtIndex .= GetMenuTemplate();
 
 	$txtIndex .= GetPageFooter();
