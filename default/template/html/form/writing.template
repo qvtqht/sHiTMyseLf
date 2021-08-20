@@ -1,7 +1,5 @@
 <!-- writing.template -->
 <fieldset>
-	<legend><b>Writing</b><br></legend>
-
 	<p>
 		<label for=chkWriteEnhance class=advanced>
 			<input type=checkbox id=chkWriteEnhance name=chkWriteEnhance onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'write_enhance'); }">

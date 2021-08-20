@@ -1,7 +1,5 @@
 <!-- annoyances.template -->
 <fieldset class=advanced>
-	<legend><b>Annoyances</b><br></legend>
-
 	<p>
 		<label for=chkDraggableSpawn>
 			<input id=chkDraggableSpawn name=chkDraggableSpawn type=checkbox onchange="if (window.SaveCheckbox) { SaveCheckbox(this, 'draggable_spawn'); }">
