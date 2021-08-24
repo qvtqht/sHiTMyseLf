@@ -1,46 +1,19 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -T
 #freebsd: #!/usr/local/bin/perl
 
 use strict;
 use warnings;
 use utf8;
-use DBD::SQLite;
-use DBI;
 use Data::Dumper;
+use Carp;
 use 5.010;
 
+require './utils.pl';
 
-# different ways db is accessed in here
-# =====================================
-# SqliteGetValue() (fetchrow_array)
-# $sth->execute + fetchrow_array
-# $sth->execute + fetchall_arrayref
-# $sth->execute + fetchrow_arrayref
-# $sth->execute + fetchrow_hashref
-# SqliteQueryHashRef (fetchrow_hashref)
-# $sth->execute + bind_columns
-
-# SqliteQuery2() (fetchall_arrayref)
-# SqliteQuery() (calls to shell, doesn't return results)
-# SqliteQueryCachedShell() (calls to shell, also uses cache)
-
-# other mentionables
-# ==================
-# SqliteEscape
-# EscapeShellChars
-
-# needs implementing
-# ==================
-# sqlite3
-# dbi::sqlite
-# ---
-# get value
-# get row array-hashref
-# get returned value after insert/update
-# parameter insertion (duplicate parametrized in sqlite3 layer)
-# db creation
-
-
+my @foundArgs;
+while (my $argFound = shift) {
+	push @foundArgs, $argFound;
+}
 
 sub GetSqliteDbName {
 	my $cacheDir = GetDir('cache');
@@ -48,540 +21,36 @@ sub GetSqliteDbName {
 	return $SqliteDbName;
 }
 
-sub SqliteConnect { # Establishes connection to sqlite db, RETURNS HANDLE
-# tries up to 5 times, because sometimes the first try fails
-# reason for occasional failure is unknown to me
-# retry count is done by recursion and counted with state $retries
-
-	state $dbh; # handle for sqlite interface
-	if ($dbh) {
-		# turn this off if $useThreads
-		return $dbh;
-	}
-
-	my $SqliteDbName = GetSqliteDbName();
-	EnsureSubdirs($SqliteDbName);
-
-	# if admin/debug is set, use RaiseError
-	# otherwise do not use RaiseError
-	if (!
-		(
-			(
-				GetConfig('admin/debug')
-					&&
-				(
-					$dbh = DBI->connect(
-						"dbi:SQLite:dbname=$SqliteDbName",
-						"", # username (unused)
-						"", # password (unused)
-						{
-							RaiseError => 1,
-							AutoCommit => 1
-						}
-					)
-				)
-			)
-				||
-			(
-				$dbh = DBI->connect(
-					"dbi:SQLite:dbname=$SqliteDbName",
-					"", # username
-					"", # password
-					{
-						AutoCommit => 1
-					}
-				)
-			)
-		) # ! (not)
-	) { # if
-		WriteLog('SqliteConnect: warning: problem connecting to database: ' . $DBI::errstr);
-
-		state $retries;
-		if (!$retries) {
-			$retries = 1;
-		} else {
-			$retries = $retries + 1;
-		}
-
-		if ($retries < 5) {
-			return SqliteConnect();
-		}
-	}
-
-	if ($dbh) {
-		return $dbh;
-	}
-
-	#SqliteMakeItemFlatTable();
-} # SqliteConnect()
-
-
-SqliteConnect();
-
 sub DBMaxQueryLength { # Returns max number of characters to allow in sqlite query
-	return 10240;
+	return 1024;
 }
 
 sub DBMaxQueryParams { # Returns max number of parameters to allow in sqlite query
 	return 128;
 }
 
-#sub SqliteUnlinkDb { # Removes sqlite database by renaming it to ".prev"
-#unused
-#	my $SqliteDbName = GetSqliteDbName();
-#	if ($dbh) {
-#		$dbh->disconnect();
-#	}
-#	rename($SqliteDbName, "$SqliteDbName.prev");
-#	SqliteConnect();
-#}
+sub SqliteQuery2 {
+    return SqliteQuery(@_);
+}
 
 sub SqliteMakeTables { # creates sqlite schema
+    # sub SqliteCreateTables {
+    # sub SqliteMakeTables {
+    # sub DBMakeTables {
 	my $existingTables = SqliteQueryCachedShell('.tables');
 	if ($existingTables) {
 		WriteLog('SqliteMakeTables: warning: tables already exist');
-		return;
+		return '';
 	}
 
-	# wal
-	# this switches to write-ahead log mode for sqlite
-	# reduces problems with concurrent access
-	SqliteQuery2("PRAGMA journal_mode=WAL;");
+    my $schemaQueries = GetConfig('sqlite3/schema.sql'); #todo improve name, use template tree; use GetTemplate()
+    $schemaQueries .= GetConfig('sqlite3/vote_value.sql'); #todo improve name, use template tree; use GetTemplate()
 
-	# author
-	SqliteQuery2("
-		CREATE VIEW author
-		AS
-			SELECT DISTINCT
-				value AS key
-			FROM
-				item_attribute
-			WHERE
-				attribute IN ('cookie_id', 'gpg_id');
-	");
+    $schemaQueries =~ s/^#.+$//mg; # remove sh-style comments (lines which begin with #)
 
-	# author_alias
-	SqliteQuery2("CREATE TABLE author_alias(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		key UNIQUE,
-		alias,
-		fingerprint,
-		file_hash
-	)");
+    #confess $schemaQueries;
 
-	# item
-	SqliteQuery2("CREATE TABLE item(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		file_path UNIQUE,
-		file_name,
-		file_hash UNIQUE,
-		item_type,
-		verify_error
-	)");
-
-	# item_attribute
-	SqliteQuery2("
-		CREATE TABLE item_attribute(
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			file_hash,
-			attribute,
-			value,
-			epoch,
-			source
-		)
-	");
-	SqliteQuery2("
-		CREATE UNIQUE INDEX item_attribute_unique ON item_attribute (
-			file_hash,
-			attribute,
-			value,
-			epoch,
-			source
-		)
-	");
-	SqliteQuery2("
-		CREATE VIEW item_attribute_latest
-		AS
-		SELECT
-			file_hash,
-			attribute,
-			value,
-			source,
-			MAX(epoch) AS epoch
-		FROM item_attribute
-		GROUP BY file_hash, attribute
-		ORDER BY epoch DESC
-	;");
-
-	# added_time
-	#todo ideally, this should only use chain, but only if chain is enabled
-	SqliteQuery("
-		CREATE VIEW added_time
-		AS
-		SELECT
-			file_hash,
-			MIN(value) AS add_timestamp
-		FROM item_attribute_latest
-		WHERE attribute LIKE '%_timestamp'
-		GROUP BY file_hash
-	");
-
-	# item_title
-	SqliteQuery("
-		CREATE VIEW item_title
-		AS
-		SELECT
-			file_hash,
-			value AS title
-		FROM item_attribute_latest
-		WHERE attribute = 'title'
-	");
-
-	# item_name
-	SqliteQuery("
-		CREATE VIEW item_name
-		AS
-		SELECT
-			file_hash,
-			value AS name
-		FROM item_attribute_latest
-		WHERE attribute = 'name'
-	");
-
-	# item_order
-	SqliteQuery("
-		CREATE VIEW item_order
-		AS
-		SELECT
-			file_hash,
-			value AS item_order
-		FROM item_attribute_latest
-		WHERE attribute = 'order'
-	");
-
-	# item_sequence
-	SqliteQuery("
-		CREATE VIEW item_sequence
-		AS
-		SELECT
-			file_hash,
-			value AS item_sequence,
-			epoch AS item_timestamp
-		FROM item_attribute_latest
-		WHERE attribute = 'chain_sequence'
-	"); #todo rename columns
-
-	# item_author
-	SqliteQuery("
-		CREATE VIEW item_author
-		AS
-		SELECT
-			file_hash,
-			MAX(value) AS author_key
-		FROM item_attribute_latest
-		WHERE attribute IN ('cookie_id', 'gpg_id')
-		GROUP BY file_hash;
-	");
-#
-# 	SqliteQuery2("
-# 		CREATE VIEW item_title_latest
-#		AS
-# 		SELECT
-# 			file_hash,
-# 			title,
-# 			source_item_hash,
-# 			MAX(source_item_timestamp) AS source_item_timestamp
-# 		FROM item_title
-# 		GROUP BY file_hash
-# 		ORDER BY source_item_timestamp DESC
-# 	;");
-# 	#SqliteQuery2("CREATE UNIQUE INDEX item_title_unique ON item_title(file_hash)");
-
-	# item_parent
-	SqliteQuery2("CREATE TABLE item_parent(item_hash, parent_hash)");
-	SqliteQuery2("CREATE UNIQUE INDEX item_parent_unique ON item_parent(item_hash, parent_hash)");
-
-	# child_count view
-	SqliteQuery2("
-		CREATE VIEW child_count
-		AS
-		SELECT
-			parent_hash AS parent_hash,
-			COUNT(*) AS child_count
-		FROM
-			item_parent
-		GROUP BY
-			parent_hash
-	");
-
-#	# tag
-#	SqliteQuery2("CREATE TABLE tag(id INTEGER PRIMARY KEY AUTOINCREMENT, vote_value)");
-#	SqliteQuery2("CREATE UNIQUE INDEX tag_unique ON tag(vote_value);");
-
-	# vote
-	SqliteQuery2("CREATE TABLE vote(id INTEGER PRIMARY KEY AUTOINCREMENT, file_hash, ballot_time, vote_value, author_key, ballot_hash);");
-	SqliteQuery2("CREATE UNIQUE INDEX vote_unique ON vote (file_hash, ballot_time, vote_value, author_key);");
-
-	# item_page
-	SqliteQuery2("CREATE TABLE item_page(item_hash, page_name, page_param);");
-	SqliteQuery2("CREATE UNIQUE INDEX item_page_unique ON item_page(item_hash, page_name, page_param);");
-
-	#SqliteQuery2("CREATE TABLE item_type(item_hash, type_mask)");
-
-	# event
-	SqliteQuery2("CREATE TABLE event(id INTEGER PRIMARY KEY AUTOINCREMENT, item_hash, author_key, event_time, event_duration);");
-	SqliteQuery2("CREATE UNIQUE INDEX event_unique ON event(item_hash, event_time, event_duration);");
-
-	# location
-	SqliteQuery2("
-		CREATE TABLE location(
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			item_hash,
-			author_key,
-			latitude,
-			longitude
-		);
-	");
-
-	SqliteQuery2("
-		CREATE TABLE user_agent(
-			user_agent_string
-		);
-	");
-
-	# task
-	SqliteQuery2("CREATE TABLE task(id INTEGER PRIMARY KEY AUTOINCREMENT, task_type, task_name, task_param, touch_time INTEGER, priority DEFAULT 1);");
-	SqliteQuery2("CREATE UNIQUE INDEX task_unique ON task(task_type, task_name, task_param);");
-
-	# # task/queue
-	# SqliteQuery2("CREATE TABLE task(id INTEGER PRIMARY KEY AUTOINCREMENT, action, param, touch_time INTEGER, priority DEFAULT 1);");
-	# SqliteQuery2("CREATE UNIQUE INDEX task_touch_unique ON task(action, param);");
-	#
-	# action      param           touch_time     priority
-	# make_page   author/abc
-	# index_file  path/abc.txt
-	# read_log    log/access.log
-	# find_new_files
-	# make_thumb  path/abc.jpg
-	# annotate_votes   (vote starts with valid=0, must be annotated)
-	#
-
-
-
-	# config
-	SqliteQuery2("CREATE TABLE config(key, value, reset_flag, file_hash);");
-	### VIEWS BELOW ############################################
-	############################################################
-
-	# parent_count view
-	SqliteQuery2("
-		CREATE VIEW parent_count
-		AS
-		SELECT
-			item_hash AS item_hash,
-			COUNT(parent_hash) AS parent_count
-		FROM
-			item_parent
-		GROUP BY
-			item_hash
-	");
-
-	{ #todo clean up vote_value #scaffold
-		SqliteQuery2("
-			create table vote_value(vote, value);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('good', 1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('like', 1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('pubkey', 1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('textart', 1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('meta', 1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('textart', 1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('noise', -1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('funny', 1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('signed', 1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('puzzle', 9000);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('approve', 10);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('flag', -50000);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('scunthorpe', -1);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('stop', -1023);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('hide', -1023);
-		");
-
-		SqliteQuery2("
-			insert into vote_value(vote, value) values('report', -1023);
-		");
-	}
-
-	SqliteQuery2("
-		CREATE VIEW item_tags_list
-		AS
-		SELECT
-			file_hash,
-			GROUP_CONCAT(DISTINCT vote_value) AS tags_list
-		FROM vote
-		GROUP BY file_hash
-	");
-
-	SqliteQuery2("
-		CREATE VIEW item_flat
-		AS
-			SELECT
-				item.file_path AS file_path,
-				IFNULL(item_name.name, item.file_name) AS item_name,
-				item.file_hash AS file_hash,
-				IFNULL(item_author.author_key, '') AS author_key,
-				IFNULL(child_count.child_count, 0) AS child_count,
-				IFNULL(parent_count.parent_count, 0) AS parent_count,
-				added_time.add_timestamp AS add_timestamp,
-				IFNULL(item_sequence.item_sequence, '') AS item_sequence,
-				IFNULL(item_title.title, '') AS item_title,
-				IFNULL(item_score.item_score, 0) AS item_score,
-				item.item_type AS item_type,
-				tags_list AS tags_list,
-				item.file_name AS file_name,
-				CAST(item_order.item_order AS INTEGER) AS item_order
-			FROM
-				item
-				LEFT JOIN child_count ON ( item.file_hash = child_count.parent_hash )
-				LEFT JOIN parent_count ON ( item.file_hash = parent_count.item_hash )
-				LEFT JOIN added_time ON ( item.file_hash = added_time.file_hash )
-				LEFT JOIN item_title ON ( item.file_hash = item_title.file_hash )
-				LEFT JOIN item_name ON ( item.file_hash = item_name.file_hash )
-				LEFT JOIN item_order ON ( item.file_hash = item_order.file_hash )
-				LEFT JOIN item_author ON ( item.file_hash = item_author.file_hash )
-				LEFT JOIN item_score ON ( item.file_hash = item_score.file_hash)
-				LEFT JOIN item_tags_list ON ( item.file_hash = item_tags_list.file_hash )
-				LEFT JOIN item_sequence ON ( item.file_hash = item_sequence.file_hash )
-	");
-
-	SqliteQuery2("
-		CREATE VIEW item_vote_count
-		AS
-			SELECT
-				file_hash,
-				vote_value AS vote_value,
-				COUNT(file_hash) AS vote_count
-			FROM vote
-			GROUP BY file_hash, vote_value
-			ORDER BY vote_count DESC
-	");
-
-	SqliteQuery2("
-		CREATE VIEW author_flat
-		AS
-		SELECT
-			author.key AS author_key,
-			author_alias.alias AS author_alias,
-			MAX(item_flat.add_timestamp) AS last_seen,
-			SUM(item_flat.item_score) AS author_score,
-			COUNT(item_flat.file_hash) AS item_count,
-			author_alias.file_hash AS file_hash
-		FROM
-			author
-			LEFT JOIN author_alias
-				ON (author.key = author_alias.key)
-			LEFT JOIN item_flat
-				ON (author.key = item_flat.author_key)
-		GROUP BY
-			author.key, author_alias.alias, author_alias.file_hash
-	");
-
-
-	#todo deconfusify
-	# uses sum of entries in vote table combined with vote weights in vote_value table
-	SqliteQuery2("
-		CREATE VIEW item_score
-		AS
-			SELECT
-				item.file_hash AS file_hash,
-				IFNULL(SUM(vote_value.value), 0) AS item_score
-			FROM
-				vote
-				LEFT JOIN item
-					ON (vote.file_hash = item.file_hash)
-				LEFT JOIN vote_value
-					ON (vote.vote_value = vote_value.vote)
-			GROUP BY
-				item.file_hash
-	");
-
-	SqliteQuery2("
-		CREATE VIEW item_score_weighed
-		AS
-			SELECT
-				item.file_hash AS file_hash,
-				IFNULL(SUM(vote_value.value), 0) AS item_score,
-				IFNULL(SUM(vote_value.value), 0) * IFNULL(SUM(author_score), 0) AS item_score_weighed
-			FROM
-				vote
-				LEFT JOIN item
-					ON (vote.file_hash = item.file_hash)
-				LEFT JOIN vote_value
-					ON (vote.vote_value = vote_value.vote)
-				LEFT JOIN author_score
-					ON (vote.author_key = author_score.author_key)
-			GROUP BY
-				item.file_hash
-	");
-
-	SqliteQuery2("
-		CREATE VIEW author_score
-		AS
-			SELECT
-				item_flat.author_key AS author_key,
-				SUM(item_flat.item_score) AS author_score
-			FROM
-				item_flat
-			GROUP BY
-				item_flat.author_key
-
-	");
-
-
+    SqliteQuery($schemaQueries);
 
 	my $SqliteDbName = GetSqliteDbName();
 
@@ -592,157 +61,93 @@ sub SqliteMakeTables { # creates sqlite schema
 
 } # SqliteMakeTables()
 
-sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns result as array reference
-	WriteLog('SqliteQuery2() begin');
-
+sub SqliteGetQueryString {
 	my $query = shift;
 	chomp $query;
 
 	my @queryParams = @_;
 
-	if ($query) {
-		my $queryOneLine = $query;
-		$queryOneLine =~ s/\s+/ /g;
-
-		WriteLog('SqliteQuery2: $query = ' . $queryOneLine);
-		WriteLog('SqliteQuery2: caller: ' . join(', ', caller));
-		#print('SqliteQuery2: caller: ' . join(', ', caller)); #for debugging
-
-		foreach my $qpTest (@queryParams) {
-			if (!defined($qpTest)) {
-				WriteLog('SqliteQuery2: warning: uninitialized array item in @queryParams, returning');
-				return '';
-			}
-		}
-		WriteLog('SqliteQuery2: @queryParams: ' . join(', ', @queryParams));
-
-		my $dbh = SqliteConnect();
-
-		if ($dbh) {
-			WriteLog('SqliteQuery2: $dbh was found, proceeding...');
-
-			my $aref;
-			my $sth;
-
-			# try {
-			#
-			# } catch {
-			# 	WriteMessage('SqliteQuery2: warning: error');
-			# 	WriteMessage('SqliteQuery2: query: ' . $query);
-			#
-			# 	WriteLog('SqliteQuery2: warning: error');
-			# 	WriteLog('SqliteQuery2: query: ' . $query);
-			#
-			# 	return;
-			# };
-
-			$sth = $dbh->prepare($query);
-			if ($sth) {
-				my $timeBeforeQuery = time();
-
-				my $execResult = $sth->execute(@queryParams);
-
-				if (time() - $timeBeforeQuery > 1) {
-					WriteLog('SqliteQuery2: warning: query took more than 1 second: ' . $query);
-
-				}
-
-				WriteLog('SqliteQuery2: $execResult = ' . $execResult);
-
-				$aref = $sth->fetchall_arrayref();
-				$sth->finish();
-
-				return $aref;
-			} else {
-				WriteLog('SqliteQuery2: warning: $sth=false on $query = ' . $query);
-				return '';
-			}
-		} else {
-			WriteLog('SqliteQuery2: warning: $dbh is missing');
-			WriteLog('SqliteQuery2: caller: ' . join(', ', caller));
-			return '';
-		}
-	}
-	else {
-		WriteLog('SqliteQuery2: warning: $query is missing!');
-		return '';
+	if ($query =~ m/^(.+)$/s) { #todo real sanity check
+		$query = $1;
+	} else {
+	    WriteLog('SqliteGetQueryStringWithParams: warning: sanity check failed on $query');
+	    return '';
 	}
 
-	WriteLog('SqliteQuery2: warning: unreachable was reached');
-	return '';
-} # SqliteQuery2()
+    if (! $query =~ m/\s/) {
+        #if no spaces in query, it may be a query name
+        # here try to look it up
 
-sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
+        WriteLog('SqliteGetQueryStringWithParams: looking up query/');
+        if (GetConfig('query/' . $query)) {
+            #todo IsItem() ...
+            #todo sanity
+            $query = GetConfig('query/' . $query);
+        } else {
+            WriteLog('SqliteGetQueryStringWithParams: warning: query did not contain spaces, but lookup in config/query failed');
+        }
+    }
+
+    # remove any non-space space characters and make it one line
+    my $queryOneLine = $query;
+    $queryOneLine =~ s/\s/ /g;
+    $queryOneLine =~ s/  / /g;
+
+    WriteLog('SqliteGetQueryStringWithParams: $query = ' . $queryOneLine);
+    WriteLog('SqliteGetQueryStringWithParams: caller: ' . join(', ', caller));
+
+    my $queryWithParams = $queryOneLine;
+
+    if (@queryParams && scalar(@queryParams)) {
+        # insert params into ? placeholders
+        while (@queryParams) {
+            my $paramValue = shift @queryParams;
+            $queryWithParams =~ s/\?/'$paramValue'/;
+        }
+    }
+
+    return $queryWithParams;
+} # SqliteGetQueryString()
+
+sub SqliteQueryGetArrayOfHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
+# sub SqliteQueryHashRef {
 # ATTENTION: first array element returned is an array of column names!
 
-	WriteLog('SqliteQueryHashRef: begin');
+	WriteLog('SqliteQueryGetArrayOfHashRef: begin');
 
 	my $query = shift;
 	chomp $query;
-
-	if ($query =~ m/^([0-9a-zA-Z_-]+)$/i) {
-		$query = $1;
-		if (GetConfig('query/' . $query)) {
-			#todo sanity
-			$query = GetConfig('query/' . $query);
-		}
-	}
-
 	my @queryParams = @_;
+	my $queryWithParams = SqliteGetQueryString($query, @queryParams);
 
 	if ($query) {
-		my $queryOneLine = $query;
-		$queryOneLine =~ s/\s+/ /g;
+		my $resultString = SqliteQueryCachedShell($query, @queryParams);
 
-		WriteLog('SqliteQueryHashRef: $query = ' . $queryOneLine);
-		WriteLog('SqliteQueryHashRef: caller: ' . join(', ', caller));
+        if ($resultString) {
+    		my @resultsArray;
+            my @resultStringLines = split("\n", $resultString);
 
-		foreach my $qpTest (@queryParams) {
-			if (!defined($qpTest)) {
-				WriteLog('SqliteQueryHashRef: warning: uninitialized array item in @queryParams, returning');
-				return '';
-			}
-		}
-		WriteLog('SqliteQueryHashRef: @queryParams: ' . join(', ', @queryParams));
+            my @columns = ();
+            while (@resultStringLines) {
+                my $line = shift @resultStringLines;
+                if (!@columns) {
+                    @columns = split ('|', $line);
+                    push @resultsArray, \@columns;
+                    # store column names, next
+                } else {
+                    my @fields = split('|', $line);
+                    my %newHash;
+                    foreach my $field (@columns) {
+                        $newHash{$field} = shift @fields;
+                    }
+                    push @resultsArray, \%newHash;
+                }
+            }
 
-		my $dbh = SqliteConnect();
-
-		if ($dbh) {
-			WriteLog('SqliteQueryHashRef: $dbh was found, proceeding...');
-
-			my $aref;
-			my $sth;
-
-			#todo error handling in case sql query has an error
-
-			$sth = $dbh->prepare($query);
-			if ($sth) {
-				my $execResult = $sth->execute(@queryParams);
-
-				WriteLog('SqliteQueryHashRef: $execResult = ' . $execResult);
-
-				my @resultsArray = ();
-				push @resultsArray, $sth->{'NAME'};
-
-				while (my $row = $sth->fetchrow_hashref()) {
-					push @resultsArray, $row;
-				}
-
-				return @resultsArray;
-			} else {
-				WriteLog('SqliteQueryHashRef: warning: prepare failed on $query = ' . $query);
-				return '';
-			}
-		} else {
-			WriteLog('SqliteQueryHashRef: warning: $dbh is missing');
-			return '';
-		}
-	}
-	else {
-		WriteLog('SqliteQueryHashRef: warning: $query is missing!');
-		return '';
-	}
-} # SqliteQueryHashRef()
+            return @resultsArray;
+		} # if ($resultString)
+	} # if ($query)
+} # SqliteQueryGetArrayOfHashRef()
 
 sub EscapeShellChars { # $string ; escapes string for including as parameter in shell command
 	#todo this is still probably not safe and should be improved upon #security
@@ -762,25 +167,37 @@ sub SqliteQuery { # performs sqlite query via sqlite3 command
 		WriteLog('SqliteQuery: warning: called without $query');
 		return;
 	}
-	my $queryOneLine = $query;
-	$queryOneLine =~ s/\s+/ /g;
-
 	chomp $query;
-	$query = EscapeShellChars($query);
-	WriteLog('SqliteQuery: $query = ' . $queryOneLine);
+	my @queryParams = shift;
+
+    $query = SqliteGetQueryString($query, @queryParams);
 
 	my $SqliteDbName = GetSqliteDbName();
 
-	my $results = `sqlite3 "$SqliteDbName" "$query"`;
+	if ($SqliteDbName =~ m/^(.+)$/) {
+	    #todo real sanity check
+	    $SqliteDbName = $1;
+    } else {
+        #todo failed sanity check
+    }
+
+	if ($query =~ m/^(.+)$/) {
+	    #todo real sanity check
+	    $query = $1;
+    } else {
+        #todo failed sanity check
+    }
+
+	my $results = `sqlite3 -header "$SqliteDbName" "$query"`;
 	return $results;
 } # SqliteQuery()
 
-sub SqliteQueryCachedShell { # $query ; performs sqlite query via sqlite3 command
-# uses hash-keyed cache 
-# CacheSqliteQuery { keyword
-# #todo add parsing into array?
-
+sub SqliteQueryCachedShell { # $query, @queryParams ; performs sqlite query via sqlite3 command
+# uses cache with query text's hash as key
+# sub CacheSqliteQuery {
 	WriteLog('SqliteQueryCachedShell: caller: ' . join(', ', caller));
+
+	my $withHeader = 1;
 
 	my $query = shift;
 	if (!$query) {
@@ -788,8 +205,9 @@ sub SqliteQueryCachedShell { # $query ; performs sqlite query via sqlite3 comman
 		return;
 	}
 	chomp $query;
-	$query = EscapeShellChars($query);
-	WriteLog('SqliteQueryCachedShell: $query = ' . $query);
+	my @queryParams = shift;
+
+	$query = SqliteGetQueryString($query, @queryParams);
 
 	my $cachePath = md5_hex($query);
 	if ($cachePath =~ m/^([0-9a-f]{32})$/) {
@@ -799,47 +217,32 @@ sub SqliteQueryCachedShell { # $query ; performs sqlite query via sqlite3 comman
 	}
 	my $cacheTime = GetTime();
 
-	# this limits the cache to expiration of 1-100 seconds
-	$cacheTime = substr($cacheTime, 0, length($cacheTime) - 2);
-	$cachePath = "$cacheTime/$cachePath";
+    if (0) {
+	    # this limits the cache to expiration of 1-100 seconds
+	    # #bug this does not account for milliseconds
+	    $cacheTime = substr($cacheTime, 0, length($cacheTime) - 2);
+	    $cachePath = "$cacheTime/$cachePath";
+    }
 
 	WriteLog('SqliteQueryCachedShell: $cachePath = ' . $cachePath);
-	my $results = GetCache("sqcs/$cachePath");
+	my $results;
+
+	#$results = GetCache("sqcs/$cachePath");
+	#todo uncomment ###todo
 
 	if ($results) {
-		return $results;
+		#cool
+		WriteLog('SqliteQueryCachedShell: $results was populated from cache');
 	} else {
-		my $SqliteDbName = GetSqliteDbName();
-		$results = `sqlite3 "$SqliteDbName" "$query"`;
+		my $results = SqliteQuery($query);
+		WriteLog('SqliteQueryCachedShell: PutCache: length($results) ' . length($results));
 		PutCache('sqcs/'.$cachePath, $results);
-		return $results;
 	}
-} # SqliteQueryCachedShell()
 
-#
-#sub DBGetVotesTable {
-#	my $fileHash = shift;
-#
-#	if (!IsSha1($fileHash) && $fileHash) {
-#		WriteLog("DBGetVotesTable called with invalid parameter! returning");
-#		WriteLog("$fileHash");
-#		return '';
-#	}
-#
-#	my $query;
-#	my @queryParams = ();
-#
-#	if ($fileHash) {
-#		$query = "SELECT file_hash, ballot_time, vote_value, author_key FROM vote_weighed WHERE file_hash = ?;";
-#		@queryParams = ($fileHash);
-#	} else {
-#		$query = "SELECT file_hash, ballot_time, vote_value, author_key FROM vote_weighed;";
-#	}
-#
-#	my $result = SqliteQuery2($query, @queryParams);
-#
-#	return $result;
-#}
+	if ($results) {
+        return $results;
+    }
+} # SqliteQueryCachedShell()
 
 sub DBGetVotesForItem { # Returns all votes (weighed) for item
 	my $fileHash = shift;
@@ -864,9 +267,9 @@ sub DBGetVotesForItem { # Returns all votes (weighed) for item
 	";
 	@queryParams = ($fileHash);
 
-	my $result = SqliteQuery2($query, @queryParams);
+	my @result = SqliteQueryGetArrayOfHashRef($query, @queryParams);
 
-	return $result;
+	return @result;
 }
 #
 sub DBGetEvents { #gets events list
@@ -894,18 +297,8 @@ sub DBGetEvents { #gets events list
 
 	#todo rewrite this sub better
 
-	my $dbh = SqliteConnect();
-
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@queryParams);
-
-	my @resultsArray = ();
-
-	while (my $row = $sth->fetchrow_hashref()) {
-		push @resultsArray, $row;
-	}
-
-	return @resultsArray;
+	my @queryResult = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	return @queryResult;
 }
 
 sub DBGetAuthorFriends { # Returns list of authors which $authorKey has tagged as friend
@@ -935,19 +328,9 @@ sub DBGetAuthorFriends { # Returns list of authors which $authorKey has tagged a
 	my @queryParams = ();
 	push @queryParams, $authorKey;
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
+	my @queryResult = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	return @queryResult;
 
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@queryParams);
-
-	my @resultsArray = ();
-
-	while (my $row = $sth->fetchrow_hashref()) {
-		push @resultsArray, $row;
-	}
-
-	return @resultsArray;
 } # DBGetAuthorFriends()
 
 sub DBGetLatestConfig { # Returns everything from config_latest view
@@ -959,111 +342,44 @@ sub DBGetLatestConfig { # Returns everything from config_latest view
 	my $query = "SELECT * FROM config_latest";
 	#todo write out the fields
 
-	my $dbh = SqliteConnect();
 
-	if ($dbh) {
-		my $sth = $dbh->prepare($query);
-		$sth->execute();
-		my @resultsArray = ();
-		while (my $row = $sth->fetchrow_hashref()) {
-			push @resultsArray, $row;
-		}
-		return @resultsArray;
-	} else {
-		WriteLog('DBGetLatestConfig: warning: $dbh was false');
-		return 0;
-	}
+	my @queryResult = SqliteQueryGetArrayOfHashRef($query);
+	return @queryResult;
+
 } # DBGetLatestConfig()
-
-#sub SqliteGetHash {
-#	my $query = shift;
-#	chomp $query;
-#
-#	my @results = split("\n", SqliteQuery($query));
-#
-#	my %hash;
-#
-#	foreach (@results) {
-#		chomp;
-#
-#		my ($key, $value) = split(/\|/, $_);
-#
-#		$hash{$key} = $value;
-#	}
-#
-#	return %hash;
-#}
-
-sub SqliteGetValue { # Returns the first column from the first row returned by sqlite $query
-	#todo perhaps use SqliteQuery2() ?
-	#todo perhaps add params array?
-
-	my $query = shift;
-	chomp $query;
-
-	my $queryOneLine = $query;
-	$queryOneLine =~ s/\s+/ /g;
-	WriteLog('SqliteGetValue: $query = ' . $queryOneLine);
-
-
-	WriteLog('SqliteGetValue: caller: ' . join (',', caller));
-	#my ($package, $filename, $line) = caller;
-	#WriteLog('SqliteGetValue: caller: ' . $package . ',' . $filename . ', ' . $line);
-
-	#SqliteMakeItemFlatTable();
-	my $dbh = SqliteConnect();
-	#todo rewrite better
-
-	my $sth = $dbh->prepare("$query");
-	$sth->execute(@_);
-
-	my @aref = $sth->fetchrow_array();
-
-	$sth->finish();
-
-	return $aref[0];
-} # SqliteGetValue()
 
 sub DBGetAuthorCount { # Returns author count.
 # By default, all authors, unless $whereClause is specified
 
-	my $whereClause = shift;
-
 	my $authorCount;
-	if ($whereClause) {
-		$authorCount = SqliteGetValue("SELECT COUNT(*) FROM author_flat WHERE $whereClause");
-	} else {
-		$authorCount = SqliteGetValue("SELECT COUNT(*) FROM author_flat");
-	}
-	if ($authorCount) {
-		chomp($authorCount);
-	} else {
-		#todo warning
-		$authorCount = 0;
-	}
 
-	return $authorCount;
+	my $query = 'author_count';
 
+	my $queryResult = SqliteGetValue($query);
+
+	#$authorCount = $queryResult[0]->{'author_count'};
+
+	return $queryResult;
 }
 
 sub DBGetItemCount { # Returns item count.
 # By default, all items, unless $whereClause is specified
-	my $whereClause = shift;
+	#my $whereClause = shift;
 
 	my $itemCount;
-	if ($whereClause) {
-		if (substr(lc($whereClause), 0, 7) eq 'where ') {
-			$whereClause = substr($whereClause, 7);
-		}
-		$itemCount = SqliteGetValue("SELECT COUNT(*) FROM item_flat WHERE $whereClause");
-	} else {
-		$itemCount = SqliteGetValue("SELECT COUNT(*) FROM item_flat");
-	}
+#	if ($whereClause) {
+#		if (substr(lc($whereClause), 0, 7) eq 'where ') {
+#			$whereClause = substr($whereClause, 7);
+#		}
+#		$itemCountQuery = SqliteQueryCachedShell("SELECT COUNT(*) AS item_count FROM item_flat WHERE $whereClause LIMIT 1");
+#	} else {
+    $itemCount = SqliteGetValue('item_count');
+#	}
 	if ($itemCount) {
 		chomp($itemCount);
 	} else {
 		#todo warning
-		$itemCount = 0;
+		$itemCount = -1;
 	}
 
 	return $itemCount;
@@ -1126,26 +442,24 @@ sub SqliteEscape { # Escapes supplied text for use in sqlite query
 	return $text;
 }
 
-#sub SqliteAddKeyValue {
-#	my $table = shift;
-#	my $key = shift;
-#	my $value = shift;
-#
-#	$table = SqliteEscape ($table);
-#	$key = SqliteEscape($key);
-#	$value = SqliteEscape($value);
-#
-#	SqliteQuery("INSERT INTO $table(key, alias) VALUES ('$key', '$value');");
-#
-#}
+sub SqliteGetValue {
+    return 1;
 
-# sub DBGetAuthor {
-# 	my $query = "SELECT author_key, author_alias FROM author_flat";
-#
-# 	my $authorInfo = SqliteQuery2($query);
-#
-# 	return $authorInfo;
-# }
+    #todo
+	my $query = shift;
+	my @queryParams = shift;
+	#todo sanity
+
+	my @result = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+
+	my $firstColumn = $result[0][0];
+
+	my %firstResult = %{$result[1]}; #0 is headers
+
+	my $return = $firstResult{$firstColumn};
+
+	return $return;
+}
 
 sub DBGetItemTitle { # get title for item ($itemhash)
 	my $itemHash = shift;
@@ -1306,10 +620,10 @@ sub DBGetTouchedPages { # Returns items from task table, used for prioritizing w
 	my @params;
 	push @params, $touchedPageLimit;
 
-	my $results = SqliteQuery2($query, @params);
+	my @results = SqliteQueryGetArrayOfHashRef($query, @params);
 
-	return $results;
-}
+	return @results;
+} # DBGetTouchedPages()
 
 sub DBGetAllPages { # Returns items from task table, used for prioritizing which pages need rebuild
 # index, rss, authors, stats, tags, and top are returned first
@@ -1333,9 +647,9 @@ sub DBGetAllPages { # Returns items from task table, used for prioritizing which
 
 	my @params;
 
-	my $results = SqliteQuery2($query, @params);
+	my @results = SqliteQueryGetArrayOfHashRef($query, @params);
 
-	return $results;
+	return @results;
 } # DBGetAllPages()
 
 sub DBAddItemPage { # $itemHash, $pageType, $pageParam ; adds an entry to item_page table
@@ -1698,23 +1012,15 @@ sub DBGetVoteCounts { # Get total vote counts by tag value
 		$orderBy;
 	";
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
+	my @result = SqliteQueryGetArrayOfHashRef($query);
 
-	my $sth = $dbh->prepare($query);
-	$sth->execute();
-
-	my $ref = $sth->fetchall_arrayref();
-
-	$sth->finish();
-
-	return $ref;
+	return @result;
 }
 
 sub DBGetTagCount { # Gets number of distinct tag/vote values
 	my $query = "
 		SELECT
-			COUNT(vote_value)
+			COUNT(vote_value) AS vote_count
 		FROM (
 			SELECT
 				DISTINCT vote_value
@@ -1723,16 +1029,10 @@ sub DBGetTagCount { # Gets number of distinct tag/vote values
 			GROUP BY
 				vote_value
 		)
+		LIMIT 1
 	";
 
 	my $result = SqliteGetValue($query);
-
-	if ($result) {
-		WriteLog('DBGetTagCount: $result = ' . $result);
-	} else {
-		WriteLog('DBGetTagCount: warning: no $result, returning 0');
-		$result = 0;
-	}
 
 	return $result;
 } # DBGetTagCount()
@@ -1761,36 +1061,8 @@ sub DBGetItemLatestAction { # returns highest timestamp in all of item's childre
 
 	push @queryParams, $itemHash;
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
-
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@queryParams);
-
-	my @aref = $sth->fetchrow_array();
-
-	$sth->finish();
-
-	return $aref[0];
+	return SqliteGetValue($query, @queryParams);
 } # DBGetItemLatestAction()
-
-#sub GetTopItemsForTag {
-#	my $tag = shift;
-#	chomp($tag);
-#
-#	my $query = "
-#		SELECT * FROM item_flat WHERE file_hash IN (
-#			SELECT file_hash FROM (
-#				SELECT file_hash, COUNT(vote_value) AS vote_count
-#				FROM vote WHERE vote_value = '" . SqliteEscape($tag) . "'
-#				GROUP BY file_hash
-#				ORDER BY vote_count DESC
-#			)
-#		);
-#	";
-#
-#	return $query;
-#}
 
 sub DBAddKeyAlias { # adds new author-alias record $key, $alias, $pubkeyFileHash
 	# $key = user key
@@ -1929,12 +1201,11 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 			DBAddItemAttribute('flush');
 		}
 
-		return;
+		return '';
 	}
 
 	if ($query && (length($query) > DBMaxQueryLength() || scalar(@queryParams) > DBMaxQueryParams())) {
 		DBAddItem('flush');
-
 		$query = '';
 		@queryParams = ();
 	}
@@ -1967,7 +1238,7 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 	my $authorKey = shift;
 	my $fileHash = shift;
 	my $itemType = shift;
-	my $verifyError = shift;
+	my $verifyError = shift; #todo remove this and move it somewhere else
 
 	if (!$verifyError) {
 		$verifyError = '';
@@ -1993,13 +1264,13 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 	WriteLog("DBAddItem($filePath, $fileName, $authorKey, $fileHash, $itemType, $verifyError);");
 
 	if (!$query) {
-		$query = "INSERT OR REPLACE INTO item(file_path, file_name, file_hash, item_type, verify_error) VALUES ";
+		$query = "INSERT OR REPLACE INTO item(file_path, file_name, file_hash, item_type) VALUES ";
 	} else {
 		$query .= ",";
 	}
-	push @queryParams, $filePath, $fileName, $fileHash, $itemType, $verifyError;
+	push @queryParams, $filePath, $fileName, $fileHash, $itemType;
 
-	$query .= "(?, ?, ?, ?, ?)";
+	$query .= "(?, ?, ?, ?)";
 
 	my $filePathRelative = $filePath;
 	my $htmlDir = GetDir('html');
@@ -2078,7 +1349,6 @@ sub DBAddEventRecord { # add event record to database; $itemHash, $eventTime, $e
 	push @queryParams, $fileHash, $eventTime, $eventDuration, $signedBy;
 }
 
-
 sub DBAddLocationRecord { # $itemHash, $latitude, $longitude, $signedBy ; Adds new location record from latlong token
 	state $query;
 	state @queryParams;
@@ -2143,8 +1413,6 @@ sub DBAddLocationRecord { # $itemHash, $latitude, $longitude, $signedBy ; Adds n
 	$query .= '(?, ?, ?, ?)';
 	push @queryParams, $fileHash, $latitude, $longitude, $signedBy;
 }
-
-###
 
 sub DBAddVoteRecord { # $fileHash, $ballotTime, $voteValue, $signedBy, $ballotHash ; Adds a new vote (tag) record to an item based on vote/ token
 	state $query;
@@ -2470,24 +1738,12 @@ sub DBGetItemList { # get list of items from database. takes reference to hash o
 		$query .= " " . $params{'limit_clause'};
 	}
 
-	#todo bind params and use hash of parameters
-
 	WriteLog('DBGetItemList: $query = ' . $query);
 
 	my ($package, $filename, $line) = caller;
 	WriteLog('DBGetItemList: caller: ' . $package . ',' . $filename . ', ' . $line);
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
-
-	my $sth = $dbh->prepare($query);
-	$sth->execute();
-
-	my @resultsArray = ();
-
-	while (my $row = $sth->fetchrow_hashref()) {
-		push @resultsArray, $row;
-	}
+	my @resultsArray = SqliteQueryGetArrayOfHashRef($query);
 
 	WriteLog('DBGetItemList: scalar(@resultsArray) = ' . scalar(@resultsArray));
 
@@ -2658,7 +1914,6 @@ sub DBGetAuthorLastSeen { # return timestamp of last item attributed to author
 	}
 }
 
-
 sub DBGetAuthorPublicKeyHash { # Returns the hash/identifier of the file containing the author's public key
 # $key = author's gpg fingerprint
 # cached in hash called %authorPubKeyCache
@@ -2715,10 +1970,10 @@ sub DBGetAdminKey { # Returns the pubkey id of the top-scoring admin (or nothing
 	my $key = 1;
 
 	if ($key) { #todo fix non-param sql
-		my $query = "SELECT MAX(author_flat.author_key) AS author_key FROM author_flat WHERE file_hash in (SELECT file_hash FROM item_flat WHERE ',' || tags_list || ',' LIKE '%,admin,%')";
-		my $valueReturned = SqliteGetValue($query);
+		my $query = "SELECT MAX(author_flat.author_key) AS author_key FROM author_flat WHERE file_hash in (SELECT file_hash FROM item_flat WHERE ',' || tags_list || ',' LIKE '%,admin,%') LIMIT 1";
+		my $valueReturned = SqliteQueryCachedShell($query);
 		if ($valueReturned) {
-			$memoHash{$memoKey} = SqliteGetValue($query);
+			$memoHash{$memoKey} = SqliteQueryCachedShell($query);
 			WriteLog('DBGetAdminKey: returning ' . $memoHash{$memoKey});
 			return $memoHash{$memoKey};
 		} else {
@@ -2751,8 +2006,11 @@ sub DBGetItemFields { # Returns fields we typically need to request from item_fl
 		item_flat.item_sequence item_sequence
 	";
 
+    #fix spaces
 	$itemFields = trim($itemFields);
 	$itemFields = str_replace("\t", '', $itemFields);
+	#$itemFields =~ s/\s/ /g;
+	#$itemFields =~ s/  / /g;
 
 	return $itemFields;
 }
@@ -2895,5 +2153,52 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 
 	return %voteTotals;
 } # DBGetItemVoteTotals()
+
+sub PrintBanner {
+	my $string = shift; #todo sanity checks
+	my $width = length($string);
+
+	my $edge = "=" x $width;
+
+	print "\n" ;
+	print "\n";
+	print $edge;
+	print "\n"  ;
+	print "\n"   ;
+	print $string;
+	print "\n"    ;
+	print "\n"     ;
+	print $edge;
+	print "\n"      ;
+	print "\n"       ;
+}
+
+while (my $arg1 = shift @foundArgs) {
+	#print("\n=========================\n");
+	PrintBanner("\nFOUND ARGUMENT: $arg1;\n");
+	#print("\n=========================\n");
+
+	# go through all the arguments one at a time
+	if ($arg1) {
+	    if ($arg1 eq '--test') {
+	        SqliteMakeTables();
+	        PutFile('./html/txt/test.txt', 'test');
+	        DBAddItem('./html/txt/test.txt', 'b', 'c', 'd', 'txt');
+	        DBAddItem('flush');
+	        my @testParams;
+	        push @testParams, 'ha';
+	        push @testParams, 'ha';
+	        push @testParams, 'ha';
+
+
+	        print "\n\n".'SqliteGetQueryStringWithParams(...) = ' . SqliteGetQueryString('select ? ? ?' . "\n" . "thanks", @testParams);
+	        print "\n\n".'SqliteQuery(...) = ' . SqliteQuery('select count(*) as c from item limit 1');
+	        print "\n\n".'SqliteGetValue(...) = ' . SqliteGetValue('select count(*) as c from item limit 1');
+			print "\n\n".'DBGetItemCount() = ' . DBGetItemCount();
+			print "\n\n".'SqliteQueryGetArrayOfHashRef("select * from item") = ' . Dumper(SqliteQueryGetArrayOfHashRef("select * from item"));
+			#confess SqliteQueryGetArrayOfHashRef("select * from item");
+	    }
+    }
+}
 
 1;

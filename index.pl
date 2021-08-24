@@ -26,6 +26,7 @@ use POSIX qw(floor);
 
 require('./gpgpg.pl');
 require('./utils.pl');
+require('./sqlite.pl');
 
 sub MakeChainIndex { # $import = 1; reads from log/chain.log and puts it into item_attribute table
 	# note: this is kind of a hack, and non-importing validation should just be separate own sub
@@ -1523,15 +1524,18 @@ sub IndexImageFile { # $file ; indexes one image file into database
 } # IndexImageFile()
 
 sub WriteIndexedConfig { # writes config indexed in database into config/
+# WRITES CONFIG INDEXED IN DATABASE INTO CONFIG/
 # this should ideally filter for the "latest" config value in database
 # but that's more challenging than i thought using sql
 # so instead of that, it filters here, and only prints the topmost value
 # for each key
 
 	WriteLog('WriteIndexedConfig() begin');
+	WriteLog('WriteIndexedConfig: warning: it is off pending some testing');
+	return '';
 
 	# author must be admin or must have completed puzzle
-	my @indexedConfig = SqliteQueryHashRef("select * from config left join item_flat on (config.file_hash = item_flat.file_hash) where (','||tags_list||',' like '%,admin,%') order by add_timestamp desc");
+	my @indexedConfig = SqliteQueryGetArrayOfHashRef('indexed_config');
 	my %configDone;
 
 	shift @indexedConfig;

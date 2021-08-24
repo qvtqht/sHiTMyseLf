@@ -5,8 +5,7 @@ CREATE TABLE
 		file_path UNIQUE,
 		item_name,
 		file_hash UNIQUE,
-		item_type,
-		verify_error
+		item_type
 	)
 
 CREATE TABLE

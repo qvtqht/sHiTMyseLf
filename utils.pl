@@ -835,6 +835,14 @@ sub PutFile { # Writes content to a file; $file, $content, $binMode
 		WriteLog('PutFile: $binMode: 1');
 	}
 
+	# keep track of files written so we can report them to user
+	state @debugFilesWritten;
+	# my $timeBegin = GetTime(); #todo
+	if ($file eq 'report_files_written') {
+		return @debugFilesWritten;
+	}
+	push @debugFilesWritten, GetPaddedEpochTimestamp() . ' ' . $file;
+
 	WriteLog('PutFile: $file = ' . $file . ', $content = (' . length($content) . 'b), $binMode = ' . $binMode);
 	#WriteLog("==== \$content ====");
 	#WriteLog($content);
@@ -909,11 +917,13 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 	my $stringLength = length($string);
 
 	if (!defined($string) || !$string) {
+	    #todo edge cases like '0', 0, ''
+	    #what to do for ''??
 		WriteLog('str_replace: warning: $string not supplied');
 		return "";
 	}
 
-	WriteLog('str_replace($replace_this = ' . length($replace_this) . ', $with_this = ' . length($with_this) . ' , ($stringLength = ' . $stringLength . '))');
+	WriteLog('str_replace($replace_this = ' . length($replace_this) . 'b, $with_this = ' . length($with_this) . 'b , ($stringLength = ' . $stringLength . ')); caller = ' . join (',', caller));
 	#WriteLog("str_replace($replace_this, $with_this, ($stringLength))");
 
 	if (!defined($replace_this) || !defined($with_this)) {
@@ -933,29 +943,37 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 	$string =~ s/\Q$replace_this/$with_this/g;
 	WriteLog('str_ireplace: length$string) = ' . length($string));
 	# WriteLog('str_ireplace: $string = ' . $string);
+
+	# RETURN ###############
+	# RETURN ###############
+	# RETURN ###############
+	# RETURN ###############
+	# RETURN ###############
 	return $string;
 
 
-	my $length = length($string);
-	my $target = length($replace_this);
+    if (0) { #buggy code, not used
+        my $length = length($string);
+        my $target = length($replace_this);
 
-	for (my $i = 0; $i < $length - $target + 1; $i++) {
-		#todo there is a bug here
-		if (!defined(substr($string, $i, $target))) {
-			WriteLog("str_replace: warning: !defined(substr($string, $i, $target))");
-		}
-		elsif (substr($string, $i, $target) eq $replace_this) {
-			$string = substr ($string, 0, $i) . $with_this . substr($string, $i + $target);
-			$i += length($with_this) - length($replace_this); # when new string contains old string
-			$length += length($with_this) - length($replace_this); # string is getting shorter or longer
-		} else {
-			# do nothing
-		}
-	}
+        for (my $i = 0; $i < $length - $target + 1; $i++) {
+            #todo there is a bug here
+            if (!defined(substr($string, $i, $target))) {
+                WriteLog("str_replace: warning: !defined(substr($string, $i, $target))");
+            }
+            elsif (substr($string, $i, $target) eq $replace_this) {
+                $string = substr ($string, 0, $i) . $with_this . substr($string, $i + $target);
+                $i += length($with_this) - length($replace_this); # when new string contains old string
+                $length += length($with_this) - length($replace_this); # string is getting shorter or longer
+            } else {
+                # do nothing
+            }
+        }
 
-	WriteLog('str_replace: length$string) = ' . length($string));
+        WriteLog('str_replace: length$string) = ' . length($string));
 
-	return $string;
+        return $string;
+    }
 } # str_replace()
 
 #props http://www.bin-co.com/perl/scripts/str_replace.php
@@ -1070,6 +1088,8 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 	if (!$file) {
 		return;
 	}
+
+	#todo more sanity
 
 	# keep track of files written so we can report them to user
 	state @debugFilesWritten;
@@ -2332,7 +2352,7 @@ EnsureDirsThatShouldExist();
 CheckForInstalledVersionChange();
 
 my $utilsPl = 1;
-
-require './sqlite.pl';
+#
+#require './sqlite.pl';
 
 1;

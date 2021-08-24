@@ -42,6 +42,7 @@ use File::Copy;
 use Cwd qw(cwd);
 
 require './utils.pl';
+require './sqlite.pl';
 require './makepage.pl';
 #
 #my $SCRIPTDIR = cwd();
@@ -964,6 +965,12 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	my $title = shift;
 	my $columns = shift;
 
+	if (!$columns) {
+	    $columns = '';
+    }
+
+	WriteLog('GetQueryPage: $pageName = ' . $pageName . '; $title = ' . ($title ? $title : 'FALSE') . '; $columns = ' . $columns);
+
 	if (!$title) {
 		$title = ucfirst($pageName);
 	}
@@ -979,7 +986,7 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	if (ConfigKeyValid('query/' . $pageName)) {
 		$query = GetConfig('query/' . $pageName);
 	}
-	my @result = SqliteQueryHashRef($query);
+	my @result = SqliteQueryGetArrayOfHashRef($query);
 
 	if (@result) {
 		$html .= GetPageHeader($title, $title, $pageName);
@@ -2189,7 +2196,7 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 
 	state $itemsDeleted;
 	if (!$itemsDeleted) {
-		my @result = SqliteQueryHashRef('deleted');
+		my @result = SqliteQueryGetArrayOfHashRef('deleted');
 		$itemsDeleted = (scalar(@result) - 1); #minus 1 because first row is headers
 		#todo optimize
 	}
@@ -2285,9 +2292,10 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 	my $chainLogLength = 0;
 	if (GetConfig('admin/logging/write_chain_log')) {
 		#$chainLogLength = `wc -l html/chain.log`;
-		$chainLogLength = SqliteGetValue("SELECT COUNT(file_hash) FROM item_attribute WHERE attribute = 'chain_sequence'");
+		$chainLogLength = SqliteGetValue('chain_length');
 		#todo make sqlite optional
 		#todo templatize query
+		#todo move to sqlite.pl
 	}
 
 	if (abs($itemsIndexed - $filesTotal) > 3) {
@@ -5571,9 +5579,9 @@ sub PrintBanner {
 }
 
 while (my $arg1 = shift @foundArgs) {
-	print("\n=========================\n");
-	print("\nFOUND ARGUMENT: $arg1;\n");
-	print("\n=========================\n");
+	#print("\n=========================\n");
+	PrintBanner("\nFOUND ARGUMENT: $arg1;\n");
+	#print("\n=========================\n");
 
 	# go through all the arguments one at a time
 	if ($arg1) {
@@ -5834,7 +5842,12 @@ while (my $arg1 = shift @foundArgs) {
 
 	print "-------";
 	print "\n";
-	my @filesWritten = PutHtmlFile('report_files_written');
+	my @filesWrittenHtml = PutHtmlFile('report_files_written');
+	for my $fileWritten (@filesWrittenHtml) {
+		print $fileWritten;
+		print "\n";
+	}
+	my @filesWritten = PutFile('report_files_written');
 	for my $fileWritten (@filesWritten) {
 		print $fileWritten;
 		print "\n";
@@ -5842,7 +5855,7 @@ while (my $arg1 = shift @foundArgs) {
 	print "-------";
 	print "\n";
 	print "Total files written: ";
-	print scalar(@filesWritten);
+	print scalar(@filesWritten) + scalar(@filesWrittenHtml);
 	print "\n";
 }
 

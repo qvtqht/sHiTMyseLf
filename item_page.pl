@@ -259,8 +259,23 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	#	}
 
 	# we're expecting a reference to a hash as the first parameter
+
 	#todo sanity checks here, it will probably break if anything else is supplied
+	my $hashRef = shift;
+	my %file;
+	if ($hashRef) {
+	    my %file = %{$hashRef};
+	} else {
+	    WriteLog('GetItemPage: warning: sanity check failed on $hashRef');
+    	WriteLog('GetItemPage: caller: ' . join(',', caller));
+    	return '';
+	}
+
 	# keyword: ItemInfo {
+
+	WriteLog('GetItemPage: caller: ' + join(',', caller));
+
+
 	my %file = %{shift @_};
 
 	# create $fileHash and $filePath variables, since we'll be using them a lot
