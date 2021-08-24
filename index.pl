@@ -236,14 +236,14 @@ sub GetTokenDefs {
 			'mask' => '()()(http:[\S]+)',
 			'mask_params' => 'mg',
 			'message' => '[http]',
-			'apply_to_parent' => 0
+			'apply_to_parent' => 1
 		},
 		{ # anything beginning with http and up to next space character (or eof)
 			'token' => 'https',
 			'mask' => '()()(https:[\S]+)',
 			'mask_params' => 'mg',
 			'message' => '[https]',
-			'apply_to_parent' => 0
+			'apply_to_parent' => 1
 		},
 #todo
 #		{ # anything beginning with http and up to next space character (or eof)
