@@ -263,24 +263,32 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	#todo sanity checks here, it will probably break if anything else is supplied
 	my $hashRef = shift;
 	my %file;
+
+	WriteLog('GetItemPage: $hashRef = ' . ($hashRef ? Dumper(%{$hashRef}) : 'FALSE'));
+
 	if ($hashRef) {
 	    my %file = %{$hashRef};
 	} else {
 	    WriteLog('GetItemPage: warning: sanity check failed on $hashRef');
-    	WriteLog('GetItemPage: caller: ' . join(',', caller));
-    	return '';
+    		WriteLog('GetItemPage: caller: ' . join(',', caller));
+    		return '';
 	}
 
 	# keyword: ItemInfo {
 
-	WriteLog('GetItemPage: caller: ' + join(',', caller));
+	WriteLog('GetItemPage: caller: ' . join(',', caller));
 
 
-	my %file = %{shift @_};
+	#my %file = %{shift @_};
 
 	# create $fileHash and $filePath variables, since we'll be using them a lot
 	my $fileHash = $file{'file_hash'};
 	my $filePath = $file{'file_path'};
+
+	if (!$fileHash || !$filePath) {
+		WriteLog('GetItemPage: warning: sanity check failed ...');
+		return '';
+	}
 
 	WriteLog("GetItemPage(file_hash = " . $file{'file_hash'} . ', file_path = ' . $file{'file_path'} . ")");
 
