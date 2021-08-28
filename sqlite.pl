@@ -109,7 +109,7 @@ sub SqliteGetQueryString {
     return $queryWithParams;
 } # SqliteGetQueryString()
 
-sub SqliteQueryGetArrayOfHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
+sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
 # sub SqliteQueryHashRef {
 # ATTENTION: first array element returned is an array of column names!
 
@@ -2154,7 +2154,7 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 	return %voteTotals;
 } # DBGetItemVoteTotals()
 
-sub PrintBanner {
+sub PrintBanner2 {
 	my $string = shift; #todo sanity checks
 	my $width = length($string);
 
@@ -2175,7 +2175,7 @@ sub PrintBanner {
 
 while (my $arg1 = shift @foundArgs) {
 	#print("\n=========================\n");
-	PrintBanner("\nFOUND ARGUMENT: $arg1;\n");
+	PrintBanner2("\nFOUND ARGUMENT: $arg1;\n");
 	#print("\n=========================\n");
 
 	# go through all the arguments one at a time
