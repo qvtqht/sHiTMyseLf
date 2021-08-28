@@ -986,7 +986,7 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	if (ConfigKeyValid('query/' . $pageName)) {
 		$query = GetConfig('query/' . $pageName);
 	}
-	my @result = SqliteQueryGetArrayOfHashRef($query);
+	my @result = SqliteQueryHashRef($query);
 
 	if (@result) {
 		$html .= GetPageHeader($title, $title, $pageName);
@@ -2196,7 +2196,7 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 
 	state $itemsDeleted;
 	if (!$itemsDeleted) {
-		my @result = SqliteQueryGetArrayOfHashRef('deleted');
+		my @result = SqliteQueryHashRef('deleted');
 		$itemsDeleted = (scalar(@result) - 1); #minus 1 because first row is headers
 		#todo optimize
 	}
