@@ -93,7 +93,7 @@ sub SqliteGetQueryString {
     $queryOneLine =~ s/\s/ /g;
     $queryOneLine =~ s/  / /g;
 
-    WriteLog('SqliteGetQueryString: $query = ' . $queryOneLine);
+    WriteLog('SqliteGetQueryString: $queryOneLine = ' . $queryOneLine);
     WriteLog('SqliteGetQueryString: caller: ' . join(', ', caller));
 
     my $queryWithParams = $queryOneLine;
@@ -105,6 +105,8 @@ sub SqliteGetQueryString {
             $queryWithParams =~ s/\?/'$paramValue'/;
         }
     }
+
+    WriteLog('SqliteGetQueryString: $queryWithParams = ' . $queryWithParams);
 
     return $queryWithParams;
 } # SqliteGetQueryString()
