@@ -309,7 +309,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		my @files = DBGetItemList({'where_clause' => "WHERE file_hash LIKE '$fileHash%'"});
 
 		if (scalar(@files)) {
-			my $file = $files[1];
+			my $file = $files[0];
 
 			if ($file) {
 				if ($HTMLDIR =~ m/^(^\s+)$/) { #security #taint #todo
