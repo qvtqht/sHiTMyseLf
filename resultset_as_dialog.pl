@@ -98,8 +98,8 @@ sub GetResultSetAsDialog { # \@result, $title, $columns, \%flags
 		# SETUP BEGINS
 
 		my $colorRow0Bg = GetThemeColor('row_0');
-    	my $colorRow1Bg = GetThemeColor('row_1');
-    	my $rowBgColor = $colorRow0Bg;
+		my $colorRow1Bg = GetThemeColor('row_1');
+		my $rowBgColor = $colorRow0Bg;
 
 		my $content = '';
 		my $checkColumnCount = 0;

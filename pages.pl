@@ -305,14 +305,14 @@ sub GetAuthorLink { # $fingerprint, $showPlain ; returns avatar'ed link for an a
 
 	my $authorLink = GetTemplate('html/authorlink.template');
 
-    { # trim whitespace from avatar template
-        #this trims extra whitespace from avatar template
-        #otherwise there may be extra spaces in layout
-        #WriteLog('avdesp before:'.$avatar);
-        $authorLink =~ s/\>\s+/>/g;
-        $authorLink =~ s/\s+\</</g;
-        #WriteLog('avdesp after:'.$avatar);
-    }
+	{ # trim whitespace from avatar template
+		#this trims extra whitespace from avatar template
+		#otherwise there may be extra spaces in layout
+		#WriteLog('avdesp before:'.$avatar);
+		$authorLink =~ s/\>\s+/>/g;
+		$authorLink =~ s/\s+\</</g;
+		#WriteLog('avdesp after:'.$avatar);
+	}
 
 	$authorAvatar = trim($authorAvatar);
 
@@ -969,7 +969,7 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 
 	if (!$columns) {
 	    $columns = '';
-    }
+	}
 
 	WriteLog('GetQueryPage: $pageName = ' . $pageName . '; $title = ' . ($title ? $title : 'FALSE') . '; $columns = ' . $columns);
 
@@ -1812,7 +1812,7 @@ sub GetItemListing { # returns listing of items based on topic
 		$fileHash = 'top'; #what
 	}
 
-    #refactor
+	#refactor
 	if ($fileHash eq 'top') {
 		@topItems = DBGetTopItems(); # get top items from db
 	} else {
@@ -3076,7 +3076,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 		$queryAuthorThreads =~ s/\?/'$authorKey'/;
 		$txtIndex .= GetQueryAsDialog(
 			$queryAuthorThreads,
-        	'Topics by Author'
+			'Topics by Author'
 		);
 		$txtIndex .= '<hr 5>';
 	}
@@ -3774,14 +3774,14 @@ sub MakePhpPages {
 		}
 		for my $template (@templatePhpSimple) {
 			my $fileContent = GetTemplate("php/$template.php");
-            my $PHPDIR = GetDir('php');
+			my $PHPDIR = GetDir('php');
 			PutFile($PHPDIR . "/$template.php", $fileContent);
 		}
 
 		my $utilsPhpTemplate = GetTemplate('php/utils.php');
 		my $SCRIPTDIR = GetDir('script');
 		my $PHPDIR = GetDir('php');
-        $utilsPhpTemplate =~ s/\$scriptDirPlaceholderForTemplating/$SCRIPTDIR/g;
+		$utilsPhpTemplate =~ s/\$scriptDirPlaceholderForTemplating/$SCRIPTDIR/g;
 		PutFile($PHPDIR . '/utils.php', $utilsPhpTemplate);
 
 		MakePostPage(); #post.html, needed by post.php
@@ -4299,18 +4299,18 @@ sub GetWritePage { # returns html for write page
 
 	my $writeForm = GetWriteForm();
 	WriteLog('GetWriteForm: js is on, adding write_options.template');
-    my $writeOptions =
-    	'<span class=advanced>' .
-    	AddAttributeToTag(
-    		GetWindowTemplate(GetTemplate('form/write/write_options.template'), 'Options'),
+	my $writeOptions =
+		'<span class=advanced>' .
+		AddAttributeToTag(
+			GetWindowTemplate(GetTemplate('form/write/write_options.template'), 'Options'),
 			'a href="/frame.html"',
 			'accesskey',
 			GetAccessKey('Keyboard')
 		).
-    	'</span>'
+		'</span>'
 	; #todo this is a hack
 
-    $writePageHtml .= '<form action="/post.html" method=GET id=compose class=submit name=compose target=_top>'; #todo
+	$writePageHtml .= '<form action="/post.html" method=GET id=compose class=submit name=compose target=_top>'; #todo
 	$writePageHtml .= $writeForm;
 	$writePageHtml .= $writeOptions;
 	$writePageHtml .= '</form>'; #todo
@@ -4525,11 +4525,11 @@ sub GetSettingsWindow { # returns settings dialog
 		$settingsTemplate = str_replace('Allow dialog reposition', '<span disabled>Allow dialog reposition (N/A)</span>', $settingsTemplate);
 		#$settingsTemplate = str_replace('Enable draggable interface<noscript><b>*</b></noscript>', '<span </span>', $settingsTemplate);
 
-        #		$settingsTemplate = str_replace(
-        #			'<input type=checkbox id=chkDraggable name=chkDraggable onchange="if (window.SaveCheckbox) { SaveCheckbox(this, \'draggable\'); }">',
-        #			'<input type=checkbox id=chkDraggable name=chkDraggable disabled>',
-        #			$settingsTemplate
-        #		);
+		#		$settingsTemplate = str_replace(
+		#			'<input type=checkbox id=chkDraggable name=chkDraggable onchange="if (window.SaveCheckbox) { SaveCheckbox(this, \'draggable\'); }">',
+		#			'<input type=checkbox id=chkDraggable name=chkDraggable disabled>',
+		#			$settingsTemplate
+		#		);
 	}
 
 	my $settingsWindow = '';#GetWindowTemplate($settingsTemplate, 'Settings');

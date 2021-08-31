@@ -73,7 +73,7 @@ sub GetItemTemplateBody {
 
 	$itemTemplateBody = GetTemplate('html/item/item.template'); # GetItemTemplate()
 	$itemTemplateBody = str_replace('$itemText', $itemText, $itemTemplateBody);
-    #$windowBody =~ s/\$itemName/$itemName/g;
+	#$windowBody =~ s/\$itemName/$itemName/g;
 
 	return $itemTemplateBody;
 } # GetItemTemplateBody()
@@ -324,7 +324,7 @@ sub GetItemTemplate { # \%file ; returns HTML for outputting one item WITH WINDO
 
 			# strip the 'html/' prefix on the file's path, replace with /
 			#todo relative links
-            my $HTMLDIR = GetDir('html');
+			my $HTMLDIR = GetDir('html');
 			$permalinkTxt =~ s/$HTMLDIR\//\//;
 			$permalinkTxt =~ s/^html\//\//;
 		}

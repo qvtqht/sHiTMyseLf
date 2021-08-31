@@ -312,26 +312,26 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 			my $file = $files[1];
 
 			if ($file) {
-                if ($HTMLDIR =~ m/^(^\s+)$/) { #security #taint #todo
-                    $HTMLDIR = $1; # untaint
-                    # create a subdir for the first 2 characters of its hash if it doesn't exist already
-                    if (!-e ($HTMLDIR . '/' . substr($fileHash, 0, 2))) {
-                        mkdir(($HTMLDIR . '/' . substr($fileHash, 0, 2)));
-                    }
-                    if (!-e ($HTMLDIR . '/' . substr($fileHash, 0, 2) . '/' . substr($fileHash, 2, 2))) {
-                        mkdir(($HTMLDIR . '/' . substr($fileHash, 0, 2) . '/' . substr($fileHash, 2, 2)));
-                    }
-                }
+				if ($HTMLDIR =~ m/^(^\s+)$/) { #security #taint #todo
+					$HTMLDIR = $1; # untaint
+					# create a subdir for the first 2 characters of its hash if it doesn't exist already
+					if (!-e ($HTMLDIR . '/' . substr($fileHash, 0, 2))) {
+						mkdir(($HTMLDIR . '/' . substr($fileHash, 0, 2)));
+					}
+					if (!-e ($HTMLDIR . '/' . substr($fileHash, 0, 2) . '/' . substr($fileHash, 2, 2))) {
+						mkdir(($HTMLDIR . '/' . substr($fileHash, 0, 2) . '/' . substr($fileHash, 2, 2)));
+					}
+				}
 
-                # get the page for this item and write it
-                WriteLog('MakePage: my $filePage = GetItemPage($file = "' . $file . '")');
-                my $filePage = GetItemPage($file);
-                WriteLog('PutHtmlFile($targetPath = ' . $targetPath . ', $filePage = ' . length($filePage) . ' bytes)');
-                PutHtmlFile($targetPath, $filePage);
-            } else {
-                WriteMessage('MakePage: warning: $file missing, sanity check failed!');
-                WriteLog('MakePage: warning: sanity check failed: $file ($files[0]) is missing!');
-            }
+				# get the page for this item and write it
+				WriteLog('MakePage: my $filePage = GetItemPage($file = "' . $file . '")');
+				my $filePage = GetItemPage($file);
+				WriteLog('PutHtmlFile($targetPath = ' . $targetPath . ', $filePage = ' . length($filePage) . ' bytes)');
+				PutHtmlFile($targetPath, $filePage);
+			} else {
+				WriteMessage('MakePage: warning: $file missing, sanity check failed!');
+				WriteLog('MakePage: warning: sanity check failed: $file ($files[0]) is missing!');
+			}
 		} else {
 			WriteLog("pages.pl: item page: warning: Asked to make page for $fileHash, but it is not in the database!");
 			return '';

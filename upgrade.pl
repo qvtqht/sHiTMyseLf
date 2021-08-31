@@ -21,14 +21,14 @@ print(`$pullCommand`);
 my $versionAfter = GetMyVersion(1);
 
 if ($versionBefore ne $versionAfter) {
-    my $cleanCommand = "time ./clean.sh >> $upgradeLogFilename";
-    print(`$cleanCommand`);
+	my $cleanCommand = "time ./clean.sh >> $upgradeLogFilename";
+	print(`$cleanCommand`);
 
-    my $buildCommand = "time ./build.pl >> $upgradeLogFilename";
-    print(`$buildCommand`);
+	my $buildCommand = "time ./build.pl >> $upgradeLogFilename";
+	print(`$buildCommand`);
 } else {
-    my $noUpgradeNeededCommand = "echo 'version no change' >> $upgradeLogFilename";
-    print(`$noUpgradeNeededCommand`);
+	my $noUpgradeNeededCommand = "echo 'version no change' >> $upgradeLogFilename";
+	print(`$noUpgradeNeededCommand`);
 }
 
 $time = time();

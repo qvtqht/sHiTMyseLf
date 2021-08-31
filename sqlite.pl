@@ -30,27 +30,27 @@ sub DBMaxQueryParams { # Returns max number of parameters to allow in sqlite que
 }
 
 sub SqliteQuery2 {
-    return SqliteQuery(@_);
+	return SqliteQuery(@_);
 }
 
 sub SqliteMakeTables { # creates sqlite schema
-    # sub SqliteCreateTables {
-    # sub SqliteMakeTables {
-    # sub DBMakeTables {
+	# sub SqliteCreateTables {
+	# sub SqliteMakeTables {
+	# sub DBMakeTables {
 	my $existingTables = SqliteQueryCachedShell('.tables');
 	if ($existingTables) {
 		WriteLog('SqliteMakeTables: warning: tables already exist');
 		return '';
 	}
 
-    my $schemaQueries = GetConfig('sqlite3/schema.sql'); #todo improve name, use template tree; use GetTemplate()
-    $schemaQueries .= GetConfig('sqlite3/vote_value.sql'); #todo improve name, use template tree; use GetTemplate()
+	my $schemaQueries = GetConfig('sqlite3/schema.sql'); #todo improve name, use template tree; use GetTemplate()
+	$schemaQueries .= GetConfig('sqlite3/vote_value.sql'); #todo improve name, use template tree; use GetTemplate()
 
-    $schemaQueries =~ s/^#.+$//mg; # remove sh-style comments (lines which begin with #)
+	$schemaQueries =~ s/^#.+$//mg; # remove sh-style comments (lines which begin with #)
 
-    #confess $schemaQueries;
+	#confess $schemaQueries;
 
-    SqliteQuery($schemaQueries);
+	SqliteQuery($schemaQueries);
 
 	my $SqliteDbName = GetSqliteDbName();
 
@@ -74,46 +74,46 @@ sub SqliteGetQueryString {
 	    return '';
 	}
 
-    if (! $query =~ m/\s/) {
-        #if no spaces in query, it may be a query name
-        # here try to look it up
+	if (! $query =~ m/\s/) {
+		#if no spaces in query, it may be a query name
+		# here try to look it up
 
-        WriteLog('SqliteGetQueryString: looking up query/');
-        if (GetConfig('query/' . $query)) {
-            #todo IsItem() ...
-            #todo sanity
-            $query = GetConfig('query/' . $query);
-        } else {
-            WriteLog('SqliteGetQueryString: warning: query did not contain spaces, but lookup in config/query failed');
-        }
-    }
+		WriteLog('SqliteGetQueryString: looking up query/');
+		if (GetConfig('query/' . $query)) {
+			#todo IsItem() ...
+			#todo sanity
+			$query = GetConfig('query/' . $query);
+		} else {
+			WriteLog('SqliteGetQueryString: warning: query did not contain spaces, but lookup in config/query failed');
+		}
+	}
 
-    # remove any non-space space characters and make it one line
-    my $queryOneLine = $query;
-    $queryOneLine =~ s/\s/ /g;
-    while ($queryOneLine =~ m/\s\s/) {
-        $queryOneLine =~ s/  / /g;
-    }
-    $queryOneLine = trim($queryOneLine);
+	# remove any non-space space characters and make it one line
+	my $queryOneLine = $query;
+	$queryOneLine =~ s/\s/ /g;
+	while ($queryOneLine =~ m/\s\s/) {
+		$queryOneLine =~ s/  / /g;
+	}
+	$queryOneLine = trim($queryOneLine);
 
-    WriteLog('SqliteGetQueryString: $queryOneLine = ' . $queryOneLine);
-    WriteLog('SqliteGetQueryString: caller: ' . join(', ', caller));
+	WriteLog('SqliteGetQueryString: $queryOneLine = ' . $queryOneLine);
+	WriteLog('SqliteGetQueryString: caller: ' . join(', ', caller));
 
-    #die Dumper(@queryParams);
+	#die Dumper(@queryParams);
 
-    my $queryWithParams = $queryOneLine;
+	my $queryWithParams = $queryOneLine;
 
-    if (@queryParams && scalar(@queryParams)) {
-        # insert params into ? placeholders
-        while (@queryParams) {
-            my $paramValue = shift @queryParams;
-            $queryWithParams =~ s/\?/'$paramValue'/;
-        }
-    }
+	if (@queryParams && scalar(@queryParams)) {
+		# insert params into ? placeholders
+		while (@queryParams) {
+			my $paramValue = shift @queryParams;
+			$queryWithParams =~ s/\?/'$paramValue'/;
+		}
+	}
 
-    WriteLog('SqliteGetQueryString: $queryWithParams = ' . $queryWithParams);
+	WriteLog('SqliteGetQueryString: $queryWithParams = ' . $queryWithParams);
 
-    return $queryWithParams;
+	return $queryWithParams;
 } # SqliteGetQueryString()
 
 sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
@@ -139,28 +139,28 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 		#my $resultString = SqliteQueryCachedShell($queryWithParams);
 		my $resultString = SqliteQuery($queryWithParams);
 
-        if ($resultString) {
-    		my @resultsArray;
-            my @resultStringLines = split("\n", $resultString);
+		if ($resultString) {
+			my @resultsArray;
+			my @resultStringLines = split("\n", $resultString);
 
-            my @columns = ();
-            while (@resultStringLines) {
-                my $line = shift @resultStringLines;
-                if (!@columns) {
-                    @columns = split ('\|', $line);
-                    push @resultsArray, \@columns;
-                    # store column names, next
-                } else {
-                    my @fields = split('\|', $line);
-                    my %newHash;
-                    foreach my $field (@columns) {
-                        $newHash{$field} = shift @fields;
-                    }
-                    push @resultsArray, \%newHash;
-                }
-            }
+			my @columns = ();
+			while (@resultStringLines) {
+				my $line = shift @resultStringLines;
+				if (!@columns) {
+					@columns = split ('\|', $line);
+					push @resultsArray, \@columns;
+					# store column names, next
+				} else {
+					my @fields = split('\|', $line);
+					my %newHash;
+					foreach my $field (@columns) {
+						$newHash{$field} = shift @fields;
+					}
+					push @resultsArray, \%newHash;
+				}
+			}
 
-            return @resultsArray;
+			return @resultsArray;
 		} # if ($resultString)
 	} # if ($query)
 } # SqliteQueryGetArrayOfHashRef()
@@ -178,7 +178,7 @@ sub EscapeShellChars { # $string ; escapes string for including as parameter in 
 
 sub SqliteQuery { # performs sqlite query via sqlite3 command
 #todo add parsing into array?
-    #print Dumper(@_);
+	#print Dumper(@_);
 
 	my $query = shift;
 	if (!$query) {
@@ -191,23 +191,23 @@ sub SqliteQuery { # performs sqlite query via sqlite3 command
 	WriteLog('SqliteQuery: $query = ' . $query);
 	WriteLog('SqliteQuery: caller = ' . join(',', caller));
 
-    $query = SqliteGetQueryString($query, @queryParams);
+	$query = SqliteGetQueryString($query, @queryParams);
 
 	my $SqliteDbName = GetSqliteDbName();
 
 	if ($SqliteDbName =~ m/^(.+)$/) {
 	    #todo real sanity check
 	    $SqliteDbName = $1;
-    } else {
-        #todo failed sanity check
-    }
+	} else {
+		#todo failed sanity check
+	}
 
 	if ($query =~ m/^(.+)$/) {
 	    #todo real sanity check
 	    $query = $1;
-    } else {
-        #todo failed sanity check
-    }
+	} else {
+		#todo failed sanity check
+	}
 
 	my $results = `sqlite3 -header "$SqliteDbName" "$query"`;
 	return $results;
@@ -238,12 +238,12 @@ sub SqliteQueryCachedShell { # $query, @queryParams ; performs sqlite query via 
 	}
 	my $cacheTime = GetTime();
 
-    if (0) {
+	if (0) {
 	    # this limits the cache to expiration of 1-100 seconds
 	    # #bug this does not account for milliseconds
 	    $cacheTime = substr($cacheTime, 0, length($cacheTime) - 2);
 	    $cachePath = "$cacheTime/$cachePath";
-    }
+	}
 
 	WriteLog('SqliteQueryCachedShell: $cachePath = ' . $cachePath);
 	my $results;
@@ -261,8 +261,8 @@ sub SqliteQueryCachedShell { # $query, @queryParams ; performs sqlite query via 
 	}
 
 	if ($results) {
-        return $results;
-    }
+		return $results;
+	}
 } # SqliteQueryCachedShell()
 
 sub DBGetVotesForItem { # Returns all votes (weighed) for item
@@ -394,7 +394,7 @@ sub DBGetItemCount { # Returns item count.
 #		}
 #		$itemCountQuery = SqliteQueryCachedShell("SELECT COUNT(*) AS item_count FROM item_flat WHERE $whereClause LIMIT 1");
 #	} else {
-    $itemCount = SqliteGetValue('item_count');
+	$itemCount = SqliteGetValue('item_count');
 #	}
 	if ($itemCount) {
 		chomp($itemCount);
@@ -464,7 +464,7 @@ sub SqliteEscape { # Escapes supplied text for use in sqlite query
 }
 
 sub SqliteGetValue {
-    #todo
+	#todo
 	my $query = shift;
 	my @queryParams = @_;
 	#todo sanity
@@ -472,11 +472,11 @@ sub SqliteGetValue {
 	my @result = SqliteQueryHashRef($query, @queryParams);
 
 	if (scalar(@result) > 1) { #first row is column names
-        my $firstColumn = $result[0][0];
-        my %firstRow = %{$result[1]}; #0 is headers
-        my $return = $firstRow{$firstColumn};
+		my $firstColumn = $result[0][0];
+		my %firstRow = %{$result[1]}; #0 is headers
+		my $return = $firstRow{$firstColumn};
 
-        return $return;
+		return $return;
 	} else {
 	    return '';
 	}
@@ -1657,7 +1657,7 @@ sub DBGetAddedTime { # return added time for item specified
 
 	WriteLog($query);
 
-    my $returnValue = SqliteGetValue($query);
+	my $returnValue = SqliteGetValue($query);
 
 } # DBGetAddedTime()
 
@@ -1797,7 +1797,7 @@ sub DBGetAuthorList { # returns list of all authors' gpg keys as array
 	my $query = "SELECT key FROM author";
 
 	my $dbh = SqliteConnect();
-    #todo rewrite better
+	#todo rewrite better
 
 	my $sth = $dbh->prepare($query);
 
@@ -2008,7 +2008,7 @@ sub DBGetItemFields { # Returns fields we typically need to request from item_fl
 		item_flat.item_sequence item_sequence
 	";
 
-    #fix spaces
+	#fix spaces
 	$itemFields = trim($itemFields);
 	$itemFields = str_replace("\t", '', $itemFields);
 	#$itemFields =~ s/\s/ /g;
@@ -2138,19 +2138,19 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 	my @queryParams;
 	push @queryParams, $fileHash;
 
-    my @result = SqliteQueryHashRef($query, @queryParams);
+	my @result = SqliteQueryHashRef($query, @queryParams);
 
-    shift @result; # remove headers
+	shift @result; # remove headers
 
-    my %voteTotals;
+	my %voteTotals;
 
-    while (@result) {
-        my $rowReference = shift @result;
-        my %row = %{$rowReference};
-        if ($row{'vote_value'}) {
-            $voteTotals{$row{'vote_value'}} = $row{'vote_count'};
-        }
-    }
+	while (@result) {
+		my $rowReference = shift @result;
+		my %row = %{$rowReference};
+		if ($row{'vote_value'}) {
+			$voteTotals{$row{'vote_value'}} = $row{'vote_count'};
+		}
+	}
 
 	return %voteTotals;
 } # DBGetItemVoteTotals()
@@ -2199,7 +2199,7 @@ while (my $arg1 = shift @foundArgs) {
 			print "\n\n".'SqliteQueryHashRef("select * from item") = ' . Dumper(SqliteQueryHashRef("select * from item"));
 			#confess SqliteQueryHashRef("select * from item");
 	    }
-    }
+	}
 }
 
 1;

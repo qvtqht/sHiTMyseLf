@@ -270,8 +270,8 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	    %file = %{$hashRef};
 	} else {
 	    WriteLog('GetItemPage: warning: sanity check failed on $hashRef');
-    		WriteLog('GetItemPage: caller: ' . join(',', caller));
-    		return '';
+			WriteLog('GetItemPage: caller: ' . join(',', caller));
+			return '';
 	}
 
 	# keyword: ItemInfo {

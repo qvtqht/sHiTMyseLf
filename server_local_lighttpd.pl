@@ -120,13 +120,13 @@ sub GetLighttpdConfig { # generate contents for lighttpd.conf file based on sett
 		my $phpConf = GetTemplate('lighttpd/lighttpd_php.conf.template');
 
 		my $phpCgiPath = `which php-cgi`;
-        chomp($phpCgiPath);
+		chomp($phpCgiPath);
 
 		if ($phpCgiPath) {
-    		$phpConf =~ s/\/bin\/php-cgi/$phpCgiPath/g;
-        } else {
-            WriteLog('GetLighttpdConfig: warning: php enabled with lighttpd, but php-cgi missing');
-        }
+			$phpConf =~ s/\/bin\/php-cgi/$phpCgiPath/g;
+		} else {
+			WriteLog('GetLighttpdConfig: warning: php enabled with lighttpd, but php-cgi missing');
+		}
 
 		WriteLog('$phpConf beg =====');
 		WriteLog($phpConf);

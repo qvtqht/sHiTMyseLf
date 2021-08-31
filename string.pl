@@ -26,8 +26,8 @@ sub GetString { # $stringKey, $language, $noSubstitutions ; Returns string from 
 	}
 
 	# this will store all looked up values so that we don't have to look them up again
-    state %strings; #memo
-    my $memoKey = $stringKey . '/' . $language . '/' . ($noSubstitute ? 1 : 0);
+	state %strings; #memo
+	my $memoKey = $stringKey . '/' . $language . '/' . ($noSubstitute ? 1 : 0);
 
 	if (defined($strings{$memoKey})) {
 	    #memo match
