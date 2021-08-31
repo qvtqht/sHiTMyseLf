@@ -1021,7 +1021,7 @@ sub DBGetVoteCounts { # Get total vote counts by tag value
 		$orderBy;
 	";
 
-	my @result = SqliteQueryGetArrayOfHashRef($query);
+	my @result = SqliteQueryHashRef($query);
 
 	return @result;
 }
@@ -1752,7 +1752,7 @@ sub DBGetItemList { # get list of items from database. takes reference to hash o
 	my ($package, $filename, $line) = caller;
 	WriteLog('DBGetItemList: caller: ' . $package . ',' . $filename . ', ' . $line);
 
-	my @resultsArray = SqliteQueryGetArrayOfHashRef($query);
+	my @resultsArray = SqliteQueryHashRef($query);
 
 	WriteLog('DBGetItemList: scalar(@resultsArray) = ' . scalar(@resultsArray));
 
@@ -2204,8 +2204,8 @@ while (my $arg1 = shift @foundArgs) {
 	        print "\n\n".'SqliteQuery(...) = ' . SqliteQuery('select count(*) as c from item limit 1');
 	        print "\n\n".'SqliteGetValue(...) = ' . SqliteGetValue('select count(*) as c from item limit 1');
 			print "\n\n".'DBGetItemCount() = ' . DBGetItemCount();
-			print "\n\n".'SqliteQueryGetArrayOfHashRef("select * from item") = ' . Dumper(SqliteQueryGetArrayOfHashRef("select * from item"));
-			#confess SqliteQueryGetArrayOfHashRef("select * from item");
+			print "\n\n".'SqliteQueryHashRef("select * from item") = ' . Dumper(SqliteQueryHashRef("select * from item"));
+			#confess SqliteQueryHashRef("select * from item");
 	    }
     }
 }
