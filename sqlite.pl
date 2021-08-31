@@ -1711,7 +1711,7 @@ sub DBGetItemListByTagList { #get list of items by taglist (as array)
 
 sub DBGetItemList { # get list of items from database. takes reference to hash of parameters
 	my $paramHashRef = shift;
-	my %params = %$paramHashRef;
+	my %params = %{$paramHashRef};
 
 	#supported params:
 	#where_clause
