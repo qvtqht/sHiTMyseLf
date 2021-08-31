@@ -70,7 +70,7 @@ sub SqliteGetQueryString {
 	if ($query =~ m/^(.+)$/s) { #todo real sanity check
 		$query = $1;
 	} else {
-	    WriteLog('SqliteGetQueryStringWithParams: warning: sanity check failed on $query');
+	    WriteLog('SqliteGetQueryString: warning: sanity check failed on $query');
 	    return '';
 	}
 
@@ -78,13 +78,13 @@ sub SqliteGetQueryString {
         #if no spaces in query, it may be a query name
         # here try to look it up
 
-        WriteLog('SqliteGetQueryStringWithParams: looking up query/');
+        WriteLog('SqliteGetQueryString: looking up query/');
         if (GetConfig('query/' . $query)) {
             #todo IsItem() ...
             #todo sanity
             $query = GetConfig('query/' . $query);
         } else {
-            WriteLog('SqliteGetQueryStringWithParams: warning: query did not contain spaces, but lookup in config/query failed');
+            WriteLog('SqliteGetQueryString: warning: query did not contain spaces, but lookup in config/query failed');
         }
     }
 
@@ -93,8 +93,8 @@ sub SqliteGetQueryString {
     $queryOneLine =~ s/\s/ /g;
     $queryOneLine =~ s/  / /g;
 
-    WriteLog('SqliteGetQueryStringWithParams: $query = ' . $queryOneLine);
-    WriteLog('SqliteGetQueryStringWithParams: caller: ' . join(', ', caller));
+    WriteLog('SqliteGetQueryString: $query = ' . $queryOneLine);
+    WriteLog('SqliteGetQueryString: caller: ' . join(', ', caller));
 
     my $queryWithParams = $queryOneLine;
 
@@ -2200,7 +2200,7 @@ while (my $arg1 = shift @foundArgs) {
 	        push @testParams, 'ha';
 
 
-	        print "\n\n".'SqliteGetQueryStringWithParams(...) = ' . SqliteGetQueryString('select ? ? ?' . "\n" . "thanks", @testParams);
+	        print "\n\n".'SqliteGetQueryString(...) = ' . SqliteGetQueryString('select ? ? ?' . "\n" . "thanks", @testParams);
 	        print "\n\n".'SqliteQuery(...) = ' . SqliteQuery('select count(*) as c from item limit 1');
 	        print "\n\n".'SqliteGetValue(...) = ' . SqliteGetValue('select count(*) as c from item limit 1');
 			print "\n\n".'DBGetItemCount() = ' . DBGetItemCount();
