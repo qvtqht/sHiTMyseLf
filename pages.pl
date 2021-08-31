@@ -3086,8 +3086,6 @@ sub GetReadPage { # generates page with item listing based on parameters
 
 	# LISTING ITEMS BEGINS HERE
 
-	shift @files;
-
 	foreach my $row (@files) {
 		my $file = $row->{'file_path'};
 
@@ -3213,6 +3211,8 @@ sub GetItemListHtml { # @files(array of hashes) ; takes @files, returns html lis
 	my $itemComma = '';
 
 	my $itemListTemplate = '<span class=itemList>$itemList</span>'; #todo templatize
+
+	shift @files;
 
 	foreach my $rowHashRef (@files) { # loop through each file
 		my %row = %{$rowHashRef};

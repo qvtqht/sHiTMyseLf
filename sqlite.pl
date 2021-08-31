@@ -1546,18 +1546,12 @@ sub DBGetItemAttribute { # $fileHash, [$attribute] ; returns all if attribute no
 	my $query = "SELECT attribute, value FROM item_attribute WHERE file_hash LIKE '$fileHash%'";
 	if ($attribute) {
 		$query .= " AND attribute = '$attribute'";
+		return SqliteGetValue($query);
+	} else {
+	    return SqliteQuery($query);
+	    #todo split into two functions?
 	}
 
-	my $results = SqliteQueryCachedShell($query);
-
-	if ($attribute) {
-		my @resultsArray = split('\|', $results);
-		if ($resultsArray[1]) {
-			return $resultsArray[1];
-		}
-	}
-
-	return $results;
 } # DBGetItemAttribute()
 
 sub DBAddItemAttribute { # $fileHash, $attribute, $value, $epoch, $source # add attribute to item
@@ -1752,6 +1746,8 @@ sub DBGetItemList { # get list of items from database. takes reference to hash o
 	my @resultsArray = SqliteQueryHashRef($query);
 
 	WriteLog('DBGetItemList: scalar(@resultsArray) = ' . scalar(@resultsArray));
+
+	shift @resultsArray; #remove headers entry
 
 	return @resultsArray;
 } # DBGetItemList()
@@ -2144,7 +2140,7 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 
     my @result = SqliteQueryHashRef($query, @queryParams);
 
-    shift @result;
+    shift @result; # remove headers
 
     my %voteTotals;
 

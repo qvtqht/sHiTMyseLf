@@ -486,7 +486,6 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 #		my @itemReplies = SqliteQueryHashRef($query);
 
 
-        shift @itemReplies; #column headers
 		WriteLog('GetItemPage: scalar(@itemReplies) = ' . scalar(@itemReplies));
 		foreach my $itemReply (@itemReplies) {
 			WriteLog('GetItemPage: $itemReply = ' . $itemReply);
@@ -638,14 +637,16 @@ sub GetItemAttributesWindow2 {
 	#WriteLog('GetItemAttributesWindow: %file = ' . Dumper(%file));
 	#WriteLog('GetItemAttributesWindow: $fileHash = ' . $fileHash);
 
-	my $itemAttributes = DBGetItemAttribute($fileHash);
-	$itemAttributes = trim($itemAttributes);
+	my @itemAttributes = DBGetItemAttribute($fileHash);
+	shift @itemAttributes;
 
 	my $itemAttributesTable = '';
 	{ # arrange into table nicely
-		foreach my $itemAttribute (split("\n", $itemAttributes)) {
+		foreach my $itemAttribute (@itemAttributes) {
 			if ($itemAttribute) {
-				my ($iaName, $iaValue) = split('\|', $itemAttribute);
+			    my %attributeRowHash = %{$itemAttribute};
+				my $iaName = $attributeRowHash{'attribute'};
+				my $iaValue = $attributeRowHash{'value'};
 
 				{
 					# this part formats some values for output
