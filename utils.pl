@@ -1611,6 +1611,8 @@ sub IsMd5 { # returns 1 if parameter is md5 hash, 0 otherwise
 }
 
 sub IsFingerprint { # returns 1 if parameter is a user fingerprint, 0 otherwise
+# sub IsAuthor {
+# sub IsPubKey {
 	my $string = shift;
 
 	if (!$string) {

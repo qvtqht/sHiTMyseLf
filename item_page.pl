@@ -363,7 +363,13 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 
 
 	# ITEM TEMPLATE
-	my $itemTemplate = GetItemTemplate(\%file); # GetItemPage()
+
+	my $itemTemplate = '';
+	if (index($file{'tags_list'}, 'pubkey') != -1) { #todo make nicer/stabler
+	    $itemTemplate = GetAuthorInfoBox($file{'file_hash'});
+	} else {
+	    $itemTemplate = GetItemTemplate(\%file); # GetItemPage()
+    }
 	WriteLog('GetItemPage: child_count: ' . $file{'file_hash'} . ' = ' . $file{'child_count'});
 
 	# EASY FIND
