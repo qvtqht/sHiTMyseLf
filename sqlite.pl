@@ -91,10 +91,15 @@ sub SqliteGetQueryString {
     # remove any non-space space characters and make it one line
     my $queryOneLine = $query;
     $queryOneLine =~ s/\s/ /g;
-    $queryOneLine =~ s/  / /g;
+    while ($queryOneLine =~ m/\s\s/) {
+        $queryOneLine =~ s/  / /g;
+    }
+    $queryOneLine = trim($queryOneLine);
 
     WriteLog('SqliteGetQueryString: $queryOneLine = ' . $queryOneLine);
     WriteLog('SqliteGetQueryString: caller: ' . join(', ', caller));
+
+    #die Dumper(@queryParams);
 
     my $queryWithParams = $queryOneLine;
 
@@ -112,7 +117,6 @@ sub SqliteGetQueryString {
 } # SqliteGetQueryString()
 
 sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
-# sub SqliteQueryHashRef {
 # ATTENTION: first array element returned is an array of column names!
 
 	WriteLog('SqliteQueryGetArrayOfHashRef: begin');
@@ -131,8 +135,9 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
 	my @queryParams = @_;
 	my $queryWithParams = SqliteGetQueryString($query, @queryParams);
 
-	if ($query) {
-		my $resultString = SqliteQueryCachedShell($query, @queryParams);
+	if ($queryWithParams) {
+		#my $resultString = SqliteQueryCachedShell($queryWithParams);
+		my $resultString = SqliteQuery($queryWithParams);
 
         if ($resultString) {
     		my @resultsArray;
@@ -142,11 +147,11 @@ sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and re
             while (@resultStringLines) {
                 my $line = shift @resultStringLines;
                 if (!@columns) {
-                    @columns = split ('|', $line);
+                    @columns = split ('\|', $line);
                     push @resultsArray, \@columns;
                     # store column names, next
                 } else {
-                    my @fields = split('|', $line);
+                    my @fields = split('\|', $line);
                     my %newHash;
                     foreach my $field (@columns) {
                         $newHash{$field} = shift @fields;
@@ -173,13 +178,18 @@ sub EscapeShellChars { # $string ; escapes string for including as parameter in 
 
 sub SqliteQuery { # performs sqlite query via sqlite3 command
 #todo add parsing into array?
+    #print Dumper(@_);
+
 	my $query = shift;
 	if (!$query) {
 		WriteLog('SqliteQuery: warning: called without $query');
 		return;
 	}
 	chomp $query;
-	my @queryParams = shift;
+	my @queryParams = @_;
+
+	WriteLog('SqliteQuery: $query = ' . $query);
+	WriteLog('SqliteQuery: caller = ' . join(',', caller));
 
     $query = SqliteGetQueryString($query, @queryParams);
 
@@ -216,7 +226,7 @@ sub SqliteQueryCachedShell { # $query, @queryParams ; performs sqlite query via 
 		return;
 	}
 	chomp $query;
-	my @queryParams = shift;
+	my @queryParams = @_;
 
 	$query = SqliteGetQueryString($query, @queryParams);
 
@@ -454,22 +464,22 @@ sub SqliteEscape { # Escapes supplied text for use in sqlite query
 }
 
 sub SqliteGetValue {
-    return 1;
-
     #todo
 	my $query = shift;
-	my @queryParams = shift;
+	my @queryParams = @_;
 	#todo sanity
 
-	my @result = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	my @result = SqliteQueryHashRef($query, @queryParams);
 
-	my $firstColumn = $result[0][0];
+	if (scalar(@result) > 1) { #first row is column names
+        my $firstColumn = $result[0][0];
+        my %firstRow = %{$result[1]}; #0 is headers
+        my $return = $firstRow{$firstColumn};
 
-	my %firstResult = %{$result[1]}; #0 is headers
-
-	my $return = $firstResult{$firstColumn};
-
-	return $return;
+        return $return;
+	} else {
+	    return '';
+	}
 }
 
 sub DBGetItemTitle { # get title for item ($itemhash)
@@ -1653,28 +1663,13 @@ sub DBGetAddedTime { # return added time for item specified
 
 	WriteLog($query);
 
-	my $dbh = SqliteConnect();
+    my $returnValue = SqliteGetValue($query);
 
-	if ($dbh) {
-		my $sth = $dbh->prepare($query);
-		$sth->execute();
-
-		my @aref = $sth->fetchrow_array();
-
-		$sth->finish();
-
-		my $resultUnHacked = $aref[0];
-		#todo do this properly
-
-		return $resultUnHacked;
-	} else {
-		WriteLog('DBGetAddedTime: warning: $dbh was missing, returning empty-handed');
-	}
 } # DBGetAddedTime()
 
 sub DBGetItemListByTagList { #get list of items by taglist (as array)
 # uses DBGetItemList()
-#	my @tagListArray = shift;
+#	my @tagListArray = @_;
 
 #	if (scalar(@tagListArray) < 1) {
 #		return;
@@ -2147,20 +2142,19 @@ sub DBGetItemVoteTotals { # get tag counts for specified item, returned as hash 
 	my @queryParams;
 	push @queryParams, $fileHash;
 
-	my $dbh = SqliteConnect();
-	#todo rewrite better
+    my @result = SqliteQueryHashRef($query, @queryParams);
 
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@queryParams);
+    shift @result;
 
-	my %voteTotals;
+    my %voteTotals;
 
-	my $tagTotal;
-	while ($tagTotal = $sth->fetchrow_arrayref()) {
-		$voteTotals{@$tagTotal[0]} = @$tagTotal[1];
-	}
-
-	$sth->finish();
+    while (@result) {
+        my $rowReference = shift @result;
+        my %row = %{$rowReference};
+        if ($row{'vote_value'}) {
+            $voteTotals{$row{'vote_value'}} = $row{'vote_count'};
+        }
+    }
 
 	return %voteTotals;
 } # DBGetItemVoteTotals()

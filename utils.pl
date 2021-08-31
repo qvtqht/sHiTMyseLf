@@ -2117,7 +2117,7 @@ sub GetPathFromHash { # guesses path of text file based on hash
 
 sub in_array { # $needle, @haystack ; emulates php's in_array()
 	my $needle = shift;
-	my @haystack = shift;
+	my @haystack = @_;
 
 	WriteLog('in_array: $needle = ' . $needle);
 

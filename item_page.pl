@@ -267,7 +267,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	WriteLog('GetItemPage: $hashRef = ' . ($hashRef ? Dumper(%{$hashRef}) : 'FALSE'));
 
 	if ($hashRef) {
-	    my %file = %{$hashRef};
+	    %file = %{$hashRef};
 	} else {
 	    WriteLog('GetItemPage: warning: sanity check failed on $hashRef');
     		WriteLog('GetItemPage: caller: ' . join(',', caller));
@@ -277,9 +277,6 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	# keyword: ItemInfo {
 
 	WriteLog('GetItemPage: caller: ' . join(',', caller));
-
-
-	#my %file = %{shift @_};
 
 	# create $fileHash and $filePath variables, since we'll be using them a lot
 	my $fileHash = $file{'file_hash'};
@@ -489,6 +486,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 #		my @itemReplies = SqliteQueryHashRef($query);
 
 
+        shift @itemReplies; #column headers
 		WriteLog('GetItemPage: scalar(@itemReplies) = ' . scalar(@itemReplies));
 		foreach my $itemReply (@itemReplies) {
 			WriteLog('GetItemPage: $itemReply = ' . $itemReply);

@@ -86,7 +86,7 @@ sub MakeGalleryPage {
 }
 
 sub MakePage2 {
-	my @arg = shift;
+	my @arg = @_;
 	my $useThreads = 0;
 
 	WriteLog('MakePage: $useThreads = ' . $useThreads);
@@ -309,7 +309,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		my @files = DBGetItemList({'where_clause' => "WHERE file_hash LIKE '$fileHash%'"});
 
 		if (scalar(@files)) {
-			my $file = $files[0];
+			my $file = $files[1];
 
 			if ($file) {
                 if ($HTMLDIR =~ m/^(^\s+)$/) { #security #taint #todo

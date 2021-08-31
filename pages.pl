@@ -907,22 +907,24 @@ sub GetTagPageHeaderLinks { # $tagSelected ; returns html-formatted links to exi
 
 	WriteLog("GetTagPageHeaderLinks($tagSelected)");
 
-	my $voteCounts;
-	$voteCounts = DBGetVoteCounts();
-	my @voteCountsArray = @{$voteCounts};
+	my @voteCountsArray = DBGetVoteCounts();
 
 	my $voteItemsWrapper = GetTemplate('html/tag_wrapper.template');
 
 	my $voteItems = '';
 
 	my $voteItemTemplateTemplate = GetTemplate('html/tag.template');
+
+	shift @voteCountsArray;
+
 	while (@voteCountsArray) {
 		my $voteItemTemplate = $voteItemTemplateTemplate;
 
-		my $tagArrayRef = shift @voteCountsArray;
+		my $tagHashRef = shift @voteCountsArray;
+		my %tagHash = %{$tagHashRef};
 
-		my $tagName = @{$tagArrayRef}[0]; #todo assoc-array
-		my $tagCount = @{$tagArrayRef}[1];
+		my $tagName = $tagHash{'vote_value'};
+		my $tagCount = $tagHash{'vote_count'};
 
 		if ($tagCount > $minimumTagCount || $tagName eq $tagSelected) {
 			my $voteItemLink = "/top/" . $tagName . ".html";
@@ -1008,7 +1010,7 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 } # GetQueryPage()
 
 sub GetQueryPageFromArrayOfQueries {
-	my @queries = shift;
+	my @queries = @_;
 
 	#todo sanity checks
 
@@ -3083,6 +3085,8 @@ sub GetReadPage { # generates page with item listing based on parameters
 	$txtIndex .= GetWindowTemplate('Items on page: ' . scalar(@files), 'Count');
 
 	# LISTING ITEMS BEGINS HERE
+
+	shift @files;
 
 	foreach my $row (@files) {
 		my $file = $row->{'file_path'};
