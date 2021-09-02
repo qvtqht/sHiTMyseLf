@@ -5,6 +5,9 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 	my $fieldName = shift;
 	my $fieldValue = shift;
 
+
+	#todo if special_* is present, then the included fields should not be printed by default
+
 	WriteLog('RenderField()');
 
 	if (!defined($fieldName) || !defined(!$fieldValue)) {
@@ -226,7 +229,7 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 		#
 		# in the query, it looks like this:
 		#    SELECT
-		#		'' AS special_title_and_tags_list, <-- special field
+		#		'' AS special_title_tags_list, <-- special field
 		#		file_hash, <-- used for populating special field
 		#		item_title, <-- used for populating special field
 		#		tags_list, <-- used for populating special field
@@ -239,9 +242,23 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 			#todo add #sanity
 
 			my $specialName = substr($fieldName, 8);
-			if ($specialName eq 'title_and_tags_list') {
+			if ($specialName eq 'title_tags_list') {
 				# title, tags list, and author avatar (if any)
-				# special_title_and_tags_list
+				# special_title_tags_list
+				# this should become a template
+				$fieldValue =
+					'<b>' .
+						GetItemHtmlLink($itemRow{'file_hash'}, $itemRow{'item_title'}) .
+					'</b>' .
+					'<br>'.
+					'<span style="float:right">' .
+						GetTagsListAsHtmlWithLinks($itemRow{'tags_list'}) .
+					'</span>';
+				;
+			}
+            if ($specialName eq 'title_tags_list_author') {
+				# title, tags list, and author avatar (if any)
+				# special_title_tags_list_author
 				# this should become a template
 				$fieldValue =
 					'<b>' .

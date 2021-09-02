@@ -1,5 +1,5 @@
 SELECT
-	'' AS special_title_and_tags_list,
+	'' AS special_title_tags_list_author,
 	item_flat.item_title,
 	item_flat.author_key AS author_id,
 	item_flat.tags_list,

@@ -407,7 +407,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		my $chainPage = GetQueryPage(
 			'chain',
 			'Notarized Items',
-			'special_title_and_tags_list,chain_order,chain_timestamp,file_hash'
+			'special_title_tags_list,chain_order,chain_timestamp,file_hash'
 		);
 		PutHtmlFile("chain.html", $chainPage);
 	}
