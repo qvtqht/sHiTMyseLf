@@ -81,8 +81,13 @@ sub RenderField { # $fieldName, $fieldValue, [%rowData] ; outputs formatted data
 
 	elsif ($fieldName eq 'vote_value') {
 		#todo redo
+		my $tagColor = GetStringHtmlColor($fieldValue);
+
 		my $link = "/top/" . $fieldValue . ".html";
-		$fieldValue = RenderLink($link, $fieldValue);
+
+		my $linkText = '<font color="' . $tagColor . '">#</font>' . $fieldValue;
+
+		$fieldValue = RenderLink($link, $linkText);
 	}
 
 	elsif ($fieldName =~ /.+timestamp/) {
