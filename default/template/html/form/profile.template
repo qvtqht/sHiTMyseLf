@@ -14,7 +14,7 @@
 
 		<p id=pSigningIndicator>
 			<span id=lblSigningIndicator>
-				<noscript>*</noscript>
+				<noscript>* Signed in with cookie.</noscript>
 				<script>
                 <!--
                 document.write('...');
