@@ -993,7 +993,11 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	if (@result) {
 		$html .= GetPageHeader($title, $title, $pageName);
 		$html .= GetTemplate('html/maincontent.template');
+
+		###
 		$html .= GetResultSetAsDialog(\@result, $title, $columns);
+		###
+
 		$html .= '<pre class=advanced><br><hr>'.HtmlEscape($query).'</pre>';
 		$html .= GetPageFooter();
 		if (GetConfig('admin/js/enable')) {
@@ -1329,6 +1333,8 @@ sub GetTagsListAsHtmlWithLinks { # $tagsListParam ; prints up to 7 tags
 
 	return $headings;
 } # GetTagsListAsHtmlWithLinks()
+
+#todo sub GetTagLink {
 
 require './item_template.pl';
 
