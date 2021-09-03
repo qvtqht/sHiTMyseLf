@@ -55,6 +55,7 @@ function SortTable (t, sortOrder) {
 			(
 				t.textContent.indexOf('_count') != -1 ||
 				t.textContent.indexOf('_order') != -1 ||
+				t.textContent.indexOf('_sequence') != -1 ||
 				t.textContent.indexOf('_score') != -1
 			)
 		) {

@@ -19,7 +19,7 @@
 		<span class=advanced>
 			<label for=recfing>
 				<input name=recfing id=recfing type=checkbox>
-				Record device fingerprint</span>
+				Record device fingerprint as signature</span>
 			</label>
 		</span>
 	</p>

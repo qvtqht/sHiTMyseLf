@@ -86,7 +86,7 @@ sub MakeGalleryPage {
 }
 
 sub MakePage2 {
-	my @arg = shift;
+	my @arg = @_;
 	my $useThreads = 0;
 
 	WriteLog('MakePage: $useThreads = ' . $useThreads);
@@ -130,6 +130,8 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		$HTMLDIR = $htmlRoot;
 	}
 
+	#todo sanity checks
+	#todo sanity checks
 	#todo sanity checks
 
 	if (!defined($pageParam)) {
@@ -308,22 +310,28 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 
 		if (scalar(@files)) {
 			my $file = $files[0];
-			if ($HTMLDIR =~ m/^(^\s+)$/) { #security #taint #todo
-				$HTMLDIR = $1; # untaint
-				# create a subdir for the first 2 characters of its hash if it doesn't exist already
-				if (!-e ($HTMLDIR . '/' . substr($fileHash, 0, 2))) {
-					mkdir(($HTMLDIR . '/' . substr($fileHash, 0, 2)));
-				}
-				if (!-e ($HTMLDIR . '/' . substr($fileHash, 0, 2) . '/' . substr($fileHash, 2, 2))) {
-					mkdir(($HTMLDIR . '/' . substr($fileHash, 0, 2) . '/' . substr($fileHash, 2, 2)));
-				}
-			}
 
-			# get the page for this item and write it
-			WriteLog('MakePage: my $filePage = GetItemPage($file = "' . $file . '")');
-			my $filePage = GetItemPage($file);
-			WriteLog('PutHtmlFile($targetPath = ' . $targetPath . ', $filePage = ' . length($filePage) . ' bytes)');
-			PutHtmlFile($targetPath, $filePage);
+			if ($file) {
+				if ($HTMLDIR =~ m/^(^\s+)$/) { #security #taint #todo
+					$HTMLDIR = $1; # untaint
+					# create a subdir for the first 2 characters of its hash if it doesn't exist already
+					if (!-e ($HTMLDIR . '/' . substr($fileHash, 0, 2))) {
+						mkdir(($HTMLDIR . '/' . substr($fileHash, 0, 2)));
+					}
+					if (!-e ($HTMLDIR . '/' . substr($fileHash, 0, 2) . '/' . substr($fileHash, 2, 2))) {
+						mkdir(($HTMLDIR . '/' . substr($fileHash, 0, 2) . '/' . substr($fileHash, 2, 2)));
+					}
+				}
+
+				# get the page for this item and write it
+				WriteLog('MakePage: my $filePage = GetItemPage($file = "' . $file . '")');
+				my $filePage = GetItemPage($file);
+				WriteLog('PutHtmlFile($targetPath = ' . $targetPath . ', $filePage = ' . length($filePage) . ' bytes)');
+				PutHtmlFile($targetPath, $filePage);
+			} else {
+				WriteMessage('MakePage: warning: $file missing, sanity check failed!');
+				WriteLog('MakePage: warning: sanity check failed: $file ($files[0]) is missing!');
+			}
 		} else {
 			WriteLog("pages.pl: item page: warning: Asked to make page for $fileHash, but it is not in the database!");
 			return '';
@@ -399,7 +407,7 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		my $chainPage = GetQueryPage(
 			'chain',
 			'Notarized Items',
-			'special_title_and_tags_list,chain_order,chain_timestamp,file_hash'
+			'special_title_tags_list,chain_order,chain_timestamp,file_hash'
 		);
 		PutHtmlFile("chain.html", $chainPage);
 	}

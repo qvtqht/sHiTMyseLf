@@ -42,6 +42,7 @@ use File::Copy;
 use Cwd qw(cwd);
 
 require './utils.pl';
+require './sqlite.pl';
 require './makepage.pl';
 #
 #my $SCRIPTDIR = cwd();
@@ -304,14 +305,14 @@ sub GetAuthorLink { # $fingerprint, $showPlain ; returns avatar'ed link for an a
 
 	my $authorLink = GetTemplate('html/authorlink.template');
 
-    { # trim whitespace from avatar template
-        #this trims extra whitespace from avatar template
-        #otherwise there may be extra spaces in layout
-        #WriteLog('avdesp before:'.$avatar);
-        $authorLink =~ s/\>\s+/>/g;
-        $authorLink =~ s/\s+\</</g;
-        #WriteLog('avdesp after:'.$avatar);
-    }
+	{ # trim whitespace from avatar template
+		#this trims extra whitespace from avatar template
+		#otherwise there may be extra spaces in layout
+		#WriteLog('avdesp before:'.$avatar);
+		$authorLink =~ s/\>\s+/>/g;
+		$authorLink =~ s/\s+\</</g;
+		#WriteLog('avdesp after:'.$avatar);
+	}
 
 	$authorAvatar = trim($authorAvatar);
 
@@ -906,22 +907,24 @@ sub GetTagPageHeaderLinks { # $tagSelected ; returns html-formatted links to exi
 
 	WriteLog("GetTagPageHeaderLinks($tagSelected)");
 
-	my $voteCounts;
-	$voteCounts = DBGetVoteCounts();
-	my @voteCountsArray = @{$voteCounts};
+	my @voteCountsArray = DBGetVoteCounts();
 
 	my $voteItemsWrapper = GetTemplate('html/tag_wrapper.template');
 
 	my $voteItems = '';
 
 	my $voteItemTemplateTemplate = GetTemplate('html/tag.template');
+
+	shift @voteCountsArray;
+
 	while (@voteCountsArray) {
 		my $voteItemTemplate = $voteItemTemplateTemplate;
 
-		my $tagArrayRef = shift @voteCountsArray;
+		my $tagHashRef = shift @voteCountsArray;
+		my %tagHash = %{$tagHashRef};
 
-		my $tagName = @{$tagArrayRef}[0]; #todo assoc-array
-		my $tagCount = @{$tagArrayRef}[1];
+		my $tagName = $tagHash{'vote_value'};
+		my $tagCount = $tagHash{'vote_count'};
 
 		if ($tagCount > $minimumTagCount || $tagName eq $tagSelected) {
 			my $voteItemLink = "/top/" . $tagName . ".html";
@@ -964,6 +967,12 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	my $title = shift;
 	my $columns = shift;
 
+	if (!$columns) {
+	    $columns = '';
+	}
+
+	WriteLog('GetQueryPage: $pageName = ' . $pageName . '; $title = ' . ($title ? $title : 'FALSE') . '; $columns = ' . $columns);
+
 	if (!$title) {
 		$title = ucfirst($pageName);
 	}
@@ -984,7 +993,11 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 	if (@result) {
 		$html .= GetPageHeader($title, $title, $pageName);
 		$html .= GetTemplate('html/maincontent.template');
+
+		###
 		$html .= GetResultSetAsDialog(\@result, $title, $columns);
+		###
+
 		$html .= '<pre class=advanced><br><hr>'.HtmlEscape($query).'</pre>';
 		$html .= GetPageFooter();
 		if (GetConfig('admin/js/enable')) {
@@ -1001,7 +1014,7 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 } # GetQueryPage()
 
 sub GetQueryPageFromArrayOfQueries {
-	my @queries = shift;
+	my @queries = @_;
 
 	#todo sanity checks
 
@@ -1320,6 +1333,8 @@ sub GetTagsListAsHtmlWithLinks { # $tagsListParam ; prints up to 7 tags
 
 	return $headings;
 } # GetTagsListAsHtmlWithLinks()
+
+#todo sub GetTagLink {
 
 require './item_template.pl';
 
@@ -1803,7 +1818,7 @@ sub GetItemListing { # returns listing of items based on topic
 		$fileHash = 'top'; #what
 	}
 
-    #refactor
+	#refactor
 	if ($fileHash eq 'top') {
 		@topItems = DBGetTopItems(); # get top items from db
 	} else {
@@ -2285,9 +2300,10 @@ sub GetStatsTable { # returns Stats dialog (without window frame)
 	my $chainLogLength = 0;
 	if (GetConfig('admin/logging/write_chain_log')) {
 		#$chainLogLength = `wc -l html/chain.log`;
-		$chainLogLength = SqliteGetValue("SELECT COUNT(file_hash) FROM item_attribute WHERE attribute = 'chain_sequence'");
+		$chainLogLength = SqliteGetValue('chain_length');
 		#todo make sqlite optional
 		#todo templatize query
+		#todo move to sqlite.pl
 	}
 
 	if (abs($itemsIndexed - $filesTotal) > 3) {
@@ -2777,6 +2793,16 @@ sub GetAuthorInfoBox {
 		return '';
 	}
 
+	if (!IsFingerprint($authorKey) && IsItem($authorKey)) {
+	    #todo refactor this nonsense
+	    my @queryParams;
+	    push @queryParams, $authorKey;
+	    my $newAuthorKey = SqliteGetValue('select author_key from author_flat where file_hash = ?', @queryParams);
+	    if ($newAuthorKey) {
+	        $authorKey = $newAuthorKey;
+	    }
+	}
+
 	my $authorInfoTemplate = GetTemplate('html/author_info.template');
 	$authorInfoTemplate = FillThemeColors($authorInfoTemplate);
 
@@ -3066,7 +3092,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 		$queryAuthorThreads =~ s/\?/'$authorKey'/;
 		$txtIndex .= GetQueryAsDialog(
 			$queryAuthorThreads,
-        	'Topics by Author'
+			'Topics by Author'
 		);
 		$txtIndex .= '<hr 5>';
 	}
@@ -3201,6 +3227,8 @@ sub GetItemListHtml { # @files(array of hashes) ; takes @files, returns html lis
 	my $itemComma = '';
 
 	my $itemListTemplate = '<span class=itemList>$itemList</span>'; #todo templatize
+
+	shift @files;
 
 	foreach my $rowHashRef (@files) { # loop through each file
 		my %row = %{$rowHashRef};
@@ -3762,14 +3790,14 @@ sub MakePhpPages {
 		}
 		for my $template (@templatePhpSimple) {
 			my $fileContent = GetTemplate("php/$template.php");
-            my $PHPDIR = GetDir('php');
+			my $PHPDIR = GetDir('php');
 			PutFile($PHPDIR . "/$template.php", $fileContent);
 		}
 
 		my $utilsPhpTemplate = GetTemplate('php/utils.php');
 		my $SCRIPTDIR = GetDir('script');
 		my $PHPDIR = GetDir('php');
-        $utilsPhpTemplate =~ s/\$scriptDirPlaceholderForTemplating/$SCRIPTDIR/g;
+		$utilsPhpTemplate =~ s/\$scriptDirPlaceholderForTemplating/$SCRIPTDIR/g;
 		PutFile($PHPDIR . '/utils.php', $utilsPhpTemplate);
 
 		MakePostPage(); #post.html, needed by post.php
@@ -4287,18 +4315,18 @@ sub GetWritePage { # returns html for write page
 
 	my $writeForm = GetWriteForm();
 	WriteLog('GetWriteForm: js is on, adding write_options.template');
-    my $writeOptions =
-    	'<span class=advanced>' .
-    	AddAttributeToTag(
-    		GetWindowTemplate(GetTemplate('form/write/write_options.template'), 'Options'),
+	my $writeOptions =
+		'<span class=advanced>' .
+		AddAttributeToTag(
+			GetWindowTemplate(GetTemplate('form/write/write_options.template'), 'Options'),
 			'a href="/frame.html"',
 			'accesskey',
 			GetAccessKey('Keyboard')
 		).
-    	'</span>'
+		'</span>'
 	; #todo this is a hack
 
-    $writePageHtml .= '<form action="/post.html" method=GET id=compose class=submit name=compose target=_top>'; #todo
+	$writePageHtml .= '<form action="/post.html" method=GET id=compose class=submit name=compose target=_top>'; #todo
 	$writePageHtml .= $writeForm;
 	$writePageHtml .= $writeOptions;
 	$writePageHtml .= '</form>'; #todo
@@ -4513,11 +4541,11 @@ sub GetSettingsWindow { # returns settings dialog
 		$settingsTemplate = str_replace('Allow dialog reposition', '<span disabled>Allow dialog reposition (N/A)</span>', $settingsTemplate);
 		#$settingsTemplate = str_replace('Enable draggable interface<noscript><b>*</b></noscript>', '<span </span>', $settingsTemplate);
 
-        #		$settingsTemplate = str_replace(
-        #			'<input type=checkbox id=chkDraggable name=chkDraggable onchange="if (window.SaveCheckbox) { SaveCheckbox(this, \'draggable\'); }">',
-        #			'<input type=checkbox id=chkDraggable name=chkDraggable disabled>',
-        #			$settingsTemplate
-        #		);
+		#		$settingsTemplate = str_replace(
+		#			'<input type=checkbox id=chkDraggable name=chkDraggable onchange="if (window.SaveCheckbox) { SaveCheckbox(this, \'draggable\'); }">',
+		#			'<input type=checkbox id=chkDraggable name=chkDraggable disabled>',
+		#			$settingsTemplate
+		#		);
 	}
 
 	my $settingsWindow = '';#GetWindowTemplate($settingsTemplate, 'Settings');
@@ -4568,14 +4596,17 @@ sub GetSettingsPage { # returns html for settings page (/settings.html)
 
 	$txtIndex .= GetAccessDialog();
 
-	$txtIndex .= GetSettingsWindow();
-
 	$txtIndex .= GetStatsTable();  # GetSettingsPage()
 
+	$txtIndex .= GetSettingsWindow();
+
 	$txtIndex .= GetServerConfigDialog();
+	
+	$txtIndex .= GetWindowTemplate(GetTemplate('form/writing.template'), 'Writing');
 
 	$txtIndex .= GetOperatorWindow();
 
+	$txtIndex .= '<span class=advanced>' . GetWindowTemplate(GetTemplate('form/annoyances.template'), 'Annoyances') . '</span>';
 	#$txtIndex .= GetMenuTemplate();
 
 	$txtIndex .= GetPageFooter();
@@ -5568,9 +5599,9 @@ sub PrintBanner {
 }
 
 while (my $arg1 = shift @foundArgs) {
-	print("\n=========================\n");
-	print("\nFOUND ARGUMENT: $arg1;\n");
-	print("\n=========================\n");
+	#print("\n=========================\n");
+	PrintBanner("\nFOUND ARGUMENT: $arg1;\n");
+	#print("\n=========================\n");
 
 	# go through all the arguments one at a time
 	if ($arg1) {
@@ -5831,7 +5862,12 @@ while (my $arg1 = shift @foundArgs) {
 
 	print "-------";
 	print "\n";
-	my @filesWritten = PutHtmlFile('report_files_written');
+	my @filesWrittenHtml = PutHtmlFile('report_files_written');
+	for my $fileWritten (@filesWrittenHtml) {
+		print $fileWritten;
+		print "\n";
+	}
+	my @filesWritten = PutFile('report_files_written');
 	for my $fileWritten (@filesWritten) {
 		print $fileWritten;
 		print "\n";
@@ -5839,7 +5875,7 @@ while (my $arg1 = shift @foundArgs) {
 	print "-------";
 	print "\n";
 	print "Total files written: ";
-	print scalar(@filesWritten);
+	print scalar(@filesWritten) + scalar(@filesWrittenHtml);
 	print "\n";
 }
 

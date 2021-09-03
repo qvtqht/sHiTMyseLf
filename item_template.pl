@@ -7,6 +7,13 @@ sub GetItemTemplateBody {
 
 	WriteLog('GetItemTemplateBody() BEGIN');
 
+	if ($file{'item_type'} eq 'image') {
+	    my $imageContainer = GetImageContainer($file{'file_hash'}, $file{'item_name'}, 0);
+
+        $itemTemplateBody = GetTemplate('html/item/item.template'); # GetItemTemplate()
+        $itemTemplateBody = str_replace('$itemText', $imageContainer, $itemTemplateBody);
+	}
+
 	if ($file{'item_type'} eq 'txt') {
 		my $isTextart = 0;
 		if (-1 != index(','.$file{'tags_list'}.',', ',textart,')) {
@@ -22,7 +29,7 @@ sub GetItemTemplateBody {
 		if ($isTextart) {
 			$itemText = TextartForWeb(GetCache('message/' . $file{'file_hash'} . '_gpg'));
 			if (!$itemText) {
-				$itemText = '.'.TextartForWeb(GetFile($file{'file_path'}));
+				$itemText = TextartForWeb(GetFile($file{'file_path'}));
 			}
 		} else {
 			$itemText = GetItemDetokenedMessage($file{'file_hash'}, $file{'file_path'});
@@ -69,11 +76,12 @@ sub GetItemTemplateBody {
 				$itemText =~ s/([A-F0-9]{16})/GetHtmlAvatar($1)/eg;
 			}
 		}
-	}
 
-	$itemTemplateBody = GetTemplate('html/item/item.template'); # GetItemTemplate()
-	$itemTemplateBody = str_replace('$itemText', $itemText, $itemTemplateBody);
-    #$windowBody =~ s/\$itemName/$itemName/g;
+        $itemTemplateBody = GetTemplate('html/item/item.template'); # GetItemTemplate()
+        $itemTemplateBody = str_replace('$itemText', $itemText, $itemTemplateBody);
+	} # 'txt'
+
+	#$windowBody =~ s/\$itemName/$itemName/g;
 
 	return $itemTemplateBody;
 } # GetItemTemplateBody()
@@ -324,7 +332,7 @@ sub GetItemTemplate { # \%file ; returns HTML for outputting one item WITH WINDO
 
 			# strip the 'html/' prefix on the file's path, replace with /
 			#todo relative links
-            my $HTMLDIR = GetDir('html');
+			my $HTMLDIR = GetDir('html');
 			$permalinkTxt =~ s/$HTMLDIR\//\//;
 			$permalinkTxt =~ s/^html\//\//;
 		}

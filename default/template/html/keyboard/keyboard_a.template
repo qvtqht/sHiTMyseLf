@@ -89,14 +89,6 @@
 // -->
 </script>
 
-<span style="float: right">
-	<noscript>*</noscript>
-	Transliterated Keyboard Layouts:<br>
-	Russian: Ctrl+R, Alt+R, Meta+R<br>
-	Dvorak: Ctrl+D, Alt+D, Meta+D<br><br>
-	(Press again to go back to default.)
-</span>
-
 <table bgcolor="$colorWindow" cellpadding=4 cellspacing=0 border=0>
 
 <tr><td>

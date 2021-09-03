@@ -299,9 +299,9 @@ sub WriteMessage { # Writes timestamped message to console (stdout)
 		$output = substr($output, 0, 60) . '...';
 	}
 
-    # THIS is the part that prints the message
-    # this code is not approved for public viewing
-    #todo print "\n================================================================================\n";
+	# THIS is the part that prints the message
+	# this code is not approved for public viewing
+	#todo print "\n================================================================================\n";
 	print "\n$timestamp $output\n$timestamp =======================================================\n$timestamp";
 
 	$previousText = $text;
@@ -415,7 +415,7 @@ sub GetFileHash { # $fileName ; returns hash of file contents
 	my $fileName = shift;
 	chomp $fileName;
 	WriteLog("GetFileHash($fileName)");
-    #todo normalize path (static vs full)
+	#todo normalize path (static vs full)
 	state %memoFileHash;
 	if ($memoFileHash{$fileName}) {
 		WriteLog('GetFileHash: memo hit ' . $memoFileHash{$fileName});
@@ -703,17 +703,17 @@ sub GetClockFormattedTime() { # returns current time in appropriate format from 
 
 	if ($clockFormat eq '24hour') {
 	    my $time = GetTime();
-        my $hours = strftime('%H', localtime $time);
-        my $minutes = strftime('%M', localtime $time);
+		my $hours = strftime('%H', localtime $time);
+		my $minutes = strftime('%M', localtime $time);
 		my $clockFormattedTime = $hours . ':' . $minutes;
 
-        if (0) { # 24-hour with seconds
-        	my $seconds = strftime('%S', localtime $time);
-        	my $clockFormattedTime = $hours . ':' . $minutes . ':' . $seconds;
+		if (0) { # 24-hour with seconds
+			my $seconds = strftime('%S', localtime $time);
+			my $clockFormattedTime = $hours . ':' . $minutes . ':' . $seconds;
 		}
 
-        return $clockFormattedTime;
-    }
+		return $clockFormattedTime;
+	}
 
 	if ($clockFormat eq 'union') {
 		my $time = GetTime();
@@ -835,6 +835,14 @@ sub PutFile { # Writes content to a file; $file, $content, $binMode
 		WriteLog('PutFile: $binMode: 1');
 	}
 
+	# keep track of files written so we can report them to user
+	state @debugFilesWritten;
+	# my $timeBegin = GetTime(); #todo
+	if ($file eq 'report_files_written') {
+		return @debugFilesWritten;
+	}
+	push @debugFilesWritten, GetPaddedEpochTimestamp() . ' ' . $file;
+
 	WriteLog('PutFile: $file = ' . $file . ', $content = (' . length($content) . 'b), $binMode = ' . $binMode);
 	#WriteLog("==== \$content ====");
 	#WriteLog($content);
@@ -909,11 +917,13 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 	my $stringLength = length($string);
 
 	if (!defined($string) || !$string) {
+	    #todo edge cases like '0', 0, ''
+	    #what to do for ''??
 		WriteLog('str_replace: warning: $string not supplied');
 		return "";
 	}
 
-	WriteLog('str_replace($replace_this = ' . length($replace_this) . ', $with_this = ' . length($with_this) . ' , ($stringLength = ' . $stringLength . '))');
+	WriteLog('str_replace($replace_this = ' . length($replace_this) . 'b, $with_this = ' . length($with_this) . 'b , ($stringLength = ' . $stringLength . ')); caller = ' . join (',', caller));
 	#WriteLog("str_replace($replace_this, $with_this, ($stringLength))");
 
 	if (!defined($replace_this) || !defined($with_this)) {
@@ -933,29 +943,37 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 	$string =~ s/\Q$replace_this/$with_this/g;
 	WriteLog('str_ireplace: length$string) = ' . length($string));
 	# WriteLog('str_ireplace: $string = ' . $string);
+
+	# RETURN ###############
+	# RETURN ###############
+	# RETURN ###############
+	# RETURN ###############
+	# RETURN ###############
 	return $string;
 
 
-	my $length = length($string);
-	my $target = length($replace_this);
+	if (0) { #buggy code, not used
+		my $length = length($string);
+		my $target = length($replace_this);
 
-	for (my $i = 0; $i < $length - $target + 1; $i++) {
-		#todo there is a bug here
-		if (!defined(substr($string, $i, $target))) {
-			WriteLog("str_replace: warning: !defined(substr($string, $i, $target))");
+		for (my $i = 0; $i < $length - $target + 1; $i++) {
+			#todo there is a bug here
+			if (!defined(substr($string, $i, $target))) {
+				WriteLog("str_replace: warning: !defined(substr($string, $i, $target))");
+			}
+			elsif (substr($string, $i, $target) eq $replace_this) {
+				$string = substr ($string, 0, $i) . $with_this . substr($string, $i + $target);
+				$i += length($with_this) - length($replace_this); # when new string contains old string
+				$length += length($with_this) - length($replace_this); # string is getting shorter or longer
+			} else {
+				# do nothing
+			}
 		}
-		elsif (substr($string, $i, $target) eq $replace_this) {
-			$string = substr ($string, 0, $i) . $with_this . substr($string, $i + $target);
-			$i += length($with_this) - length($replace_this); # when new string contains old string
-			$length += length($with_this) - length($replace_this); # string is getting shorter or longer
-		} else {
-			# do nothing
-		}
+
+		WriteLog('str_replace: length$string) = ' . length($string));
+
+		return $string;
 	}
-
-	WriteLog('str_replace: length$string) = ' . length($string));
-
-	return $string;
 } # str_replace()
 
 #props http://www.bin-co.com/perl/scripts/str_replace.php
@@ -1070,6 +1088,8 @@ sub PutHtmlFile { # $file, $content ; writes content to html file, with special 
 	if (!$file) {
 		return;
 	}
+
+	#todo more sanity
 
 	# keep track of files written so we can report them to user
 	state @debugFilesWritten;
@@ -1591,6 +1611,8 @@ sub IsMd5 { # returns 1 if parameter is md5 hash, 0 otherwise
 }
 
 sub IsFingerprint { # returns 1 if parameter is a user fingerprint, 0 otherwise
+# sub IsAuthor {
+# sub IsPubKey {
 	my $string = shift;
 
 	if (!$string) {
@@ -1781,20 +1803,20 @@ sub CheckForInstalledVersionChange {
 sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log and removes it if found
 #todo rename to IsFileMarkedAsDeleted()
 # only one or the other is required
-    my $file = shift;
+	my $file = shift;
 	WriteLog("IsFileDeleted($file)");
 
-    if ($file && !-e $file) {
+	if ($file && !-e $file) {
 		# file already doesn't exist
 		WriteLog('IsFileDeleted: file already gone, returning 1');
 		return 1;
-    }
+	}
 
-    my $fileHash = shift;
-    if (!$fileHash) {
+	my $fileHash = shift;
+	if (!$fileHash) {
 		WriteLog('IsFileDeleted: $fileHash not specified, calling GetFileHash()');
-    	$fileHash = GetFileHash($file);
-    }
+		$fileHash = GetFileHash($file);
+	}
 	WriteLog("IsFileDeleted($file, $fileHash)");
 
 	if ($file && $file =~ m/^([0-9a-zA-Z.\-_\/]+)$/) {
@@ -1805,10 +1827,10 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
 	}
 
 
-    if ($fileHash && -e 'log/deleted.log' && GetFile('log/deleted.log') =~ $fileHash) {
+	if ($fileHash && -e 'log/deleted.log' && GetFile('log/deleted.log') =~ $fileHash) {
 	    # if the file is present in deleted.log, get rid of it and its page, return
-        # write to log
-        WriteLog("IsFileDeleted: MATCHED! $fileHash exists in deleted.log, removing $file");
+		# write to log
+		WriteLog("IsFileDeleted: MATCHED! $fileHash exists in deleted.log, removing $file");
 
 		# unlink the file itself
 		if (-e $file) {
@@ -1839,12 +1861,12 @@ sub IsFileDeleted { # $file, $fileHash ; checks for file's hash in deleted.log a
 			}
 		}
 
-        return 1;
-    } # $fileHash is in 'log/deleted.log'
+		return 1;
+	} # $fileHash is in 'log/deleted.log'
 
-    WriteLog("IsFileDeleted($file, $fileHash) = FALSE");
+	WriteLog("IsFileDeleted($file, $fileHash) = FALSE");
 
-    return 0;
+	return 0;
 } # IsFileDeleted()
 
 sub file_exists { # $file ; port of php file_exists()
@@ -2097,7 +2119,7 @@ sub GetPathFromHash { # guesses path of text file based on hash
 
 sub in_array { # $needle, @haystack ; emulates php's in_array()
 	my $needle = shift;
-	my @haystack = shift;
+	my @haystack = @_;
 
 	WriteLog('in_array: $needle = ' . $needle);
 
@@ -2332,7 +2354,7 @@ EnsureDirsThatShouldExist();
 CheckForInstalledVersionChange();
 
 my $utilsPl = 1;
-
-require './sqlite.pl';
+#
+#require './sqlite.pl';
 
 1;

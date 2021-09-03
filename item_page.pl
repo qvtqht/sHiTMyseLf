@@ -259,13 +259,33 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 	#	}
 
 	# we're expecting a reference to a hash as the first parameter
+
 	#todo sanity checks here, it will probably break if anything else is supplied
+	my $hashRef = shift;
+	my %file;
+
+	WriteLog('GetItemPage: $hashRef = ' . ($hashRef ? Dumper(%{$hashRef}) : 'FALSE'));
+
+	if ($hashRef) {
+	    %file = %{$hashRef};
+	} else {
+	    WriteLog('GetItemPage: warning: sanity check failed on $hashRef');
+			WriteLog('GetItemPage: caller: ' . join(',', caller));
+			return '';
+	}
+
 	# keyword: ItemInfo {
-	my %file = %{shift @_};
+
+	WriteLog('GetItemPage: caller: ' . join(',', caller));
 
 	# create $fileHash and $filePath variables, since we'll be using them a lot
 	my $fileHash = $file{'file_hash'};
 	my $filePath = $file{'file_path'};
+
+	if (!$fileHash || !$filePath) {
+		WriteLog('GetItemPage: warning: sanity check failed ...');
+		return '';
+	}
 
 	WriteLog("GetItemPage(file_hash = " . $file{'file_hash'} . ', file_path = ' . $file{'file_path'} . ")");
 
@@ -343,7 +363,13 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 
 
 	# ITEM TEMPLATE
-	my $itemTemplate = GetItemTemplate(\%file); # GetItemPage()
+
+	my $itemTemplate = '';
+	if (index($file{'tags_list'}, 'pubkey') != -1) { #todo make nicer/stabler
+	    $itemTemplate = GetAuthorInfoBox($file{'file_hash'});
+	} else {
+	    $itemTemplate = GetItemTemplate(\%file); # GetItemPage()
+    }
 	WriteLog('GetItemPage: child_count: ' . $file{'file_hash'} . ' = ' . $file{'child_count'});
 
 	# EASY FIND
@@ -617,14 +643,16 @@ sub GetItemAttributesWindow2 {
 	#WriteLog('GetItemAttributesWindow: %file = ' . Dumper(%file));
 	#WriteLog('GetItemAttributesWindow: $fileHash = ' . $fileHash);
 
-	my $itemAttributes = DBGetItemAttribute($fileHash);
-	$itemAttributes = trim($itemAttributes);
+	my @itemAttributes = DBGetItemAttribute($fileHash);
+	shift @itemAttributes;
 
 	my $itemAttributesTable = '';
 	{ # arrange into table nicely
-		foreach my $itemAttribute (split("\n", $itemAttributes)) {
+		foreach my $itemAttribute (@itemAttributes) {
 			if ($itemAttribute) {
-				my ($iaName, $iaValue) = split('\|', $itemAttribute);
+			    my %attributeRowHash = %{$itemAttribute};
+				my $iaName = $attributeRowHash{'attribute'};
+				my $iaValue = $attributeRowHash{'value'};
 
 				{
 					# this part formats some values for output

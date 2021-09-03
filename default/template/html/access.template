@@ -2,24 +2,12 @@
 <form action="/access.html">
 	<fieldset>
 		<p>
-			<label for=lightOn>
-				<input name=btnLightOn value="Light" id=lightOn type=submit>
-			</label>
-		</p>
-		<p>
-			<input name=btnLightOff value="Modern" id=lightOff type=submit>
-		</p>
-
-		<hr>
-
-		<p>
+			<span class=beginner>Use these buttons to set interface mode:<br></span>
+			<input name=btnLightOn value="Light" id=lightOn type=submit>
+			<input name=btnLightOff value="Modern" class=advanced id=lightOff type=submit>
 			<input value="Beginner" type=submit name=ui>
-		</p>
-		<p>
 			<input value="Intermediate" type=submit name=ui>
-		</p>
-		<p>
-			<input value="Advanced" type=submit name=ui>
+			<input value="Advanced" class=advanced type=submit name=ui>
 		</p>
 	</fieldset>
 </form>

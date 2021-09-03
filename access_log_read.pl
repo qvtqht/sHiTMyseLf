@@ -328,7 +328,7 @@ sub ProcessAccessLog { # reads an access log and writes .txt files as needed
 		#my $dateIso = "$dateYear-$dateMonth-$dateDay";
 		my ($timeHour, $timeMinute, $timeSecond) = split(':', $time);
 
-        my $accessLogTimestamp = timelocal($timeSecond, $timeMinute, $timeHour, $dateDay, $dateMonth - 1, $dateYear);
+		my $accessLogTimestamp = timelocal($timeSecond, $timeMinute, $timeHour, $dateDay, $dateMonth - 1, $dateYear);
 
 		$req = substr($req, 1); # remove the quote preceding the request field
 		chop($gmt);
