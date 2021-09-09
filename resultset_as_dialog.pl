@@ -136,6 +136,7 @@ sub GetResultSetAsDialog { # \@result, $title, $columns, \%flags
 			foreach my $column (split(',', $columns)) {
 				#print $column . ',' . $row->{$column} . "\n";
 				if (
+					$column eq 'tags_list' ||#todo config/list/field_advanced
 					$column eq 'file_hash' ||#todo config/list/field_advanced
 					$column eq 'author_key' ||#todo config/list/field_advanced
 					$column eq 'child_count' ||#todo config/list/field_advanced

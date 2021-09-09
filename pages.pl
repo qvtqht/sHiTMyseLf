@@ -545,6 +545,7 @@ sub GetWindowTemplate2 { # \%paramHash ; returns window template
 			$printedColumnsCount++;
 			my $columnHeaderTemplate = GetTemplate('html/window/header_column.template'); # <td></td>
 			if (
+				$columnCaption eq 'tags_list' || #todo config/list/field_advanced
 				$columnCaption eq 'file_hash' || #todo config/list/field_advanced
 				$columnCaption eq 'author_key' || #todo config/list/field_advanced
 				$columnCaption eq 'child_count' || #todo config/list/field_advanced
