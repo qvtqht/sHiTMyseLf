@@ -268,7 +268,7 @@ sub SqliteQueryCachedShell { # $query, @queryParams ; performs sqlite query via 
 sub DBGetVotesForItem { # Returns all votes (weighed) for item
 	my $fileHash = shift;
 
-	if (!IsSha1($fileHash)) {
+	if (!IsItem($fileHash)) {
 		WriteLog("DBGetVotesTable called with invalid parameter! returning");
 		WriteLog("$fileHash");
 		return '';
@@ -411,7 +411,7 @@ sub DBGetItemParents {# Returns all item's parents
 # Sets up parameters and calls DBGetItemList
 	my $itemHash = shift;
 
-	if (!IsSha1($itemHash)) {
+	if (!IsItem($itemHash)) {
 		WriteLog('DBGetItemParents called with invalid parameter! returning');
 		return '';
 	}
@@ -763,7 +763,7 @@ sub DBDeleteItemReferences { # delete all references to item from tables
 	WriteLog('DBDeleteItemReferences() ...');
 
 	my $hash = shift;
-	if (!IsSha1($hash)) {
+	if (!IsItem($hash)) {
 		return;
 	}
 
@@ -1522,7 +1522,7 @@ sub DBGetItemAttribute { # $fileHash, [$attribute] ; returns all if attribute no
 
 	if ($fileHash) {
 		if ($fileHash =~ m/^([a-f0-9]+)$/) {
-			WriteLog('DBGetItemAttribute: warning: sanity check passed on $fileHash');
+			WriteLog('DBGetItemAttribute: sanity check passed on $fileHash = ' . $fileHash);
 			$fileHash = $1;
 		} else {
 			WriteLog('DBGetItemAttribute: warning: sanity check FAILED on $fileHash = ' . $fileHash);
@@ -1635,13 +1635,13 @@ sub DBGetAddedTime { # return added time for item specified
 	}
 	chomp ($fileHash);
 
-	if (!IsSha1($fileHash)) {
+	if (!IsItem($fileHash)) {
 		WriteLog('DBGetAddedTime: warning: called with invalid parameter! returning');
 		return;
 	}
 
-	if (!IsSha1($fileHash) || $fileHash ne SqliteEscape($fileHash)) {
-		WriteLog('DBGetAddedTime: warning: important sanity check failed! this should never happen: !IsSha1($fileHash) || $fileHash ne SqliteEscape($fileHash)');
+	if (!IsItem($fileHash) || $fileHash ne SqliteEscape($fileHash)) {
+		WriteLog('DBGetAddedTime: warning: important sanity check failed! this should never happen: !IsItem($fileHash) || $fileHash ne SqliteEscape($fileHash)');
 		return '';
 	} #todo ideally this should verify it's a proper hash too
 
