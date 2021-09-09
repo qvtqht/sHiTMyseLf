@@ -149,8 +149,8 @@ my $IMAGEDIR = $HTMLDIR . '/image';
 		unlink("$LOGDIR/access.log");
 	}
 
-	print("cp -r \"$CONFIGDIR\" \"$ARCHIVE_DATE_DIR/config\"\n");
-	system("cp -r \"$CONFIGDIR\" \"$ARCHIVE_DATE_DIR/config\""); #fast enough
+	print("cp -rv \"$CONFIGDIR\" \"$ARCHIVE_DATE_DIR/config\"\n");
+	system("cp -rv \"$CONFIGDIR\" \"$ARCHIVE_DATE_DIR/config\""); #todo not fast enough
 
 	print("mkdir($HTMLDIR)\n");
 	mkdir("$HTMLDIR");
