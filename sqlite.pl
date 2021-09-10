@@ -308,7 +308,7 @@ sub DBGetVotesForItem { # Returns all votes (weighed) for item
 	";
 	@queryParams = ($fileHash);
 
-	my @result = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	my @result = SqliteQueryHashRef($query, @queryParams);
 
 	return @result;
 }
@@ -338,7 +338,7 @@ sub DBGetEvents { #gets events list
 
 	#todo rewrite this sub better
 
-	my @queryResult = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	my @queryResult = SqliteQueryHashRef($query, @queryParams);
 	return @queryResult;
 }
 
@@ -369,7 +369,7 @@ sub DBGetAuthorFriends { # Returns list of authors which $authorKey has tagged a
 	my @queryParams = ();
 	push @queryParams, $authorKey;
 
-	my @queryResult = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	my @queryResult = SqliteQueryHashRef($query, @queryParams);
 	return @queryResult;
 
 } # DBGetAuthorFriends()
@@ -384,7 +384,7 @@ sub DBGetLatestConfig { # Returns everything from config_latest view
 	#todo write out the fields
 
 
-	my @queryResult = SqliteQueryGetArrayOfHashRef($query);
+	my @queryResult = SqliteQueryHashRef($query);
 	return @queryResult;
 
 } # DBGetLatestConfig()
@@ -661,7 +661,7 @@ sub DBGetTouchedPages { # Returns items from task table, used for prioritizing w
 	my @params;
 	push @params, $touchedPageLimit;
 
-	my @results = SqliteQueryGetArrayOfHashRef($query, @params);
+	my @results = SqliteQueryHashRef($query, @params);
 
 	return @results;
 } # DBGetTouchedPages()
@@ -688,7 +688,7 @@ sub DBGetAllPages { # Returns items from task table, used for prioritizing which
 
 	my @params;
 
-	my @results = SqliteQueryGetArrayOfHashRef($query, @params);
+	my @results = SqliteQueryHashRef($query, @params);
 
 	return @results;
 } # DBGetAllPages()
