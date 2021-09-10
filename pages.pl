@@ -3022,7 +3022,7 @@ sub GetReadPage { # generates page with item listing based on parameters
 				$queryParams{'where_clause'} = "WHERE ','||tags_list||',' LIKE '%,$tagName,%' AND item_score >= $scoreThreshold";
 			}
 			$queryParams{'order_clause'} = "ORDER BY item_score DESC, item_flat.add_timestamp DESC";
-			$queryParams{'limit_clause'} = "LIMIT 50"; #todo fix hardcoded limit #todo pagination
+			$queryParams{'limit_clause'} = "LIMIT 1000"; #todo fix hardcoded limit #todo pagination
 
 			@files = DBGetItemList(\%queryParams);
 		} # $pageType eq 'tag'
