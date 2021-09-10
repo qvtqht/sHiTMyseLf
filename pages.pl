@@ -5035,6 +5035,9 @@ sub GetPagePath { # $pageType, $pageParam ; returns path to item's html path
 } # GetPagePath()
 
 sub BuildTouchedPages { # $timeLimit, $startTime ; builds pages returned by DBGetTouchedPages();
+    WriteLog("BuildTouchedPages: warning: is broken, exiting");
+    return ''; #todo
+
 	# DBGetTouchedPages() means select * from task where priority > 0
 
 
