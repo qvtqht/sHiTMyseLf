@@ -919,7 +919,7 @@ sub str_replace { # $replaceWhat, $replaceWith, $string ; emulates some of str_r
 	if (!defined($string) || !$string) {
 	    #todo edge cases like '0', 0, ''
 	    #what to do for ''??
-		WriteLog('str_replace: warning: $string not supplied');
+		WriteLog('str_replace: warning: $string not supplied; caller = ' . join(',', caller));
 		return "";
 	}
 
