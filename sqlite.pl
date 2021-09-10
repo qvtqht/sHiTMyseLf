@@ -30,7 +30,9 @@ sub DBMaxQueryParams { # Returns max number of parameters to allow in sqlite que
 }
 
 sub SqliteQuery2 {
-	return SqliteQuery(@_);
+	my $query = shift;
+	my @params = @_;
+	return SqliteQuery($query, @params);
 }
 
 sub SqliteMakeTables { # creates sqlite schema
@@ -580,7 +582,7 @@ sub DBAddConfigValue { # $key, $value, $resetFlag, $sourceItem ; add value to co
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -693,7 +695,7 @@ sub DBAddItemPage { # $itemHash, $pageType, $pageParam ; adds an entry to item_p
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -738,7 +740,7 @@ sub DBResetPageTouch { # Clears the task table
 	my $query = "DELETE FROM task WHERE task_type = 'page'";
 	my @queryParams = ();
 
-	SqliteQuery2($query, @queryParams);
+	SqliteQuery($query, @queryParams);
 
 	WriteMessage("DBResetPageTouch() end");
 }
@@ -753,7 +755,7 @@ sub DBDeletePageTouch { # $pageName, $pageParam
 
 	my @queryParams = ($pageName, $pageParam);
 
-	SqliteQuery2($query, @queryParams);
+	SqliteQuery($query, @queryParams);
 }
 
 sub DBDeleteItemReferences { # delete all references to item from tables
@@ -781,31 +783,31 @@ sub DBDeleteItemReferences { # delete all references to item from tables
 	);
 	foreach (@tables) {
 		my $query = "DELETE FROM $_ WHERE file_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	#item_hash
 	my @tables2 = qw(event item_page item_parent location);
 	foreach (@tables2) {
 		my $query = "DELETE FROM $_ WHERE item_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	{ #dupe of below? #todo
 		my $query = "DELETE FROM vote WHERE ballot_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	{
 		my $query = "DELETE FROM item_attribute WHERE source = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	#ballot_hash
 	my @tables3 = qw(vote);
 	foreach (@tables3) {
 		my $query = "DELETE FROM $_ WHERE ballot_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	#todo
@@ -839,7 +841,7 @@ sub DBAddTask { # $taskType, $taskName, $taskParam, $touchTime # make new task
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -903,7 +905,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -948,7 +950,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 		my @queryParamsAuthorItems;
 		push @queryParamsAuthorItems, $pageParam;
 
-		SqliteQuery2($queryAuthorItems, @queryParamsAuthorItems);
+		SqliteQuery($queryAuthorItems, @queryParamsAuthorItems);
 	}
 	#
 	# if ($pageName eq 'item') {
@@ -971,7 +973,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 	# 	my @queryParamsAuthorItems;
 	# 	push @queryParamsAuthorItems, $pageParam;
 	#
-	# 	SqliteQuery2($queryAuthorItems, @queryParamsAuthorItems);
+	# 	SqliteQuery($queryAuthorItems, @queryParamsAuthorItems);
 	# }
 
 	#todo need to incremenet priority after doing this
@@ -1106,7 +1108,7 @@ sub DBAddKeyAlias { # adds new author-alias record $key, $alias, $pubkeyFileHash
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -1151,7 +1153,7 @@ sub DBAddItemParent { # Add item parent record. $itemHash, $parentItemHash ;
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1216,7 +1218,7 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 		if ($query) {
 			WriteLog("DBAddItem(flush)");
 			$query .= ';';
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 			$query = '';
 			@queryParams = ();
 			DBAddItemAttribute('flush');
@@ -1327,7 +1329,7 @@ sub DBAddEventRecord { # add event record to database; $itemHash, $eventTime, $e
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1384,7 +1386,7 @@ sub DBAddLocationRecord { # $itemHash, $latitude, $longitude, $signedBy ; Adds n
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1449,7 +1451,7 @@ sub DBAddVoteRecord { # $fileHash, $ballotTime, $voteValue, $signedBy, $ballotHa
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1569,7 +1571,9 @@ sub DBAddItemAttribute { # $fileHash, $attribute, $value, $epoch, $source # add 
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			WriteLog('DBAddItemAttribute: $query = ' . $query . ';');
+
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();

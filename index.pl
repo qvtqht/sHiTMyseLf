@@ -468,7 +468,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 #			if ($authorKey eq 'AE85DDBDCED2E285') {
 #				#todo #scaffolding
 #				my $queryAddAdmin = "insert into vote(file_hash, vote_value) values('$fileHash', 'admin')";
-#				SqliteQuery2($queryAddAdmin);
+#				SqliteQuery($queryAddAdmin);
 #			}
 		}
 		my $message = GetFileMessage($file);
