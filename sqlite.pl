@@ -109,6 +109,8 @@ sub SqliteGetQueryString {
 		# insert params into ? placeholders
 		while (@queryParams) {
 			my $paramValue = shift @queryParams;
+			$paramValue = str_replace("'", '', $paramValue); #todo improve on just stripping single quotes :D
+			$paramValue = str_replace('"', '', $paramValue); #todo improve on just stripping single quotes :D
 			$queryWithParams =~ s/\?/'$paramValue'/;
 		}
 	}
@@ -211,7 +213,23 @@ sub SqliteQuery { # performs sqlite query via sqlite3 command
 		#todo failed sanity check
 	}
 
-	my $results = `sqlite3 -header "$SqliteDbName" "$query"`;
+	if ($query =~ m/\?/) {
+		WriteLog('SqliteQuery: warning: $query contains QM; caller = ' . join(',', caller));
+		return '';
+	}
+
+    my $sqliteErrorLog = GetRandomHash();
+
+	my $results = `sqlite3 -header "$SqliteDbName" "$query" 2>log/$sqliteErrorLog`;
+
+	if (GetFile('log/' . $sqliteErrorLog)) {
+	    WriteLog('SqliteQuery: warning: sqlite3 call wrote to stderr: log/' . $sqliteErrorLog . '; caller = ' . join(',', caller));
+	    return '';
+	}
+
+    #print "hithere\n";
+    #sleep 1;
+
 	return $results;
 } # SqliteQuery()
 
