@@ -468,7 +468,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 #			if ($authorKey eq 'AE85DDBDCED2E285') {
 #				#todo #scaffolding
 #				my $queryAddAdmin = "insert into vote(file_hash, vote_value) values('$fileHash', 'admin')";
-#				SqliteQuery2($queryAddAdmin);
+#				SqliteQuery($queryAddAdmin);
 #			}
 		}
 		my $message = GetFileMessage($file);
@@ -1535,7 +1535,7 @@ sub WriteIndexedConfig { # writes config indexed in database into config/
 	return '';
 
 	# author must be admin or must have completed puzzle
-	my @indexedConfig = SqliteQueryGetArrayOfHashRef('indexed_config');
+	my @indexedConfig = SqliteQueryHashRef('indexed_config');
 	my %configDone;
 
 	shift @indexedConfig;

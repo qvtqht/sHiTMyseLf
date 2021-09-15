@@ -10,12 +10,12 @@
 #	if (!$tableBeenMade) {
 #		$tableBeenMade = 1;
 #		my $itemFlatQuery = "create temp table item_flat as select * from item_flat_view";
-#		SqliteQuery2($itemFlatQuery);
+#		SqliteQuery($itemFlatQuery);
 #	}
 #}
 
-#	SqliteQuery2("CREATE UNIQUE INDEX config_unique ON config(key, value, reset_flag);");
-#	SqliteQuery2("
+#	SqliteQuery("CREATE UNIQUE INDEX config_unique ON config(key, value, reset_flag);");
+#	SqliteQuery("
 #   		CREATE VIEW config_latest
 #   		AS
 #   			SELECT
@@ -26,7 +26,7 @@
 #			GROUP BY key
 #    	;");
 #
-#	SqliteQuery2("
+#	SqliteQuery("
 #		CREATE VIEW config_bestest
 #		AS
 #			SELECT
@@ -42,7 +42,7 @@
 #			ORDER BY item_score.item_score DESC, timestamp DESC
 #	;");
 #
-#	SqliteQuery2("
+#	SqliteQuery("
 #		CREATE VIEW config_latest_timestamp
 #		AS
 #			SELECT
@@ -672,12 +672,12 @@ sub SqliteMakeTables { # creates sqlite schema
 	# wal
 	# this switches to write-ahead log mode for sqlite
 	# reduces problems with concurrent access
-	SqliteQuery2("PRAGMA journal_mode=WAL;");
+	SqliteQuery("PRAGMA journal_mode=WAL;");
 
 	# config
-	SqliteQuery2("CREATE TABLE config(key, value, timestamp, reset_flag, file_hash);");
-	SqliteQuery2("CREATE UNIQUE INDEX config_unique ON config(key, value, timestamp, reset_flag);");
-	SqliteQuery2("
+	SqliteQuery("CREATE TABLE config(key, value, timestamp, reset_flag, file_hash);");
+	SqliteQuery("CREATE UNIQUE INDEX config_unique ON config(key, value, timestamp, reset_flag);");
+	SqliteQuery("
 		CREATE VIEW config_latest AS
 		SELECT key, value, MAX(timestamp) config_timestamp, reset_flag, file_hash FROM config GROUP BY key ORDER BY timestamp DESC
 	;");
@@ -690,12 +690,12 @@ sub SqliteMakeTables { # creates sqlite schema
 			$sql = $1;
 			#if ($sql =~ m/^[a-zA-Z'\n .. finish this #todo
 		}
-		SqliteQuery2($script);
+		SqliteQuery($script);
 	}
 
 
 #
-# 	SqliteQuery2("
+# 	SqliteQuery("
 # 		CREATE VIEW item_title_latest AS
 # 		SELECT
 # 			file_hash,
@@ -706,14 +706,14 @@ sub SqliteMakeTables { # creates sqlite schema
 # 		GROUP BY file_hash
 # 		ORDER BY source_item_timestamp DESC
 # 	;");
-# 	#SqliteQuery2("CREATE UNIQUE INDEX item_title_unique ON item_title(file_hash)");
+# 	#SqliteQuery("CREATE UNIQUE INDEX item_title_unique ON item_title(file_hash)");
 
 	# item_parent
-	SqliteQuery2("CREATE TABLE item_parent(item_hash, parent_hash)");
-	SqliteQuery2("CREATE UNIQUE INDEX item_parent_unique ON item_parent(item_hash, parent_hash)");
+	SqliteQuery("CREATE TABLE item_parent(item_hash, parent_hash)");
+	SqliteQuery("CREATE UNIQUE INDEX item_parent_unique ON item_parent(item_hash, parent_hash)");
 
 	# child_count view
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW child_count AS
 		SELECT
 			parent_hash AS parent_hash,
@@ -725,25 +725,25 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 #	# tag
-#	SqliteQuery2("CREATE TABLE tag(id INTEGER PRIMARY KEY AUTOINCREMENT, vote_value)");
-#	SqliteQuery2("CREATE UNIQUE INDEX tag_unique ON tag(vote_value);");
+#	SqliteQuery("CREATE TABLE tag(id INTEGER PRIMARY KEY AUTOINCREMENT, vote_value)");
+#	SqliteQuery("CREATE UNIQUE INDEX tag_unique ON tag(vote_value);");
 
 	# vote
-	SqliteQuery2("CREATE TABLE vote(id INTEGER PRIMARY KEY AUTOINCREMENT, file_hash, ballot_time, vote_value, author_key, ballot_hash);");
-	SqliteQuery2("CREATE UNIQUE INDEX vote_unique ON vote (file_hash, ballot_time, vote_value, author_key);");
+	SqliteQuery("CREATE TABLE vote(id INTEGER PRIMARY KEY AUTOINCREMENT, file_hash, ballot_time, vote_value, author_key, ballot_hash);");
+	SqliteQuery("CREATE UNIQUE INDEX vote_unique ON vote (file_hash, ballot_time, vote_value, author_key);");
 
 	# item_page
-	SqliteQuery2("CREATE TABLE item_page(item_hash, page_name, page_param);");
-	SqliteQuery2("CREATE UNIQUE INDEX item_page_unique ON item_page(item_hash, page_name, page_param);");
+	SqliteQuery("CREATE TABLE item_page(item_hash, page_name, page_param);");
+	SqliteQuery("CREATE UNIQUE INDEX item_page_unique ON item_page(item_hash, page_name, page_param);");
 
-	#SqliteQuery2("CREATE TABLE item_type(item_hash, type_mask)");
+	#SqliteQuery("CREATE TABLE item_type(item_hash, type_mask)");
 
 	# event
-	SqliteQuery2("CREATE TABLE event(id INTEGER PRIMARY KEY AUTOINCREMENT, item_hash, author_key, event_time, event_duration);");
-	SqliteQuery2("CREATE UNIQUE INDEX event_unique ON event(item_hash, event_time, event_duration);");
+	SqliteQuery("CREATE TABLE event(id INTEGER PRIMARY KEY AUTOINCREMENT, item_hash, author_key, event_time, event_duration);");
+	SqliteQuery("CREATE UNIQUE INDEX event_unique ON event(item_hash, event_time, event_duration);");
 
 	# location
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE TABLE location(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			item_hash,
@@ -753,19 +753,19 @@ sub SqliteMakeTables { # creates sqlite schema
 		);
 	");
 
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE TABLE user_agent(
 			user_agent_string
 		);
 	");
 
 	# task
-	SqliteQuery2("CREATE TABLE task(id INTEGER PRIMARY KEY AUTOINCREMENT, task_type, task_name, task_param, touch_time INTEGER, priority DEFAULT 1);");
-	SqliteQuery2("CREATE UNIQUE INDEX task_unique ON task(task_type, task_name, task_param);");
+	SqliteQuery("CREATE TABLE task(id INTEGER PRIMARY KEY AUTOINCREMENT, task_type, task_name, task_param, touch_time INTEGER, priority DEFAULT 1);");
+	SqliteQuery("CREATE UNIQUE INDEX task_unique ON task(task_type, task_name, task_param);");
 
 	# # task/queue
-	# SqliteQuery2("CREATE TABLE task(id INTEGER PRIMARY KEY AUTOINCREMENT, action, param, touch_time INTEGER, priority DEFAULT 1);");
-	# SqliteQuery2("CREATE UNIQUE INDEX task_touch_unique ON task(action, param);");
+	# SqliteQuery("CREATE TABLE task(id INTEGER PRIMARY KEY AUTOINCREMENT, action, param, touch_time INTEGER, priority DEFAULT 1);");
+	# SqliteQuery("CREATE UNIQUE INDEX task_touch_unique ON task(action, param);");
 	#
 	# action      param           touch_time     priority
 	# make_page   author/abc
@@ -784,7 +784,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	############################################################
 
 	# parent_count view
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW parent_count AS
 		SELECT
 			item_hash AS item_hash,
@@ -796,7 +796,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW
 			item_tags_list
 		AS
@@ -807,7 +807,7 @@ sub SqliteMakeTables { # creates sqlite schema
 		GROUP BY file_hash
 	");
 
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW item_flat AS
 			SELECT
 				item.file_path AS file_path,
@@ -831,7 +831,7 @@ sub SqliteMakeTables { # creates sqlite schema
 				LEFT JOIN item_score ON ( item.file_hash = item_score.file_hash)
 				LEFT JOIN item_tags_list ON ( item.file_hash = item_tags_list.file_hash )
 	");
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW event_future AS
 			SELECT
 				*
@@ -840,7 +840,7 @@ sub SqliteMakeTables { # creates sqlite schema
 			WHERE
 				event.event_time > strftime('%s','now');
 	");
-#	SqliteQuery2("
+#	SqliteQuery("
 #		CREATE VIEW event_future AS
 #			SELECT
 #				event.item_hash AS item_hash,
@@ -851,7 +851,7 @@ sub SqliteMakeTables { # creates sqlite schema
 #			WHERE
 #				event.event_time > strftime('%s','now');
 #	");
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW item_vote_count AS
 			SELECT
 				file_hash,
@@ -862,7 +862,7 @@ sub SqliteMakeTables { # creates sqlite schema
 			ORDER BY vote_count DESC
 	");
 
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW
 			author_score
 		AS
@@ -876,7 +876,7 @@ sub SqliteMakeTables { # creates sqlite schema
 
 	");
 
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW
 			author_flat
 		AS
@@ -900,7 +900,7 @@ sub SqliteMakeTables { # creates sqlite schema
 	");
 
 	#todo deconfusify
-	SqliteQuery2("
+	SqliteQuery("
 		CREATE VIEW
 			item_score
 		AS
@@ -924,7 +924,7 @@ sub SqliteMakeTables { # creates sqlite schema
 } # SqliteMakeTables()
 
 sub SqliteQuery2 { # $query, @queryParams; calls sqlite with query, and returns result as array reference
-	WriteLog('SqliteQuery2() begin');
+	WriteLog('SqliteQuery() begin');
 
 	my $query = shift;
 	chomp $query;
@@ -1064,7 +1064,7 @@ sub SqliteQuery3 { # performs sqlite query via sqlite3 command
 #		$query = "SELECT file_hash, ballot_time, vote_value, author_key FROM vote_weighed;";
 #	}
 #
-#	my $result = SqliteQuery2($query, @queryParams);
+#	my $result = SqliteQuery($query, @queryParams);
 #
 #	return $result;
 #}
@@ -1092,7 +1092,7 @@ sub DBGetVotesForItem { # Returns all votes (weighed) for item
 	";
 	@queryParams = ($fileHash);
 
-	my $result = SqliteQuery2($query, @queryParams);
+	my $result = SqliteQuery($query, @queryParams);
 
 	return $result;
 }
@@ -1211,7 +1211,7 @@ sub DBGetLatestConfig { # Returns everything from config_latest view
 #}
 
 sub SqliteGetValue { # Returns the first column from the first row returned by sqlite $query
-	#todo perhaps use SqliteQuery2() ?
+	#todo perhaps use SqliteQuery() ?
 	#todo perhaps add params array?
 
 	my $query = shift;
@@ -1330,7 +1330,7 @@ sub SqliteEscape { # Escapes supplied text for use in sqlite query
 # sub DBGetAuthor {
 # 	my $query = "SELECT author_key, author_alias FROM author_flat";
 #
-# 	my $authorInfo = SqliteQuery2($query);
+# 	my $authorInfo = SqliteQuery($query);
 #
 # 	return $authorInfo;
 # }
@@ -1396,7 +1396,7 @@ sub DBAddConfigValue { # add value to the config table ($key, $value)
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1458,7 +1458,7 @@ sub DBGetTouchedPages { # Returns items from task table, used for prioritizing w
 	my @params;
 	push @params, $touchedPageLimit;
 
-	my $results = SqliteQuery2($query, @params);
+	my $results = SqliteQuery($query, @params);
 
 	return $results;
 } # DBGetTouchedPages()
@@ -1484,7 +1484,7 @@ sub DBAddItemPage { # $itemHash, $pageType, $pageParam ; adds an entry to item_p
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -1529,7 +1529,7 @@ sub DBResetPageTouch { # Clears the task table
 	my $query = "DELETE FROM task WHERE task_type = 'page'";
 	my @queryParams = ();
 
-	SqliteQuery2($query, @queryParams);
+	SqliteQuery($query, @queryParams);
 
 	WriteMessage("DBResetPageTouch() end");
 }
@@ -1544,7 +1544,7 @@ sub DBDeletePageTouch { # $pageName, $pageParam
 
 	my @queryParams = ($pageName, $pageParam);
 
-	SqliteQuery2($query, @queryParams);
+	SqliteQuery($query, @queryParams);
 }
 
 sub DBDeleteItemReferences { # delete all references to item from tables
@@ -1569,24 +1569,24 @@ sub DBDeleteItemReferences { # delete all references to item from tables
 	);
 	foreach (@tables) {
 		my $query = "DELETE FROM $_ WHERE file_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	#item_hash
 	my @tables2 = qw(event item_page item_parent location);
 	foreach (@tables2) {
 		my $query = "DELETE FROM $_ WHERE item_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	{
 		my $query = "DELETE FROM vote WHERE ballot_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	{
 		my $query = "DELETE FROM item_attribute WHERE source = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 
@@ -1594,7 +1594,7 @@ sub DBDeleteItemReferences { # delete all references to item from tables
 	my @tables3 = qw(vote);
 	foreach (@tables3) {
 		my $query = "DELETE FROM $_ WHERE ballot_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	#todo
@@ -1641,7 +1641,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -1686,7 +1686,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 		my @queryParamsAuthorItems;
 		push @queryParamsAuthorItems, $pageParam;
 
-		SqliteQuery2($queryAuthorItems, @queryParamsAuthorItems);
+		SqliteQuery($queryAuthorItems, @queryParamsAuthorItems);
 	}
 	#
 	# if ($pageName eq 'item') {
@@ -1709,7 +1709,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 	# 	my @queryParamsAuthorItems;
 	# 	push @queryParamsAuthorItems, $pageParam;
 	#
-	# 	SqliteQuery2($queryAuthorItems, @queryParamsAuthorItems);
+	# 	SqliteQuery($queryAuthorItems, @queryParamsAuthorItems);
 	# }
 
 	#todo need to incremenet priority after doing this
@@ -1880,7 +1880,7 @@ sub DBAddKeyAlias { # adds new author-alias record $key, $alias, $pubkeyFileHash
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -1925,7 +1925,7 @@ sub DBAddItemParent { # Add item parent record. $itemHash, $parentItemHash ;
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1992,7 +1992,7 @@ sub DBAddItem { # $filePath, $itemName, $authorKey, $fileHash, $itemType, $verif
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -2066,7 +2066,7 @@ sub DBAddEventRecord { # add event record to database; $itemHash, $eventTime, $e
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -2124,7 +2124,7 @@ sub DBAddLocationRecord { # $itemHash, $latitude, $longitude, $signedBy ; Adds n
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -2191,7 +2191,7 @@ sub DBAddVoteRecord { # $fileHash, $ballotTime, $voteValue, $signedBy, $ballotHa
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -2343,7 +2343,7 @@ sub DBAddItemAttribute { # $fileHash, $attribute, $value, $epoch, $source # add 
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();

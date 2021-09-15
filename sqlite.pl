@@ -30,7 +30,9 @@ sub DBMaxQueryParams { # Returns max number of parameters to allow in sqlite que
 }
 
 sub SqliteQuery2 {
-	return SqliteQuery(@_);
+	my $query = shift;
+	my @params = @_;
+	return SqliteQuery($query, @params);
 }
 
 sub SqliteMakeTables { # creates sqlite schema
@@ -107,6 +109,8 @@ sub SqliteGetQueryString {
 		# insert params into ? placeholders
 		while (@queryParams) {
 			my $paramValue = shift @queryParams;
+			$paramValue = str_replace("'", '', $paramValue); #todo improve on just stripping single quotes :D
+			$paramValue = str_replace('"', '', $paramValue); #todo improve on just stripping single quotes :D
 			$queryWithParams =~ s/\?/'$paramValue'/;
 		}
 	}
@@ -209,7 +213,23 @@ sub SqliteQuery { # performs sqlite query via sqlite3 command
 		#todo failed sanity check
 	}
 
-	my $results = `sqlite3 -header "$SqliteDbName" "$query"`;
+	if ($query =~ m/\?/) {
+		WriteLog('SqliteQuery: warning: $query contains QM; caller = ' . join(',', caller));
+		return '';
+	}
+
+    my $sqliteErrorLog = GetRandomHash();
+
+	my $results = `sqlite3 -header "$SqliteDbName" "$query" 2>log/$sqliteErrorLog`;
+
+	if (GetFile('log/' . $sqliteErrorLog)) {
+	    WriteLog('SqliteQuery: warning: sqlite3 call wrote to stderr: log/' . $sqliteErrorLog . '; caller = ' . join(',', caller));
+	    return '';
+	}
+
+    #print "hithere\n";
+    #sleep 1;
+
 	return $results;
 } # SqliteQuery()
 
@@ -288,7 +308,7 @@ sub DBGetVotesForItem { # Returns all votes (weighed) for item
 	";
 	@queryParams = ($fileHash);
 
-	my @result = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	my @result = SqliteQueryHashRef($query, @queryParams);
 
 	return @result;
 }
@@ -318,7 +338,7 @@ sub DBGetEvents { #gets events list
 
 	#todo rewrite this sub better
 
-	my @queryResult = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	my @queryResult = SqliteQueryHashRef($query, @queryParams);
 	return @queryResult;
 }
 
@@ -349,7 +369,7 @@ sub DBGetAuthorFriends { # Returns list of authors which $authorKey has tagged a
 	my @queryParams = ();
 	push @queryParams, $authorKey;
 
-	my @queryResult = SqliteQueryGetArrayOfHashRef($query, @queryParams);
+	my @queryResult = SqliteQueryHashRef($query, @queryParams);
 	return @queryResult;
 
 } # DBGetAuthorFriends()
@@ -364,7 +384,7 @@ sub DBGetLatestConfig { # Returns everything from config_latest view
 	#todo write out the fields
 
 
-	my @queryResult = SqliteQueryGetArrayOfHashRef($query);
+	my @queryResult = SqliteQueryHashRef($query);
 	return @queryResult;
 
 } # DBGetLatestConfig()
@@ -580,7 +600,7 @@ sub DBAddConfigValue { # $key, $value, $resetFlag, $sourceItem ; add value to co
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -641,7 +661,7 @@ sub DBGetTouchedPages { # Returns items from task table, used for prioritizing w
 	my @params;
 	push @params, $touchedPageLimit;
 
-	my @results = SqliteQueryGetArrayOfHashRef($query, @params);
+	my @results = SqliteQueryHashRef($query, @params);
 
 	return @results;
 } # DBGetTouchedPages()
@@ -668,7 +688,7 @@ sub DBGetAllPages { # Returns items from task table, used for prioritizing which
 
 	my @params;
 
-	my @results = SqliteQueryGetArrayOfHashRef($query, @params);
+	my @results = SqliteQueryHashRef($query, @params);
 
 	return @results;
 } # DBGetAllPages()
@@ -693,7 +713,7 @@ sub DBAddItemPage { # $itemHash, $pageType, $pageParam ; adds an entry to item_p
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -738,7 +758,7 @@ sub DBResetPageTouch { # Clears the task table
 	my $query = "DELETE FROM task WHERE task_type = 'page'";
 	my @queryParams = ();
 
-	SqliteQuery2($query, @queryParams);
+	SqliteQuery($query, @queryParams);
 
 	WriteMessage("DBResetPageTouch() end");
 }
@@ -753,7 +773,7 @@ sub DBDeletePageTouch { # $pageName, $pageParam
 
 	my @queryParams = ($pageName, $pageParam);
 
-	SqliteQuery2($query, @queryParams);
+	SqliteQuery($query, @queryParams);
 }
 
 sub DBDeleteItemReferences { # delete all references to item from tables
@@ -781,31 +801,31 @@ sub DBDeleteItemReferences { # delete all references to item from tables
 	);
 	foreach (@tables) {
 		my $query = "DELETE FROM $_ WHERE file_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	#item_hash
 	my @tables2 = qw(event item_page item_parent location);
 	foreach (@tables2) {
 		my $query = "DELETE FROM $_ WHERE item_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	{ #dupe of below? #todo
 		my $query = "DELETE FROM vote WHERE ballot_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	{
 		my $query = "DELETE FROM item_attribute WHERE source = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	#ballot_hash
 	my @tables3 = qw(vote);
 	foreach (@tables3) {
 		my $query = "DELETE FROM $_ WHERE ballot_hash = '$hash'";
-		SqliteQuery2($query);
+		SqliteQuery($query);
 	}
 
 	#todo
@@ -839,7 +859,7 @@ sub DBAddTask { # $taskType, $taskName, $taskParam, $touchTime # make new task
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -903,7 +923,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -948,7 +968,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 		my @queryParamsAuthorItems;
 		push @queryParamsAuthorItems, $pageParam;
 
-		SqliteQuery2($queryAuthorItems, @queryParamsAuthorItems);
+		SqliteQuery($queryAuthorItems, @queryParamsAuthorItems);
 	}
 	#
 	# if ($pageName eq 'item') {
@@ -971,7 +991,7 @@ sub DBAddPageTouch { # $pageName, $pageParam; Adds or upgrades in priority an en
 	# 	my @queryParamsAuthorItems;
 	# 	push @queryParamsAuthorItems, $pageParam;
 	#
-	# 	SqliteQuery2($queryAuthorItems, @queryParamsAuthorItems);
+	# 	SqliteQuery($queryAuthorItems, @queryParamsAuthorItems);
 	# }
 
 	#todo need to incremenet priority after doing this
@@ -1106,7 +1126,7 @@ sub DBAddKeyAlias { # adds new author-alias record $key, $alias, $pubkeyFileHash
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = "";
 			@queryParams = ();
@@ -1151,7 +1171,7 @@ sub DBAddItemParent { # Add item parent record. $itemHash, $parentItemHash ;
 
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1216,7 +1236,7 @@ sub DBAddItem { # $filePath, $fileName, $authorKey, $fileHash, $itemType, $verif
 		if ($query) {
 			WriteLog("DBAddItem(flush)");
 			$query .= ';';
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 			$query = '';
 			@queryParams = ();
 			DBAddItemAttribute('flush');
@@ -1327,7 +1347,7 @@ sub DBAddEventRecord { # add event record to database; $itemHash, $eventTime, $e
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1384,7 +1404,7 @@ sub DBAddLocationRecord { # $itemHash, $latitude, $longitude, $signedBy ; Adds n
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1449,7 +1469,7 @@ sub DBAddVoteRecord { # $fileHash, $ballotTime, $voteValue, $signedBy, $ballotHa
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
@@ -1569,7 +1589,9 @@ sub DBAddItemAttribute { # $fileHash, $attribute, $value, $epoch, $source # add 
 		if ($query) {
 			$query .= ';';
 
-			SqliteQuery2($query, @queryParams);
+			WriteLog('DBAddItemAttribute: $query = ' . $query . ';');
+
+			SqliteQuery($query, @queryParams);
 
 			$query = '';
 			@queryParams = ();
