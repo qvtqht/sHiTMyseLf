@@ -1,0 +1,15 @@
+SELECT
+	file_hash,
+	item_title,
+	child_count,
+	add_timestamp,
+FROM
+	item_flat
+WHERE
+	(','||tags_list||',' LIKE '%,approve,%' OR ','||tags_list||',' LIKE '%,like,%')
+	AND
+	item_score > 0
+	AND
+	author_score > 0
+ORDER BY add_timestamp DESC
+LIMIT 100

@@ -375,6 +375,10 @@ sub MakePage { # $pageType, $pageParam, $htmlRoot ; make a page and write it int
 		#my $rawItemsPage = GetQueryPage('raw', 'Raw Items', 'file_hash,author_key,author_score,child_count,parent_count,item_sequence,add_timestamp,tags_list');
 		PutHtmlFile("raw.html", $rawItemsPage);
 	}
+	elsif ($pageType eq 'new') {
+		my $itemsPage = GetQueryPage('new', 'New Items');
+		PutHtmlFile("new.html", $itemsPage);
+	}
 	elsif ($pageType eq 'compost') {
 		my $compostPage = GetQueryPage('compost');
 #		my $compostPage = GetQueryPage('compost', 'Compost', 'item_title,author_key,add_timestamp');
