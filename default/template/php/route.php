@@ -913,16 +913,6 @@ if (GetConfig('admin/php/route_enable')) {
 						//						}
 
 						if (
-							isset($_GET['chkUpgrade']) &&
-							isset($_GET['btnUpgrade'])
-						) {
-							WriteLog('Upgrade requested');
-							//#todo check cookie for admin?
-							DoUpgrade();
-							RedirectWithResponse('/stats.html', 'Upgrade complete. Press Update to re-import content.');
-						}
-
-						if (
 							isset($_GET['chkUpdate']) &&
 							isset($_GET['btnUpdate'])
 						) {
