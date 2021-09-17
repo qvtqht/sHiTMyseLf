@@ -61,6 +61,15 @@ function SortTable (t, sortOrder) {
 		) {
 			sortMethod = 2; // parseInt(innerHTML)
 		}
+
+		if (
+			t.textContent &&
+			(
+				t.textContent.indexOf('_timestamp') != -1
+			)
+		) {
+			sortMethod = 3; // timestamp widget
+		}
 	}
 
 	while (!table && t.parentNode) {
@@ -108,69 +117,51 @@ function SortTable (t, sortOrder) {
       			x.innerHTML &&
       			y.innerHTML
 			) {
-				//if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+			    var xValue = 0;
+			    var yValue = 0;
+
+			    if (sortMethod == 0) {
+			        xValue = x.innerHTML;
+			        yValue = y.innerHTML;
+			    }
+			    if (sortMethod == 1) {
+			        xValue = x.textContent; // #todo lowercase
+			        yValue = y.textContent; // #todo lowercase
+			    }
+			    if (sortMethod == 2) {
+			        if (x.textContent == '-') {
+			            xValue = 0;
+			        } else {
+			            xValue = parseInt(x.innerHTML);
+                    }
+                    if (y.textContent == '-') {
+                        yValue = 0;
+                    } else {
+			            yValue = parseInt(y.innerHTML);
+                    }
+			    }
+			    if (sortMethod == 3) {
+			        var xWidget = x.getElementsByClassName('timestamp');
+			        xValue = xWidget[0].getAttribute('datetime');
+			        var yWidget = y.getElementsByClassName('timestamp');
+			        yValue = yWidget[0].getAttribute('datetime');
+			    }
+
+			    //////
+
 				if (
 					(
 						sortOrder == 0
 						&&
-						sortMethod == 0
-						&&
-						x.innerHTML
-						<
-						y.innerHTML
-					)
-					||
-					(
-						sortOrder == 0
-						&&
-						sortMethod == 1
-						&&
-						x.textContent
-						<
-						y.textContent
+						xValue < yValue
 					)
 					||
 					(
 						sortOrder == 1
 						&&
-						sortMethod == 0
-						&&
-						y.innerHTML
-						<
-						x.innerHTML
-					)
-					||
-					(
-						sortOrder == 1
-						&&
-						sortMethod == 1
-						&&
-						y.textContent
-						<
-						x.textContent
-					)
-					||
-					(
-						sortOrder == 0
-						&&
-						sortMethod == 2
-						&&
-						parseInt(x.innerHTML)
-						<
-						parseInt(y.innerHTML)
-					)
-					||
-					(
-						sortOrder == 1
-						&&
-						sortMethod == 2
-						&&
-						parseInt(y.innerHTML)
-						<
-						parseInt(x.innerHTML)
+						yValue < xValue
 					)
 				) {
-
 					// If so, mark as a switch and break the loop:
 					shouldSwitch = true;
 					anyChanges++;
