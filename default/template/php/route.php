@@ -644,7 +644,8 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 				PutCache($mostRecentCacheName, time());
 			} else {
 				WriteLog('HandleNotFound: warning: pages.pl was called LESS THAN $refreshWindowInterval seconds ago, NOT trying to grow page');
-				return 0;
+				#fallthrough to showing 404 page
+				#return 0;
 			}
 		} # $pagesPlArgument = true
 		else {
