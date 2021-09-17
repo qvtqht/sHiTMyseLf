@@ -301,7 +301,9 @@ if (is_array($comment)) { # comment[]
 			WriteLog('post.php: batch mode: $hnMode finished stripping tags. length($c) = ' . length($c));
 
 			#convert to ascii
-			$c = iconv('UTF-8', 'ASCII//TRANSLIT', $c);
+			if (function_exists('iconv')) {
+			    $c = iconv('UTF-8', 'ASCII//TRANSLIT', $c);
+            }
 
 			$c = trim($c);
 			$str= str_replace("\nreply\n", '', $c);
