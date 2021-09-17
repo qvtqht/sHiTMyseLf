@@ -37,6 +37,8 @@ function SortTable (t, sortOrder) {
 		return '';
 	}
 
+	var sortField = t.textContent;
+
 	if (t.cellIndex || t.cellIndex == 0) {
 		sortColumn = t.cellIndex;
 		// default sortMethod is 0, defined above
@@ -85,6 +87,13 @@ function SortTable (t, sortOrder) {
 	} else {
 		//alert('DEBUG: SortTable: table exists, proceeding');
 	}
+
+    var tableId = table.getAttribute('id');
+    if (tableId) {
+        if (window.SetPrefs) {
+            SetPrefs('TableSort:' + tableId, sortField + ':' + sortOrder + ':' + sortMethod);
+        }
+    }
 
 	//alert('DEBUG: SortTable: sortOrder = ' + sortOrder + '; sortMethod = ' + sortMethod);
 
