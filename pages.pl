@@ -1082,14 +1082,14 @@ sub GetReplyForm { # $replyTo ; returns reply form for specified item
 				$replyForm,
 				'input id=btnSendReply',
 				'onclick',
-				"this.value = 'Meditate...'; if (window.writeSubmit) { setTimeout('writeSubmit();', 100); return true; } else { return true; }"
+				"this.value = 'Meditate...'; if (window.writeSubmit) { setTimeout('writeSubmit();', 100); return true; } else { return true; }" #reply, optimize_for_delivery = true
 			);
 		} else {
 			$replyForm = AddAttributeToTag(
 				$replyForm,
 				'input id=btnSendReply',
 				'onclick',
-				"this.value='Meditate...';if(window.writeSubmit){return writeSubmit(this);}"
+				"this.value='Meditate...';if(window.writeSubmit){return writeSubmit(this);}" #reply, optimize_for_delivery = false
 			);
 		}
 
@@ -4242,12 +4242,21 @@ sub GetWriteForm { # returns write form (for composing text message)
 			);
 		}
 
-		$writeForm = AddAttributeToTag(
-			$writeForm,
-			'input type=submit',
-			'onclick',
-			"this.value = 'Meditate...'; if (window.writeSubmit) { setTimeout('writeSubmit();', 1); return true; } else { return true; }"
-		);
+		if (GetConfig('admin/js/write_form_optimize_for_delivery')) {
+            $writeForm = AddAttributeToTag(
+                $writeForm,
+                'input type=submit',
+                'onclick',
+                "this.value = 'Meditate...'; if (window.writeSubmit) { setTimeout('writeSubmit();', 100); return true; } else { return true; }" #write #optimize_for_delivery = true
+            );
+		} else {
+            $writeForm = AddAttributeToTag(
+                $writeForm,
+                'input type=submit',
+                'onclick',
+                "this.value = 'Meditate...'; if (window.writeSubmit) { return writeSubmit(); } else { return true; }" #write #optimize_for_delivery = false
+            );
+        }
 	} # js stuff in write form
 
 	return $writeForm;

@@ -644,7 +644,8 @@ function HandleNotFound ($path, $pathRel) { // handles 404 error by regrowing th
 				PutCache($mostRecentCacheName, time());
 			} else {
 				WriteLog('HandleNotFound: warning: pages.pl was called LESS THAN $refreshWindowInterval seconds ago, NOT trying to grow page');
-				return 0;
+				#fallthrough to showing 404 page
+				#return 0;
 			}
 		} # $pagesPlArgument = true
 		else {
@@ -911,16 +912,6 @@ if (GetConfig('admin/php/route_enable')) {
 						//							echo "<p>Hello {$_SERVER['PHP_AUTH_USER']}.</p>";
 						//							echo "<p>You entered {$_SERVER['PHP_AUTH_PW']} as your password.</p>";
 						//						}
-
-						if (
-							isset($_GET['chkUpgrade']) &&
-							isset($_GET['btnUpgrade'])
-						) {
-							WriteLog('Upgrade requested');
-							//#todo check cookie for admin?
-							DoUpgrade();
-							RedirectWithResponse('/stats.html', 'Upgrade complete. Press Update to re-import content.');
-						}
 
 						if (
 							isset($_GET['chkUpdate']) &&

@@ -10,16 +10,6 @@
 
 	<p>
 		<span class=beginner>
-			Use Safe Mode if problems exist or anticipated:<br>
-		</span>
-		<label for=chkSafeMode>
-			<input type=checkbox id=chkSafeMode name=chkSafeMode>
-			SafeMode
-		</label>
-		<input type=submit name=btnSafeMode id=btnSafeMode value=SafeMode>
-	</p>
-	<p>
-		<span class=beginner>
 			Save snapshot file with configuration:<br>
 		</span>
 		<label for=chkConfigDump>
@@ -37,16 +27,6 @@
 			Update
 		</label>
 		<input type=submit name=btnUpdate id=btnUpdate value=Update>
-	</p>
-	<p>
-		<span class=beginner>
-			Upgrade software to latest version:<br>
-		</span>
-		<label for=chkUpgrade>
-			<input type=checkbox id=chkUpgrade name=chkUpgrade>
-			Upgrade
-		</label>
-		<input type=submit name=btnUpgrade id=btnUpgrade value=Upgrade>
 	</p>
 	<p>
 		<span class=beginner>
