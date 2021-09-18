@@ -567,7 +567,7 @@ function ProfileOnLoad () { // onload event for profile page
 						var myAlgo = pubKeyObj.primaryKey.algorithm.toString();
 						if (myAlgo) {
 							//lblSigningIndicator.innerHTML = myAlgo;
-							lblSigningIndicator.innerHTML = 'Signed in with private key.';
+							lblSigningIndicator.innerHTML = 'Signed in with private key. <a href="#" onclick="btnSignOut_Click()">Delete</a>';
 
 						} else {
 							lblSigningIndicator.innerHTML = 'Signed in.';
