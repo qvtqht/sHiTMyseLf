@@ -83,6 +83,7 @@ if (!empty($_FILES['uploaded_file'])) {
 			else if (isset($_FILES['uploaded_file']['name'])) {
 			#single
 				$path = $basePath . basename($_FILES['uploaded_file']['name']);
+				$path = str_replace(' ', '_', $path);
 				WriteLog('trying to move_uploaded_file(' . $_FILES['uploaded_file']['tmp_name'] . ',' . $path . ')');
 				if (file_exists($path)) {
 					#todo make this nicer
