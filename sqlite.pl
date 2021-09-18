@@ -109,8 +109,8 @@ sub SqliteGetQueryString {
 		# insert params into ? placeholders
 		while (@queryParams) {
 			my $paramValue = shift @queryParams;
-			$paramValue = str_replace("'", '', $paramValue); #todo improve on just stripping single quotes :D
-			$paramValue = str_replace('"', '', $paramValue); #todo improve on just stripping single quotes :D
+			$paramValue = str_replace("'", ',', $paramValue); #todo improve on just stripping single quotes :D
+			$paramValue = str_replace('"', ',,', $paramValue); #todo improve on just stripping single quotes :D
 			$queryWithParams =~ s/\?/'$paramValue'/;
 		}
 	}
