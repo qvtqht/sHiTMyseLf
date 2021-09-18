@@ -532,14 +532,14 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 
 	if (GetConfig('reply/enable')) {
 		# if replies is on, include write.js and write_buttons.js
-		my @js = qw(settings avatar voting utils profile translit write write_buttons timestamp);
+		my @js = qw(settings avatar voting utils profile translit write write_buttons timestamp itsyou);
 		if (GetConfig('admin/php/enable')) {
 			push @js, 'write_php';
 		}
 		$txtIndex = InjectJs($txtIndex, @js);
 
 	} else {
-		$txtIndex = InjectJs($txtIndex, qw(settings avatar voting utils profile translit timestamp));
+		$txtIndex = InjectJs($txtIndex, qw(settings avatar voting utils profile translit timestamp itsyou));
 	}
 
 	#	my $scriptsInclude = '<script src="/openpgp.js"></script><script src="/crypto2.js"></script>';

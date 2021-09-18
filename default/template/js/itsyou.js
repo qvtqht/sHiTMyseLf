@@ -6,10 +6,12 @@ function ItsYou () { // tells user it is their profile
 //alert('debug: ItsYou() begins');
 	if (window.localStorage && document.getElementById) {
 		var myFp = localStorage.getItem('fingerprint');
+		var itemFp = 0; // for templating;
 
 		if (
 			(window.location.pathname == '/author/' + myFp + '/') ||
-			(window.location.pathname == '/author/' + myFp + '/index.html')
+			(window.location.pathname == '/author/' + myFp + '/index.html') || 
+			(itemFp && (itemFp == myFp))
 		) {
 			var itsYou = document.getElementById('itsyou');
 			itsYou.innerHTML = 'This is your profile!';

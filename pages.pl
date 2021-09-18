@@ -2626,6 +2626,11 @@ sub GetScriptTemplate { # $script ; returns script for name
 		$scriptTemplate =~ s/\$currentAdminId/$currentAdminId/g;
 	}
 
+	if ($script eq 'itsyou') {
+		my $itemFp = '00000000000000000'; #todo
+		$scriptTemplate =~ s/var itemFp = 0;/var itemFp = '$itemFp';/g;
+	}
+
 	#if ($script eq 'settings' || $script eq 'loading_begin') {
 	if (
 			$script eq 'settings' ||
