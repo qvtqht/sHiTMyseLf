@@ -26,11 +26,11 @@ if (!(window.MakeKey) && document.head && document.head.appendChild && document.
 	//alert('DEBUG: not loading crypto2.js; ' + ' window.MakeKey = ' + window.MakeKey + '; document.getElementById = ' + document.getElementById + ' window.localStorage = ' + window.localStorage );
 }
 
-function btnSignOut_Click(t) { // event for 'Sign Out' button's click
-	//alert('DEBUG: btnSignOut_Click begin');
+function btnSignOut_Click (t) { // event for 'Sign Out' button's click
+	//alert('DEBUG: btnSignOut_Click() begin');
 
 	if (window.localStorage) {
-		//alert('DEBUG: localStorage is true');
+		//alert('DEBUG: btnSignOut_Click: localStorage is true');
 
 		var ls = window.localStorage;
 		ls.removeItem('privatekey');
@@ -567,8 +567,8 @@ function ProfileOnLoad () { // onload event for profile page
 						var myAlgo = pubKeyObj.primaryKey.algorithm.toString();
 						if (myAlgo) {
 							//lblSigningIndicator.innerHTML = myAlgo;
-							lblSigningIndicator.innerHTML = 'Signed in with private key. <a href="#" onclick="btnSignOut_Click()">Delete</a>';
-
+							lblSigningIndicator.innerHTML = 'Signed in with private key. <a href="/profile.html" onclick="return btnSignOut_Click()">Delete</a>';
+							//#todo this is a hack, make it less hacky
 						} else {
 							lblSigningIndicator.innerHTML = 'Signed in.';
 						}
