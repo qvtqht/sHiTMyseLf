@@ -1265,7 +1265,11 @@ sub AddToChainLog { # $fileHash ; add line to log/chain.log
 		AppendFile($logFilePath, $newLineAddedLog);
 
 		# figure out how many existing entries for chain sequence value
-		my $chainSequenceNumber = (`wc -l html/chain.log | cut -d " " -f 1`) - 1;
+		my $chainLogLineCount = `wc -l html/chain.log | cut -d " " -f 1`;
+		if (!$chainLogLineCount) {
+		    $chainLogLineCount = 0;
+		}
+		my $chainSequenceNumber = $chainLogLineCount - 1;
 		if ($chainSequenceNumber < 0) {
 			WriteLog('AddToChainLog: warning: $chainSequenceNumber < 0');
 			$chainSequenceNumber = 0;
