@@ -225,6 +225,10 @@ sub SqliteQuery { # performs sqlite query via sqlite3 command
 	if (GetFile('log/' . $sqliteErrorLog)) {
 	    WriteLog('SqliteQuery: warning: sqlite3 call wrote to stderr: log/' . $sqliteErrorLog . '; caller = ' . join(',', caller));
 	    return '';
+	} else {
+	    if (-e 'log/' . $sqliteErrorLog) {
+	        system('rm ' . 'log/' . $sqliteErrorLog);
+	    }
 	}
 
     #print "hithere\n";
