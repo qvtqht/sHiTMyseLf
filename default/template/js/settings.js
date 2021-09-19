@@ -20,9 +20,9 @@ function SetElementVisible (element, displayValue, bgColor, borderStyle) { // se
 		return '';
 	}
 
-    //alert('DEBUG: \nelement:' + element + "\ndisplayValue:" + displayValue + "\nbgColor:" + bgColor + "\nborderStyle:" + borderStyle + "\n");
+    //alert('DEBUG: \nelement:' + element.tagName + "\ndisplayValue:" + displayValue + "\nbgColor:" + bgColor + "\nborderStyle:" + borderStyle + "\n");
 
-	if (bgColor) {
+	if (bgColor && (element.tagName != 'SPAN')) {
 		// background color
 		if (bgColor == 'initial') {
 			bgColor = '$colorWindow';
