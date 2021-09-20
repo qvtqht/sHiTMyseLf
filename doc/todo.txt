@@ -7,14 +7,6 @@
 	# annotate_votes   (vote starts with valid=0, must be annotated)
 	#
 
-
-sqlite3 vs dbd::sqlite plan
-	ensure no multi-line data is stored in db
-	convert all db calls to use SqliteQuery2()
-	do the rewrite
-
-
-
 if zip is missing, data page doesn't generate correctly
 	very little operator feedback on cause
 
@@ -61,9 +53,6 @@ meta importer should also include items which have been tagged #meta
 improve upload.php error feedback page
 
 #bug access log timestamp not recorded properly (recording time is recorded instead)
-
-
-
 
 
 required for usefulness
@@ -2309,10 +2298,6 @@ in this situation (for now)
 	make it a flag
 
 
-
-
-#todo #todo #todo
-config/list/menu_bytag
 
 
 make list of common lighttpd bin paths
