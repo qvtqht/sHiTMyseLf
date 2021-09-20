@@ -8,7 +8,8 @@ FROM
 	item_attribute
 	LEFT JOIN item_flat ON (item_attribute.file_hash = item_flat.file_hash)
 WHERE
-	attribute IN('http', 'https')
+	attribute IN('http', 'https') AND
+	item_flat.item_score > 0
 ORDER BY
 	item_score DESC
 LIMIT 50
