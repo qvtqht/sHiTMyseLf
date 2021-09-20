@@ -588,7 +588,8 @@ function SetInterfaceMode (ab, thisButton) { // updates several settings to chan
 } // SetInterfaceMode()
 
 function LoadCheckbox (c, prefKey) { // updates checkbox state to reflect settings
-// c = checkbox
+// function RestoreCheckbox () {
+// c = checkbox object
 // prefKey = key of preference value
 //
 	if (prefKey == 'timestamps_format') {
@@ -626,7 +627,7 @@ function LoadCheckboxValues () {
 	LoadCheckbox(document.getElementById('chkDraggable'), 'draggable');
 	LoadCheckbox(document.getElementById('chkDraggableRestore'), 'draggable_restore');
 	LoadCheckbox(document.getElementById('chkDraggableScale'), 'draggable_scale');
-	LoadCheckbox(document.getElementById('chkDraggableScale'), 'draggable_activate');
+	LoadCheckbox(document.getElementById('chkDraggableActivate'), 'draggable_activate');
 	LoadCheckbox(document.getElementById('chkDraggableSpawn'), 'draggable_spawn');
 	LoadCheckbox(document.getElementById('chkShowAdmin'), 'show_admin');
 	LoadCheckbox(document.getElementById('chkShowAdvanced'), 'show_advanced');
