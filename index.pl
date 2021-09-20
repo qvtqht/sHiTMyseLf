@@ -451,7 +451,8 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 	WriteLog('IndexTextFile: $fileHash = ' . $fileHash);
 	if (GetConfig('admin/logging/write_chain_log')) {
 		$addedTime = AddToChainLog($fileHash); # IndexTextFile();
-		#todo there is a bug here, should not depend on chain log
+	} else {
+	    $addedTime = GetTime(); #todo make nicer
 	}
 
 	if (GetCache('indexed/' . $fileHash)) {
