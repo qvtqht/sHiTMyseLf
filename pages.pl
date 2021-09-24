@@ -999,7 +999,7 @@ sub GetQueryPage { # $pageName, $title, $columns ;
 		$html .= GetResultSetAsDialog(\@result, $title, $columns);
 		###
 
-		$html .= '<pre class=advanced><br><hr>'.HtmlEscape($query).'</pre>';
+		$html .= '<pre class=admin><br><hr>'.HtmlEscape($query).'</pre>';
 		$html .= GetPageFooter();
 		if (GetConfig('admin/js/enable')) {
 			$html = InjectJs($html, qw(settings utils timestamp voting avatar));
