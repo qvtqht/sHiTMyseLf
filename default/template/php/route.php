@@ -1381,6 +1381,7 @@ if (GetConfig('admin/php/route_enable')) {
 			if (isset($cookie) && $cookie) {
 				if (GetConfig('admin/js/enable')) {
 					$html = str_replace('<span id=spanProfileLink></span>', '<span id=spanProfileLink><p><a href="/author/' . $cookie . '/index.html" onclick="if (window.sharePubKey) { return sharePubKey(this); }">Go to profile</a></p></span>', $html);
+					$html = str_replace('<p id=spanProfileLink></p>', '<p id=spanProfileLink><a href="/author/' . $cookie . '/index.html" onclick="if (window.sharePubKey) { return sharePubKey(this); }">Go to profile</a></p>', $html);
 				} else {
 					$html = str_replace('<span id=spanProfileLink></span>', '<span id=spanProfileLink><p><a href="/author/' . $cookie . '/index.html">Go to profile</a></p></span>', $html);
 				}

@@ -30,6 +30,8 @@
 			<span id=lblFingerprint></span><br>
 		</p>
 
+		<p id=spanProfileLink></p>
+
 		<hr id=pCurrentProfileIndicatorSeparator>
 
 		<p id=pExitButton>
