@@ -124,34 +124,6 @@ GROUP BY
 item.file_hash
 ;
 
-CREATE VIEW item_score_weighed
-AS
-SELECT
-item.file_hash AS file_hash,
-IFNULL(SUM(vote_value.value), 0) AS item_score,
-IFNULL(SUM(vote_value.value), 0) * IFNULL(SUM(author_score), 0) AS item_score_weighed
-FROM
-vote
-LEFT JOIN item
-ON (vote.file_hash = item.file_hash)
-LEFT JOIN vote_value
-ON (vote.vote_value = vote_value.vote)
-LEFT JOIN author_score
-ON (vote.author_key = author_score.author_key)
-GROUP BY
-item.file_hash
-;
-
-
-CREATE VIEW author
-AS
-SELECT DISTINCT
-value AS key
-FROM
-item_attribute
-WHERE
-attribute IN ('cookie_id', 'gpg_id');
-
 CREATE VIEW item_attribute_latest
 AS
 SELECT
@@ -164,7 +136,6 @@ FROM item_attribute
 GROUP BY file_hash, attribute
 ORDER BY epoch DESC
 ;
-
 
 CREATE VIEW added_time
 AS
@@ -227,6 +198,8 @@ WHERE attribute IN ('cookie_id', 'gpg_id')
 GROUP BY file_hash;
 
 
+
+
 CREATE VIEW item_flat
 AS
 SELECT
@@ -258,8 +231,6 @@ LEFT JOIN item_tags_list ON ( item.file_hash = item_tags_list.file_hash )
 LEFT JOIN item_sequence ON ( item.file_hash = item_sequence.file_hash )
 ;
 
-
-
 CREATE VIEW author_score
 AS
 SELECT
@@ -270,6 +241,37 @@ item_flat
 GROUP BY
 item_flat.author_key
 ;
+
+CREATE VIEW item_score_weighed
+AS
+SELECT
+item.file_hash AS file_hash,
+IFNULL(SUM(vote_value.value), 0) AS item_score,
+IFNULL(SUM(vote_value.value), 0) * IFNULL(SUM(author_score), 0) AS item_score_weighed
+FROM
+vote
+LEFT JOIN item
+ON (vote.file_hash = item.file_hash)
+LEFT JOIN vote_value
+ON (vote.vote_value = vote_value.vote)
+LEFT JOIN author_score
+ON (vote.author_key = author_score.author_key)
+GROUP BY
+item.file_hash
+;
+
+
+CREATE VIEW author
+AS
+SELECT DISTINCT
+value AS key
+FROM
+item_attribute
+WHERE
+attribute IN ('cookie_id', 'gpg_id');
+
+
+
 
 CREATE VIEW author_flat
 AS
