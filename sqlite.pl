@@ -478,10 +478,10 @@ sub DBGetItemReplies { # Returns replies for item (actually returns all child it
 	} else {
 		$queryParams{'where_clause'} = "WHERE file_hash IN (SELECT item_hash FROM item_parent WHERE parent_hash = '$itemHash')";
 	}
-	$queryParams{'order_clause'} = "ORDER BY (tags_list NOT LIKE '%hastext%'), add_timestamp";
+	$queryParams{'order_clause'} = "ORDER BY (tags_list NOT LIKE '%hastext%'), add_timestamp DESC";
 
 	return DBGetItemList(\%queryParams);
-}
+} # DBGetItemReplies()
 
 sub SqliteEscape { # Escapes supplied text for use in sqlite query
 # Just changes ' to ''
