@@ -4146,6 +4146,21 @@ sub MakeSystemPages {
 		}
 	}
 
+	MakePage('read');
+
+	MakePage('profile');
+
+	MakePage('chain');
+
+	MakePage('deleted');
+
+	MakePage('compost');
+
+	MakePage('authors');
+
+
+    WriteDataPage();
+
 	if (GetConfig('admin/js/enable') && GetConfig('admin/js/dragging')) {
 		my $dialog;
 
@@ -4814,6 +4829,7 @@ sub GetVersionPage { # returns html with version information for $version (git c
 }
 
 sub WriteDataPage { # writes /data.html (and zip files if needed) # MakeZip txt.zip
+# sub MakeDataPage {
 	#This makes the zip file as well as the data.html page that lists its size
 	WriteLog('MakeDataPage() called');
 
