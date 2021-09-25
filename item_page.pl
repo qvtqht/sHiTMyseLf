@@ -440,7 +440,7 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 			# do nothing
 		} else { # additional dialogs on items page
 			# REPLY FORM
-			$txtIndex .= GetReplyForm($file{'file_hash'});
+			#$txtIndex .= GetReplyForm($file{'file_hash'});
 
 #
 #			# VOTE  BUTTONS
@@ -479,7 +479,6 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		#my @itemReplies = DBGetItemReplies($fileHash);
 		my @itemReplies = DBGetItemReplies($fileHash);
 
-
 #
 #		my $query = '';
 #		if (ConfigKeyValid("query/related")) {
@@ -511,6 +510,9 @@ sub GetItemPage { # %file ; returns html for individual item page. %file as para
 		# RELATED LIST
 		$txtIndex .= GetRelatedListing($file{'file_hash'});
 
+		if (GetConfig('reply/enable')) {
+            $txtIndex .= GetReplyForm($file{'file_hash'});
+		}
 
 	}
 
