@@ -23,8 +23,8 @@ function SortTable (t, sortOrder) {
 		return '';
 	}
 
-//	var rowColor0 = 'white';
-//	var rowColor1 = 'black';
+	var rowColor0 = '';
+	var rowColor1 = '';
 
 	sortOrder = sortOrder ? 1 : 0;
 
@@ -189,18 +189,19 @@ function SortTable (t, sortOrder) {
   	if (!anyChanges) {
   		sortOrder++
   		return SortTable(tOrig, sortOrder);
-//  	} else {
-//		rows = table.rows;
-//
-//  		for (i = 1; i < rows.length; i++) {
-//  			if (i % 2) {
-//				rows[i].getElementsByTagName("TR").style.backgroundColor = rowColor0;
-//				rows[i].getElementsByTagName("TD").style.backgroundColor = rowColor0;
-//  			} else {
-//				rows[i].getElementsByTagName("TR").style.backgroundColor = rowColor1;
-//				rows[i].getElementsByTagName("TD").style.backgroundColor = rowColor1;
-//  			}
-//  		}
+  	}
+
+  	if (anyChanges) {
+		rows = table.rows;
+		var rowsLength = rows.length;
+
+  		for (i = 2; i < rowsLength - 1; i++) {
+  			if (i % 2) {
+				rows[i].style.backgroundColor = rowColor0;
+  			} else {
+				rows[i].style.backgroundColor = rowColor1;
+  			}
+  		}
   	}
 
 	//alert('DEBUG: SortTable() finished');

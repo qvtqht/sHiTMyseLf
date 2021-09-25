@@ -2626,6 +2626,15 @@ sub GetScriptTemplate { # $script ; returns script for name
 		$scriptTemplate =~ s/\$currentAdminId/$currentAdminId/g;
 	}
 
+	if ($script eq 'table_sort') {
+		# for settings.js we also need to fill in some theme colors
+		my $colorRow0 = GetThemeColor('row_0');
+		my $colorRow1 = GetThemeColor('row_1');
+
+		$scriptTemplate =~ s/var rowColor0 = '';/var rowColor0 = '$colorRow0';/g;
+		$scriptTemplate =~ s/var rowColor1 = '';/var rowColor1 = '$colorRow1';/g;
+	}
+
 	if ($script eq 'itsyou') {
 		my $itemFp = '00000000000000000'; #todo
 		$scriptTemplate =~ s/var itemFp = 0;/var itemFp = '$itemFp';/g;
