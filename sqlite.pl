@@ -109,8 +109,14 @@ sub SqliteGetQueryString {
 		# insert params into ? placeholders
 		while (@queryParams) {
 			my $paramValue = shift @queryParams;
-			$paramValue = str_replace("'", ',', $paramValue); #todo improve on just stripping single quotes :D
-			$paramValue = str_replace('"', ',,', $paramValue); #todo improve on just stripping single quotes :D
+			if ($paramValue) {
+				$paramValue = str_replace("'", ',', $paramValue); #todo improve on just stripping single quotes :D
+				$paramValue = str_replace('"', ',,', $paramValue); #todo improve on just stripping single quotes :D
+				$paramValue = str_replace('|', '-', $paramValue); #todo improve on just stripping single quotes :D
+				$paramValue = str_replace('?', 'Q', $paramValue); #todo improve on just stripping single quotes :D
+			} else {
+				$paramValue = '0';
+			}
 			$queryWithParams =~ s/\?/'$paramValue'/;
 		}
 	}
