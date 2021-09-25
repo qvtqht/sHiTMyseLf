@@ -1757,6 +1757,11 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 		);
 	}
 
+	if (GetConfig('html/prefetch_enable')) {
+	    my $prefetchTags = GetTemplate('html/prefetch_head.template');
+	    $htmlStart = str_replace('</head>', $prefetchTags . "\n" . '</head>', $htmlStart);
+	}
+
 	#top menu
 						  
 	my $identityLink = '<span id="signin"><a href="/profile.html">Go to profile</a></span> <span class="myid" id=myid></span> ';
