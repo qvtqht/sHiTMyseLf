@@ -128,11 +128,23 @@ sub GetTokenDefs {
 
 	#todo memo
 	my @tokenDefs = (
+	    # ATTENTION #tokenSanityCheck
+	    # Whenever adding a new definition here
+	    # Also add it to the sanity check below
+	    # Look for this tag: #tokenSanityCheck
+	    # ATTENTION #tokenSanityCheck
+
 		{ # cookie of user who posted the message
 			'token'   => 'cookie',
 			'mask'    => '^(cookie)(\W+)([0-9A-F]{16})',
 			'mask_params'    => 'mgi',
 			'message' => '[Cookie]'
+		},
+		{ # date in yyyy-mm-dd format
+			'token'   => 'date',
+			'mask'    => '^(date)(\W+)([0-9]{4}\-[0-9]{2}\-[0-9]{2})',
+			'mask_params'    => 'mgi',
+			'message' => '[Date]'
 		},
 		{ # host user used to post message
 			'token'   => 'host',
@@ -681,7 +693,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 				if ($tokenFound{'token'} && $tokenFound{'param'}) {
 					WriteLog('IndexTextFile: token, param: ' . $tokenFound{'token'} . ',' . $tokenFound{'param'});
 
-					if (
+					if ( #tokenSanityCheck
 						$tokenFound{'token'} eq 'title' || #title
 						$tokenFound{'token'} eq 'name' ||
 						$tokenFound{'token'} eq 'order' ||
@@ -692,6 +704,7 @@ sub IndexTextFile { # $file | 'flush' ; indexes one text file into database
 						$tokenFound{'token'} eq 'duration' ||
 						$tokenFound{'token'} eq 'track' ||
 						$tokenFound{'token'} eq 'host' ||
+						$tokenFound{'token'} eq 'date' ||
 						$tokenFound{'token'} eq 'https' ||
 						$tokenFound{'token'} eq 'http'
 					) {
