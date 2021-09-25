@@ -123,7 +123,10 @@ sub SqliteGetQueryString {
 sub SqliteQueryHashRef { # $query, @queryParams; calls sqlite with query, and returns result as array of hashrefs
 # ATTENTION: first array element returned is an array of column names!
 
-	WriteLog('SqliteQueryGetArrayOfHashRef: begin');
+#sub SqliteGetHash {}
+
+#	WriteLog('SqliteQueryGetArrayOfHashRef: begin');
+	WriteLog('SqliteQueryHashRef: begin');
 
 	my $query = shift;
 	chomp $query;
