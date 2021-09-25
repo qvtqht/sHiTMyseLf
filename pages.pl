@@ -5066,69 +5066,68 @@ sub GetPagePath { # $pageType, $pageParam ; returns path to item's html path
 
 sub BuildTouchedPages { # $timeLimit, $startTime ; builds pages returned by DBGetTouchedPages();
     WriteLog("BuildTouchedPages: warning: is broken, exiting");
-    return ''; #todo
 
 	# DBGetTouchedPages() means select * from task where priority > 0
 
+#	my $timeLimit = shift;
+#	if (!$timeLimit) {
+#		$timeLimit = 0;
+#	}
+#	my $startTime = shift;
+#	if (!$startTime) {
+#		$startTime = 0;
+#	}
 
-	my $timeLimit = shift;
-	if (!$timeLimit) {
-		$timeLimit = 0;
-	}
-	my $startTime = shift;
-	if (!$startTime) {
-		$startTime = 0;
-	}
+#	WriteLog("BuildTouchedPages($timeLimit, $startTime)");
 
-	WriteLog("BuildTouchedPages($timeLimit, $startTime)");
-
-	my $pagesLimit = GetConfig('admin/update/limit_page');
-	if (!$pagesLimit) {
-		WriteLog("WARNING: config/admin/update/limit_page missing!");
-		$pagesLimit = 1000;
-	}
+#	my $pagesLimit = GetConfig('admin/update/limit_page');
+#	if (!$pagesLimit) {
+#		WriteLog("WARNING: config/admin/update/limit_page missing!");
+#		$pagesLimit = 1000;
+#	}
 
 	my $pagesProcessed = 0;
 
 	# get a list of pages that have been touched since touch git_flow
 	# this is from the task table
-	my $touchedPages = DBGetTouchedPages($pagesLimit);
+	my @pages = SqliteQueryHashRef("select task_name, task_param from task where task_type = 'page' order by priority desc;");
+	#todo templatize
 
-	if ($touchedPages) { #todo actually check it's an array reference or something?
-		# de-reference array of touched pages
-		my @touchedPagesArray = @$touchedPages;
+	shift @pages; #header row
 
+	if (@pages) {
 		# write number of touched pages to log
-		WriteLog('BuildTouchedPages: scalar(@touchedPagesArray) = ' . scalar(@touchedPagesArray));
+		WriteLog('BuildTouchedPages: scalar(@pages) = ' . scalar(@pages));
 
 		# this part will refresh any pages that have been "touched"
 		# in this case, 'touch' means when an item that affects the page
 		# is updated or added
 
 		my $isLazy = 0;
-		if (GetConfig('admin/pages/lazy_page_generation')) {
-			if (GetConfig('admin/php/enable')) {
-				# at this time, php is the only module which can support regrowing
-				# 404 pages and thsu lazy page gen
-				if (GetConfig('admin/php/rewrite')) {
-					# rewrite is also required for this to work
-					if (GetConfig('admin/php/regrow_404_pages')) {
-						WriteLog('BuildTouchedPages: $isLazy conditions met, setting $isLazy = 1');
-						$isLazy = 1;
-					}
-				}
-			}
-		}
+#		if (GetConfig('admin/pages/lazy_page_generation')) {
+#			if (GetConfig('admin/php/enable')) {
+#				# at this time, php is the only module which can support regrowing
+#				# 404 pages and thsu lazy page gen
+#				if (GetConfig('admin/php/rewrite')) {
+#					# rewrite is also required for this to work
+#					if (GetConfig('admin/php/regrow_404_pages')) {
+#						WriteLog('BuildTouchedPages: $isLazy conditions met, setting $isLazy = 1');
+#						$isLazy = 1;
+#					}
+#				}
+#			}
+#		}
 		WriteLog('BuildTouchedPages: $isLazy = ' . $isLazy);
 
-		foreach my $page (@touchedPagesArray) {
-			if ($timeLimit && $startTime && ((time() - $startTime) > $timeLimit)) {
-				WriteMessage("BuildTouchedPages: Time limit reached, exiting loop");
-				WriteMessage("BuildTouchedPages: " . time() . " - $startTime > $timeLimit");
-				last;
-			}
+		foreach my $pageHashRef (@pages) {
+		    my %page = %{$pageHashRef};
+#			if ($timeLimit && $startTime && ((time() - $startTime) > $timeLimit)) {
+#				WriteMessage("BuildTouchedPages: Time limit reached, exiting loop");
+#				WriteMessage("BuildTouchedPages: " . time() . " - $startTime > $timeLimit");
+#				last;
+#			}
 
-			$pagesProcessed++;
+#			$pagesProcessed++;
 			#	if ($pagesProcessed > $pagesLimit) {
 			#		WriteLog("Will not finish processing pages, as limit of $pagesLimit has been reached");
 			#		last;
@@ -5139,13 +5138,14 @@ sub BuildTouchedPages { # $timeLimit, $startTime ; builds pages returned by DBGe
 			#	}
 
 			# dereference @pageArray and get the 3 items in it
-			my @pageArray = @$page;
-			my $pageType = shift @pageArray;
-			my $pageParam = shift @pageArray;
-			my $touchTime = shift @pageArray;
+
+			my $pageType = $page{'task_name'};
+			my $pageParam = $page{'task_param'};
+#			my $touchTime = shift @pageArray;
 
 			# output to log
-			WriteLog('BuildTouchedPages: $pageType = ' . $pageType . '; $pageParam = ' . $pageParam . '; $touchTime = ' . $touchTime);
+#			WriteLog('BuildTouchedPages: $pageType = ' . $pageType . '; $pageParam = ' . $pageParam . ';');
+#			WriteLog('BuildTouchedPages: $pageType = ' . $pageType . '; $pageParam = ' . $pageParam . '; $touchTime = ' . $touchTime);
 
 			if ($isLazy) {
 				my $pagePath = GetPagePath($pageType, $pageParam);
