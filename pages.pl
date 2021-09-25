@@ -4858,7 +4858,7 @@ sub WriteDataPage { # writes /data.html (and zip files if needed) # MakeZip txt.
 		# -q for quiet
 		# -r for recursive
 		#todo write zip call
-		system("time git archive --format zip --output $HTMLDIR/tree.tmp.zip master");
+		system("git archive --format zip --output $HTMLDIR/tree.tmp.zip master");
 		rename("$HTMLDIR/tree.tmp.zip", "$HTMLDIR/tree.tmp.zip");
 
 		system("zip -qr $HTMLDIR/txt.tmp.zip $HTMLDIR/txt/ $HTMLDIR/chain.log");
