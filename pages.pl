@@ -1764,7 +1764,6 @@ sub GetPageHeader { # $title, $titleHtml, $pageType ; returns html for page head
 
 	#top menu
 						  
-	my $identityLink = '<span id="signin"><a href="/profile.html">Go to profile</a></span> <span class="myid" id=myid></span> ';
 #	my $noJsIndicator = '<noscript><a href="/profile.html">Profile</a></noscript>';
 	#todo profile link should be color-underlined like other menus
 	{
